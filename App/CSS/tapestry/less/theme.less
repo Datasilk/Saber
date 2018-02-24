@@ -1,0 +1,346 @@
+﻿
+@import 'util.less';
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Tapestry //////// a CSS framework ////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// developed by Mark Entingh www.markentingh.com ////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// theme.less : a set of functions used to generate a color theme for your web pages ////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//global variables //////////////
+@fade-perc:50%;
+/////////////////////////////////
+
+// box : the outer-most container
+.box(@box-bg, @box-border, @box-font){
+    background:@box-bg;
+    & when not (@box-border = transparent){border-color:@box-border;}
+    color:@box-font;
+    a.no-link{color:@box-font !important;}
+}
+
+// links : all types of anchor links, including svg icon links & faded links
+.links(@a-link, @a-hover, @a-active, @a-visited, @important:false){
+    a{
+        .link(@a-link, @a-hover, @a-active, @a-link, @important);
+        .svglink(@a-link, @a-hover, @a-active, @a-link, @important);
+    }
+    a.faded{
+        .link(fade(@a-link, @fade-perc), fade(@a-hover, @fade-perc), fade(@a-active, @fade-perc), fade(@a-link, @fade-perc), @important);
+        .svglink(fade(@a-link, @fade-perc), fade(@a-hover, @fade-perc), fade(@a-active, @fade-perc), fade(@a-link, @fade-perc), @important);
+    }    
+}
+
+// icons : anchor link icons (that use the .icon or .nolinks classes)
+.icons(@a-link, @a-hover, @a-active, @a-visited, @important:false){
+    .icon a, .nolinks a, a.icon, &.icon a{
+        .link(@a-link, @a-hover, @a-active, @a-link, true);
+        .svglink(@a-link, @a-hover, @a-active, @a-link, true);
+    }
+}
+
+.menu-icons(@a-link, @a-hover, @a-active, @a-visited, @important:false){
+    a{
+        & when (@important = true){
+            &:link .icon use{color:@a-link !important; fill:@a-link !important;}
+            &:visited .icon use{color:@a-visited !important; fill:@a-visited !important;}
+            &:hover .icon use{color:@a-hover !important; fill:@a-hover !important;} 
+            &:active .icon use{color:@a-active !important; fill:@a-active !important;} 
+        } 
+        & when (@important = false){
+            &:link .icon use{color:@a-link; fill:@a-link;}
+            &:visited .icon use{color:@a-visited; fill:@a-visited;}
+            &:hover .icon use{color:@a-hover; fill:@a-hover;}
+            &:active .icon use{color:@a-active; fill:@a-active;} 
+        }
+    }
+}
+
+// fonts : miscellaneous font colors
+.fonts(@header, @faded, @price, @positive, @negative, @time){
+    h1, h2, h3, h4, h5, h6{color:@header;}
+    .font-faded{color:@faded;}
+    .font-price{color:@price;}
+    .font-positive{color:@positive;}
+    .font-negative, .font-error{color:@negative;}
+    .font-time{color:@time;}
+}
+ 
+// row : grid styling for a row & alternate row   
+.get-row(@bg, @hover, @selected, @font, @font-hover, @font-selected, @a-link, @a-hover, @a-active, @a-visited, @a-selected, @icon-link, @icon-hover, @icon-active, @icon-selected, @is-hover-alt:false){
+    &{
+        //row defaults
+        background:@bg; 
+        color:@font;
+        .links(@a-link, @a-hover, @a-active, @a-visited);
+        .icons(@icon-link, @icon-hover, @icon-active, @icon-link);
+        a.text{.link(@font, @font, @font, @font);}
+    }
+    
+    //row arrow
+    & > .arrow-right:after{ border-left-color:@bg;}
+    & > .arrow-left:after{ border-right-color:@bg;}
+    .arrow-expand{border-color: transparent transparent transparent @font;}
+
+    & when not (@hover = transparent){
+        //row hover (optional)
+        & when (@is-hover-alt = false){
+            &.hover:hover{
+                background:@hover;
+                color:@font-hover;
+                .links(@a-hover, @a-hover, @a-active, @a-hover);
+                .icons(@icon-hover, @icon-hover, @icon-active, @icon-hover);
+                & > .arrow-right:after{ border-left-color:@hover;}
+                & > .arrow-left:after{ border-right-color:@hover;}
+                .arrow-expand{border-color: transparent transparent transparent @font-hover;}
+            }
+        }
+        & when (@is-hover-alt = true){
+            &.hover.alt:not(.selected):hover{
+                background:@hover;
+                color:@font-hover;
+                .links(@a-hover, @a-hover, @a-active, @a-hover);
+                .icons(@icon-hover, @icon-hover, @icon-active, @icon-hover);
+                & > .arrow-right:after{ border-left-color:@hover;}
+                & > .arrow-left:after{ border-right-color:@hover;}
+                .arrow-expand{border-color: transparent transparent transparent @font-hover;}
+            }
+        }
+    }
+        
+    & when not (@selected = transparent){
+        //row selected (optional)
+        &.selected, &.selected:hover{
+            background:@selected;
+            color:@font-selected;
+            .links(@a-selected, @a-hover, @a-active, @a-selected);
+            .icons(@icon-selected, @icon-hover, @icon-active, @icon-selected);
+            a{
+                .link(@a-selected, @a-hover, @a-active, @a-selected);
+                .svglink(@icon-selected, @icon-hover, @icon-active, @icon-selected);
+            }
+            & > .arrow-right:after{ border-left-color:@selected;}
+            & > .arrow-left:after{ border-right-color:@selected;}
+            .arrow-expand{border-color: transparent transparent transparent @font-selected;}
+        }
+
+        & when (@is-hover-alt = true){
+            &.selected.alt, &.selected.alt:hover{
+            background:@selected;
+            color:@font-selected;
+            .links(@a-selected, @a-hover, @a-active, @a-selected);
+            .icons(@icon-selected, @icon-hover, @icon-active, @icon-selected);
+            a{
+                .link(@a-selected, @a-hover, @a-active, @a-selected);
+                .svglink(@icon-selected, @icon-hover, @icon-active, @icon-selected);
+            }
+            & > .arrow-right:after{ border-left-color:@selected;}
+            & > .arrow-left:after{ border-right-color:@selected;}
+            .arrow-expand{border-color: transparent transparent transparent @font-selected;}
+        }
+        }
+    }
+}
+.row(@bg, @hover, @selected, @font, @font-hover, @font-selected, @a-link, @a-hover, @a-active, @a-visited, @a-selected, @icon-link, @icon-hover, @icon-active, @icon-selected){
+    .row{.get-row(@bg, @hover, @selected, @font, @font-hover, @font-selected, @a-link, @a-hover, @a-active, @a-visited, @a-selected, @icon-link, @icon-hover, @icon-active, @icon-selected, false);}
+}
+.row-alt(@bg, @hover, @selected, @font, @font-hover, @font-selected, @a-link, @a-hover, @a-active, @a-visited, @a-selected, @icon-link, @icon-hover, @icon-active, @icon-selected){
+    .row.alt{.get-row(@bg, @hover, @selected, @font, @font-hover, @font-selected, @a-link, @a-hover, @a-active, @a-visited, @a-selected, @icon-link, @icon-hover, @icon-active, @icon-selected, true);}
+}
+
+.table(@header-bg, @header-font, @header-a-link, @header-a-hover, @header-a-active, @header-a-visited, @row-bg, @row-hover, @row-selected, @row-font, @row-font-hover, @row-font-selected, @row-a-link, @row-a-hover, @row-a-active, @row-a-visited, @row-icon-link, @row-icon-hover, @row-icon-active, @row-icon-selected, @row-alt-bg, @row-alt-hover, @row-alt-selected, @row-alt-font, @row-alt-font-hover, @row-alt-font-selected, @row-alt-a-link, @row-alt-a-hover, @row-alt-a-active, @row-alt-a-visited, @row-alt-icon-link, @row-alt-icon-hover, @row-alt-icon-active, @row-alt-icon-selected){
+    table.spreadsheet{
+        .table-head(@header-bg, @header-font, @header-a-link, @header-a-hover, @header-a-active, @header-a-visited);
+        .table-row(@row-bg, @row-hover, @row-selected, @row-font, @row-font-hover, @row-font-selected, @row-a-link, @row-a-hover, @row-a-active, @row-a-visited, @row-icon-link, @row-icon-hover, @row-icon-active, @row-icon-selected);
+        .table-row-alt(@row-alt-bg, @row-alt-hover, @row-alt-selected, @row-alt-font, @row-alt-font-hover, @row-alt-font-selected, @row-alt-a-link, @row-alt-a-hover, @row-alt-a-active, @row-alt-a-visited, @row-alt-icon-link, @row-alt-icon-hover, @row-alt-icon-active, @row-alt-icon-selected);
+    }
+}
+
+.table-head(@bg, @font, @a-link, @a-hover, @a-active, @a-visited){
+    thead > tr{
+        background:@bg; color:@font;
+        .links(@a-link, @a-hover, @a-active, @a-visited);
+    }
+}
+
+.table-row(@bg, @bg-hover, @bg-selected, @font, @font-hover, @font-selected, @a-link, @a-hover, @a-active, @a-visited, @icon-link, @icon-hover, @icon-active, @icon-selected){
+    tbody > tr{
+        background:@bg; color:@font;
+        .links(@a-link, @a-hover, @a-active, @a-visited);
+        .icons(@icon-link, @icon-hover, @icon-active, @icon-link);
+        a.text{.link(@font, @font, @font, @font);}
+    }
+    tbody > tr:hover{
+        background:@bg-hover; color:@font-hover;
+        .links(@a-link, @a-hover, @a-active, @a-visited);
+        .icons(@icon-link, @icon-hover, @icon-active, @icon-link);
+        a.text{.link(@font-hover, @font-hover, @font-hover, @font-hover);}
+    }
+    tbody > tr.selected{
+        background:@bg-selected; color:@font-selected;
+        .links(@a-link, @a-hover, @a-active, @a-visited);
+        .icons(@icon-selected, @icon-hover, @icon-active, @icon-selected);
+        a.text{.link(@font-selected, @font-selected, @font-selected, @font-selected);}
+    }
+}
+.table-row-alt(@bg, @bg-hover, @bg-selected, @font, @font-hover, @font-selected, @a-link, @a-hover, @a-active, @a-visited, @icon-link, @icon-hover, @icon-active, @icon-selected){
+    tbody > tr:nth-child(even){
+        background:@bg; color:@font;
+        .links(@a-link, @a-hover, @a-active, @a-visited);
+        .icons(@icon-link, @icon-hover, @icon-active, @icon-link);
+        a.text{.link(@font, @font, @font, @font);}
+    }
+    tbody > tr:nth-child(even):hover{
+        background:@bg-hover; color:@font-hover;
+        .links(@a-link, @a-hover, @a-active, @a-visited);
+        .icons(@icon-link, @icon-hover, @icon-active, @icon-link);
+        a.text{.link(@font-hover, @font-hover, @font-hover, @font-hover);}
+    }
+    tbody > tr:nth-child(even).selected{
+        background:@bg-selected; color:@font-selected;
+        .links(@a-link, @a-hover, @a-active, @a-visited);
+        .icons(@icon-selected, @icon-hover, @icon-active, @icon-selected);
+        a.text{.link(@font-selected, @font-selected, @font-selected, @font-selected);}
+    }
+}
+
+// input : styling for form inputs
+.input(@input-bg, @input-color, @input-border, @input-placeholder, @input-bg-hover, @input-color-hover, @input-border-hover, @input-bg-focus, @input-color-focus, @input-border-focus, @input-label, @input-label-hover){
+    input[type]:not([type=button]):not([type=submit]):not([type=radio]), textarea, select{background:@input-bg; color:@input-color; border-color:@input-border;}
+    .input-placeholder() when not (@input-placeholder = transparent){
+        input[type]:not([type=button]):not([type=submit]):not([type=radio])::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+          color: @input-placeholder;
+        }
+        input[type]:not([type=button]):not([type=submit]):not([type=radio])::-moz-placeholder { /* Firefox 19+ */
+          color: @input-placeholder;
+        }
+        input[type]:not([type=button]):not([type=submit]):not([type=radio]):-ms-input-placeholder { /* IE 10+ */
+          color: @input-placeholder;
+        }
+
+        textarea::-webkit-input-placeholder {
+            color: @input-placeholder;
+        }
+        textarea::-moz-placeholder {  /* Firefox 19+ */
+            color: @input-placeholder;
+        }
+ 
+        textarea:-ms-input-placeholder {  
+        color: green !important;  
+        }
+    }
+    .input-hover() when not (@input-bg-hover = transparent){
+        input[type]:not([type=button]):not([type=submit]):not([type=radio]):hover, textarea:hover, select:hover{background:@input-bg-hover; color:@input-color-hover; border-color:@input-border-hover;}
+        .row.hover:hover{
+            input[type]:not([type=button]):not([type=submit]):not([type=radio]), textarea, select{background:@input-bg-hover; color:@input-color-hover; border-color:@input-border-hover;}
+        }
+    }
+    .input-focus() when not (@input-bg-focus = transparent){
+        input[type]:not([type=button]):not([type=submit]):not([type=radio]):focus, textarea:focus, select:focus{background:@input-bg-focus !important; color:@input-color-focus !important; border-color:@input-border-focus !important; outline-color:@input-border-focus !important;}
+        a:focus{outline-color:@input-border-focus;}
+    }
+
+    .input-placeholder();
+    .input-hover();
+    .input-focus();
+
+    .col.field{color:@input-label}
+    .row.hover:hover .col.field{color:@input-label-hover}
+}
+
+
+// button : a simple button, distinguished by a unique @name (default @name is '')
+.button(@name, @bg, @bg-hover, @bg-active, @bg-selected, @border, @border-hover, @border-active, @border-selected, @outline, @outline-hover, @outline-active, @outline-selected, @font, @font-hover, @font-active, @font-selected){
+    
+    .check-button-name() when (@name = default){
+        .button, a.button{
+            .get-button();
+        }
+    }
+
+    .check-button-name() when not (@name = default){
+        .button.@{name}, a.button.@{name}{
+            .get-button();
+        }
+    }
+
+    .check-button-name();
+
+    .get-button(){
+        background:@bg;
+        border-color:@border;
+        outline-color:@outline;
+        color:@font !important;;
+        &:hover, &:focus{
+            background:@bg-hover;
+            border-color:@border-hover;
+            outline-color:@outline-hover;
+            color:@font-hover !important;
+        }
+        &:active{
+            background:@bg-active;
+            border-color:@border-active;
+            outline-color:@outline-active;
+            color:@font-active;
+        }
+        &.selected{
+            background:@bg-selected;
+            border-color:@border-selected;
+            outline-color:@outline-selected;
+            color:@font-selected;
+        }
+        &{.link(@font, @font-hover, @font-active, @font);}
+        &{.svglink(@font, @font-hover, @font-active, @font);}
+    }
+}
+
+// button-icon : a clickable icon
+.button-icon(@name, @default, @hover, @active, @important:false){
+    .check-button-name() when (@name = ''){
+        .button{
+            .get-button();
+        }
+    }
+
+    .check-button-name() when not (@name = ''){
+        .button.@{name}{
+            .get-button();
+        }
+    }
+
+    .check-button-name();
+
+    .get-button(){
+        .svglink(@default, @hover, @active, @default, @important);
+    }
+}
+
+// line : a horizontal line separator
+.line(@color){
+    .line{border-top-color:@color;}
+}
+
+// message : colors for all message types
+.message(@name, @bg, @border, @font){
+    .msg() when (@name = default){
+        .message{
+            .get-msg();
+        }
+    }
+
+    .msg() when not (@name = default){
+        .message.@{name}{
+            .get-msg();
+        }
+    }
+
+    .msg();
+
+    .get-msg(){
+        background:@bg;
+        border-color:@border;
+        color:@font;
+    }
+}

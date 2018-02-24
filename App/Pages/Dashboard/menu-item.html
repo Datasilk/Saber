@@ -1,0 +1,17 @@
+﻿<li>
+    <div class="row hover">
+        <div class="arrow-right small onselect"></div>
+        <a href="{{href}}" onvalidate="S.dashboard.menu.validate('{{href}}','{{section-name}}')" {{target}}>
+            {{gutter}}
+            <span class="col icon small pad-width pad-top-sm">
+                <span>    
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-{{icon}}" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </span>
+            </span>
+            <span class="col label nolinks"><span>{{label}}</span></span>
+        </a>
+    </div>
+    {{submenu}}
+</li>

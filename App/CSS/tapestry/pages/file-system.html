@@ -1,0 +1,115 @@
+<style type="text/css">
+    .demo-file-system{height:100%;}
+</style>
+<div class="row flex desktop pad-sm">
+    <!-- inner box section with file structure -->
+    <div class="section shadow">
+        <!-- (header) -->
+        <div class="row header">
+            <div class="col six tablet nowrap">
+                <div class="col icon pad-right-sm">
+                    <a href="/dashboard" target="_blank">
+                        <svg viewBox="0 0 15 15">
+                            <use xlink:href="#icon-dashboard" x="0" y="0" width="15" height="15"></use>
+                        </svg>
+                    </a>
+                </div>
+                <div class="col title">File System</div>
+            </div>
+            <div class="col six right tablet nowrap text-right">
+                <div class="col pad-right">
+                    <a href="#" class="button icon">
+                        <svg viewBox="0 0 36 36">
+                            <use xlink:href="#icon-settings" x="0" y="0" width="36" height="36"></use>
+                        </svg>
+                    </a>
+                </div>
+                <div class="col pad-right">
+                    <a href="#" class="button circle special">
+                        <svg viewBox="0 0 36 36">
+                            <use xlink:href="#icon-settings" x="0" y="0" width="36" height="36"></use>
+                        </svg>
+                    </a>
+                </div>
+                <div class="col pad-right">
+                    <a href="#" class="button circle">
+                        <svg viewBox="0 0 36 36">
+                            <use xlink:href="#icon-settings" x="0" y="0" width="36" height="36"></use>
+                        </svg>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="#" class="button circle large">
+                        <svg viewBox="0 0 36 36">
+                            <use xlink:href="#icon-settings" x="0" y="0" width="36" height="36"></use>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- (ui elements) -->
+        <div id="filelist_ui">
+            <div class="row hover">
+                <div class="color-tag {{color}}">
+                    <div class="bg dark">&nbsp;</div>
+                </div>
+                <div class="col color-contents pad-sm clear">
+                    <div class="col" style="cursor:pointer">
+                        <div class="col icon small pad-right-sm">
+                            {{iconfolder}}
+                            <a href="#" title="View a list of sub-pages for '{{label}}'">
+                                <svg viewBox="0 0 15 15">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-folder" x="0" y="0" width="15" height="15"></use>
+                                </svg>
+                            </a>
+                            {{/iconfolder}}
+                        </div>
+                        <div class="col label">{{label}}</div>
+                    </div>
+                    <div class="col hover-only right pad-left">
+                        {{icondelete}}
+                        <div class="col icon small right pad-right">
+                            <a href="#" title="Permanently delete the page '{{label}}' and all of its sub-pages">
+                                <svg viewBox="0 0 15 15">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-close" x="0" y="0" width="36" height="36"></use>
+                                </svg>
+                            </a>
+                        </div>
+                        {{/icondelete}}
+                        {{iconsettings}}
+                        <div class="col icon small right pad-right">
+                            <a href="#" title="Page Settings for '{{label}}'">
+                                <svg viewBox="0 0 36 36">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-settings" x="0" y="0" width="36" height="36"></use>
+                                </svg>
+                            </a>
+                        </div>
+                        {{/iconsettings}}
+                        {{iconadd}}
+                        <div class="col icon small right pad-right">
+                            <a href="#" title="Create a new Sub-Page for '{{label}}'">
+                                <svg viewBox="0 0 15 15">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-add" x="0" y="0" width="15" height="15"></use>
+                                </svg>
+                            </a>
+                        </div>
+                        {{/iconadd}}
+                        {{iconopen}}
+                        <div class="col icon small right pad-right">
+                            <a href="#" title="View Web Page">
+                                <svg viewBox="0 0 15 15">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-openwindow" x="0" y="0" width="15" height="15"></use>
+                                </svg>
+                            </a>
+                        </div>
+                        {{/iconopen}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--(body)-->
+        <div class="demo-file-system">
+            <ul id="filelist" class="columns-list"></ul>
+        </div>
+    </div>
+</div>

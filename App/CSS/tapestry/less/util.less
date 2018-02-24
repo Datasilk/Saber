@@ -1,0 +1,43 @@
+//colors for various anchor link states
+.link(@color-link; @color-hover; @color-active; @color-visited; @important:false){
+    & when (@important = true){ 
+        &:link{color:@color-link !important;}
+        &:visited{color:@color-visited !important;}
+        &:hover{color:@color-hover !important;}
+        &:active{color:@color-active !important;} 
+    } 
+    & when (@important = false){
+        &:link{color:@color-link;}
+        &:visited{color:@color-visited;}
+        &:hover{color:@color-hover;}
+        &:active{color:@color-active;} 
+    }
+}
+
+//colors for various anchor link states that contain an svg
+.svglink(@color-link; @color-hover; @color-active; @color-visited; @important:false){
+    & when (@important = true){
+        &:link use{color:@color-link !important; fill:@color-link !important;}
+        &:visited use{color:@color-visited !important; fill:@color-visited !important;}
+        &:hover use{color:@color-hover !important; fill:@color-hover !important;} 
+        &:active use{color:@color-active !important; fill:@color-active !important;} 
+    } 
+    & when (@important = false){
+        &:link use{color:@color-link; fill:@color-link;}
+        &:visited use{color:@color-visited; fill:@color-visited;}
+        &:hover use{color:@color-hover; fill:@color-hover;}
+        &:active use{color:@color-active; fill:@color-active;} 
+    }
+}
+
+.keyframes(@name; @arguments) {
+	@-moz-keyframes @name { @arguments(); }
+	@-webkit-keyframes @name { @arguments(); }
+	@keyframes @name { @arguments(); }
+}
+
+.animation(@arguments) {
+	-webkit-animation: @arguments;
+	-moz-animation: @arguments;
+	animation: @arguments;
+}

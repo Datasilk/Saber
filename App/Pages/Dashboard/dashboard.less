@@ -1,0 +1,19 @@
+﻿.webpage{flex-direction:unset !important; -ms-flex-direction:unset !important;}
+.dash-side{
+    width:200px;
+    height:100%;
+    float:left;
+    flex-shrink:0;
+    cursor:default;
+
+    > .head{
+        border-bottom-width:7px; border-bottom-style:solid;
+        > span, > h5{display:inline-block; width:100%;} 
+    }
+}
+.dash-menu{margin-top:20px;}
+ 
+.dash-body{
+    flex-grow:1;    width:~"calc(100% - 200px)";
+    min-height:100%;
+}

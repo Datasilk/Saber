@@ -1,0 +1,24 @@
+﻿{{header "/Partials/UI/header.html"}}
+
+{{editing}}
+    <div class="edit-menu">
+        <ul class="tabs">
+            <li>
+                <div class="row tab-browse hover" onclick="S.editor.explorer.show()">
+                    Browse Files...    
+                </div>
+                <div class="row hover tab-{{tabId}} selected" onclick="S.editor.explorer.open('{{tab-path}}', {{tabId}}">
+                    {{tab-title}}
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="editor">
+            <div id="editor"></div>
+        </div>
+        <div class="file-browser hide">
+
+        </div>
+    </div>
+{{/editing}}
