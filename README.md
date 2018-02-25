@@ -30,5 +30,8 @@ A simple, straight forward CMS.
 
 
 ## Features
-* Build web pages from within the web browser using a built-in IDE for editing HTML, CSS, LESS, & Javascript
-* Convert any URL within your website to a valid web page simply by navigating to the URL and writing some HTML & CSS
+* Build web pages from within your web browser using a built-in IDE for editing HTML, CSS, LESS, & Javascript
+* Convert any URL within your website to a valid web page simply by navigating to the URL and writing some HTML & CSS within the built-in IDE
+
+## Future Development
+* Publish content using other formats besides HTML & CSS, such as writing markdown or uploading a PDF file.

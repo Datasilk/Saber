@@ -240,6 +240,9 @@ gulp.task('watch', function () {
     pathjs.unshift(paths.working.js.app);
     gulp.watch(pathjs, ['js:app']);
 
+    //watch utility JS
+    gulp.watch(paths.working.js.utility, ['js:utility']);
+
     //watch app LESS
     var pathless = paths.working.exclude.app.slice(0);
     for (var x = 0; x < pathless.length; x++) {
@@ -259,7 +262,7 @@ gulp.task('watch', function () {
     //watch themes LESS
     gulp.watch([
         paths.working.less.themes
-    ], ['less:themes']);
+    ], ['less:themes', 'less:platform']);
 
     //watch utility LESS
     gulp.watch([

@@ -1,24 +1,37 @@
 ﻿{{header "/Partials/UI/header.html"}}
 
-{{editing}}
-    <div class="edit-menu">
+{{editor}}
+<div class="editor pad">
+    <div class="edit-menu row pad-bottom">
         <ul class="tabs">
             <li>
-                <div class="row tab-browse hover" onclick="S.editor.explorer.show()">
-                    Browse Files...    
-                </div>
-                <div class="row hover tab-{{tabId}} selected" onclick="S.editor.explorer.open('{{tab-path}}', {{tabId}}">
-                    {{tab-title}}
+                <div class="row tab-browse hover">
+                    <div class="col pad-height pad-width-lg">Browse Files...</div>
                 </div>
             </li>
+            
         </ul>
     </div>
-    <div class="content">
-        <div class="editor">
+    <div class="row sections">
+        <div class="tab code-editor">
             <div id="editor"></div>
         </div>
-        <div class="file-browser hide">
-
+        <div class="tab file-browser hide">
+            <ul class="columns-list"></ul>
         </div>
     </div>
-{{/editing}}
+    <script type="text/html" id="file_{{tabId}}" class="file-current-page">
+        {{tab-content}}
+    </script>
+</div>
+
+<script type="text/html" id="template_tab">
+    <li class="tab-##id## selected">
+        <div class="row hover selected" onclick="S.editor.explorer.open('##path##', '##id##')">
+            <div class="col pad-height pad-width-lg">##title##</div>
+        </div>
+    </li>
+</script>
+{{/editor}}
+
+{{no-editor}}{{content}}{{/no-editor}}
