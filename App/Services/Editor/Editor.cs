@@ -124,9 +124,11 @@ namespace Saber.Services
             //translate root path to relative path
             var paths = GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
-
-            var scaffold = new Scaffold(string.Join("/", paths), S.Server.Scaffold);
-            return WebUtility.HtmlEncode(scaffold.HTML);
+            if(File.Exists(S.Server.MapPath(string.Join("/", paths))))
+            {
+                return WebUtility.HtmlEncode(File.ReadAllText(S.Server.MapPath(string.Join("/", paths))));
+            }
+            return WebUtility.HtmlEncode("<p>Write content using HTML & CSS</p>");
         }
     }
 }

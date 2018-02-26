@@ -93,6 +93,9 @@
                         editor.setValue(S.editor.decodeHtml(d));
                         editor.clearSelection();
                         S.editor.resize();
+                        setTimeout(function () {
+                            S.editor.resize();
+                        }, 500);
                         $('.editor').append('<script language="text/html" id="file_' + id + '">' + d + '</script>');
                     },
                     function () {
@@ -103,6 +106,9 @@
                 editor.setValue(S.editor.decodeHtml(content.html().trim()));
                 editor.clearSelection();
                 S.editor.resize();
+                setTimeout(function () {
+                    S.editor.resize();
+                }, 500);
             }
         }
     }
