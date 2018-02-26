@@ -1,8 +1,11 @@
 
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="none" x="0px" y="0px" width="64px" height="64px" viewBox="0 0 64 64">
 <defs>
-<g id="file_0_Layer2_0_FILL">
+<g id="filejs_0_Layer2_0_FILL">
 <path fill="#FFFFFF" stroke="none" d="
+M 44 16
+L 56 16 39 0 39 11
+Q 39 16 44 16
 M 56 18.95
 L 41.85 18.95
 Q 35.95 18.95 35.95 13.05
@@ -13,23 +16,6 @@ Q 9 64 14 64
 L 51 64
 Q 56 64 56 59
 L 56 18.95
-M 22.8 33.1
-Q 22.8 28.25 27.6 28.15
-L 27.6 30.2
-Q 25.1 30.25 25.1 33.3
-L 25.1 37.9
-Q 25.1 41.2 22.75 41.95
-L 22.75 42
-Q 25.1 42.7 25.1 46.05
-L 25.1 50.55
-Q 25.1 52.3 25.7 53.05 26.25 53.8 27.6 53.85
-L 27.6 55.8
-Q 22.8 55.75 22.8 50.95
-L 22.8 46.25
-Q 22.8 43.05 20.35 42.9
-L 20.35 41.1
-Q 22.8 40.95 22.8 37.7
-L 22.8 33.1
 M 45.8 41.1
 L 45.8 42.9
 Q 43.35 43.05 43.35 46.25
@@ -47,25 +33,39 @@ L 38.55 28.15
 Q 43.35 28.25 43.35 33.1
 L 43.35 37.7
 Q 43.35 40.95 45.8 41.1
-M 44 16
-L 56 16 39 0 39 11
-Q 39 16 44 16 Z"/>
+M 22.8 33.1
+Q 22.8 28.25 27.6 28.15
+L 27.6 30.2
+Q 25.1 30.25 25.1 33.3
+L 25.1 37.9
+Q 25.1 41.2 22.75 41.95
+L 22.75 42
+Q 25.1 42.7 25.1 46.05
+L 25.1 50.55
+Q 25.1 52.3 25.7 53.05 26.25 53.8 27.6 53.85
+L 27.6 55.8
+Q 22.8 55.75 22.8 50.95
+L 22.8 46.25
+Q 22.8 43.05 20.35 42.9
+L 20.35 41.1
+Q 22.8 40.95 22.8 37.7
+L 22.8 33.1 Z"/>
 </g>
 
-<g id="file_0_Layer0_0_FILL">
+<g id="filejs_0_Layer0_0_FILL">
 <path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
-M 64 0
-L 0 0 0 64 64 64 64 0 Z"/>
+M 0 0
+L 0 64 64 64 64 0 0 0 Z"/>
 </g>
 </defs>
 
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
-<use xlink:href="#file_0_Layer2_0_FILL"/>
+<use xlink:href="#filejs_0_Layer2_0_FILL"/>
 </g>
 
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
-<use xlink:href="#file_0_Layer0_0_FILL"/>
+<use xlink:href="#filejs_0_Layer0_0_FILL"/>
 </g>
 </g>
 </svg>

@@ -8,22 +8,21 @@
         editor.session.setMode("ace/mode/html");
 
         this.instance = editor;
-
-        //editor resizing 
-        var resize = function() {
-            var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
-            if (newHeight < 200) { newHeight = 200; }
-            newHeight += 10;
-            $('#editor').css({ minHeight: newHeight.toString() + "px" });
-            $('#editor-section').css({ minHeight: newHeight.toString() + "px" });
-            editor.resize();
-        };
-        
-        resize();
-        editor.getSession().on('change', resize);
+        this.resize();
+        editor.getSession().on('change', this.resize);
 
         //add button events
         $('.tab-browse').on('click', S.editor.explorer.show);
+    },
+
+    resize: function () {
+        var editor = S.editor.instance;
+        var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
+        if (newHeight < 20) { newHeight = 20; }
+        newHeight += 30;
+        $('#editor').css({ minHeight: newHeight.toString() + "px" });
+        $('#editor-section').css({ minHeight: newHeight.toString() + "px" });
+        editor.resize();
     },
 
     fileId: function (path) {
@@ -93,6 +92,7 @@
                         var editor = S.editor.instance;
                         editor.setValue(S.editor.decodeHtml(d));
                         editor.clearSelection();
+                        S.editor.resize();
                         $('.editor').append('<script language="text/html" id="file_' + id + '">' + d + '</script>');
                     },
                     function () {
@@ -102,6 +102,7 @@
             } else {
                 editor.setValue(S.editor.decodeHtml(content.html().trim()));
                 editor.clearSelection();
+                S.editor.resize();
             }
         }
     }

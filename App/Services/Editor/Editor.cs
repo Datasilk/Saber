@@ -1,5 +1,6 @@
-﻿using System.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.IO;
 using System.Text;
 using System.Net;
 
@@ -34,22 +35,21 @@ namespace Saber.Services
         {
             if (!CheckSecurity()) { return AccessDenied(); }
 
-            var paths = path.Split('/');
-            var rpath = "";
-            var rid = string.Join("_", paths).ToLower();
-            var pid = rid.Replace("_", "/").Replace("root", "");
+            var rawpaths = path.Split('/');
+            var rid = path.Replace("/", "_").ToLower();
+            var pid = rid.Replace("_", "/");
             var html = new StringBuilder();
             if(pid == "/") { pid = ""; }
 
             //translate root path to relative path
-            paths = GetRelativePath(path);
+            var paths = GetRelativePath(path);
             if(paths.Length == 0) { return Error(); }
-            rpath = string.Join("/", path) + "/";
+            var rpath = string.Join("/", paths) + "/";
 
             var item = new Scaffold("/Services/Editor/file.html", S.Server.Scaffold);
             var items = new List<string>();
 
-            if(paths[0] == "")
+            if(paths[0] == "" && paths.Length == 1)
             {
                 //display root folders for website
                 items = new List<string>()
@@ -84,20 +84,33 @@ namespace Saber.Services
                     }
                 }
             }
+
+            if(rawpaths.Length > 1)
+            {
+                //add parent directory
+                var parent = string.Join("/", rawpaths.SkipLast(1)).ToLower();
+                item.Data["id"] = "goback";
+                item.Data["title"] = "..";
+                item.Data["icon"] = "folder";
+                item.Data["onclick"] = "S.editor.explorer.dir('" + parent + "')";
+                html.Append(item.Render());
+            }
+
             foreach(var i in items)
             {
+                //add directories and files
                 item.Data["id"] = rid + "_" + i.Replace(".", "_").ToLower();
-                item.Data["path"] = (pid != "" ? pid + "/" : "") + i;
+                var ipath = (pid != "" ? pid + "/" : "") + i;
                 item.Data["title"] = i;
                 if (i.IndexOf(".") > 0)
                 {
                     item.Data["icon"] =  "file-" + i.Split('.', 2)[1].ToLower();
-                    item.Data["onclick"] = "S.editor.explorer.open('" + item.Data["path"] + "')";
+                    item.Data["onclick"] = "S.editor.explorer.open('" + ipath + "')";
                 }
                 else
                 {
                     item.Data["icon"] = "folder";
-                    item.Data["onclick"] = "S.editor.explorer.dir('" + item.Data["path"] + "')";
+                    item.Data["onclick"] = "S.editor.explorer.dir('" + ipath + "')";
                 }
                 html.Append(item.Render());
             }
