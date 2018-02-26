@@ -1,11 +1,12 @@
 ﻿S.editor = {
     instance: null,
+    EditSession: require("ace/edit_session").EditSession,
+    sessions: {},
 
     init: function () {
         //initialize code editor
         var editor = ace.edit("editor");
         editor.setTheme("ace/theme/xcode");
-        editor.session.setMode("ace/mode/html");
 
         this.instance = editor;
         this.resize();
@@ -57,7 +58,7 @@
             );
         },
 
-        open: function (path) {
+        open: function (path, code) {
             var id = S.editor.fileId(path);
 
             //hide sections
@@ -83,14 +84,24 @@
             }
 
             //check for existing source code
-            var content = $('#file_' + id);
+            var session = S.editor.sessions[id];
             var editor = S.editor.instance;
+            var paths = path.split('/');
+            var ext = paths[paths.length - 1].split('.')[1];
+            var mode = '';
+            switch (ext) {
+                case 'html': case 'css': case 'less': mode = ext; break;
+                case 'js': mode = 'javascript'; break;
+            }
 
-            if (content.length == 0) {
+            if (session == null && typeof code == 'undefined') {
+                //load new session from ajax POST
                 S.ajax.post("Editor/Open", { path: path },
                     function (d) {
-                        var editor = S.editor.instance;
-                        editor.setValue(S.editor.decodeHtml(d));
+                        session = new S.editor.EditSession(S.editor.decodeHtml(d));
+                        session.setMode("ace/mode/" + mode);
+                        editor.setSession(session);
+                        S.editor.sessions[id] = session;
                         editor.clearSelection();
                         S.editor.resize();
                         setTimeout(function () {
@@ -102,14 +113,26 @@
                         S.message.show('.editor .message', S.message.error.generic);
                     }
                 );
-            } else {
-                editor.setValue(S.editor.decodeHtml(content.html().trim()));
+            } else if (typeof code != 'undefined') {
+                //load new session from provided code argument
+                session = new S.editor.EditSession(S.editor.decodeHtml(code));
+                session.setMode("ace/mode/" + mode);
+                editor.setSession(session);
+                S.editor.sessions[id] = session;
                 editor.clearSelection();
                 S.editor.resize();
                 setTimeout(function () {
                     S.editor.resize();
                 }, 500);
+            } else {
+                //load existing session
+                editor.setSession(session);
+                S.editor.resize();
+                setTimeout(function () {
+                    S.editor.resize();
+                }, 500);
             }
+            editor.focus();
         }
     }
 };

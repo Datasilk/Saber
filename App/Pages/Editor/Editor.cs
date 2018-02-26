@@ -51,7 +51,7 @@ namespace Saber.Pages
                 AddScript("/js/utility/ace/ace.js");
                 AddScript("/js/pages/editor/editor.js");
                 AddCSS("/css/pages/editor/editor.css");
-                scripts += "<script language=\"javascript\">S.editor.explorer.open('content/" + file + "', '" + file.Replace("/", "_").Replace(".","_") + "');</script>";
+                scripts += "<script language=\"javascript\">S.editor.explorer.open('content/" + file + "', $('.file-current-page').html().trim());</script>";
             }
             else
             {
