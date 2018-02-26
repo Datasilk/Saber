@@ -1,9 +1,15 @@
-﻿<div class="row hover item file-{{id}}" data-path="{{path}}">
-    <div class="row pad-sm">
-        <div class="col icon small pad-right pad-left-sm pad-top-sm">{{icon}}</div>
-        <div class="col label" style="max-width: calc(100% - 45px);">
-            <div class="row page-title"><h6>{{title}}</h6></div>
+﻿<li>
+    <div class="row hover item file-{{id}}" onclick="{{onclick}}">
+        <div class="row pad-sm">
+            <div class="col icon small pad-right pad-left-sm pad-top-sm">
+                <svg viewBox="0 0 32 32">
+                    <use xlink:href="#icon-{{icon}}" x="0" y="0" width="32" height="32"></use>
+                </svg>
+            </div>
+            <div class="col label" style="max-width: calc(100% - 45px);">
+                <div class="row page-title"><h6>{{title}}</h6></div>
+            </div>
         </div>
+        <div class="line"></div>
     </div>
-    <div class="line"></div>
-</div>
+</li>

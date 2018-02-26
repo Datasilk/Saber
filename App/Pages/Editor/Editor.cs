@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 
 namespace Saber.Pages
 {
@@ -44,7 +45,7 @@ namespace Saber.Pages
                 scaffold.Data["tabId"] = "content_" + file.Replace("/", "_").Replace(".", "_");
                 scaffold.Data["tab-path"] = rpath + rfile;
                 scaffold.Data["tab-title"] = rfile;
-                scaffold.Data["tab-content"] = content.HTML;
+                scaffold.Data["tab-content"] = WebUtility.HtmlEncode(content.HTML);
 
                 //load editor resources
                 AddScript("/js/utility/ace/ace.js");

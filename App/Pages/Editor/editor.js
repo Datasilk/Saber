@@ -9,14 +9,37 @@
 
         this.instance = editor;
 
+        //editor resizing 
+        var resize = function() {
+            var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
+            if (newHeight < 200) { newHeight = 200; }
+            newHeight += 10;
+            $('#editor').css({ minHeight: newHeight.toString() + "px" });
+            $('#editor-section').css({ minHeight: newHeight.toString() + "px" });
+            editor.resize();
+        };
+        
+        resize();
+        editor.getSession().on('change', resize);
+
         //add button events
         $('.tab-browse').on('click', S.editor.explorer.show);
     },
 
+    fileId: function (path) {
+        return path.replace(/\//g, '_').replace(/\./g, '_');
+    },
+
+    decodeHtml(html) {
+        var txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        return txt.value;
+    },
+
     explorer: {
         show: function () {
-            if ($('.file-browser ul.columns-list').children() == 0) {
-                S.editor.dir('root');
+            if ($('.file-browser ul.columns-list').children().length == 0) {
+                S.editor.explorer.dir('root');
             }
             $('.editor .sections > div').addClass('hide');
             $('.editor .file-browser').removeClass('hide');
@@ -36,7 +59,7 @@
         },
 
         open: function (path) {
-            var id = path.replace(/\//g, '_').replace(/\./g, '_');
+            var id = S.editor.fileId(path);
 
             //hide sections
             $('.editor .sections > div').addClass('hide');
@@ -65,9 +88,19 @@
             var editor = S.editor.instance;
 
             if (content.length == 0) {
-
+                S.ajax.post("Editor/Open", { path: path },
+                    function (d) {
+                        var editor = S.editor.instance;
+                        editor.setValue(S.editor.decodeHtml(d));
+                        editor.clearSelection();
+                        $('.editor').append('<script language="text/html" id="file_' + id + '">' + d + '</script>');
+                    },
+                    function () {
+                        S.message.show('.editor .message', S.message.error.generic);
+                    }
+                );
             } else {
-                editor.setValue(content.html().trim());
+                editor.setValue(S.editor.decodeHtml(content.html().trim()));
                 editor.clearSelection();
             }
         }

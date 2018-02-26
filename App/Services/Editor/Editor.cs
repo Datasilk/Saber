@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using System.Net;
 
 namespace Saber.Services
 {
@@ -11,14 +11,9 @@ namespace Saber.Services
         {
         }
 
-        public string Dir(string path)
+        private string[] GetRelativePath(string path)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
-
             var paths = path.Split('/');
-            var rpath = "";
-            var rid = string.Join("_", paths);
-            var html = new StringBuilder();
 
             //translate root path to relative path
             switch (paths[0].ToLower())
@@ -30,8 +25,25 @@ namespace Saber.Services
                 case "scripts": paths[0] = "/Scripts/"; break;
                 case "services": paths[0] = "/Services/"; break;
                 case "content": paths[0] = "/Content/pages/"; break;
-                default: return Error();
+                default: return new string[] { };
             }
+            return paths;
+        }
+
+        public string Dir(string path)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+
+            var paths = path.Split('/');
+            var rpath = "";
+            var rid = string.Join("_", paths).ToLower();
+            var pid = rid.Replace("_", "/").Replace("root", "");
+            var html = new StringBuilder();
+            if(pid == "/") { pid = ""; }
+
+            //translate root path to relative path
+            paths = GetRelativePath(path);
+            if(paths.Length == 0) { return Error(); }
             rpath = string.Join("/", path) + "/";
 
             var item = new Scaffold("/Services/Editor/file.html", S.Server.Scaffold);
@@ -58,29 +70,50 @@ namespace Saber.Services
                 }
                 foreach(var file in info.GetFiles())
                 {
-                    switch(file.Name.Split(".", 2)[1].ToLower())
+                    var f = file.Name.Split(".", 2);
+                    if(f.Length > 1)
                     {
-                        case "html": case "css": case "less": case "js":
-                            items.Add(file.Name); break;
+                        switch (f[1].ToLower())
+                        {
+                            case "html":
+                            case "css":
+                            case "less":
+                            case "js":
+                                items.Add(file.Name); break;
+                        }
                     }
                 }
             }
             foreach(var i in items)
             {
-                if(i.IndexOf(".") > 0)
+                item.Data["id"] = rid + "_" + i.Replace(".", "_").ToLower();
+                item.Data["path"] = (pid != "" ? pid + "/" : "") + i;
+                item.Data["title"] = i;
+                if (i.IndexOf(".") > 0)
                 {
                     item.Data["icon"] =  "file-" + i.Split('.', 2)[1].ToLower();
+                    item.Data["onclick"] = "S.editor.explorer.open('" + item.Data["path"] + "')";
                 }
                 else
                 {
                     item.Data["icon"] = "folder";
+                    item.Data["onclick"] = "S.editor.explorer.dir('" + item.Data["path"] + "')";
                 }
-                item.Data["id"] = rid + "_" + i.Replace(".", "_");
-                item.Data["path"] = rid.Replace("_", "_") + "/" + i;
-                item.Data["title"] = i;
                 html.Append(item.Render());
             }
             return html.ToString();
+        }
+
+        public string Open(string path)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            
+            //translate root path to relative path
+            var paths = GetRelativePath(path);
+            if (paths.Length == 0) { return Error(); }
+
+            var scaffold = new Scaffold(string.Join("/", paths), S.Server.Scaffold);
+            return WebUtility.HtmlEncode(scaffold.HTML);
         }
     }
 }
