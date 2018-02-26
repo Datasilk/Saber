@@ -60,61 +60,76 @@ namespace Saber.Services
             else
             {
                 //get folder structure from hard drive
-                var info = new DirectoryInfo(S.Server.MapPath(rpath));
-                foreach(var dir in info.GetDirectories())
-                {
-                    if(dir.Name.IndexOfAny(new char[] { '.', '_' }) != 0)
+                if (Directory.Exists(S.Server.MapPath(rpath))){
+                    var info = new DirectoryInfo(S.Server.MapPath(rpath));
+                    foreach (var dir in info.GetDirectories())
                     {
-                        items.Add(dir.Name);
-                    }
-                }
-                foreach(var file in info.GetFiles())
-                {
-                    var f = file.Name.Split(".", 2);
-                    if(f.Length > 1)
-                    {
-                        switch (f[1].ToLower())
+                        if (dir.Name.IndexOfAny(new char[] { '.', '_' }) != 0)
                         {
-                            case "html":
-                            case "css":
-                            case "less":
-                            case "js":
-                                items.Add(file.Name); break;
+                            items.Add(dir.Name);
+                        }
+                    }
+                    foreach (var file in info.GetFiles())
+                    {
+                        var f = file.Name.Split(".", 2);
+                        if (f.Length > 1)
+                        {
+                            switch (f[1].ToLower())
+                            {
+                                case "html": case "css": case "less": case "js":
+                                    items.Add(file.Name); break;
+                            }
                         }
                     }
                 }
             }
 
-            if(rawpaths.Length > 1)
+            if (rawpaths.Length > 1)
             {
-                //add parent directory
-                var parent = string.Join("/", rawpaths.SkipLast(1)).ToLower();
-                item.Data["id"] = "goback";
-                item.Data["title"] = "..";
-                item.Data["icon"] = "folder";
-                item.Data["onclick"] = "S.editor.explorer.dir('" + parent + "')";
-                html.Append(item.Render());
+                //add parent directory;
+                html.Append(RenderBrowserItem(item, "goback", "..", "folder", string.Join("/", rawpaths.SkipLast(1)).ToLower()));
+            }else if (rawpaths[0] == "content" && rawpaths.Length == 1)
+            {
+                //add parent directory when navigating to special directory
+                html.Append(RenderBrowserItem(item, "goback", "..", "folder", "root"));
+            }
+            else if(rawpaths.Length == 1 && paths[0] == "")
+            {
+                //add special directories
+                html.Append(RenderBrowserItem(item, "content", "Content", "folder", "content"));
             }
 
             foreach(var i in items)
             {
                 //add directories and files
-                item.Data["id"] = rid + "_" + i.Replace(".", "_").ToLower();
-                var ipath = (pid != "" ? pid + "/" : "") + i;
-                item.Data["title"] = i;
+                var icon = "folder";
                 if (i.IndexOf(".") > 0)
                 {
-                    item.Data["icon"] =  "file-" + i.Split('.', 2)[1].ToLower();
-                    item.Data["onclick"] = "S.editor.explorer.open('" + ipath + "')";
+                    icon =  "file-" + i.Split('.', 2)[1].ToLower();
                 }
-                else
-                {
-                    item.Data["icon"] = "folder";
-                    item.Data["onclick"] = "S.editor.explorer.dir('" + ipath + "')";
-                }
-                html.Append(item.Render());
+                html.Append(RenderBrowserItem(item, rid + "_" + i.Replace(".", "_").ToLower(), i, icon, (pid != "" ? pid + "/" : "") + i));
             }
             return html.ToString();
+        }
+
+        private string RenderBrowserItem(Scaffold item, string id, string title, string icon, string path)
+        {
+            item.Data["id"] = id;
+            item.Data["title"] = title;
+            item.Data["icon"] = "folder";
+
+            if (title.IndexOf(".") > 0)
+            {
+                item.Data["icon"] = "file-" + title.Split('.', 2)[1].ToLower();
+                item.Data["onclick"] = "S.editor.explorer.open('" + path + "')";
+            }
+            else
+            {
+                item.Data["icon"] = "folder";
+                item.Data["onclick"] = "S.editor.explorer.dir('" + path + "')";
+            }
+
+            return item.Render();
         }
 
         public string Open(string path)

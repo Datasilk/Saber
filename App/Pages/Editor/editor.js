@@ -88,12 +88,12 @@
             var editor = S.editor.instance;
             var paths = path.split('/');
             var ext = paths[paths.length - 1].split('.')[1];
-            var mode = '';
+            var mode = 'html';
             switch (ext) {
-                case 'html': case 'css': case 'less': mode = ext; break;
+                case 'css': case 'less': mode = ext; break;
                 case 'js': mode = 'javascript'; break;
             }
-
+            var delay = 200;
             if (session == null && typeof code == 'undefined') {
                 //load new session from ajax POST
                 S.ajax.post("Editor/Open", { path: path },
@@ -106,7 +106,7 @@
                         S.editor.resize();
                         setTimeout(function () {
                             S.editor.resize();
-                        }, 500);
+                        }, delay);
                         $('.editor').append('<script language="text/html" id="file_' + id + '">' + d + '</script>');
                     },
                     function () {
@@ -123,14 +123,14 @@
                 S.editor.resize();
                 setTimeout(function () {
                     S.editor.resize();
-                }, 500);
+                }, delay);
             } else {
                 //load existing session
                 editor.setSession(session);
                 S.editor.resize();
                 setTimeout(function () {
                     S.editor.resize();
-                }, 500);
+                }, delay);
             }
             editor.focus();
         }
