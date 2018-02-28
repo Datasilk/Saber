@@ -22,6 +22,26 @@ M 32 0
 L 0 0 0 32 32 32 32 0 Z"/>
 </g>
 
+<g id="icon_cycle_0_Layer1_0_FILL">
+<path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
+M 25 0
+L 0 0 0 25 25 25 25 0 Z"/>
+</g>
+
+<g id="icon_cycle_0_Layer0_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 0.05 23
+L 2.15 20.9 3.1 20 5 18.15 0 18 0.05 23 Z"/>
+
+<path fill="#FFFFFF" fill-opacity="0.9882352941176471" stroke="none" d="
+M 10.55 2
+Q 14.85 2 17.9 5.05 21 8.1 21 12.5 21 16.9 17.9 19.95 14.85 23.05 10.55 23.05 6.2 23.05 3.1 20
+L 2.15 20.9 1.7 21.4
+Q 5.4 25 10.55 25 15.65 25 19.3 21.35 23 17.7 23 12.5 23 7.3 19.3 3.65 15.65 0 10.55 0 5.35 0 1.7 3.65
+L 3.1 5.05
+Q 6.15 2 10.55 2 Z"/>
+</g>
+
 <g id="filecss_0_Layer2_0_FILL">
 <path fill="#FFFFFF" stroke="none" d="
 M 44 16
@@ -241,6 +261,44 @@ M 7 3
 L 8 3 8 9 7.5 12.3 7 9 7 3 Z"/>
 </g>
 
+<g id="menu_0_Layer1_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 62.8 48.15
+Q 61.65 47 60 47
+L 4 47
+Q 2.35 47 1.15 48.15 0 49.35 0 51
+L 0 53
+Q 0 54.65 1.15 55.8 2.35 57 4 57
+L 60 57
+Q 61.65 57 62.8 55.8 64 54.65 64 53
+L 64 51
+Q 64 49.35 62.8 48.15
+M 64 31
+Q 64 29.35 62.8 28.15 61.65 27 60 27
+L 4 27
+Q 2.35 27 1.15 28.15 0 29.35 0 31
+L 0 33
+Q 0 34.65 1.15 35.8 2.35 37 4 37
+L 60 37
+Q 61.65 37 62.8 35.8 64 34.65 64 33
+L 64 31
+M 64 11
+Q 64 9.35 62.8 8.15 61.65 7 60 7
+L 4 7
+Q 2.35 7 1.15 8.15 0 9.35 0 11
+L 0 13
+Q 0 14.65 1.15 15.8 2.35 17 4 17
+L 60 17
+Q 61.65 17 62.8 15.8 64 14.65 64 13
+L 64 11 Z"/>
+</g>
+
+<g id="menu_0_Layer0_0_FILL">
+<path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
+M 64 64
+L 64 0 0 0 0 64 64 64 Z"/>
+</g>
+
 <g id="icon_photos_0_Layer1_0_FILL">
 <path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
 M 36 0
@@ -271,6 +329,18 @@ M 23.15 22.4
 Q 25.35 20.3 25.35 17.25 25.35 14.2 23.15 12.05 21.05 9.9 18 9.9 14.95 9.9 12.8 12.05 10.65 14.2 10.65 17.25 10.65 20.3 12.8 22.4 14.95 24.6 18 24.6 21.05 24.6 23.15 22.4
 M 22.45 12.75
 Q 24.35 14.65 24.35 17.25 24.35 19.85 22.45 21.7 20.6 23.6 18 23.6 15.4 23.6 13.5 21.7 11.65 19.85 11.65 17.25 11.65 14.65 13.5 12.75 15.4 10.9 18 10.9 20.6 10.9 22.45 12.75 Z"/>
+</g>
+
+<g id="iconSave_0_Layer0_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 8 16
+L 8 21 17 21 17 16 8 16
+M 9 20
+L 9 17 11 17 11 20 9 20
+M 18 12
+L 18 4 7 4 7 12 18 12
+M 21 21
+L 21 4 19 4 19 13 6 13 6 4 4 4 4 21 7 21 7 15 18 15 18 21 21 21 Z"/>
 </g>
 
 <g id="icon_settings_0_Layer1_0_FILL">
@@ -411,6 +481,18 @@ L 23.05 17.05 16.05 17.05 16.05 19.05 25 19.05 25 0 0 0 0 19.05 9.05 19.05 9.05 
 <use xlink:href="#icon_0_Layer0_0_FILL"/>
 </g>
 </g>
+</symbol><symbol id="icon-cycle" viewBox="0 0 25 25">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#icon_cycle_0_Layer1_0_FILL"/>
+</g>
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#icon_cycle_0_Layer0_0_FILL"/>
+</g>
+</g>
 </symbol><symbol id="icon-file-css" viewBox="0 0 64 64">
 
 
@@ -495,6 +577,18 @@ L 23.05 17.05 16.05 17.05 16.05 19.05 25 19.05 25 0 0 0 0 19.05 9.05 19.05 9.05 
 <use xlink:href="#icon_logout_0_Layer0_0_FILL"/>
 </g>
 </g>
+</symbol><symbol id="icon-menu" viewBox="0 0 64 64">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#menu_0_Layer1_0_FILL"/>
+</g>
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#menu_0_Layer0_0_FILL"/>
+</g>
+</g>
 </symbol><symbol id="icon-photos" viewBox="0 0 36 36">
 
 
@@ -505,6 +599,14 @@ L 23.05 17.05 16.05 17.05 16.05 19.05 25 19.05 25 0 0 0 0 19.05 9.05 19.05 9.05 
 
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
 <use xlink:href="#icon_photos_0_Layer0_0_FILL"/>
+</g>
+</g>
+</symbol><symbol id="icon-save" viewBox="0 0 25 25">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#iconSave_0_Layer0_0_FILL"/>
 </g>
 </g>
 </symbol><symbol id="icon-settings" viewBox="0 0 36 36">

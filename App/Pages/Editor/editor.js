@@ -2,6 +2,8 @@
     instance: null,
     EditSession: require("ace/edit_session").EditSession,
     sessions: {},
+    selected: '',
+    div: $('.code-editor'),
 
     init: function () {
         //initialize code editor
@@ -10,10 +12,14 @@
 
         this.instance = editor;
         this.resize();
-        editor.getSession().on('change', this.resize);
 
         //add button events
-        $('.tab-browse').on('click', S.editor.explorer.show);
+        $('.item-browse').on('click', S.editor.explorer.show);
+        $('.tab-drop-menu').on('click', S.editor.dropmenu.show);
+        $('.bg-overlay').on('click', S.editor.dropmenu.hide);
+
+        //add window resize event
+        $(window).on('resize', S.editor.resizeWindow);
     },
 
     resize: function () {
@@ -24,6 +30,40 @@
         $('#editor').css({ minHeight: newHeight.toString() + "px" });
         $('#editor-section').css({ minHeight: newHeight.toString() + "px" });
         editor.resize();
+        S.editor.resizeWindow();
+    },
+
+    resizeWindow: function () {
+        var win = S.window.pos();
+        var div = S.editor.div;
+        var pos = div.offset();
+        $('.code-editor').css({ height: win.h - pos.top - 20 });
+        
+    },
+
+    dropmenu: {
+        show: function () {
+            $('.editor-drop-menu, .bg-overlay').removeClass('hide');
+            $(document.body).on('click', S.editor.dropmenu.hide);
+        },
+
+        hide: function (e) {
+            var hide = false;
+            if (e) {
+                if ($(e.target).parents('.editor-drop-menu > div').length == 0) {
+                    hide = true;
+                }
+            } else { hide = true; }
+            if (hide == true) {
+                $('.editor-drop-menu, .bg-overlay').addClass('hide');
+                $(document.body).off('click', S.editor.dropmenu.hide);
+            }
+        }
+    },
+
+    save: function () {
+        var paths = S.editor.selected.split('_');
+        //var path = paths.map()
     },
 
     fileId: function (path) {
@@ -36,21 +76,45 @@
         return txt.value;
     },
 
+    sessions: {
+        add: function (id, mode, code) {
+            var editor = S.editor.instance;
+            session = new S.editor.EditSession(S.editor.decodeHtml(code));
+            session.setMode("ace/mode/" + mode);
+            session.on('change', S.editor.resize);
+            editor.setSession(session);
+            S.editor.sessions[id] = session;
+            editor.clearSelection();
+            S.editor.resize();
+            setTimeout(function () {
+                S.editor.resize();
+            }, 200);
+            editor.focus();
+        }
+    },
+
     explorer: {
         show: function () {
-            if ($('.file-browser ul.columns-list').children().length == 0) {
+            if (!$('.editor .file-browser').hasClass('hide')) { S.editor.explorer.hide(); return;}
+            if ($('.file-browser ul.menu').children().length == 0) {
                 S.editor.explorer.dir('root');
             }
-            $('.editor .sections > div').addClass('hide');
             $('.editor .file-browser').removeClass('hide');
+            $('.editor').addClass('show-browser');
             $('ul.tabs li, ul.tabs > li > div').removeClass('selected');
-            $('ul.tabs .tab-browse, ul.tabs > li:nth-child(1)').addClass('selected');
+            $('ul.tabs .tab-browse, ul.tabs > li:nth-child(2)').addClass('selected');
+            S.editor.dropmenu.hide();
+        },
+
+        hide: function () {
+            $('.editor .file-browser').addClass('hide');
+            $('.editor').removeClass('show-browser');
         },
 
         dir: function (path) {
             S.ajax.post('Editor/Dir', { path: path },
                 function (d) {
-                    $('.file-browser ul.columns-list').html(d);
+                    $('.file-browser ul.menu').html(d);
                 },
                 function () {
                     S.message.show('.editor .message', S.message.error.generic);
@@ -60,10 +124,6 @@
 
         open: function (path, code) {
             var id = S.editor.fileId(path);
-
-            //hide sections
-            $('.editor .sections > div').addClass('hide');
-            $('.editor .code-editor').removeClass('hide');
 
             //deselect tabs
             $('ul.tabs li, ul.tabs > li > div').removeClass('selected');
@@ -93,21 +153,11 @@
                 case 'css': case 'less': mode = ext; break;
                 case 'js': mode = 'javascript'; break;
             }
-            var delay = 200;
             if (session == null && typeof code == 'undefined') {
                 //load new session from ajax POST
                 S.ajax.post("Editor/Open", { path: path },
                     function (d) {
-                        session = new S.editor.EditSession(S.editor.decodeHtml(d));
-                        session.setMode("ace/mode/" + mode);
-                        editor.setSession(session);
-                        S.editor.sessions[id] = session;
-                        editor.clearSelection();
-                        S.editor.resize();
-                        setTimeout(function () {
-                            S.editor.resize();
-                        }, delay);
-                        $('.editor').append('<script language="text/html" id="file_' + id + '">' + d + '</script>');
+                        S.editor.sessions.add(id, mode, d)
                     },
                     function () {
                         S.message.show('.editor .message', S.message.error.generic);
@@ -115,24 +165,20 @@
                 );
             } else if (typeof code != 'undefined') {
                 //load new session from provided code argument
-                session = new S.editor.EditSession(S.editor.decodeHtml(code));
-                session.setMode("ace/mode/" + mode);
-                editor.setSession(session);
-                S.editor.sessions[id] = session;
-                editor.clearSelection();
-                S.editor.resize();
-                setTimeout(function () {
-                    S.editor.resize();
-                }, delay);
+                S.editor.sessions.add(id, mode, code)
+                
             } else {
                 //load existing session
                 editor.setSession(session);
                 S.editor.resize();
                 setTimeout(function () {
                     S.editor.resize();
-                }, delay);
+                }, 200);
+                editor.focus();
             }
-            editor.focus();
+
+            //update selected session
+            S.editor.selected = path;
         }
     }
 };

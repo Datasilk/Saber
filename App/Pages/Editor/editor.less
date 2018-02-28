@@ -1,4 +1,16 @@
-﻿
+﻿.editor{position:relative;
+    .code-editor{overflow-x:hidden; overflow-y:auto !important; box-sizing:border-box;}
+}
 #editor{width:100%; min-height:300px;}
 .box ul.tabs > li{padding:0 5px 0 0;}
 .ace_gutter-active-line, .ace_active-line{background-color:transparent !important;background:transparent !important;}
+.edit-menu{float:left;}
+.tab-drop-menu > .col{margin:-5px 0 -5px 0;}
+.editor-drop-menu{position:absolute; z-index:1000; left:15px; top:75px; cursor:default;
+    & > div{box-shadow: 4px 4px 30px 0px rgba(0, 0, 0, 0.2);}
+    li{overflow:hidden;}
+    li > div.item{padding:7px 75px 7px 15px;}
+    .line{margin:5px 0;}
+}
+.file-browser{float:left; width:250px;}
+.editor.show-browser .code-editor{float:left; width:~"calc(100% - 250px)"; overflow:hidden;}

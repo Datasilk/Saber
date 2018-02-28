@@ -8,7 +8,6 @@ public class Routes : Datasilk.Routes
     {
         switch (name)
         {
-            case "": case "home": return new Saber.Pages.Home(S);
             case "login": return new Saber.Pages.Login(S);
             default: return new Saber.Pages.Editor(S);
         }

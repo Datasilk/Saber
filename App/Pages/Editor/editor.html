@@ -1,37 +1,69 @@
 ﻿{{header "/Partials/UI/header.html"}}
 
 {{editor}}
-<div class="editor pad">
-    <div class="edit-menu row pad-bottom">
-        <ul class="tabs">
-            <li>
-                <div class="row tab-browse hover">
-                    <div class="col pad-height pad-width-lg">Browse Files...</div>
-                </div>
-            </li>
-            
-        </ul>
+<div class="editor pad-height pad-left">
+    <div class="editor-drop-menu col hide">
+        <div class="box">
+            <ul class="menu">
+                <li>
+                    <div class="row hover item item-save">
+                        <div class="col">Save</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="row hover item item-save-as">
+                        <div class="col">Save As</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="row line">&nbsp;</div>
+                </li>
+                <li>
+                    <div class="row hover item item-browse">
+                        <div class="col">Browse Files...</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
+    <div class="edit-bar row">
+        <div class="left-bar edit-menu col pad-bottom">
+            <ul class="tabs">
+                <li>
+                    <div class="row tab-drop-menu hover">
+                        <div class="col pad-height pad-width-lg">
+                            <div class="col icon">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-menu" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
     <div class="row sections">
-        <div class="tab code-editor">
+        <div class="tab file-browser hide">
+            <ul class="menu"></ul>
+        </div>
+        <div class="tab code-editor pad-right">
             <div id="editor"></div>
         </div>
-        <div class="tab file-browser hide">
-            <ul class="columns-list"></ul>
-        </div>
     </div>
-    <script type="text/html" id="file_{{tabId}}" class="file-current-page">
-        {{tab-content}}
+    <script type="text/html" class="cached">
+        {{editor-content}}
     </script>
 </div>
 
-<script type="text/html" id="template_tab">
-    <li class="tab-##id## selected">
-        <div class="row hover selected" onclick="S.editor.explorer.open('##path##')">
-            <div class="col pad-height pad-width-lg">##title##</div>
-        </div>
-    </li>
-</script>
-{{/editor}}
+    <script type="text/html" id="template_tab">
+        <li class="tab-##id## selected">
+            <div class="row hover selected" onclick="S.editor.explorer.open('##path##')">
+                <div class="col pad-height pad-width-lg">##title##</div>
+            </div>
+        </li>
+    </script>
+    {{/editor}}
 
-{{no-editor}}{{content}}{{/no-editor}}
+    {{no-editor}}{{content}}{{/no-editor}}

@@ -42,16 +42,13 @@ namespace Saber.Pages
                     content.HTML = "<p>Write content using HTML & CSS</p>";
                 }
                 scaffold.Data["editor"] = "1";
-                scaffold.Data["tabId"] = "content_" + file.Replace("/", "_").Replace(".", "_");
-                scaffold.Data["tab-path"] = rpath + rfile;
-                scaffold.Data["tab-title"] = rfile;
-                scaffold.Data["tab-content"] = WebUtility.HtmlEncode(content.HTML);
+                scaffold.Data["editor-content"] = WebUtility.HtmlEncode(content.HTML);
 
                 //load editor resources
                 AddScript("/js/utility/ace/ace.js");
                 AddScript("/js/pages/editor/editor.js");
                 AddCSS("/css/pages/editor/editor.css");
-                scripts += "<script language=\"javascript\">S.editor.explorer.open('content/" + file + "', $('.file-current-page').html().trim());</script>";
+                scripts += "<script language=\"javascript\">S.editor.explorer.open('content/" + file + "', $('.cached').html().trim());</script>";
             }
             else
             {
