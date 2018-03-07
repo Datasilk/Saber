@@ -41,6 +41,7 @@ namespace Saber.Pages
             }
 
             //load login page
+            usePlatform = true;
             return base.Render(path, scaffold.Render());
         }
     }

@@ -55,7 +55,7 @@ body{font-family: Jaldi, Arial, Helvetica, sans-serif;}
 
 
 .box{
-    .box(#eee, transparent, #444);
+    .box(transparent, transparent, #444);
     .links(#0099FF, #006bff, #006bff, #0099FF);
     .icons(#555, #0099FF, #0099FF, #555);
     .row(transparent, #9bd7ff, #0099FF, #444, #33494C, #13474F, #009B87, #00C5C7, #00C5C7, #009B87, #0099FF, #555, #009B87, #00A46C, #fff);
@@ -85,6 +85,10 @@ body{font-family: Jaldi, Arial, Helvetica, sans-serif;}
     );
 }
 
+.box.bg{
+    background:#eee;
+}
+
 .box .section, .popup{
     .box(#fafafa, #dadada, #444); 
 }
@@ -93,7 +97,7 @@ body{font-family: Jaldi, Arial, Helvetica, sans-serif;}
     border-bottom-color:#0099FF; 
 }
 
-.box ul.tabs{ 
+.box .edit-tabs ul.tabs{ 
     .row(#dadada, #d0d0d0, #9bd7ff, #444, #33494C, #13474F, #009B87, #00C5C7, #00C5C7, #009B87, #00B4FF, #555, #009B87, #00A46C, #185A64);
 }
 

@@ -1,4 +1,4 @@
-﻿S.editor = {
+S.editor = {
     instance: null,
     EditSession: require("ace/edit_session").EditSession,
     sessions: {},
@@ -17,9 +17,16 @@
         $('.item-browse').on('click', S.editor.explorer.show);
         $('.tab-drop-menu').on('click', S.editor.dropmenu.show);
         $('.bg-overlay').on('click', S.editor.dropmenu.hide);
+        $('.editor-drop-menu .item-save').on('click', function () { S.editor.save(S.editor.selected, S.editor.instance.getValue()); });
+        $('.editor-drop-menu .item-save-as').on('click', S.editor.saveAs);
+        $('.tab-preview').on('click', S.editor.preview.show);
+        $('.editor-tab').on('click', S.editor.preview.hide);
 
         //add window resize event
         $(window).on('resize', S.editor.resizeWindow);
+
+        //register hotkeys
+        $(window).on('keydown', S.editor.hotkey.pressed);
     },
 
     resize: function () {
@@ -37,7 +44,7 @@
         var win = S.window.pos();
         var div = S.editor.div;
         var pos = div.offset();
-        $('.code-editor').css({ height: win.h - pos.top - 20 });
+        $('.code-editor').css({ height: win.h - pos.top });
         
     },
 
@@ -61,9 +68,76 @@
         }
     },
 
-    save: function () {
-        var paths = S.editor.selected.split('_');
-        //var path = paths.map()
+    changed: function (checkall) {
+        var self = S.editor;
+        var id = self.fileId(self.selected);
+        var tab = $('.tab-' + id);
+        if (tab.length == 1) {
+            if (tab.attr('data-edited') != "true" || checkall == true) {
+                $('.item-save').removeClass('faded').removeAttr('disabled');
+                if (tab.attr('data-edited') != "true") {
+                    tab.attr('data-edited', "true");
+                    var col = tab.find('.col');
+                    col.html(col.html() + ' *');
+                }
+            }
+        }
+        self.resize();
+    },
+
+    isChanged: function (path) {
+        var self = S.editor;
+        var id = self.fileId(path);
+        var tab = $('.tab-' + id);
+        if (tab.length == 1) {
+            if (tab.attr('data-edited') == "true") {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    unChanged: function (path) {
+        var self = S.editor;
+        var id = self.fileId(path);
+        var tab = $('.tab-' + id);
+        if (tab.length == 1) {
+            if (tab.attr('data-edited') == "true") {
+                tab.removeAttr('data-edited');
+                $('.item-save').addClass('faded').attr('disabled', 'disabled');
+                var col = tab.find('.col');
+                col.html(col.html().replace(' *', ''));
+            }
+        }
+    },
+
+    save: function (path, content) {
+        if ($('.editor-drop-menu .item-save.faded').length == 1) { return;}
+        var self = S.editor;
+        self.dropmenu.hide();
+        S.ajax.post('Editor/SaveFile', { path: path, content: content },
+
+            function (d) {
+                if (d != "success") {
+                    S.message.show('.editor .message', S.message.error.generic);
+                } else {
+                    self.unChanged(path);
+                    S.editor.explorer.open(path);
+                }
+            },
+            function () {
+                S.message.show('.editor .message', S.message.error.generic);
+            }
+        );
+    },
+
+    saveAs: function () {
+        S.editor.dropmenu.hide();
+        var oldpath = S.editor.selected;
+        var path = prompt("Save As...", oldpath);
+        if (path != '' && path != null) {
+            S.editor.save(path, S.editor.instance.getValue());
+        }
     },
 
     fileId: function (path) {
@@ -81,7 +155,7 @@
             var editor = S.editor.instance;
             session = new S.editor.EditSession(S.editor.decodeHtml(code));
             session.setMode("ace/mode/" + mode);
-            session.on('change', S.editor.resize);
+            session.on('change', S.editor.changed);
             editor.setSession(session);
             S.editor.sessions[id] = session;
             editor.clearSelection();
@@ -90,20 +164,33 @@
                 S.editor.resize();
             }, 200);
             editor.focus();
+        },
+
+        remove: function (id) {
+            S.editor.sessions[id].destroy();
+            delete S.editor.sessions[id];
+        }
+    },
+
+    tabs: {
+        close: function (path) {
+            var id = S.editor.fileId(path);
+            $('.tab-' + id).remove();
+            S.editor.sessions.remove(id);
         }
     },
 
     explorer: {
+        queue: [],
+
         show: function () {
+            S.editor.dropmenu.hide();
             if (!$('.editor .file-browser').hasClass('hide')) { S.editor.explorer.hide(); return;}
             if ($('.file-browser ul.menu').children().length == 0) {
                 S.editor.explorer.dir('root');
             }
             $('.editor .file-browser').removeClass('hide');
             $('.editor').addClass('show-browser');
-            $('ul.tabs li, ul.tabs > li > div').removeClass('selected');
-            $('ul.tabs .tab-browse, ul.tabs > li:nth-child(2)').addClass('selected');
-            S.editor.dropmenu.hide();
         },
 
         hide: function () {
@@ -122,28 +209,73 @@
             );
         },
 
-        open: function (path, code) {
+        openResources: function (path, files) {
+            //opens a group of resources (html, less, js) from a specified path
+            var self = S.editor.explorer;
+            files.forEach((f) => {
+                self.queue.push(path + f);
+            });
+            self.runQueue();
+        },
+
+        runQueue: function () {
+            //opens next resource in the queue
+            var self = S.editor.explorer;
+            var queue = self.queue;
+            if (queue.length > 0) {
+                var path = queue[0].toString();
+                queue.splice(0, 1);
+                self.open(path, null, self.runQueue);
+            }
+        },
+
+        open: function (path, code, callback) {
+            //opens a resource that exists on the server
+
             var id = S.editor.fileId(path);
 
+            //update selected session
+            S.editor.selected = path;
+
+            //disable save menu
+            $('.item-save').addClass('faded').attr('disabled', 'disabled');
+
             //deselect tabs
-            $('ul.tabs li, ul.tabs > li > div').removeClass('selected');
+            $('.edit-tabs ul.tabs li, .edit-tabs ul.tabs > li > div').removeClass('selected');
 
             //check for existing tab
-            var tab = $('.editor ul.tabs .tab-' + id);
+            var tab = $('.edit-tabs ul.tabs .tab-' + id);
             if (tab.length == 0) {
                 var temp = $('#template_tab').html().trim();
                 var paths = path.split('/');
                 var file = paths[paths.length - 1];
-                $('.editor .edit-menu ul.tabs').append(temp
+                var dir = '/' + paths.join('/').replace(file, '');
+                var fileparts = paths[paths.length - 1].split('.', 2);
+                var relpath = dir + fileparts[0];
+                $('.edit-tabs ul.tabs').append(temp
                     .replace(/\#\#id\#\#/g, id)
                     .replace('##path##', path)
                     .replace('##title##', file)
                 );
+
+                //add button events for tab
+                if (relpath != '/content' + window.location.pathname) {
+                    $('.tab-' + id + ' .btn-close').on('click', function (e) {
+                        S.editor.tabs.close(path);
+                        e.preventDefault();
+                        e.cancelBubble = true;
+                    });
+                } else {
+                    //hide close button, tab is special
+                    $('.tab-' + id + ' .btn-close').hide();
+                }
+                
             } else {
                 tab.addClass('selected').find('.row.hover').addClass('selected');
             }
 
             //check for existing source code
+            var nocode = (code == null || typeof code == 'undefined');
             var session = S.editor.sessions[id];
             var editor = S.editor.instance;
             var paths = path.split('/');
@@ -153,32 +285,86 @@
                 case 'css': case 'less': mode = ext; break;
                 case 'js': mode = 'javascript'; break;
             }
-            if (session == null && typeof code == 'undefined') {
+
+            //change file path
+            var cleanPath = path;
+            if (path.indexOf('content/') == 0) { cleanPath = path.replace('content/', 'content/pages/'); }
+            if (path.indexOf('root/') == 0) { cleanPath = path.replace('root/', '');}
+            $('#filepath').val(cleanPath);
+            $('.file-bar .file-icon use')[0].setAttribute('xlink:href', '#icon-file-' + ext);
+
+            if (session == null && nocode == true) {
                 //load new session from ajax POST
                 S.ajax.post("Editor/Open", { path: path },
                     function (d) {
-                        S.editor.sessions.add(id, mode, d)
+                        S.editor.sessions.add(id, mode, d);
+                        if (typeof callback == 'function') { callback();}
                     },
                     function () {
                         S.message.show('.editor .message', S.message.error.generic);
                     }
                 );
-            } else if (typeof code != 'undefined') {
+            } else if (nocode == false) {
                 //load new session from provided code argument
-                S.editor.sessions.add(id, mode, code)
+                S.editor.sessions.add(id, mode, code);
+                if (typeof callback == 'function') { callback(); }
                 
             } else {
                 //load existing session
                 editor.setSession(session);
+                if (S.editor.isChanged(path) == true) {
+                    S.editor.changed(true);
+                }
                 S.editor.resize();
                 setTimeout(function () {
                     S.editor.resize();
                 }, 200);
                 editor.focus();
+                if (typeof callback == 'function') { callback(); }
             }
+        }
+    },
 
-            //update selected session
-            S.editor.selected = path;
+    preview: {
+        show: function () {
+            var tagcss = $('#page_css');
+            var tagjs = $('#page_js');
+            var css = tagcss.attr('href');
+            var js = tagjs.attr('src');
+            var rnd = Math.floor(Math.random() * 9999);
+            tagcss.remove();
+            tagjs.remove();
+            $('head').append(
+                '<link rel="stylesheet" type="text/css" id="page_css" href="' + css + '?r=' + rnd + '"></link>'
+            );
+            S.util.js.load(js + '?r=' + rnd, 'page_js');
+            $('.preview, .editor-tab').removeClass('hide');
+            $('.editor').addClass('hide');
+        },
+
+        hide: function () {
+            $('.preview, .editor-tab').addClass('hide');
+            $('.editor').removeClass('hide');
+        }
+    },
+
+    hotkey: {
+        pressed: function (e) {
+            var has = false;
+            var key = String.fromCharCode(e.which).toLowerCase();
+            if (e.ctrlKey == true) {
+                switch (key) {
+                    case 's':
+                        //save file
+                        S.editor.save(S.editor.selected, S.editor.instance.getValue());
+                        has = true;
+                        break;
+                }
+            }
+            if (has == true) {
+                event.preventDefault();
+                return false;
+            }
         }
     }
 };

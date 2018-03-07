@@ -35,3 +35,11 @@ A simple, straight forward CMS.
 
 ## Future Development
 * Publish content using other formats besides HTML & CSS, such as writing markdown or uploading a PDF file.
+* ##### Simple Content Editor
+  Add content to your web pages by filling out text fields within a generic form instead of writing content directly within the raw HTML code.
+  This works by adding variables inside the HTML code (e.g. `{{article-title}}`), which will generate form fields within the editor
+  that can easily be updated by content writers who may not be well versed in writing HTML.
+	* Generated forms will have multi-lingual support, allowing writers to select a language before filling out form fields. 
+	* Generated text fields will support markdown & HTML.
+	* Allow user to select a supported language by executing a simple JavaScript method from an anchor link: `S.language.change('spanish');`
+	* Add all country flags to images folder so web developers can easily generate a language selection menu for their website

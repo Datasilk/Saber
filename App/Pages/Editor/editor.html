@@ -1,18 +1,35 @@
-﻿{{header "/Partials/UI/header.html"}}
+{{header "/Partials/UI/header.html"}}
 
 {{editor}}
-<div class="editor pad-height pad-left">
+<div class="editor-tab hide">
+    <div class="box bg">
+        <svg viewBox="0 0 32 32">
+            <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
+        </svg>
+    </div>
+</div>
+<div class="editor box pad-top pad-left">
     <div class="editor-drop-menu col hide">
-        <div class="box">
+        <div class="box bg">
             <ul class="menu">
                 <li>
-                    <div class="row hover item item-save">
-                        <div class="col">Save</div>
+                    <div class="row hover item item-save faded" disabled>
+                        <div class="col icon pad-right">
+                            <svg viewBox="0 0 32 32">
+                                <use xlink:href="#icon-save" x="0" y="0" width="32" height="32"></use>
+                            </svg>
+                        </div>
+                        <div class="col text">Save</div>
                     </div>
                 </li>
                 <li>
                     <div class="row hover item item-save-as">
-                        <div class="col">Save As</div>
+                        <div class="col icon faded pad-right">
+                            <svg viewBox="0 0 32 32">
+                                <use xlink:href="#icon-save" x="0" y="0" width="32" height="32"></use>
+                            </svg>
+                        </div>
+                        <div class="col text">Save As</div>
                     </div>
                 </li>
                 <li>
@@ -20,30 +37,105 @@
                 </li>
                 <li>
                     <div class="row hover item item-browse">
-                        <div class="col">Browse Files...</div>
+                        <div class="col icon pad-right">
+                            <svg viewBox="0 0 32 32">
+                                <use xlink:href="#icon-folder" x="0" y="0" width="32" height="32"></use>
+                            </svg>
+                        </div>
+                        <div class="col text">Browse Files...</div>
                     </div>
                 </li>
             </ul>
         </div>
     </div>
     <div class="edit-bar row">
-        <div class="left-bar edit-menu col pad-bottom">
+        <div class="left-bar edit-tabs col pad-bottom">
             <ul class="tabs">
                 <li>
                     <div class="row tab-drop-menu hover">
-                        <div class="col pad-height pad-width-lg">
-                            <div class="col icon">
+                        <div class="col pad-height pad-width">
+                            <div class="col icon small pad-right">
                                 <svg viewBox="0 0 32 32">
                                     <use xlink:href="#icon-menu" x="0" y="0" width="32" height="32"></use>
                                 </svg>
                             </div>
+                            <div class="col">File</div>
                         </div>
                     </div>
                 </li>
             </ul>
         </div>
     </div>
-    
+    <div class="file-bar row">
+        <div class="bg row">
+            <div class="col icon file-icon pad-top-sm pad-left-sm">
+                <svg viewBox="0 0 32 32">
+                    <use xlink:href="#icon-file-html" x="0" y="0" width="32" height="32"></use>
+                </svg>
+            </div>
+            <div class="col file-path">
+                <input type="text" id="filepath" disabled="disabled" />
+            </div>
+            <div class="col buttons right pad-left-lg">
+                <ul class="tabs file-tabs">
+                    <li class="tab-form-fields" title="Multi-lingual Content Fields">
+                        <div class="row hover">
+                            <div class="col">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-form-fields" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="tab-file-code selected" title="Source Code Editor">
+                        <div class="row hover">
+                            <div class="col">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-sourcecode" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="tab-file-settings" title="Page Settings">
+                        <div class="row hover">
+                            <div class="col">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="tab-file-photos" title="Page Resources">
+                        <div class="row hover">
+                            <div class="col">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-photos" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="tab-fullscreen" title="Full Screen Editor">
+                        <div class="row hover">
+                            <div class="col">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-fullscreen" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="tab-preview" title="Preview Changes">
+                        <div class="row hover">
+                            <div class="col">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-preview" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <div class="row sections">
         <div class="tab file-browser hide">
             <ul class="menu"></ul>
@@ -52,18 +144,26 @@
             <div id="editor"></div>
         </div>
     </div>
-    <script type="text/html" class="cached">
-        {{editor-content}}
-    </script>
 </div>
 
-    <script type="text/html" id="template_tab">
-        <li class="tab-##id## selected">
-            <div class="row hover selected" onclick="S.editor.explorer.open('##path##')">
-                <div class="col pad-height pad-width-lg">##title##</div>
+<script type="text/html" id="template_tab">
+    <li class="tab-##id## selected">
+        <div class="row hover selected" onclick="S.editor.explorer.open('##path##')">
+            <div class="btn-close icon tiny hover-only">
+                <svg viewBox="0 0 32 32">
+                    <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
+                </svg>
             </div>
-        </li>
-    </script>
-    {{/editor}}
+            <div class="col pad-height pad-width-lg">##title##</div>
+        </div>
+    </li>
+</script>
+<div class="preview hide">
+{{/editor}}
 
-    {{no-editor}}{{content}}{{/no-editor}}
+
+{{content}}
+
+{{editor-foot}}
+    </div>
+{{/editor-foot}}

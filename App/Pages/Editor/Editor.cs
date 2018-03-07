@@ -23,16 +23,16 @@ namespace Saber.Pages
             if (path.Length > 1)
             {
                 rpath += string.Join("/", path.Take(path.Length - 1)) + "/";
-                rfile = path[path.Length - 1].ToLower() + ".html";
+                rfile = path[path.Length - 1].ToLower();
             }
             else
             {
-                rfile = path[0].ToLower() + ".html";
+                rfile = path[0].ToLower();
             }
             
 
             //open page contents
-            var content = new Scaffold(rpath + rfile, S.Server.Scaffold);
+            var content = new Scaffold(rpath + rfile + ".html", S.Server.Scaffold);
 
             if(S.User.userId > 0)
             {
@@ -42,13 +42,19 @@ namespace Saber.Pages
                     content.HTML = "<p>Write content using HTML & CSS</p>";
                 }
                 scaffold.Data["editor"] = "1";
-                scaffold.Data["editor-content"] = WebUtility.HtmlEncode(content.HTML);
+                scaffold.Data["editor-foot"] = "1";
 
                 //load editor resources
                 AddScript("/js/utility/ace/ace.js");
                 AddScript("/js/pages/editor/editor.js");
                 AddCSS("/css/pages/editor/editor.css");
-                scripts += "<script language=\"javascript\">S.editor.explorer.open('content/" + file + "', $('.cached').html().trim());</script>";
+                scripts += 
+                    "<script language=\"javascript\">" + 
+                        "S.editor.explorer.openResources('content/" + rpath.Replace("/Content/pages/", "") + 
+                        "', ['" + rfile + ".js', '" + rfile + ".less', '" + rfile + ".html']" + 
+                        ");" + 
+                    "</script>";
+                usePlatform = true;
             }
             else
             {
@@ -56,9 +62,15 @@ namespace Saber.Pages
                 {
                     content.HTML = "<p>This page does not exist. Please log into your account to write content for this page.</p>";
                 }
-                scaffold.Data["no-editor"] = "1";
-                scaffold.Data["content"] = content.Render();
             }
+
+            //add page-specific references
+            AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
+            AddScript(rpath.ToLower() + rfile + ".js", "page_js");
+
+            //render page content
+            scaffold.Data["content"] = content.Render();
+
             return base.Render(path, scaffold.Render(), metadata);
         }
     }

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
 using System.Net;
+using System.Diagnostics;
 
 namespace Saber.Services
 {
@@ -20,12 +22,12 @@ namespace Saber.Services
             switch (paths[0].ToLower())
             {
                 case "root": paths[0] = ""; break;
-                case "css": paths[0] = "/CSS/"; break;
-                case "pages": paths[0] = "/Pages/"; break;
-                case "partials": paths[0] = "/Partials/"; break;
-                case "scripts": paths[0] = "/Scripts/"; break;
-                case "services": paths[0] = "/Services/"; break;
-                case "content": paths[0] = "/Content/pages/"; break;
+                case "css": paths[0] = "/CSS"; break;
+                case "pages": paths[0] = "/Pages"; break;
+                case "partials": paths[0] = "/Partials"; break;
+                case "scripts": paths[0] = "/Scripts"; break;
+                case "services": paths[0] = "/Services"; break;
+                case "content": paths[0] = "/Content/pages"; break;
                 default: return new string[] { };
             }
             return paths;
@@ -143,7 +145,130 @@ namespace Saber.Services
             {
                 return WebUtility.HtmlEncode(File.ReadAllText(S.Server.MapPath(string.Join("/", paths))));
             }
-            return WebUtility.HtmlEncode("<p>Write content using HTML & CSS</p>");
+            var ext = paths[paths.Length - 1].Split(".")[1].ToLower();
+            switch (ext)
+            {
+                case "html": return WebUtility.HtmlEncode("<p>Write content using HTML & CSS</p>");
+                case "css": return WebUtility.HtmlEncode("body { }");
+                case "less": return WebUtility.HtmlEncode("body {\n    p { }\n}");
+                case "js": return WebUtility.HtmlEncode("(function(){\n    //do stuff\n})();");
+            }
+            return "";
+        }
+
+        public string OpenRender(string path)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+
+            //translate root path to relative path
+            var paths = GetRelativePath(path);
+            var relpath = string.Join("/", paths);
+            if (paths.Length == 0) { return Error(); }
+            if (File.Exists(S.Server.MapPath(relpath)))
+            {
+                var scaffold = new Scaffold(relpath, S.Server.Scaffold);
+                return scaffold.Render();
+            }
+            return "";
+        }
+
+        public string SaveFile(string path, string content)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+
+            var paths = GetRelativePath(path);
+            if (paths.Length == 0) { return Error(); }
+            try
+            {
+                var dir = string.Join("/", paths.Take(paths.Length - 1));
+                dir = S.Server.MapPath(dir);
+                var filepath = S.Server.MapPath(string.Join("/", paths));
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                File.WriteAllText(filepath, content);
+
+                //clean cache related to file
+                var file = paths[paths.Length - 1];
+                var ext = file.Split('.', 2)[1].ToLower();
+                switch (ext)
+                {
+                    case "html":
+                        //remove cached scaffold object
+                        S.Server.Scaffold.Remove(path);
+                        break;
+                }
+
+                //gulp file
+                if(paths[0].ToLower() == "/content/pages")
+                {
+                    switch (ext)
+                    {
+                        case "js": case "css": case "less":
+                            var p = new Process();
+                            p.StartInfo = new ProcessStartInfo()
+                            {
+                                FileName = "cmd.exe",
+                                Arguments = "/c gulp file --path \"" + string.Join("/", paths).ToLower().Substring(1) + "\"",
+                                WindowStyle = ProcessWindowStyle.Hidden,
+                                UseShellExecute = false,
+                                CreateNoWindow = true,
+                                RedirectStandardError = true,
+                                WorkingDirectory = S.Server.MapPath("/").Replace("App\\", ""),
+                                Verb = "runas"
+                            };
+                            p.OutputDataReceived += ProcessOutputReceived;
+                            p.ErrorDataReceived += ProcessErrorReceived;
+                            p.Start();
+                            break;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+            
+            return Success();
+        }
+
+        private void ProcessOutputReceived(object sender, DataReceivedEventArgs e)
+        {
+            Process p = sender as Process;
+            if (p == null) { return; }
+            Console.WriteLine(e.Data);
+        }
+
+        private void ProcessErrorReceived(object sender, DataReceivedEventArgs e)
+        {
+            Process p = sender as Process;
+            if (p == null) { return; }
+            Console.WriteLine(e.Data);
+        }
+
+        public string SaveForm(string path, Dictionary<string, string> fields)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+
+            var paths = GetRelativePath(path);
+            if (paths.Length == 0) { return Error(); }
+            try
+            {
+                //save fields as json
+                var last = paths.Length - 1;
+                var file = paths[last];
+                var fileparts = file.Split(".", 2);
+                fileparts[0] += "_fields";
+                paths[last] = string.Join(".", fileparts);
+                S.Util.Serializer.WriteObjectToFile(fields, S.Server.MapPath(string.Join("/", paths)));
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+
+            return Success();
         }
     }
 }
