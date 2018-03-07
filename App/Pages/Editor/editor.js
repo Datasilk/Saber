@@ -252,14 +252,15 @@ S.editor = {
                 var dir = '/' + paths.join('/').replace(file, '');
                 var fileparts = paths[paths.length - 1].split('.', 2);
                 var relpath = dir + fileparts[0];
+                var title = file;
+                if (fileparts[0].length > 18) { title = '...' + fileparts[0].substr(fileparts[0].length - 15) + '.' + fileparts[1];}
                 $('.edit-tabs ul.tabs').append(temp
                     .replace(/\#\#id\#\#/g, id)
                     .replace('##path##', path)
-                    .replace('##title##', file)
+                    .replace('##title##', title)
                 );
-
                 //add button events for tab
-                if (relpath != '/content' + window.location.pathname) {
+                if (relpath.toLowerCase() != '/content' + window.location.pathname.toLowerCase()) {
                     $('.tab-' + id + ' .btn-close').on('click', function (e) {
                         S.editor.tabs.close(path);
                         e.preventDefault();
