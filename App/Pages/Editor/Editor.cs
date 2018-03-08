@@ -19,7 +19,9 @@ namespace Saber.Pages
             //get relative paths
             var rpath = "/Content/pages/";
             var rfile = "";
-            var file = string.Join("/", path) + ".html";
+            var pathname = string.Join("/", path);
+            if(pathname == "") { pathname = "home"; }
+            var file = pathname + ".html";
             if (path.Length > 1)
             {
                 rpath += string.Join("/", path.Take(path.Length - 1)) + "/";
@@ -29,9 +31,10 @@ namespace Saber.Pages
             {
                 rfile = path[0].ToLower();
             }
-            
+
 
             //open page contents
+            var Editor = new Services.Editor(S);
             var content = new Scaffold(rpath + rfile + ".html", S.Server.Scaffold);
 
             if(S.User.userId > 0)
@@ -69,7 +72,9 @@ namespace Saber.Pages
             AddScript(rpath.ToLower() + rfile + ".js", "page_js");
 
             //render page content
-            scaffold.Data["content"] = content.Render();
+            var html = Editor.RenderPage("content/" + pathname + ".html");
+            if(html == "") { html = content.HTML; }
+            scaffold.Data["content"] = html;
 
             return base.Render(path, scaffold.Render(), metadata);
         }

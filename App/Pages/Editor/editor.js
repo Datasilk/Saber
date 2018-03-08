@@ -338,9 +338,13 @@ S.editor = {
             $('head').append(
                 '<link rel="stylesheet" type="text/css" id="page_css" href="' + css + '?r=' + rnd + '"></link>'
             );
-            S.util.js.load(js + '?r=' + rnd, 'page_js');
-            $('.preview, .editor-tab').removeClass('hide');
-            $('.editor').addClass('hide');
+            S.util.js.load(js + '?r=' + rnd, 'page_js', function () {
+                $('.preview, .editor-tab').removeClass('hide');
+                $('.editor').addClass('hide');
+            });
+            setTimeout(function () {
+                
+            }, 500);
         },
 
         hide: function () {

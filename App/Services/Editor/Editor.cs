@@ -156,20 +156,51 @@ namespace Saber.Services
             return "";
         }
 
-        public string OpenRender(string path)
+        /// <summary>
+        /// Renders a page, including language-specific content, and uses page-specific config to check for security & other features
+        /// </summary>
+        /// <param name="path">relative path to content (e.g. "content/home")</param>
+        /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
+        public string RenderPage(string path)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
-
             //translate root path to relative path
             var paths = GetRelativePath(path);
             var relpath = string.Join("/", paths);
+            var file = paths[paths.Length - 1];
+            var fileparts = file.Split(".", 2);
             if (paths.Length == 0) { return Error(); }
-            if (File.Exists(S.Server.MapPath(relpath)))
+            var scaffold = new Scaffold(relpath, S.Server.Scaffold);
+            if (scaffold.HTML == "") { return ""; }
+
+            //load data from user form fields, depending on selected language
+            var config = GetPageConfig(path);
+            var lang = UserInfo.language;
+            var security = config.ContainsKey("security") ? (config["security"] == "1" ? true : false) : false;
+            if(security == true && !CheckSecurity()) { return AccessDenied(); }
+            var langfile = S.Server.MapPath(relpath.Replace(file, fileparts[0] + "_" + lang + ".json"));
+
+            //load language-specific content for page
+            var pagedata = (Dictionary<string, string>)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(langfile, true), typeof(Dictionary<string, string>));
+            if (pagedata != null)
             {
-                var scaffold = new Scaffold(relpath, S.Server.Scaffold);
-                return scaffold.Render();
+                foreach (var item in pagedata)
+                {
+                    scaffold.Data[item.Key] = item.Value;
+                }
             }
-            return "";
+            return scaffold.Render();
+        }
+
+        private Dictionary<string, string> GetPageConfig(string path)
+        {
+            var paths = GetRelativePath(path);
+            var relpath = string.Join("/", paths);
+            var file = paths[paths.Length - 1];
+            var fileparts = file.Split(".", 2);
+            var configfile = S.Server.MapPath(relpath.Replace(file, fileparts[0] + ".json"));
+            var config = (Dictionary<string, string>)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(configfile, true), typeof(Dictionary<string, string>));
+            if(config != null) { return config; }
+            return new Dictionary<string, string>();
         }
 
         public string SaveFile(string path, string content)

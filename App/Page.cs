@@ -3,11 +3,19 @@
     public class Page : Datasilk.Page
     {
         public bool usePlatform = false;
-        public string language = "en";
+        private User _userInfo;
 
         public Page(global::Core DatasilkCore) : base(DatasilkCore) {
             title = "Saber";
             description = "You can do everything you ever wanted";
+        }
+
+        public User UserInfo
+        {
+            get {
+                if (_userInfo == null) { _userInfo = new User(S); }
+                return _userInfo;
+            }
         }
 
         public override string Render(string[] path, string body = "", object metadata = null)
@@ -19,7 +27,7 @@
             var scaffold = new Scaffold("/layout.html", S.Server.Scaffold);
             scaffold.Data["title"] = title;
             scaffold.Data["description"] = description;
-            scaffold.Data["language"] = language;
+            scaffold.Data["language"] = UserInfo.language;
             scaffold.Data["head-css"] = headCss;
             scaffold.Data["favicon"] = favicon;
             scaffold.Data["body"] = body;
