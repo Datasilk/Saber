@@ -68,6 +68,29 @@
                             <div class="col text">New Folder</div>
                         </div>
                     </li>
+                    <li>
+                        <div class="row line">&nbsp;</div>
+                    </li>
+                    <li>
+                        <div class="row hover item item-form-fields">
+                            <div class="col icon pad-right">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-form-fields" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                            <div class="col text">Page Content</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row hover item item-page-settings">
+                            <div class="col icon pad-right">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                            <div class="col text">Page Settings</div>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -180,10 +203,15 @@
 
 <script type="text/html" id="template_tab">
     <li class="tab-##id## selected">
-        <div class="row hover selected" onclick="S.editor.explorer.open('##path##')">
+        <div class="row hover selected ##tab-type##" onclick="S.editor.explorer.open('##path##')">
             <div class="btn-close icon tiny hover-only">
                 <svg viewBox="0 0 32 32">
                     <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
+                </svg>
+            </div>
+            <div class="icon tiny is-resource ##resource-icon##">
+                <svg viewBox="0 0 32 32">
+                    <use xlink:href="#icon-pin" x="0" y="0" width="32" height="32"></use>
                 </svg>
             </div>
             <div class="col tab-title">##title##</div>

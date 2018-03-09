@@ -436,6 +436,22 @@ M 22.45 12.75
 Q 24.35 14.65 24.35 17.25 24.35 19.85 22.45 21.7 20.6 23.6 18 23.6 15.4 23.6 13.5 21.7 11.65 19.85 11.65 17.25 11.65 14.65 13.5 12.75 15.4 10.9 18 10.9 20.6 10.9 22.45 12.75 Z"/>
 </g>
 
+<g id="pin_0_Layer1_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 35 47
+L 27 47 27 59 31 64 35 59 35 47
+M 44 5
+L 48 5 48 0 14 0 14 5 18 5 14 38 4 38 4 43 58 43 58 38 48 38 44 5
+M 23 5
+L 32 5 32 38 20 38 23 5 Z"/>
+</g>
+
+<g id="pin_0_Layer0_0_FILL">
+<path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
+M 64 0
+L 0 0 0 64 64 64 64 0 Z"/>
+</g>
+
 <g id="preview_0_Layer1_0_FILL">
 <path fill="#FFFFFF" stroke="none" d="
 M 31.1 15
@@ -782,6 +798,18 @@ L 23.05 17.05 16.05 17.05 16.05 19.05 25 19.05 25 0 0 0 0 19.05 9.05 19.05 9.05 
 
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
 <use xlink:href="#icon_photos_0_Layer0_0_FILL"/>
+</g>
+</g>
+</symbol><symbol id="icon-pin" viewBox="0 0 64 64">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#pin_0_Layer1_0_FILL"/>
+</g>
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#pin_0_Layer0_0_FILL"/>
 </g>
 </g>
 </symbol><symbol id="icon-preview" viewBox="0 0 64 64">
