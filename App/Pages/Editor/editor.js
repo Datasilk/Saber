@@ -151,19 +151,21 @@ S.editor = {
     },
 
     sessions: {
-        add: function (id, mode, code) {
+        add: function (id, mode, code, select) {
             var editor = S.editor.instance;
             session = new S.editor.EditSession(S.editor.decodeHtml(code));
             session.setMode("ace/mode/" + mode);
             session.on('change', S.editor.changed);
-            editor.setSession(session);
             S.editor.sessions[id] = session;
-            editor.clearSelection();
-            S.editor.resize();
-            setTimeout(function () {
+            if (select !== false) {
+                editor.setSession(session);
+                editor.clearSelection();
                 S.editor.resize();
-            }, 200);
-            editor.focus();
+                setTimeout(function () {
+                    S.editor.resize();
+                }, 200);
+                editor.focus();
+            }
         },
 
         remove: function (id) {
@@ -222,32 +224,32 @@ S.editor = {
             files.forEach((f) => {
                 self.queue.push(path + f);
             });
-            self.runQueue();
+            self.runQueue(true);
         },
 
-        runQueue: function () {
+        runQueue: function (first) {
             //opens next resource in the queue
             var self = S.editor.explorer;
             var queue = self.queue;
             if (queue.length > 0) {
                 var path = queue[0].toString();
                 queue.splice(0, 1);
-                self.open(path, null, self.runQueue);
+                self.open(path, null, first === true, self.runQueue);
             }
         },
 
-        open: function (path, code, callback) {
+        open: function (path, code, isready, callback) {
             //opens a resource that exists on the server
             var id = S.editor.fileId(path);
 
-            //update selected session
-            S.editor.selected = path;
-
-            //disable save menu
-            $('.item-save').addClass('faded').attr('disabled', 'disabled');
-
-            //deselect tabs
-            $('.edit-tabs ul.tabs li, .edit-tabs ul.tabs > li > div').removeClass('selected');
+            if (isready !== false) {
+                //update selected session
+                S.editor.selected = path;
+                //deselect tabs
+                $('.edit-tabs ul.tabs li, .edit-tabs ul.tabs > li > div').removeClass('selected');
+                //disable save menu
+                $('.item-save').addClass('faded').attr('disabled', 'disabled');
+            }
 
             //check for existing tab
             var tab = $('.edit-tabs ul.tabs .tab-' + id);
@@ -265,6 +267,7 @@ S.editor = {
                     .replace(/\#\#id\#\#/g, id)
                     .replace('##path##', path)
                     .replace('##title##', title)
+                    .replace(/\#\#selected\#\#/g, isready !== false ? 'selected' : '' )
                     .replace('##tab-type##', isPageResource ? 'page-level' : '')
                     .replace('##resource-icon##', isPageResource ? '' : 'hide')
                 );
@@ -299,15 +302,19 @@ S.editor = {
             //change file path
             var cleanPath = path;
             if (path.indexOf('content/') == 0) { cleanPath = path.replace('content/', 'content/pages/'); }
-            if (path.indexOf('root/') == 0) { cleanPath = path.replace('root/', '');}
-            $('#filepath').val(cleanPath);
-            $('.file-bar .file-icon use')[0].setAttribute('xlink:href', '#icon-file-' + ext);
+            if (path.indexOf('root/') == 0) { cleanPath = path.replace('root/', ''); }
+
+            if (isready !== false) {
+                //set file bar path text & icon
+                $('#filepath').val(cleanPath);
+                $('.file-bar .file-icon use')[0].setAttribute('xlink:href', '#icon-file-' + ext);
+            }
 
             if (session == null && nocode == true) {
                 //load new session from ajax POST
                 S.ajax.post("Editor/Open", { path: path },
                     function (d) {
-                        S.editor.sessions.add(id, mode, d);
+                        S.editor.sessions.add(id, mode, d, isready !== false);
                         if (typeof callback == 'function') { callback();}
                     },
                     function () {
@@ -316,7 +323,7 @@ S.editor = {
                 );
             } else if (nocode == false) {
                 //load new session from provided code argument
-                S.editor.sessions.add(id, mode, code);
+                S.editor.sessions.add(id, mode, code, isready !== false);
                 if (typeof callback == 'function') { callback(); }
                 
             } else {
