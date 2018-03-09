@@ -1,25 +1,26 @@
 
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="none" x="0px" y="0px" width="64px" height="64px" viewBox="0 0 64 64">
 <defs>
-<g id="form_fields_0_Layer1_0_FILL">
+<g id="file_add_0_Layer1_0_FILL">
 <path fill="#FFFFFF" stroke="none" d="
-M 0 48
-L 0 64 64 64 64 48 0 48
-M 64 15
-L 64 6 0 6 0 15 64 15
-M 64 36
-L 64 27 0 27 0 36 64 36 Z"/>
-
-<path fill="#000000" fill-opacity="0.32941176470588235" stroke="none" d="
-M 0 42
-L 0 45 28 45 28 42 0 42
-M 28 24
-L 28 21 0 21 0 24 28 24
-M 28 3
-L 28 0 0 0 0 3 28 3 Z"/>
+M 56 18.95
+L 41.85 18.95
+Q 35.95 18.95 35.95 13.05
+L 35.95 0 14 0
+Q 9 0 9 5
+L 9 59
+Q 9 64 14 64
+L 51 64
+Q 56 64 56 59
+L 56 18.95
+M 43 47
+L 52 47 52 50 43 50 43 59 40 59 40 50 31 50 31 47 40 47 40 38 43 38 43 47
+M 44 16
+L 56 16 39 0 39 11
+Q 39 16 44 16 Z"/>
 </g>
 
-<g id="form_fields_0_Layer0_0_FILL">
+<g id="file_add_0_Layer0_0_FILL">
 <path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
 M 0 0
 L 0 64 64 64 64 0 0 0 Z"/>
@@ -28,11 +29,11 @@ L 0 64 64 64 64 0 0 0 Z"/>
 
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
-<use xlink:href="#form_fields_0_Layer1_0_FILL"/>
+<use xlink:href="#file_add_0_Layer1_0_FILL"/>
 </g>
 
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
-<use xlink:href="#form_fields_0_Layer0_0_FILL"/>
+<use xlink:href="#file_add_0_Layer0_0_FILL"/>
 </g>
 </g>
 </svg>

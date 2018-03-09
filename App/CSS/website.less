@@ -65,7 +65,9 @@ a:hover, a:active{color:#006bff; text-decoration:underline;}
 }
 
 html{display:flex; min-height:100%;}
-body{background:#eee; width:100%; position:relative; overflow-x:hidden; font-family: Jaldi, Arial, Helvetica, sans-serif;}
+body{background:#eee; width:100%; position:relative; overflow-x:hidden; font-family: Jaldi, Arial, Helvetica, sans-serif;
+    display:flex; min-height:100vh; flex-direction:column;}
+.content{flex:1;}
 
 @import "../Partials/UI/header.less"; 
 @import "../Partials/UI/footer.less"; 

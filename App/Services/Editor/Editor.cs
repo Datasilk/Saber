@@ -89,11 +89,11 @@ namespace Saber.Services
             if (rawpaths.Length > 1)
             {
                 //add parent directory;
-                html.Append(RenderBrowserItem(item, "goback", "..", "folder", string.Join("/", rawpaths.SkipLast(1)).ToLower()));
+                html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", string.Join("/", rawpaths.SkipLast(1)).ToLower()));
             }else if (rawpaths[0] == "content" && rawpaths.Length == 1)
             {
                 //add parent directory when navigating to special directory
-                html.Append(RenderBrowserItem(item, "goback", "..", "folder", "root"));
+                html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root"));
             }
             else if(rawpaths.Length == 1 && paths[0] == "")
             {
@@ -127,7 +127,7 @@ namespace Saber.Services
             }
             else
             {
-                item.Data["icon"] = "folder";
+                item.Data["icon"] = icon;
                 item.Data["onclick"] = "S.editor.explorer.dir('" + path + "')";
             }
 
@@ -172,14 +172,12 @@ namespace Saber.Services
             var scaffold = new Scaffold(relpath, S.Server.Scaffold);
             if (scaffold.HTML == "") { return ""; }
 
-            //load data from user form fields, depending on selected language
+            //load user content from json file, depending on selected language
             var config = GetPageConfig(path);
             var lang = UserInfo.language;
             var security = config.ContainsKey("security") ? (config["security"] == "1" ? true : false) : false;
             if(security == true && !CheckSecurity()) { return AccessDenied(); }
             var langfile = S.Server.MapPath(relpath.Replace(file, fileparts[0] + "_" + lang + ".json"));
-
-            //load language-specific content for page
             var pagedata = (Dictionary<string, string>)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(langfile, true), typeof(Dictionary<string, string>));
             if (pagedata != null)
             {
@@ -188,6 +186,7 @@ namespace Saber.Services
                     scaffold.Data[item.Key] = item.Value;
                 }
             }
+
             return scaffold.Render();
         }
 

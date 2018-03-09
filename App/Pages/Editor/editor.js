@@ -175,8 +175,15 @@ S.editor = {
     tabs: {
         close: function (path) {
             var id = S.editor.fileId(path);
-            $('.tab-' + id).remove();
+            var tab = $('.tab-' + id);
+            var sibling = tab.prev().find('.row.hover');
+            tab.remove();
             S.editor.sessions.remove(id);
+
+            //check to see if selected tab is being removed
+            if (S.editor.selected == path && sibling.length == 1) {
+                sibling[0].click();
+            }
         }
     },
 
@@ -231,7 +238,6 @@ S.editor = {
 
         open: function (path, code, callback) {
             //opens a resource that exists on the server
-
             var id = S.editor.fileId(path);
 
             //update selected session

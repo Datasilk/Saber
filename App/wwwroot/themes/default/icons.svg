@@ -42,6 +42,31 @@ L 3.1 5.05
 Q 6.15 2 10.55 2 Z"/>
 </g>
 
+<g id="file_add_0_Layer1_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 56 18.95
+L 41.85 18.95
+Q 35.95 18.95 35.95 13.05
+L 35.95 0 14 0
+Q 9 0 9 5
+L 9 59
+Q 9 64 14 64
+L 51 64
+Q 56 64 56 59
+L 56 18.95
+M 43 47
+L 52 47 52 50 43 50 43 59 40 59 40 50 31 50 31 47 40 47 40 38 43 38 43 47
+M 44 16
+L 56 16 39 0 39 11
+Q 39 16 44 16 Z"/>
+</g>
+
+<g id="file_add_0_Layer0_0_FILL">
+<path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
+M 0 0
+L 0 64 64 64 64 0 0 0 Z"/>
+</g>
+
 <g id="filecss_0_Layer2_0_FILL">
 <path fill="#FFFFFF" stroke="none" d="
 M 44 16
@@ -227,6 +252,44 @@ M 64 0
 L 0 0 0 64 64 64 64 0 Z"/>
 </g>
 
+<g id="Layer1_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 64 49
+L 64 21
+Q 64 16 59 16
+L 29 16 24 8 5 8 0 16 0 49
+Q 0 54 5 54
+L 59 54
+Q 64 54 64 49
+M 47 36
+L 47 27 50 27 50 36 59 36 59 39 50 39 50 48 47 48 47 39 38 39 38 36 47 36 Z"/>
+</g>
+
+<g id="Layer0_0_FILL">
+<path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
+M 0 0
+L 0 64 64 64 64 0 0 0 Z"/>
+</g>
+
+<g id="folder_back_0_Layer1_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 64 49
+L 64 21
+Q 64 16 59 16
+L 29 16 24 8 5 8 0 16 0 49
+Q 0 54 5 54
+L 59 54
+Q 64 54 64 49
+M 8.5 35
+L 18.5 25 21 27.5 13.5 35 21 42.5 18.5 45 8.5 35 Z"/>
+</g>
+
+<g id="folder_back_0_Layer0_0_FILL">
+<path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
+M 0 0
+L 0 64 64 64 64 0 0 0 Z"/>
+</g>
+
 <g id="folder_0_Layer1_0_FILL">
 <path fill="#FFFFFF" stroke="none" d="
 M 64 49
@@ -244,28 +307,28 @@ M 64 0
 L 0 0 0 64 64 64 64 0 Z"/>
 </g>
 
-<g id="Layer1_0_FILL">
+<g id="form_fields_0_Layer1_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 0 48
+L 0 64 64 64 64 48 0 48
+M 64 15
+L 64 6 0 6 0 15 64 15
+M 64 36
+L 64 27 0 27 0 36 64 36 Z"/>
+
 <path fill="#000000" fill-opacity="0.32941176470588235" stroke="none" d="
-M 28 3
-L 28 0 0 0 0 3 28 3
+M 0 42
+L 0 45 28 45 28 42 0 42
 M 28 24
 L 28 21 0 21 0 24 28 24
-M 0 42
-L 0 45 28 45 28 42 0 42 Z"/>
-
-<path fill="#FFFFFF" stroke="none" d="
-M 64 48
-L 0 48 0 64 64 64 64 48
-M 64 36
-L 64 27 0 27 0 36 64 36
-M 64 15
-L 64 6 0 6 0 15 64 15 Z"/>
+M 28 3
+L 28 0 0 0 0 3 28 3 Z"/>
 </g>
 
-<g id="Layer0_0_FILL">
+<g id="form_fields_0_Layer0_0_FILL">
 <path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
-M 64 0
-L 0 0 0 64 64 64 64 0 Z"/>
+M 0 0
+L 0 64 64 64 64 0 0 0 Z"/>
 </g>
 
 <g id="fullscreen_0_Layer1_0_FILL">
@@ -555,6 +618,18 @@ L 23.05 17.05 16.05 17.05 16.05 19.05 25 19.05 25 0 0 0 0 19.05 9.05 19.05 9.05 
 <use xlink:href="#icon_cycle_0_Layer0_0_FILL"/>
 </g>
 </g>
+</symbol><symbol id="icon-file-add" viewBox="0 0 64 64">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#file_add_0_Layer1_0_FILL"/>
+</g>
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#file_add_0_Layer0_0_FILL"/>
+</g>
+</g>
 </symbol><symbol id="icon-file-css" viewBox="0 0 64 64">
 
 
@@ -615,6 +690,28 @@ L 23.05 17.05 16.05 17.05 16.05 19.05 25 19.05 25 0 0 0 0 19.05 9.05 19.05 9.05 
 <use xlink:href="#file_0_Layer0_0_FILL"/>
 </g>
 </g>
+</symbol><symbol id="icon-folder-add" viewBox="0 0 64 64">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#Layer1_0_FILL"/>
+</g>
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#Layer0_0_FILL"/>
+</g>
+</symbol><symbol id="icon-folder-back" viewBox="0 0 64 64">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#folder_back_0_Layer1_0_FILL"/>
+</g>
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#folder_back_0_Layer0_0_FILL"/>
+</g>
+</g>
 </symbol><symbol id="icon-folder" viewBox="0 0 64 64">
 
 
@@ -631,11 +728,13 @@ L 23.05 17.05 16.05 17.05 16.05 19.05 25 19.05 25 0 0 0 0 19.05 9.05 19.05 9.05 
 
 
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
-<use xlink:href="#Layer1_0_FILL"/>
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#form_fields_0_Layer1_0_FILL"/>
 </g>
 
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
-<use xlink:href="#Layer0_0_FILL"/>
+<use xlink:href="#form_fields_0_Layer0_0_FILL"/>
+</g>
 </g>
 </symbol><symbol id="icon-fullscreen" viewBox="0 0 64 64">
 

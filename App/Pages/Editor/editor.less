@@ -1,28 +1,40 @@
-﻿.editor{position:relative;
+﻿/* editor container */
+.editor{position:relative;
     .code-editor{overflow-x:hidden; overflow-y:auto !important; box-sizing:border-box;}
     &.box ul.tabs > li{padding:0 5px 0 0;}
 }
+
+/* editor header */
+@import "header.less";
+
+/* ace editor / monaco editor container */
 #editor{width:100%; min-height:300px;}
-.editor-tab{position:absolute; top:0px; right:0px;
+
+/* editor tab (in preview mode) */
+.editor-tab{position:fixed; top:0px; right:0px;
     & > .bg{padding:7px; border-bottom-left-radius:5px; box-shadow: 4px 4px 30px 0px rgba(0, 0, 0, 0.2);}
 }
 .editor-tab:hover > .bg{background-color:#a6cdff}
 
+/* preview mode */
+.preview:not(.hide){display:flex; min-height:100vh; flex-direction:column;}
+
 /* drop down menu */
-.editor-drop-menu{position:absolute; z-index:1000; left:15px; top:75px; cursor:default;
+.editor-drop-menu{position:absolute; z-index:1000; top:41px; cursor:default;
     & > div{box-shadow: 4px 4px 30px 0px rgba(0, 0, 0, 0.2);}
     li{overflow:hidden;}
     li > div.item{padding:7px 75px 7px 15px;}
     .line{margin:5px 0;}
     .col.text{padding: 0; margin-top:5px;}
 }
-.tab-drop-menu { padding:5px 0 4px 0;
-    & > .col{margin:-5px 0 -5px 0;}
+.tab-drop-menu { padding:5px 0 4px 0; padding:12px 25px 11px 25px;
+    //& > .col{margin:-5px 0 -5px 0;}
 }
 
 /* file tabs */
 .edit-tabs{float:left;
     li{position:relative;}
+    .tab-title{padding:12px 25px;}
     .row:hover .btn-close.hover-only{opacity:0.5 !important;
         &:hover{opacity:1 !important;
             use{fill:#0070ff;color:#0070ff;}
@@ -32,16 +44,19 @@
 }
 
 /* file browser */
-.file-browser{float:left; width:250px; position:relative; top:-47px;}
+.file-browser{float:left; width:250px; position:relative; top:-48px;
+    .icon-folder-add{padding-top:4px;}
+    .label{font-size:17px;}
+}
 
 /* file bar */
 .file-bar{padding:5px 0;
     & > .bg{background-color:rgba(0,0,0,0.1) !important;}
 }
 .file-tabs{
-    li .col{padding:8px 10px 5px 10px;}
+    li .col{padding:8px 10px 6px 10px;}
 }
-.file-path{width:~"calc(100% - 400px)" !important; padding-top:2px;
+.file-path{width:~"calc(100% - 330px)" !important; padding-top:2px;
     input{font-size:18px !important; font-weight:400; 
           &:not(:focus){background-color:transparent !important; border-color:transparent !important; outline:transparent !important; }
     }
@@ -51,7 +66,6 @@
 .editor.show-browser {
     .code-editor{float:left; width:~"calc(100% - 250px)"; overflow:hidden;}
     .file-bar{padding-left:250px;}
-    .file-path{width:~"calc(100% - 650px)" !important;}
 }
 
 /* Ace Editor */

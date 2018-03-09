@@ -65,6 +65,7 @@
     <Folder Include="dbo\Views" />
     <Folder Include="dbo\Functions" />
     <Folder Include="dbo\Stored Procedures\Users" />
+    <Folder Include="dbo\Stored Procedures\Languages" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Users.sql" />
@@ -79,8 +80,15 @@
     <Build Include="dbo\Stored Procedures\Users\User_Authenticate.sql" />
     <Build Include="dbo\Stored Procedures\Users\Users_HasAdmin.sql" />
     <None Include="utility\resetdb.sql" />
+    <Build Include="dbo\Tables\Languages.sql" />
+    <Build Include="dbo\Stored Procedures\Languages\Language_Create.sql" />
+    <Build Include="dbo\Stored Procedures\Languages\Languages_GetList.sql" />
+    <Build Include="dbo\Stored Procedures\Languages\Language_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Sql.refactorlog" />
   </ItemGroup>
 </Project>

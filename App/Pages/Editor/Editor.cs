@@ -20,8 +20,6 @@ namespace Saber.Pages
             var rpath = "/Content/pages/";
             var rfile = "";
             var pathname = string.Join("/", path);
-            if(pathname == "") { pathname = "home"; }
-            var file = pathname + ".html";
             if (path.Length > 1)
             {
                 rpath += string.Join("/", path.Take(path.Length - 1)) + "/";
@@ -31,6 +29,8 @@ namespace Saber.Pages
             {
                 rfile = path[0].ToLower();
             }
+            if (pathname == "") { pathname = "home"; rfile = pathname; }
+            var file = pathname + ".html";
 
 
             //open page contents
