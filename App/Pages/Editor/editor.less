@@ -1,7 +1,7 @@
 ﻿/* editor container */
 .editor{position:relative;
     .code-editor{overflow-x:hidden; overflow-y:auto !important; box-sizing:border-box;}
-    &.box ul.tabs > li{padding:0 5px 0 0;}
+    &.box ul.tabs > li{margin:0 5px 0 0; overflow:hidden; border-top-right-radius:9px;}
 }
 
 /* editor header */
@@ -67,8 +67,19 @@
 
 /* when file browser is visible */
 .editor.show-browser {
-    .code-editor{float:left; width:~"calc(100% - 250px)"; overflow:hidden;}
+    .code-editor, .content-fields{float:left; width:~"calc(100% - 250px)"; overflow:hidden;}
     .file-bar{padding-left:250px;}
+}
+
+/* content fields */
+.content-fields{position:relative; max-width:960px; margin:0 auto;
+    form{
+        textarea{width:100%; resize: none; z-index:10; overflow:hidden;}
+    }
+    .message{margin-bottom:-5px;}
+    .col.field{width:200px;}
+    .col.input{width:~"calc(100% - 200px)";}
+    .textarea-clone{opacity:0; position:absolute; min-height:30px; z-index:-1; width:100%; font-size:15px; padding:10px; line-height:1.15;box-sizing:border-box;border-width:1px; font-family:monospace;}
 }
 
 /* Ace Editor */

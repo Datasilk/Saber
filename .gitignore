@@ -8,11 +8,7 @@
 
 /App/wwwroot/css/
 /App/wwwroot/js/
-/App/wwwroot/content/themes/default/
-/App/wwwroot/content/websites/
-/App/wwwroot/images/screenshots/
-/App/wwwroot/images/workflow/
-/App/Vendor/
+/App/wwwroot/content/pages/
 /App/Content/pages/
 
 *.bak

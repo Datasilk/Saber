@@ -54,7 +54,7 @@ namespace Saber.Pages
                 scripts += 
                     "<script language=\"javascript\">" + 
                         "S.editor.explorer.openResources('content/" + rpath.Replace("/Content/pages/", "") + 
-                        "', ['" + rfile + ".js', '" + rfile + ".less', '" + rfile + ".html']" + 
+                        "', ['" + rfile + ".html', '" + rfile + ".less', '" + rfile + ".js']" + 
                         ");" + 
                     "</script>";
                 usePlatform = true;
@@ -68,6 +68,7 @@ namespace Saber.Pages
             }
 
             //add page-specific references
+            scripts += "<script language=\"javascript\">S.language = '" + UserInfo.language + "';</script>\n";
             AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
             AddScript(rpath.ToLower() + rfile + ".js", "page_js");
 

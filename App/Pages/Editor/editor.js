@@ -3,9 +3,15 @@ S.editor = {
     EditSession: require("ace/edit_session").EditSession,
     sessions: {},
     selected: '',
+    path:'',
     div: $('.code-editor'),
 
     init: function () {
+        //generate path
+        var path = window.location.pathname.toLowerCase();
+        if (path == '/') { path = '/home'; }
+        this.path = 'content' + path;
+
         //initialize code editor
         var editor = ace.edit("editor");
         editor.setTheme("ace/theme/xcode");
@@ -20,6 +26,9 @@ S.editor = {
         $('.editor-drop-menu .item-save').on('click', function () { S.editor.save(S.editor.selected, S.editor.instance.getValue()); });
         $('.editor-drop-menu .item-save-as').on('click', S.editor.saveAs);
         $('.tab-preview').on('click', S.editor.preview.show);
+        $('.tab-content-fields').on('click', S.editor.filebar.fields.show);
+        $('.editor-drop-menu .item-content-fields').on('click', function () { S.editor.filebar.fields.show(true); });
+        $('.tab-file-code').on('click', S.editor.filebar.code.show);
         $('.editor-tab').on('click', S.editor.preview.hide);
 
         //add window resize event
@@ -74,8 +83,11 @@ S.editor = {
         var tab = $('.tab-' + id);
         if (tab.length == 1) {
             if (tab.attr('data-edited') != "true" || checkall == true) {
+                //enable save menu
                 $('.item-save').removeClass('faded').removeAttr('disabled');
+
                 if (tab.attr('data-edited') != "true") {
+                    //update tab with *
                     tab.attr('data-edited', "true");
                     var col = tab.find('.col');
                     col.html(col.html() + ' *');
@@ -111,22 +123,60 @@ S.editor = {
         }
     },
 
+    error: function () {
+        S.message.show('.editor .message', 'error', S.message.error.generic);
+    },
+
+    message: function (msg) {
+        S.message.show('.editor .message', 'confirm', msg);
+    },
+
     save: function (path, content) {
         if ($('.editor-drop-menu .item-save.faded').length == 1) { return;}
         var self = S.editor;
+        var id = self.fileId(path);
         self.dropmenu.hide();
-        S.ajax.post('Editor/SaveFile', { path: path, content: content },
+        var tab = $('.tab-' + id);
+        if (tab.hasClass('selected')) {
+            //check if we should save something besides source code
 
+            if ($('.tab-content-fields').hasClass('selected')) {
+                //save content fields values
+                var fields = {};
+                var texts = $('.content-fields form').find('textarea, input, select');
+                texts.each(function (txt) {
+                    var t = $(txt);
+                    fields[txt.id.replace('field_', '')] = t.val();
+                });
+
+                S.ajax.post('Editor/SaveContentFields', { path: path, fields: fields, language: $('#lang').val() },
+                    function (d) {
+                        if (d == 'success') {
+                            S.editor.fields.changed = false;
+                            S.message.show('.content-fields .message', 'confirm', 'Content fields were saved.', false, 4000, true);
+                        } else { S.editor.error(); }
+                    },
+                    function () {
+                        S.editor.error();
+                    }
+                );
+                return;
+            }
+        }
+
+
+        //last resort, save source code to file
+        S.ajax.post('Editor/SaveFile', { path: path, content: content },
             function (d) {
                 if (d != "success") {
-                    S.message.show('.editor .message', S.message.error.generic);
+                    S.editor.error();
                 } else {
                     self.unChanged(path);
                     S.editor.explorer.open(path);
                 }
             },
             function () {
-                S.message.show('.editor .message', S.message.error.generic);
+                S.editor.error();
             }
         );
     },
@@ -151,19 +201,22 @@ S.editor = {
     },
 
     sessions: {
-        add: function (id, mode, code) {
+        add: function (id, mode, code, select) {
             var editor = S.editor.instance;
             session = new S.editor.EditSession(S.editor.decodeHtml(code));
             session.setMode("ace/mode/" + mode);
             session.on('change', S.editor.changed);
-            editor.setSession(session);
             S.editor.sessions[id] = session;
-            editor.clearSelection();
-            S.editor.resize();
-            setTimeout(function () {
+            S.editor.filebar.code.show();
+            if (select !== false) {
+                editor.setSession(session);
+                editor.clearSelection();
                 S.editor.resize();
-            }, 200);
-            editor.focus();
+                setTimeout(function () {
+                    S.editor.resize();
+                }, 200);
+                editor.focus();
+            }
         },
 
         remove: function (id) {
@@ -186,7 +239,7 @@ S.editor = {
             }
         }
     },
-
+    
     explorer: {
         queue: [],
 
@@ -211,7 +264,7 @@ S.editor = {
                     $('.file-browser ul.menu').html(d);
                 },
                 function () {
-                    S.message.show('.editor .message', S.message.error.generic);
+                    S.editor.error();
                 }
             );
         },
@@ -222,49 +275,52 @@ S.editor = {
             files.forEach((f) => {
                 self.queue.push(path + f);
             });
-            self.runQueue();
+            self.runQueue(true);
         },
 
-        runQueue: function () {
+        runQueue: function (first) {
             //opens next resource in the queue
             var self = S.editor.explorer;
             var queue = self.queue;
             if (queue.length > 0) {
                 var path = queue[0].toString();
                 queue.splice(0, 1);
-                self.open(path, null, self.runQueue);
+                self.open(path, null, first === true, self.runQueue);
             }
         },
 
-        open: function (path, code, callback) {
+        open: function (path, code, isready, callback) {
             //opens a resource that exists on the server
             var id = S.editor.fileId(path);
 
-            //update selected session
-            S.editor.selected = path;
-
-            //disable save menu
-            $('.item-save').addClass('faded').attr('disabled', 'disabled');
-
-            //deselect tabs
-            $('.edit-tabs ul.tabs li, .edit-tabs ul.tabs > li > div').removeClass('selected');
+            if (isready !== false) {
+                //update selected session
+                S.editor.selected = path;
+                //deselect tabs
+                $('.edit-tabs ul.tabs li, .edit-tabs ul.tabs > li > div').removeClass('selected');
+                //disable save menu
+                $('.item-save').addClass('faded').attr('disabled', 'disabled');
+            }
 
             //check for existing tab
             var tab = $('.edit-tabs ul.tabs .tab-' + id);
+            var paths = path.split('/');
+            var file = paths[paths.length - 1];
+            var dir = paths.join('/').replace(file, '');
+            var fileparts = paths[paths.length - 1].split('.', 2);
+            var relpath = dir + fileparts[0];
+            var isPageResource = relpath.toLowerCase() == S.editor.path;
+
             if (tab.length == 0) {
+                //tab doesn't exist yet
                 var temp = $('#template_tab').html().trim();
-                var paths = path.split('/');
-                var file = paths[paths.length - 1];
-                var dir = '/' + paths.join('/').replace(file, '');
-                var fileparts = paths[paths.length - 1].split('.', 2);
-                var relpath = dir + fileparts[0];
                 var title = file;
-                var isPageResource = relpath.toLowerCase() == '/content' + window.location.pathname.toLowerCase();
                 if (fileparts[0].length > 18) { title = '...' + fileparts[0].substr(fileparts[0].length - 15) + '.' + fileparts[1];}
                 $('.edit-tabs ul.tabs').append(temp
                     .replace(/\#\#id\#\#/g, id)
                     .replace('##path##', path)
                     .replace('##title##', title)
+                    .replace(/\#\#selected\#\#/g, isready !== false ? 'selected' : '' )
                     .replace('##tab-type##', isPageResource ? 'page-level' : '')
                     .replace('##resource-icon##', isPageResource ? '' : 'hide')
                 );
@@ -281,8 +337,20 @@ S.editor = {
                 }
                 
             } else {
+                //tab exists
                 tab.addClass('selected').find('.row.hover').addClass('selected');
             }
+            
+            if (isready !== false) {
+                $('.tab-content-fields, .tab-file-settings, .tab-file-photos, .tab-preview').hide();
+                if (isPageResource && fileparts[1] == 'html') {
+                    //show file bar icons for page html resource
+                    $('.tab-content-fields, .tab-file-settings, .tab-file-photos, .tab-preview').show();
+                } else if (isPageResource) {
+                    $('.tab-preview').show();
+                }
+            }
+            
 
             //check for existing source code
             var nocode = (code == null || typeof code == 'undefined');
@@ -299,28 +367,33 @@ S.editor = {
             //change file path
             var cleanPath = path;
             if (path.indexOf('content/') == 0) { cleanPath = path.replace('content/', 'content/pages/'); }
-            if (path.indexOf('root/') == 0) { cleanPath = path.replace('root/', '');}
-            $('#filepath').val(cleanPath);
-            $('.file-bar .file-icon use')[0].setAttribute('xlink:href', '#icon-file-' + ext);
+            if (path.indexOf('root/') == 0) { cleanPath = path.replace('root/', ''); }
+
+            if (isready !== false) {
+                //set file bar path text & icon
+                $('#filepath').val(cleanPath);
+                $('.file-bar .file-icon use')[0].setAttribute('xlink:href', '#icon-file-' + ext);
+            }
 
             if (session == null && nocode == true) {
                 //load new session from ajax POST
                 S.ajax.post("Editor/Open", { path: path },
                     function (d) {
-                        S.editor.sessions.add(id, mode, d);
+                        S.editor.sessions.add(id, mode, d, isready !== false);
                         if (typeof callback == 'function') { callback();}
                     },
                     function () {
-                        S.message.show('.editor .message', S.message.error.generic);
+                        S.editor.error();
                     }
                 );
             } else if (nocode == false) {
                 //load new session from provided code argument
-                S.editor.sessions.add(id, mode, code);
+                S.editor.sessions.add(id, mode, code, isready !== false);
                 if (typeof callback == 'function') { callback(); }
                 
             } else {
                 //load existing session
+                S.editor.filebar.code.show();
                 editor.setSession(session);
                 if (S.editor.isChanged(path) == true) {
                     S.editor.changed(true);
@@ -335,6 +408,100 @@ S.editor = {
         }
     },
 
+    filebar: {
+        fields: {
+            show: function (loadtab) {
+                if (loadtab === true) {
+                    S.editor.explorer.open(S.editor.path + '.html');
+                }
+
+                //show content fields section & hide other sections
+                $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
+                $('.editor .sections > .content-fields').removeClass('hide');
+                $('ul.file-tabs > li').removeClass('selected');
+                $('ul.file-tabs > li.tab-content-fields').addClass('selected');
+
+                var lang = 'en';
+
+                if ($('#lang').children().length == 0) {
+                    //load list of languages
+                    S.ajax.post('Editor/Languages', {},
+                        function (d) {
+                            var html = '';
+                            var langs = d.split('|');
+                            for (x = 0; x < langs.length; x++) {
+                                var lang = langs[x].split(',');
+                                html += '<option value="' + lang[0] + '">' + lang[1] + '</option>';
+                            }
+                            $('#lang').html(html);
+                        },
+                        function () {
+                            S.editor.error();
+                        }
+                    );
+                } else {
+                    lang = $('#lang').val();
+                }
+
+                //disable save menu
+                $('.item-save').addClass('faded').attr('disabled', 'disabled');
+
+                //load content for page
+                if (S.editor.fields.selected != S.editor.selected) {
+                    S.editor.fields.changed = false;
+                    $('.content-fields > form').html('');
+                    S.ajax.post('Editor/RenderContentFields', { path: S.editor.path, language:lang },
+                        function (d) {
+                            S.editor.fields.selected = S.editor.selected;
+                            $('.content-fields > form').html(d);
+
+                            //set up events for fields
+                            $('.content-fields > form textarea').on('keyup, keydown', S.editor.fields.change).each(
+                                function (field) {
+                                    S.editor.fields.change({ target: field });
+                                }
+                            );
+                        },
+                        function () { S.editor.error(); }
+                    );
+                } else {
+                    if (S.editor.fields.changed == true) {
+                        //enable save menu since file was previously changed
+                        $('.item-save').removeClass('faded').removeAttr('disabled');
+                    }
+                }
+            }
+        },
+
+        code: {
+            show: function () {
+                $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
+                $('.editor .sections > .code-editor').removeClass('hide');
+                $('ul.file-tabs > li').removeClass('selected');
+                $('ul.file-tabs > li.tab-file-code').addClass('selected');
+                if (S.editor.isChanged(S.editor.selected)) { S.editor.changed();}
+            }
+        }
+    },
+
+    fields: {
+        clone: $('.textarea-clone'),
+        selected: '',
+        changed: false,
+        change: function (e) {
+            var field = $(e.target);
+            //resize field
+            var clone = S.editor.fields.clone;
+            clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
+            field.css({ height: clone.height() });
+            if (S.editor.fields.changed == false) {
+                //enable save menu
+                $('.item-save').removeClass('faded').removeAttr('disabled');
+                S.editor.fields.changed = true;
+            }
+        }
+    },
+
     preview: {
         show: function () {
             var tagcss = $('#page_css');
@@ -344,16 +511,26 @@ S.editor = {
             var rnd = Math.floor(Math.random() * 9999);
             tagcss.remove();
             tagjs.remove();
+
+            //first, reload CSS
             $('head').append(
                 '<link rel="stylesheet" type="text/css" id="page_css" href="' + css + '?r=' + rnd + '"></link>'
             );
-            S.util.js.load(js + '?r=' + rnd, 'page_js', function () {
-                $('.preview, .editor-tab').removeClass('hide');
-                $('.editor').addClass('hide');
-            });
-            setTimeout(function () {
-                
-            }, 500);
+
+            //next, reload rendered HTML
+            S.ajax.post('Editor/RenderPage', { path: S.editor.path + '.html', language: S.language },
+                function (d) {
+                    $('.preview > .content').html(d);
+
+                    //finally, reload javascript file
+                    S.util.js.load(js + '?r=' + rnd, 'page_js',
+                        function () {
+                            $('.preview, .editor-tab').removeClass('hide');
+                            $('.editor').addClass('hide');
+                        }
+                    );
+                }
+            );
         },
 
         hide: function () {

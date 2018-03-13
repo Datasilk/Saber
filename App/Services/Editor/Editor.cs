@@ -14,6 +14,8 @@ namespace Saber.Services
         {
         }
 
+        #region "Utility"
+
         private string[] GetRelativePath(string path)
         {
             var paths = path.Split('/');
@@ -33,6 +35,10 @@ namespace Saber.Services
             return paths;
         }
 
+        #endregion
+
+        #region "File System"
+
         public string Dir(string path)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
@@ -41,17 +47,17 @@ namespace Saber.Services
             var rid = path.Replace("/", "_").ToLower();
             var pid = rid.Replace("_", "/");
             var html = new StringBuilder();
-            if(pid == "/") { pid = ""; }
+            if (pid == "/") { pid = ""; }
 
             //translate root path to relative path
             var paths = GetRelativePath(path);
-            if(paths.Length == 0) { return Error(); }
+            if (paths.Length == 0) { return Error(); }
             var rpath = string.Join("/", paths) + "/";
 
             var item = new Scaffold("/Services/Editor/file.html", S.Server.Scaffold);
             var items = new List<string>();
 
-            if(paths[0] == "" && paths.Length == 1)
+            if (paths[0] == "" && paths.Length == 1)
             {
                 //display root folders for website
                 items = new List<string>()
@@ -62,7 +68,8 @@ namespace Saber.Services
             else
             {
                 //get folder structure from hard drive
-                if (Directory.Exists(S.Server.MapPath(rpath))){
+                if (Directory.Exists(S.Server.MapPath(rpath)))
+                {
                     var info = new DirectoryInfo(S.Server.MapPath(rpath));
                     foreach (var dir in info.GetDirectories())
                     {
@@ -78,7 +85,10 @@ namespace Saber.Services
                         {
                             switch (f[1].ToLower())
                             {
-                                case "html": case "css": case "less": case "js":
+                                case "html":
+                                case "css":
+                                case "less":
+                                case "js":
                                     items.Add(file.Name); break;
                             }
                         }
@@ -90,24 +100,25 @@ namespace Saber.Services
             {
                 //add parent directory;
                 html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", string.Join("/", rawpaths.SkipLast(1)).ToLower()));
-            }else if (rawpaths[0] == "content" && rawpaths.Length == 1)
+            }
+            else if (rawpaths[0] == "content" && rawpaths.Length == 1)
             {
                 //add parent directory when navigating to special directory
                 html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root"));
             }
-            else if(rawpaths.Length == 1 && paths[0] == "")
+            else if (rawpaths.Length == 1 && paths[0] == "")
             {
                 //add special directories
                 html.Append(RenderBrowserItem(item, "content", "Content", "folder", "content"));
             }
 
-            foreach(var i in items)
+            foreach (var i in items)
             {
                 //add directories and files
                 var icon = "folder";
                 if (i.IndexOf(".") > 0)
                 {
-                    icon =  "file-" + i.Split('.', 2)[1].ToLower();
+                    icon = "file-" + i.Split('.', 2)[1].ToLower();
                 }
                 html.Append(RenderBrowserItem(item, rid + "_" + i.Replace(".", "_").ToLower(), i, icon, (pid != "" ? pid + "/" : "") + i));
             }
@@ -137,11 +148,11 @@ namespace Saber.Services
         public string Open(string path)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
-            
+
             //translate root path to relative path
             var paths = GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
-            if(File.Exists(S.Server.MapPath(string.Join("/", paths))))
+            if (File.Exists(S.Server.MapPath(string.Join("/", paths))))
             {
                 return WebUtility.HtmlEncode(File.ReadAllText(S.Server.MapPath(string.Join("/", paths))));
             }
@@ -154,52 +165,6 @@ namespace Saber.Services
                 case "js": return WebUtility.HtmlEncode("(function(){\n    //do stuff\n})();");
             }
             return "";
-        }
-
-        /// <summary>
-        /// Renders a page, including language-specific content, and uses page-specific config to check for security & other features
-        /// </summary>
-        /// <param name="path">relative path to content (e.g. "content/home")</param>
-        /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
-        public string RenderPage(string path)
-        {
-            //translate root path to relative path
-            var paths = GetRelativePath(path);
-            var relpath = string.Join("/", paths);
-            var file = paths[paths.Length - 1];
-            var fileparts = file.Split(".", 2);
-            if (paths.Length == 0) { return Error(); }
-            var scaffold = new Scaffold(relpath, S.Server.Scaffold);
-            if (scaffold.HTML == "") { return ""; }
-
-            //load user content from json file, depending on selected language
-            var config = GetPageConfig(path);
-            var lang = UserInfo.language;
-            var security = config.ContainsKey("security") ? (config["security"] == "1" ? true : false) : false;
-            if(security == true && !CheckSecurity()) { return AccessDenied(); }
-            var langfile = S.Server.MapPath(relpath.Replace(file, fileparts[0] + "_" + lang + ".json"));
-            var pagedata = (Dictionary<string, string>)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(langfile, true), typeof(Dictionary<string, string>));
-            if (pagedata != null)
-            {
-                foreach (var item in pagedata)
-                {
-                    scaffold.Data[item.Key] = item.Value;
-                }
-            }
-
-            return scaffold.Render();
-        }
-
-        private Dictionary<string, string> GetPageConfig(string path)
-        {
-            var paths = GetRelativePath(path);
-            var relpath = string.Join("/", paths);
-            var file = paths[paths.Length - 1];
-            var fileparts = file.Split(".", 2);
-            var configfile = S.Server.MapPath(relpath.Replace(file, fileparts[0] + ".json"));
-            var config = (Dictionary<string, string>)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(configfile, true), typeof(Dictionary<string, string>));
-            if(config != null) { return config; }
-            return new Dictionary<string, string>();
         }
 
         public string SaveFile(string path, string content)
@@ -231,11 +196,13 @@ namespace Saber.Services
                 }
 
                 //gulp file
-                if(paths[0].ToLower() == "/content/pages")
+                if (paths[0].ToLower() == "/content/pages")
                 {
                     switch (ext)
                     {
-                        case "js": case "css": case "less":
+                        case "js":
+                        case "css":
+                        case "less":
                             var p = new Process();
                             p.StartInfo = new ProcessStartInfo()
                             {
@@ -248,8 +215,8 @@ namespace Saber.Services
                                 WorkingDirectory = S.Server.MapPath("/").Replace("App\\", ""),
                                 Verb = "runas"
                             };
-                            p.OutputDataReceived += ProcessOutputReceived;
-                            p.ErrorDataReceived += ProcessErrorReceived;
+                            p.OutputDataReceived += GulpOutputReceived;
+                            p.ErrorDataReceived += GulpErrorReceived;
                             p.Start();
                             break;
                     }
@@ -259,39 +226,160 @@ namespace Saber.Services
             {
                 return Error();
             }
-            
+
             return Success();
         }
 
-        private void ProcessOutputReceived(object sender, DataReceivedEventArgs e)
+        private void GulpOutputReceived(object sender, DataReceivedEventArgs e)
         {
             Process p = sender as Process;
             if (p == null) { return; }
             Console.WriteLine(e.Data);
         }
 
-        private void ProcessErrorReceived(object sender, DataReceivedEventArgs e)
+        private void GulpErrorReceived(object sender, DataReceivedEventArgs e)
         {
             Process p = sender as Process;
             if (p == null) { return; }
             Console.WriteLine(e.Data);
         }
+        #endregion
 
-        public string SaveForm(string path, Dictionary<string, string> fields)
+        #region "Render Page"
+
+        /// <summary>
+        /// Renders a page, including language-specific content, and uses page-specific config to check for security & other features
+        /// </summary>
+        /// <param name="path">relative path to content (e.g. "content/home")</param>
+        /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
+        public string RenderPage(string path)
+        {
+            //translate root path to relative path
+            var paths = GetRelativePath(path);
+            var relpath = string.Join("/", paths);
+            var file = paths[paths.Length - 1];
+            var fileparts = file.Split(".", 2);
+            if (paths.Length == 0) { return Error(); }
+            var scaffold = new Scaffold(relpath, S.Server.Scaffold);
+            if (scaffold.elements.Count == 0) { return ""; }
+
+            //load user content from json file, depending on selected language
+            var config = GetPageConfig(path);
+            var lang = UserInfo.language;
+            var security = config.ContainsKey("security") ? (config["security"] == "1" ? true : false) : false;
+
+            //check security
+            if (security == true && !CheckSecurity()) { return AccessDenied(); }
+
+            var contentfile = ContentFile(path, lang);
+            var data = (Dictionary<string, string>)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(contentfile, true), typeof(Dictionary<string, string>));
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    scaffold.Data[item.Key] = item.Value;
+                }
+            }
+
+            return scaffold.Render();
+        }
+        #endregion
+
+        #region "Page Settings"
+
+        private Dictionary<string, string> GetPageConfig(string path)
+        {
+            var paths = GetRelativePath(path);
+            var relpath = string.Join("/", paths);
+            var file = paths[paths.Length - 1];
+            var fileparts = file.Split(".", 2);
+            var configfile = S.Server.MapPath(relpath.Replace(file, fileparts[0] + ".json"));
+            var config = (Dictionary<string, string>)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(configfile, true), typeof(Dictionary<string, string>));
+            if (config != null) { return config; }
+            return new Dictionary<string, string>();
+        }
+        #endregion
+
+        #region "Content Fields"
+        private string ContentFile(string path, string language)
+        {
+            var paths = GetRelativePath(path);
+            var relpath = string.Join("/", paths);
+            var file = paths[paths.Length - 1];
+            var fileparts = file.Split(".", 2);
+            return relpath.Replace(file, fileparts[0] + "_" + language + ".json");
+
+        }
+
+        private Dictionary<string, string> GetPageContent(string path, string language)
+        {
+            var contentfile = S.Server.MapPath(ContentFile(path, language));
+            var content = (Dictionary<string, string>)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(contentfile, true), typeof(Dictionary<string, string>));
+            if (content != null) { return content; }
+            return new Dictionary<string, string>();
+        }
+
+        public string RenderContentFields(string path, string language)
+        {
+            var paths = GetRelativePath(path);
+            var content = GetPageContent(path, UserInfo.language);
+            var html = new StringBuilder();
+            var scaffold = new Scaffold(string.Join("/", paths) + ".html", S.Server.Scaffold);
+            var fieldText = new Scaffold("/Services/Editor/Fields/text.html", S.Server.Scaffold);
+            var fields = new Dictionary<string, string>();
+            var contentfile = ContentFile(path, language);
+            if (File.Exists(S.Server.MapPath(contentfile)))
+            {
+                fields = (Dictionary<string, string>)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
+            }
+            foreach (var elem in scaffold.elements)
+            {
+                if(elem.name != "")
+                {
+                    var val = "";
+                    if (fields.ContainsKey(elem.name))
+                    {
+                        //get existing content for field
+                        val = fields[elem.name];
+                    }
+
+                    //load text field
+                    fieldText.Data["title"] = S.Util.Str.Capitalize(elem.name.Replace("-", " ").Replace("_", " "));
+                    fieldText.Data["id"] = "field_" + elem.name.Replace("-", "").Replace("_", "");
+                    fieldText.Data["default"] = val;
+                    html.Append(fieldText.Render());
+                }
+            }
+            return html.ToString();
+        }
+
+        public string SaveContentFields(string path, string language, Dictionary<string, string> fields)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
 
+            var data = new Dictionary<string, string>();
             var paths = GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
+            var scaffold = new Scaffold(string.Join("/", paths), S.Server.Scaffold);
+            foreach (var elem in scaffold.elements)
+            {
+                if (elem.name != "")
+                {
+                    var name = elem.name.Replace("-", "").Replace("_", "");
+                    if (fields.ContainsKey(name))
+                    {
+                        if(fields[name] != "")
+                        {
+                            data.Add(elem.name, fields[name]);
+                        }
+                    }
+                }
+            }
+
             try
             {
                 //save fields as json
-                var last = paths.Length - 1;
-                var file = paths[last];
-                var fileparts = file.Split(".", 2);
-                fileparts[0] += "_fields";
-                paths[last] = string.Join(".", fileparts);
-                S.Util.Serializer.WriteObjectToFile(fields, S.Server.MapPath(string.Join("/", paths)));
+                S.Util.Serializer.WriteObjectToFile(data, S.Server.MapPath(ContentFile(path, language)));
             }
             catch (Exception)
             {
@@ -300,5 +388,19 @@ namespace Saber.Services
 
             return Success();
         }
+
+        #endregion
+
+        #region "Languages"
+        public string Languages()
+        {
+            var html = new StringBuilder();
+            foreach(var lang in S.Server.languages)
+            {
+                html.Append(lang.Key + ',' + lang.Value + '|');
+            }
+            return html.ToString().TrimEnd('|');
+        }
+        #endregion
     }
 }
