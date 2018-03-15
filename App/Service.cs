@@ -8,7 +8,7 @@ namespace Saber
 
         public EditorType EditorUsed
         {
-            get { return EditorType.Ace; }
+            get { return EditorType.Monaco; }
         }
 
         public User UserInfo

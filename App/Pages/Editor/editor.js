@@ -1,13 +1,14 @@
 S.editor = {
+    type: 0, //0 = Monaco, 1 = Ace
     instance: null,
     sessions: {},
     selected: '',
     path:'',
     div: $('.code-editor'),
+    initialized: false,
 
-    init: function (editorUsed) {
-        //select which code editor to use: 0 = Monaco, 1 = Ace
-        S.editor.type = editorUsed;
+    init: function () {
+        S.editor.initialized = true;
 
         //generate path
         var path = window.location.pathname.toLowerCase();
@@ -23,18 +24,8 @@ S.editor = {
         switch (S.editor.type) {
             case 0: //monaco
                 require.config({ paths: { 'vs': 'js/utility/monaco' } });
-                require(['vs/editor/editor.main'], function () {
-                    var editor = monaco.editor.create(document.getElementById('container'), {
-                        value: [
-                            'function x() {',
-                            '\tconsole.log("Hello world!");',
-                            '}'
-                        ].join('\n'),
-                        language: 'javascript'
-                    });
-                });
-
                 break;
+
             case 1: //ace
                 editor = ace.edit("editor");
                 editor.setTheme("ace/theme/xcode");
@@ -54,10 +45,11 @@ S.editor = {
                         })
                     }
                 });
+                this.instance = editor;
                 break;
         }
         
-        this.instance = editor;
+        
         this.resize();
 
         //add button events
@@ -73,7 +65,6 @@ S.editor = {
         $('.editor-drop-menu .item-content-fields').on('click', function () { S.editor.filebar.fields.show(true); });
         $('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);
         $('.editor-drop-menu .item-new-folder').on('click', S.editor.folder.create.show);
-        $('.editor-tab').on('click', S.editor.filebar.preview.hide);
 
         //add window resize event
         $(window).on('resize', S.editor.resizeWindow);
@@ -203,10 +194,7 @@ S.editor = {
     save: function (path, content) {
         if (path == null) {
             switch (S.editor.type) {
-                case 0: //monaco
-
-                    break;
-                case 1: //ace
+                case 0: case 1: //monaco & ace (apparently share the same code)
                     S.editor.save(S.editor.selected, S.editor.instance.getValue());
                     return;
             }
@@ -394,16 +382,42 @@ S.editor = {
         add: function (id, mode, code, select) {
             var editor = S.editor.instance;
             switch (S.editor.type) {
-                case 0: //monaco
+                case 0: //monaco ////////////////////////////////////////////////////
+                    $('#editor').append('<div id="editor_' + id + '" class="instance editor-' + id + '"></div>');
+                    require(['vs/editor/editor.main'], function () {
+                        var session = monaco.editor.create(document.getElementById('editor_' + id), {
+                            value: code,
+                            language: mode,
+                            automaticLayout: true,
+                            colorDecorators: true,
+                            dragAndDrop: true,
+                            folding: true
+                        });
+                        session.onKeyUp((e) => {
+                            var specialkeys = [18, 37, 38, 39, 40, 20, 17, 35, 112, 113, 114, 115, 116, 117, 118, 118, 120, 121, 122, 123, 36, 144, 33, 34, 91];
+                            if (specialkeys.indexOf(e.keyCode) < 0) {
+                                //content only changes if special keys are not pressed
+                                S.editor.changed();
+                            }
+                        });
+                        S.editor.sessions[id] = session;
+                        S.editor.instance = session;
 
+                        if (select !== false) {
+                            S.editor.filebar.code.show();
+                            $('#editor > .instance').addClass('hide');
+                            $('#editor_' + id).removeClass('hide');
+                        }
+                    });
                     break;
-                case 1: //ace
-                    var session = new S.editor.EditSession(S.editor.decodeHtml(code));
+                case 1: //ace ///////////////////////////////////////////////////////
+                    var session = new S.editor.EditSession(code);
                     session.setMode("ace/mode/" + mode);
                     session.on('change', S.editor.changed);
                     S.editor.sessions[id] = session;
-                    S.editor.filebar.code.show();
+                    
                     if (select !== false) {
+                        S.editor.filebar.code.show();
                         editor.setSession(session);
                         editor.clearSelection();
                         S.editor.resize();
@@ -414,6 +428,7 @@ S.editor = {
                     }
                     break;
             }
+            
         },
 
         remove: function (id) {
@@ -593,7 +608,7 @@ S.editor = {
                 //load new session from ajax POST
                 S.ajax.post("Editor/Open", { path: path },
                     function (d) {
-                        S.editor.sessions.add(id, mode, d, isready !== false);
+                        S.editor.sessions.add(id, mode, S.editor.decodeHtml(d), isready !== false);
                         if (typeof callback == 'function') { callback();}
                     },
                     function () {
@@ -602,7 +617,7 @@ S.editor = {
                 );
             } else if (nocode == false) {
                 //load new session from provided code argument
-                S.editor.sessions.add(id, mode, code, isready !== false);
+                S.editor.sessions.add(id, mode, S.editor.decodeHtml(code), isready !== false);
                 if (typeof callback == 'function') { callback(); }
                 
             } else {
@@ -610,7 +625,9 @@ S.editor = {
                 S.editor.filebar.code.show();
                 switch (S.editor.type) {
                     case 0: //monaco
-
+                        $('#editor > .instance').addClass('hide');
+                        $('#editor_' + id).removeClass('hide');
+                        S.editor.instance = session;
                         break;
                     case 1: //ace
                         editor.setSession(session);
@@ -741,7 +758,7 @@ S.editor = {
                     S.ajax.post('Editor/RenderPage', { path: S.editor.path + '.html', language: window.language },
                         function (d) {
                             $('.preview > .content').html(d);
-                            changeJs();
+                            changeJs(true);
                         }
                     );
                 } else {
@@ -749,7 +766,7 @@ S.editor = {
                 }
 
                 //finally, reload javascript file
-                function changeJs() {
+                function changeJs(htmlChanged) {
                     if (S.editor.resources.js.changed == true) {
                         S.editor.resources.js.changed = false;
                         tagjs.remove();
@@ -757,7 +774,17 @@ S.editor = {
                             function () { showContent(); }
                         );
                     } else {
-                        showContent();
+                        if (htmlChanged === true) {
+                            //reload javascript anyway since HTML changed
+                            var src = tagjs.attr('src');
+                            tagjs.remove();
+                            S.util.js.load(src, 'page_js',
+                                function () { showContent(); }
+                            );
+                        } else {
+                            //no need to reload Js, HTML didn't change
+                            showContent();
+                        }
                     }
                 }
 
@@ -771,6 +798,10 @@ S.editor = {
             hide: function () {
                 $('.preview, .editor-tab').addClass('hide');
                 $('.editor').removeClass('hide');
+                if (S.editor.initialized == false) {
+                    S.editor.init();
+                    return;
+                }
                 S.editor.resize();
                 setTimeout(function () {
                     S.editor.resize();
@@ -805,16 +836,7 @@ S.editor = {
                 switch (key) {
                     case 's':
                         //save file
-                        var value = '';
-                        switch (S.editor.type) {
-                            case 0: //monaco
-
-                                break;
-                            case 1: //ace
-                                value = S.editor.instance.getValue();
-                                break;
-                        }
-                        S.editor.save(S.editor.selected, value);
+                        S.editor.save();
                         has = true;
                         break;
                 }
@@ -826,3 +848,6 @@ S.editor = {
         }
     }
 };
+
+//set up editor tab
+$('.editor-tab').on('click', S.editor.filebar.preview.hide);

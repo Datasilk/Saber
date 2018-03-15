@@ -46,19 +46,24 @@ namespace Saber.Pages
                 {
                     case EditorType.Monaco:
                         AddScript("/js/utility/monaco/loader.js");
+                        scaffold.Data["editor-type"] = "monaco";
                         break;
 
                     case EditorType.Ace:
                         AddScript("/js/utility/ace/ace.js");
+                        scaffold.Data["editor-type"] = "ace";
                         break;
                 }
                 
                 AddScript("/js/pages/editor/editor.js");
                 AddCSS("/css/pages/editor/editor.css");
-                scripts += 
+                if(EditorUsed != EditorType.Monaco)
+                {
+                    scripts +=
                     "<script language=\"javascript\">" +
-                        "S.editor.init(" + (int)EditorUsed + ");" +
+                        "S.editor.type = " + (int)EditorUsed + ";" +
                     "</script>";
+                }
                 usePlatform = true;
             }
 

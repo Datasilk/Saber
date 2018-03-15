@@ -39,6 +39,7 @@ var gulp = require('gulp'),
     less = require('gulp-less'),
     rename = require('gulp-rename'),
     merge = require('merge-stream'),
+    changed = require('gulp-changed'),
     config = require('./App/config.json');
     
 //get config variables from config.json
@@ -84,8 +85,8 @@ paths.working = {
         ],
         app: paths.app + '**/*.js',
         utility: [
-            paths.scripts + 'utility/*.js',
-            paths.scripts + 'utility/**/*.js'
+            paths.scripts + 'utility/*.*',
+            paths.scripts + 'utility/**/*.*'
         ]
     },
 
@@ -152,15 +153,10 @@ gulp.task('js:platform', function () {
 });
 
 gulp.task('js:utility', function () {
-    var p = gulp.src(paths.working.js.utility)
-        .pipe(rename(function (path) {
-            path.dirname = path.dirname.toLowerCase();
-            path.basename = path.basename.toLowerCase();
-            path.extname = path.extname.toLowerCase();
-        }));
-
-    if (prod == true) { p = p.pipe(uglify()); }
-    return p.pipe(gulp.dest(paths.compiled.js + 'utility', { overwrite: true }));
+    //check file changes & replace changed files in destination
+    return gulp.src(paths.working.js.utility)
+        .pipe(changed(paths.compiled.js + 'utility'))
+        .pipe(gulp.dest(paths.compiled.js + 'utility'));
 });
 
 gulp.task('js', function () {

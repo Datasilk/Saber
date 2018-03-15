@@ -26,7 +26,7 @@
 
         public EditorType EditorUsed
         {
-            get { return EditorType.Ace; }
+            get { return EditorType.Monaco; }
         }
 
         public override string Render(string[] path, string body = "", object metadata = null)
