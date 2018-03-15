@@ -5,7 +5,12 @@ namespace Saber
         private User _userInfo;
 
         public Service(global::Core DatasilkCore) : base(DatasilkCore) {}
-        
+
+        public EditorType EditorUsed
+        {
+            get { return EditorType.Ace; }
+        }
+
         public User UserInfo
         {
             get

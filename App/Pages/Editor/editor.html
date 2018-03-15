@@ -1,12 +1,16 @@
 {{editor}}
-<div class="editor-tab hide">
+<div class="editor-tab">
     <div class="box bg">
-        <svg viewBox="0 0 32 32">
-            <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
-        </svg>
+        <div class="row hover">
+            <div class="col icon large">
+                <svg viewBox="0 0 32 32">
+                    <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
+                </svg>
+            </div>
+        </div>
     </div>
 </div>
-<div class="editor box">
+<div class="editor box hide">
     {{editor-header "/Pages/Editor/header.html"}}
     <div class="relative">
         <div class="editor-drop-menu col hide">
@@ -59,7 +63,7 @@
                         </div>
                     </li>
                     <li>
-                        <div class="row hover item item-new-file">
+                        <div class="row hover item item-new-folder">
                             <div class="col icon pad-right">
                                 <svg viewBox="0 0 32 32">
                                     <use xlink:href="#icon-folder-add" x="0" y="0" width="32" height="32"></use>
@@ -123,7 +127,7 @@
                 </div>
                 <div class="col buttons right">
                     <ul class="tabs file-tabs">
-                        <li class="tab-content-fields" title="Multi-lingual Content Fields">
+                        <li class="tab-content-fields" title="Multi-lingual Page Content">
                             <div class="row hover">
                                 <div class="col">
                                     <svg viewBox="0 0 32 32">
@@ -155,15 +159,6 @@
                                 <div class="col">
                                     <svg viewBox="0 0 32 32">
                                         <use xlink:href="#icon-photos" x="0" y="0" width="32" height="32"></use>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="tab-fullscreen" title="Full Screen Editor">
-                            <div class="row hover">
-                                <div class="col">
-                                    <svg viewBox="0 0 32 32">
-                                        <use xlink:href="#icon-fullscreen" x="0" y="0" width="32" height="32"></use>
                                     </svg>
                                 </div>
                             </div>
@@ -202,14 +197,31 @@
                         <div class="row message hide"><span></span></div>
                     </div>
                 </div>
-                <div class="row line">&nbsp;</div>
+                <div class="row line pad-bottom"></div>
+                <div class="row">&nbsp;</div>
                 <form></form>
-                <div class="textarea-clone"></div>
+                <div class="textarea-clone"><div></div></div>
+            </div>
+            <div class="tab file-settings hide">
+                <h4>Page Settings</h4>
+                <span class="page-name">for "/home"</span>
             </div>
         </div>
     </div>
-    
+
 </div>
+<div class="preview">
+{{/editor}}
+
+{{header "/Partials/UI/header.html"}}
+
+<div class="content">{{content}}</div>
+
+{{footer "/Partials/UI/footer.html"}}
+
+{{editor-foot}}
+</div>
+
 
 <script type="text/html" id="template_tab">
     <li class="tab-##id## ##selected##">
@@ -228,15 +240,46 @@
         </div>
     </li>
 </script>
-<div class="preview hide">
-{{/editor}}
 
-{{header "/Partials/UI/header.html"}}
-<div class="content">
-{{content}}
-</div>
-{{footer "/Partials/UI/footer.html"}}
+<script language="text/html" id="template_newfile">
+    <form>
+        <div class="row message hide"><span></span></div>
+        <div class="row">
+            <span>Create a new file within the folder:</span>
+        </div>
+        <div class="row pad-top-sm">
+            <input type="text" id="newfilepath" value="##folder-path##"/>
+        </div>
+        <div class="row field">Filename</div>
+        <div class="row input">
+            <input type="text" id="newfilename" placeholder="template.html"/>
+        </div>
+        <div class="row text-center pad-top-sm">
+            <div class="col">
+                <input type="submit" class="button apply" value="Create File"/>
+            </div>
+        </div>
+    </form>
+</script>
 
-{{editor-foot}}
-</div>
+<script language="text/html" id="template_newfolder">
+        <form>
+        <div class="row message hide"><span></span></div>
+            <div class="row">
+                <span>Create a new sub-folder within:</span>
+            </div>
+            <div class="row pad-top-sm">
+            <input type="text" id="newfolderpath" value="##folder-path##" />
+            </div>
+            <div class="row field">Folder Name <span class="faded">(no spaces)</span></div>
+            <div class="row input">
+                <input type="text" id="newfolder" placeholder="BlogEntries"/>
+            </div>
+            <div class="row text-center pad-top-sm">
+                <div class="col">
+                    <input type="submit" class="button apply" value="Create Folder"/>
+                </div>
+            </div>
+        </form>
+</script>
 {{/editor-foot}}

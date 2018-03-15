@@ -1,21 +1,62 @@
 S.editor = {
     instance: null,
-    EditSession: require("ace/edit_session").EditSession,
     sessions: {},
     selected: '',
     path:'',
     div: $('.code-editor'),
 
-    init: function () {
+    init: function (editorUsed) {
+        //select which code editor to use: 0 = Monaco, 1 = Ace
+        S.editor.type = editorUsed;
+
         //generate path
         var path = window.location.pathname.toLowerCase();
         if (path == '/') { path = '/home'; }
         this.path = 'content' + path;
+        var paths = this.path.split('/');
+        var file = paths[paths.length - 1];
+        var dir = paths.join('/').replace(file, '');
+        var fileparts = paths[paths.length - 1].split('.', 2);
 
         //initialize code editor
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/xcode");
+        var editor = null;
+        switch (S.editor.type) {
+            case 0: //monaco
+                require.config({ paths: { 'vs': 'js/utility/monaco' } });
+                require(['vs/editor/editor.main'], function () {
+                    var editor = monaco.editor.create(document.getElementById('container'), {
+                        value: [
+                            'function x() {',
+                            '\tconsole.log("Hello world!");',
+                            '}'
+                        ].join('\n'),
+                        language: 'javascript'
+                    });
+                });
 
+                break;
+            case 1: //ace
+                editor = ace.edit("editor");
+                editor.setTheme("ace/theme/xcode");
+                editor.setOptions({
+                    //enableEmmet: true
+                });
+                S.editor.EditSession = require("ace/edit_session").EditSession;
+
+                //add editor key bindings
+                editor.commands.addCommand({
+                    name: "showKeyboardShortcuts",
+                    bindKey: { win: "Ctrl-h", mac: "Command-h" },
+                    exec: function (editor) {
+                        ace.config.loadModule("ace/ext/keybinding_menu", function (module) {
+                            module.init(editor);
+                            S.editor.instance.showKeyboardShortcuts()
+                        })
+                    }
+                });
+                break;
+        }
+        
         this.instance = editor;
         this.resize();
 
@@ -23,36 +64,64 @@ S.editor = {
         $('.item-browse').on('click', S.editor.explorer.show);
         $('.tab-drop-menu').on('click', S.editor.dropmenu.show);
         $('.bg-overlay').on('click', S.editor.dropmenu.hide);
-        $('.editor-drop-menu .item-save').on('click', function () { S.editor.save(S.editor.selected, S.editor.instance.getValue()); });
+        $('.editor-drop-menu .item-save').on('click', S.editor.save);
         $('.editor-drop-menu .item-save-as').on('click', S.editor.saveAs);
-        $('.tab-preview').on('click', S.editor.preview.show);
         $('.tab-content-fields').on('click', S.editor.filebar.fields.show);
-        $('.editor-drop-menu .item-content-fields').on('click', function () { S.editor.filebar.fields.show(true); });
         $('.tab-file-code').on('click', S.editor.filebar.code.show);
-        $('.editor-tab').on('click', S.editor.preview.hide);
+        $('.tab-file-settings').on('click', S.editor.filebar.settings.show);
+        $('.tab-preview').on('click', S.editor.filebar.preview.show);
+        $('.editor-drop-menu .item-content-fields').on('click', function () { S.editor.filebar.fields.show(true); });
+        $('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);
+        $('.editor-drop-menu .item-new-folder').on('click', S.editor.folder.create.show);
+        $('.editor-tab').on('click', S.editor.filebar.preview.hide);
 
         //add window resize event
         $(window).on('resize', S.editor.resizeWindow);
 
         //register hotkeys
         $(window).on('keydown', S.editor.hotkey.pressed);
+
+        //finally, load content resources that belong to the page
+        S.editor.explorer.openResources(dir, [fileparts[0] + '.html', fileparts[0] + '.less', fileparts[0] + '.js']);
     },
 
     resize: function () {
         var editor = S.editor.instance;
-        var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
+        var newHeight = 0;
+        switch (S.editor.type) {
+            case 0: //monaco
+
+                break;
+            case 1: //ace
+                newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
+                break;
+        }
+        
         if (newHeight < 20) { newHeight = 20; }
         newHeight += 30;
         $('#editor').css({ minHeight: newHeight.toString() + "px" });
         $('#editor-section').css({ minHeight: newHeight.toString() + "px" });
-        editor.resize();
+
+        S.editor.resizeEditor();
         S.editor.resizeWindow();
+    },
+
+    resizeEditor: function () {
+        switch (S.editor.type) {
+            case 0: //monaco
+
+                break;
+            case 1: //ace
+                S.editor.instance.resize();
+                break;
+        }
     },
 
     resizeWindow: function () {
         var win = S.window.pos();
         var div = S.editor.div;
         var pos = div.offset();
+        div.css({ height: '' });
         $('.code-editor').css({ height: win.h - pos.top });
         
     },
@@ -132,9 +201,20 @@ S.editor = {
     },
 
     save: function (path, content) {
+        if (path == null) {
+            switch (S.editor.type) {
+                case 0: //monaco
+
+                    break;
+                case 1: //ace
+                    S.editor.save(S.editor.selected, S.editor.instance.getValue());
+                    return;
+            }
+        }
         if ($('.editor-drop-menu .item-save.faded').length == 1) { return;}
         var self = S.editor;
         var id = self.fileId(path);
+        
         self.dropmenu.hide();
         var tab = $('.tab-' + id);
         if (tab.hasClass('selected')) {
@@ -153,6 +233,8 @@ S.editor = {
                     function (d) {
                         if (d == 'success') {
                             S.editor.fields.changed = false;
+                            //html resource has changed because content fields have changed
+                            S.editor.resources.html.changed = true;
                             S.message.show('.content-fields .message', 'confirm', 'Content fields were saved.', false, 4000, true);
                         } else { S.editor.error(); }
                     },
@@ -171,6 +253,16 @@ S.editor = {
                 if (d != "success") {
                     S.editor.error();
                 } else {
+                    //check whether or not file was a required page resource for this page
+                    if (S.editor.isResource(path)) {
+                        var ext = S.editor.fileExt(path);
+                        S.editor.resources[ext].changed = true;
+                        if (ext == 'html') {
+                            //also mark content as changed so content fields can reload
+                            S.editor.resources.content.changed = true;
+                        }
+                    }
+
                     self.unChanged(path);
                     S.editor.explorer.open(path);
                 }
@@ -186,12 +278,110 @@ S.editor = {
         var oldpath = S.editor.selected;
         var path = prompt("Save As...", oldpath);
         if (path != '' && path != null) {
-            S.editor.save(path, S.editor.instance.getValue());
+            var value = '';
+            switch (S.editor.type) {
+                case 0: //monaco
+
+                    break;
+                case 1: //ace
+                    value = S.editor.instance.getValue();
+                    break;
+            }
+            S.editor.save(path, value);
+        }
+    },
+
+    file: {
+        create: {
+            show: function () {
+                S.editor.dropmenu.hide();
+                S.popup.show('New File', 
+                    $('#template_newfile').html()
+                        .replace('##folder-path##', S.editor.explorer.path)
+                );
+                //set up button events within popup
+                $('.popup form').on('submit', S.editor.file.create.submit)
+            },
+
+            submit: function (e) {
+                e.preventDefault();
+                e.cancelBubble;
+                var data = {
+                    path: $('#newfilepath').val(),
+                    filename: $('#newfilename').val().replace(/\s/g, '')
+                };
+                if (data.path == 'root') {
+                    S.message.show('.popup .message', 'error', 'You cannot create files in the root folder');
+                    return false;
+                }
+                S.ajax.post('Editor/NewFile', data,
+                    function(d) {
+                        //reload file browser
+                        if (data.path == S.editor.explorer.path) {
+                            S.editor.explorer.dir(S.editor.explorer.path);
+                        }
+                        S.popup.hide();
+                    },
+                    function(d) {
+                        S.message.show('.popup .message', 'error', d.response);
+                    }
+                );
+                return false;
+            }
+        }
+    },
+
+    folder: {
+        create: {
+            show: function () {
+                S.editor.dropmenu.hide();
+                S.popup.show('New Folder',
+                    $('#template_newfolder').html()
+                        .replace('##folder-path##', S.editor.explorer.path)
+                );
+                //set up button events within popup
+                $('.popup form').on('submit', S.editor.folder.create.submit)
+            },
+
+            submit: function(e) {
+                e.preventDefault();
+                e.cancelBubble;
+                var data = {
+                    path: $('#newfolderpath').val().replace(/\s/g,''),
+                    folder: $('#newfolder').val()
+                };
+                if (data.path == 'root') {
+                    S.message.show('.popup .message', 'error', 'You cannot create folders within the root folder');
+                    return false;
+                }
+                S.ajax.post('Editor/NewFolder', data,
+                    function(d) {
+                        //reload file browser
+                        if (data.path == S.editor.explorer.path) {
+                            S.editor.explorer.dir(S.editor.explorer.path);
+                        }
+                        S.popup.hide();
+                    },
+                    function(d) {
+                        S.message.show('.popup .message', 'error', d.response);
+                    }
+                );
+                return false;
+            }
         }
     },
 
     fileId: function (path) {
         return path.replace(/\//g, '_').replace(/\./g, '_');
+    },
+
+    fileExt: function (path) {
+        var paths = path.split('/');
+        var file = paths[paths.length - 1];
+        var dir = paths.join('/').replace(file, '');
+        var fileparts = paths[paths.length - 1].split('.', 2);
+        if (fileparts.length > 1) { return fileparts[fileparts.length - 1]; }
+        return '';
     },
 
     decodeHtml(html) {
@@ -203,19 +393,26 @@ S.editor = {
     sessions: {
         add: function (id, mode, code, select) {
             var editor = S.editor.instance;
-            session = new S.editor.EditSession(S.editor.decodeHtml(code));
-            session.setMode("ace/mode/" + mode);
-            session.on('change', S.editor.changed);
-            S.editor.sessions[id] = session;
-            S.editor.filebar.code.show();
-            if (select !== false) {
-                editor.setSession(session);
-                editor.clearSelection();
-                S.editor.resize();
-                setTimeout(function () {
-                    S.editor.resize();
-                }, 200);
-                editor.focus();
+            switch (S.editor.type) {
+                case 0: //monaco
+
+                    break;
+                case 1: //ace
+                    var session = new S.editor.EditSession(S.editor.decodeHtml(code));
+                    session.setMode("ace/mode/" + mode);
+                    session.on('change', S.editor.changed);
+                    S.editor.sessions[id] = session;
+                    S.editor.filebar.code.show();
+                    if (select !== false) {
+                        editor.setSession(session);
+                        editor.clearSelection();
+                        S.editor.resize();
+                        setTimeout(function () {
+                            S.editor.resize();
+                        }, 200);
+                        editor.focus();
+                    }
+                    break;
             }
         },
 
@@ -223,6 +420,24 @@ S.editor = {
             S.editor.sessions[id].destroy();
             delete S.editor.sessions[id];
         }
+    },
+
+    isResource: function (path) {
+        var paths = path.split('/');
+        var file = paths[paths.length - 1];
+        var dir = paths.join('/').replace(file, '');
+        var fileparts = paths[paths.length - 1].split('.', 2);
+        var relpath = dir + fileparts[0];
+        return relpath.toLowerCase() == S.editor.path;
+    },
+
+    resources: {
+        //required page resources, track whether or not they've 
+        //been updated on the server via the editor
+        html: { changed: false },
+        less: { changed: false },
+        js: { changed: false },
+        content: {changed: false}
     },
 
     tabs: {
@@ -241,6 +456,8 @@ S.editor = {
     },
     
     explorer: {
+        path: 'root',
+
         queue: [],
 
         show: function () {
@@ -260,7 +477,8 @@ S.editor = {
 
         dir: function (path) {
             S.ajax.post('Editor/Dir', { path: path },
-                function (d) {
+                function(d) {
+                    S.editor.explorer.path = path;
                     $('.file-browser ul.menu').html(d);
                 },
                 function () {
@@ -306,10 +524,8 @@ S.editor = {
             var tab = $('.edit-tabs ul.tabs .tab-' + id);
             var paths = path.split('/');
             var file = paths[paths.length - 1];
-            var dir = paths.join('/').replace(file, '');
             var fileparts = paths[paths.length - 1].split('.', 2);
-            var relpath = dir + fileparts[0];
-            var isPageResource = relpath.toLowerCase() == S.editor.path;
+            var isPageResource = S.editor.isResource(path);
 
             if (tab.length == 0) {
                 //tab doesn't exist yet
@@ -343,11 +559,9 @@ S.editor = {
             
             if (isready !== false) {
                 $('.tab-content-fields, .tab-file-settings, .tab-file-photos, .tab-preview').hide();
-                if (isPageResource && fileparts[1] == 'html') {
+                if (isPageResource) {
                     //show file bar icons for page html resource
                     $('.tab-content-fields, .tab-file-settings, .tab-file-photos, .tab-preview').show();
-                } else if (isPageResource) {
-                    $('.tab-preview').show();
                 }
             }
             
@@ -394,7 +608,15 @@ S.editor = {
             } else {
                 //load existing session
                 S.editor.filebar.code.show();
-                editor.setSession(session);
+                switch (S.editor.type) {
+                    case 0: //monaco
+
+                        break;
+                    case 1: //ace
+                        editor.setSession(session);
+                        editor.focus();
+                        break;
+                }
                 if (S.editor.isChanged(path) == true) {
                     S.editor.changed(true);
                 }
@@ -402,7 +624,6 @@ S.editor = {
                 setTimeout(function () {
                     S.editor.resize();
                 }, 200);
-                editor.focus();
                 if (typeof callback == 'function') { callback(); }
             }
         }
@@ -411,6 +632,7 @@ S.editor = {
     filebar: {
         fields: {
             show: function (loadtab) {
+                S.editor.dropmenu.hide();
                 if (loadtab === true) {
                     S.editor.explorer.open(S.editor.path + '.html');
                 }
@@ -447,7 +669,8 @@ S.editor = {
                 $('.item-save').addClass('faded').attr('disabled', 'disabled');
 
                 //load content for page
-                if (S.editor.fields.selected != S.editor.selected) {
+                if (S.editor.fields.selected != S.editor.selected || S.editor.resources.content.changed == true) {
+                    S.editor.resources.content.changed = false;
                     S.editor.fields.changed = false;
                     $('.content-fields > form').html('');
                     S.ajax.post('Editor/RenderContentFields', { path: S.editor.path, language:lang },
@@ -479,13 +702,85 @@ S.editor = {
                 $('.editor .sections > .code-editor').removeClass('hide');
                 $('ul.file-tabs > li').removeClass('selected');
                 $('ul.file-tabs > li.tab-file-code').addClass('selected');
-                if (S.editor.isChanged(S.editor.selected)) { S.editor.changed();}
+                if (S.editor.isChanged(S.editor.selected)) { S.editor.changed(); }
+                setTimeout(function () { S.editor.resize(); }, 10);
+            }
+        },
+
+        settings: {
+            show: function () {
+                S.editor.dropmenu.hide();
+                $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
+                $('.editor .sections > .file-settings').removeClass('hide');
+                $('ul.file-tabs > li').removeClass('selected');
+                $('ul.file-tabs > li.tab-file-settings').addClass('selected');
+            },
+        },
+
+        preview: {
+            show: function () {
+                var tagcss = $('#page_css');
+                var tagjs = $('#page_js');
+                var css = tagcss.attr('href');
+                var js = tagjs.attr('src');
+                var rnd = Math.floor(Math.random() * 9999);
+
+                //first, reload CSS
+                if (S.editor.resources.less.changed == true) {
+                    S.editor.resources.less.changed = false;
+                    tagcss.remove();
+                    $('head').append(
+                        '<link rel="stylesheet" type="text/css" id="page_css" href="' + css + '?r=' + rnd + '"></link>'
+                    );
+                }
+
+
+                //next, reload rendered HTML
+                if (S.editor.resources.html.changed == true) {
+                    S.editor.resources.html.changed = false;
+                    S.ajax.post('Editor/RenderPage', { path: S.editor.path + '.html', language: window.language },
+                        function (d) {
+                            $('.preview > .content').html(d);
+                            changeJs();
+                        }
+                    );
+                } else {
+                    changeJs();
+                }
+
+                //finally, reload javascript file
+                function changeJs() {
+                    if (S.editor.resources.js.changed == true) {
+                        S.editor.resources.js.changed = false;
+                        tagjs.remove();
+                        S.util.js.load(js + '?r=' + rnd, 'page_js',
+                            function () { showContent(); }
+                        );
+                    } else {
+                        showContent();
+                    }
+                }
+
+                function showContent() {
+                    $('.preview, .editor-tab').removeClass('hide');
+                    $('.editor').addClass('hide');
+                }
+
+            },
+
+            hide: function () {
+                $('.preview, .editor-tab').addClass('hide');
+                $('.editor').removeClass('hide');
+                S.editor.resize();
+                setTimeout(function () {
+                    S.editor.resize();
+                }, 10);
             }
         }
     },
 
     fields: {
-        clone: $('.textarea-clone'),
+        clone: $('.textarea-clone > div'),
         selected: '',
         changed: false,
         change: function (e) {
@@ -502,43 +797,6 @@ S.editor = {
         }
     },
 
-    preview: {
-        show: function () {
-            var tagcss = $('#page_css');
-            var tagjs = $('#page_js');
-            var css = tagcss.attr('href');
-            var js = tagjs.attr('src');
-            var rnd = Math.floor(Math.random() * 9999);
-            tagcss.remove();
-            tagjs.remove();
-
-            //first, reload CSS
-            $('head').append(
-                '<link rel="stylesheet" type="text/css" id="page_css" href="' + css + '?r=' + rnd + '"></link>'
-            );
-
-            //next, reload rendered HTML
-            S.ajax.post('Editor/RenderPage', { path: S.editor.path + '.html', language: S.language },
-                function (d) {
-                    $('.preview > .content').html(d);
-
-                    //finally, reload javascript file
-                    S.util.js.load(js + '?r=' + rnd, 'page_js',
-                        function () {
-                            $('.preview, .editor-tab').removeClass('hide');
-                            $('.editor').addClass('hide');
-                        }
-                    );
-                }
-            );
-        },
-
-        hide: function () {
-            $('.preview, .editor-tab').addClass('hide');
-            $('.editor').removeClass('hide');
-        }
-    },
-
     hotkey: {
         pressed: function (e) {
             var has = false;
@@ -547,7 +805,16 @@ S.editor = {
                 switch (key) {
                     case 's':
                         //save file
-                        S.editor.save(S.editor.selected, S.editor.instance.getValue());
+                        var value = '';
+                        switch (S.editor.type) {
+                            case 0: //monaco
+
+                                break;
+                            case 1: //ace
+                                value = S.editor.instance.getValue();
+                                break;
+                        }
+                        S.editor.save(S.editor.selected, value);
                         has = true;
                         break;
                 }
@@ -559,5 +826,3 @@ S.editor = {
         }
     }
 };
-
-S.editor.init();

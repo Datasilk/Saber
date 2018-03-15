@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Net;
 using System.Diagnostics;
+using CommonMark;
 
 namespace Saber.Services
 {
@@ -109,7 +110,7 @@ namespace Saber.Services
             else if (rawpaths.Length == 1 && paths[0] == "")
             {
                 //add special directories
-                html.Append(RenderBrowserItem(item, "content", "Content", "folder", "content"));
+                //html.Append(RenderBrowserItem(item, "content", "Content", "folder", "content"));
             }
 
             foreach (var i in items)
@@ -243,6 +244,92 @@ namespace Saber.Services
             if (p == null) { return; }
             Console.WriteLine(e.Data);
         }
+
+        public string NewFile(string path, string filename)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+
+            //check for root & content folders
+            if (path == "root")
+            {
+                return Error("You cannot create a file in the root folder");
+            }
+            if (path.IndexOf("content") == 0)
+            {
+                return Error("You cannot create a file in the content folder");
+            }
+
+            //check filename characters
+            if (!S.Util.Str.OnlyLettersAndNumbers(filename, new string[] { "-", "_", "." })) { return Error("Filename must be alpha-numeric and may contain dashes - and underscores _"); }
+
+            var paths = GetRelativePath(path.ToLower());
+            if (paths.Length == 0) { return Error(); }
+            var fileparts = filename.Split('.', 2);
+            var dir = string.Join("/", paths) + "/";
+
+            if (!Directory.Exists(S.Server.MapPath(dir)))
+            {
+                Directory.CreateDirectory(S.Server.MapPath(dir));
+            }
+            if(File.Exists(S.Server.MapPath(dir + filename.Replace(" ", ""))))
+            {
+                return Error("The file alrerady exists");
+            }
+
+            //create file with dummy content
+            var content = "";
+            switch (fileparts[1])
+            {
+                case "js":
+                    content = "(function(){\n\n})();";
+                    break;
+                case "less":
+                    content = "body {\n\n}";
+                    break;
+                case "html":
+                    content = "<p></p>";
+                    break;
+            }
+            try
+            {
+                File.WriteAllText(S.Server.MapPath(dir + filename.Replace(" ", "")), content);
+            }
+            catch (Exception)
+            {
+                return Error("Error creating file");
+            }
+            return Success();
+        }
+
+        public string NewFolder(string path, string folder)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+
+            //check for root & content folders
+            if (path == "root")
+            {
+                return Error("You cannot create a file in the root folder");
+            }
+            if (path.IndexOf("content") == 0)
+            {
+                return Error("You cannot create a file in the content folder");
+            }
+
+            //check folder characters
+            if (!S.Util.Str.OnlyLettersAndNumbers(folder, new string[] { "-", "_" })) { return Error("Folder must be alpha-numeric and may contain dashes - and underscores _"); }
+
+            var paths = GetRelativePath(path.ToLower());
+            if (paths.Length == 0) { return Error(); }
+            var dir = string.Join("/", paths) + "/" + folder.Replace(" ", "");
+
+            if (!Directory.Exists(S.Server.MapPath(dir)))
+            {
+                Directory.CreateDirectory(S.Server.MapPath(dir));
+            }
+            return Success();
+        }
+
+
         #endregion
 
         #region "Render Page"
@@ -261,7 +348,16 @@ namespace Saber.Services
             var fileparts = file.Split(".", 2);
             if (paths.Length == 0) { return Error(); }
             var scaffold = new Scaffold(relpath, S.Server.Scaffold);
-            if (scaffold.elements.Count == 0) { return ""; }
+            if (scaffold.elements.Count == 0) {
+                if(S.User.userId == 0)
+                {
+                    scaffold.HTML = "<p>This page does not exist. Please log into your account to write content for this page.</p>";
+                }
+                else
+                {
+                    scaffold.HTML = "<p>Write content using HTML & CSS</p>";
+                }
+            }
 
             //load user content from json file, depending on selected language
             var config = GetPageConfig(path);
@@ -277,7 +373,15 @@ namespace Saber.Services
             {
                 foreach (var item in data)
                 {
-                    scaffold.Data[item.Key] = item.Value;
+                    if(item.Value.IndexOf("\n") >= 0)
+                    {
+                        scaffold.Data[item.Key] = CommonMarkConverter.Convert(item.Value);
+                    }
+                    else
+                    {
+                        scaffold.Data[item.Key] = item.Value;
+                    }
+                    
                 }
             }
 
@@ -349,6 +453,12 @@ namespace Saber.Services
                     fieldText.Data["default"] = val;
                     html.Append(fieldText.Render());
                 }
+            }
+            if(html.Length == 0)
+            {
+                var nofields = new Scaffold("/Services/Editor/Fields/nofields.html", S.Server.Scaffold);
+                nofields.Data["filename"] = paths[paths.Length - 1];
+                return nofields.Render();
             }
             return html.ToString();
         }

@@ -32,49 +32,45 @@ namespace Saber.Pages
             if (pathname == "") { pathname = "home"; rfile = pathname; }
             var file = pathname + ".html";
 
-
             //open page contents
             var Editor = new Services.Editor(S);
-            var content = new Scaffold(rpath + rfile + ".html", S.Server.Scaffold);
 
             if(S.User.userId > 0)
             {
                 //load editor
-                if(content.HTML == "")
-                {
-                    content.HTML = "<p>Write content using HTML & CSS</p>";
-                }
                 scaffold.Data["editor"] = "1";
                 scaffold.Data["editor-foot"] = "1";
 
                 //load editor resources
-                AddScript("/js/utility/ace/ace.js");
+                switch (EditorUsed)
+                {
+                    case EditorType.Monaco:
+                        AddScript("/js/utility/monaco/loader.js");
+                        break;
+
+                    case EditorType.Ace:
+                        AddScript("/js/utility/ace/ace.js");
+                        break;
+                }
+                
                 AddScript("/js/pages/editor/editor.js");
                 AddCSS("/css/pages/editor/editor.css");
                 scripts += 
-                    "<script language=\"javascript\">" + 
-                        "S.editor.explorer.openResources('content/" + rpath.Replace("/Content/pages/", "") + 
-                        "', ['" + rfile + ".html', '" + rfile + ".less', '" + rfile + ".js']" + 
-                        ");" + 
+                    "<script language=\"javascript\">" +
+                        "S.editor.init(" + (int)EditorUsed + ");" +
                     "</script>";
                 usePlatform = true;
             }
-            else
-            {
-                if (content.HTML == "")
-                {
-                    content.HTML = "<p>This page does not exist. Please log into your account to write content for this page.</p>";
-                }
-            }
 
             //add page-specific references
-            scripts += "<script language=\"javascript\">S.language = '" + UserInfo.language + "';</script>\n";
+            scripts += "<script language=\"javascript\">" + 
+                "window.language = '" + UserInfo.language + "';" + 
+                "</script>\n";
             AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
             AddScript(rpath.ToLower() + rfile + ".js", "page_js");
 
             //render page content
             var html = Editor.RenderPage("content/" + pathname + ".html");
-            if(html == "") { html = content.HTML; }
             scaffold.Data["content"] = html;
 
             return base.Render(path, scaffold.Render(), metadata);

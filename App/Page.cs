@@ -1,5 +1,11 @@
 ﻿namespace Saber
 {
+    public enum EditorType
+    {
+        Monaco = 0,
+        Ace = 1
+    }
+
     public class Page : Datasilk.Page
     {
         public bool usePlatform = false;
@@ -16,6 +22,11 @@
                 if (_userInfo == null) { _userInfo = new User(S); }
                 return _userInfo;
             }
+        }
+
+        public EditorType EditorUsed
+        {
+            get { return EditorType.Ace; }
         }
 
         public override string Render(string[] path, string body = "", object metadata = null)
@@ -45,7 +56,10 @@
         {
             if(S.User.userId > 0)
             {
-                scaffold.Child("header").Data["user"] = "1";
+                var child = scaffold.Child("header");
+                child.Data["user"] = "1";
+                child.Data["username"] = S.User.name;
+                
             }
             else
             {
