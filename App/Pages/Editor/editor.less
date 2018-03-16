@@ -1,5 +1,5 @@
 ﻿/* editor container */
-.editor{position:relative;
+.editor{position:fixed;
     &.monaco .code-editor{overflow-y:hidden !important; padding-right:0 !important;}
     &.box ul.tabs > li{margin:0 5px 0 0; overflow:hidden; /*border-top-right-radius:9px;*/}
     .sections:after{content:""; display:block; clear:both;}
@@ -82,12 +82,12 @@
 
 /* when file browser is visible */
 .editor.show-browser {
-    .code-editor, .content-fields{float:left; width:~"calc(100% - 250px)"; overflow:hidden;}
+    .code-editor, .content-fields{float:left; width:~"calc(100% - 250px)";}
     .file-bar{padding-left:250px;}
 }
 
 /* content fields */
-.content-fields{position:relative; padding-bottom:30px; height:100%; overflow-y:auto; overflow-x:hidden;
+.content-fields{position:relative; padding-bottom:30px; overflow-y:auto; overflow-x:hidden;
     & > .scroller{max-width:1250px; margin:0 auto;}
     form{
         .field{padding:16px 7px 0px 4px !important;}

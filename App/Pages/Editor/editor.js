@@ -6,6 +6,7 @@ S.editor = {
     path: '',
     theme: 'dark',
     div: $('.code-editor'),
+    divFields: $('.content-fields'),
     divBrowser: $('.file-browser'),
     initialized: false,
 
@@ -142,10 +143,14 @@ S.editor = {
         var win = S.window.pos();
         var div = S.editor.div;
         var browser = S.editor.divBrowser;
+        var fields = S.editor.divFields;
         var pos = div.offset();
         var pos2 = browser.offset();
         div.css({ height: '' });
-        $('.code-editor').css({ height: win.h - pos.top });
+        if (pos.top == 0) {
+            pos = fields.offset();
+        }
+        $('.code-editor, .content-fields').css({ height: win.h - pos.top });
         $('.file-browser').css({ height: win.h - pos2.top });
         
     },

@@ -11,6 +11,7 @@ namespace Saber.Pages
 
         public override string Render(string[] path, string body = "", object metadata = null)
         {
+            theme = "dark";
             var scaffold = new Scaffold("/Pages/Editor/editor.html");
             
             //load header interface

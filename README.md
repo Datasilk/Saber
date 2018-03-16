@@ -30,16 +30,16 @@ A simple, straight forward CMS.
 
 
 ## Features
-* Build web pages from within your web browser using a built-in IDE for editing HTML, CSS, LESS, & Javascript
+* Build web pages from within your web browser using a built-in IDE ([Monaco](https://microsoft.github.io/monaco-editor/)) for editing HTML, CSS, LESS, & Javascript
 * Convert any URL within your website to a valid web page simply by navigating to the URL and writing some HTML & CSS within the built-in IDE
+* Multi-lingual Page Content
+	* Generate text fields by adding variables to your HTML page (e.g. `<div>{{article-title}}</div>`)
+	* Fill out the text fields with your content, which will replace the variables on the HTML page.
+	* Select which language the content will be written in and allow visitors to change their desired language 
+	* Use Markdown syntax in text fields that will be rendered as HTML
+* Browse server-side resources (HTML, CSS, LESS, & JS files) and open them in the code editor
+* 
+
 
 ## Future Development
 * Publish content using other formats besides HTML & CSS, such as writing markdown or uploading a PDF file.
-* ##### Simple Content Editor
-  Add content to your web pages by filling out text fields within a generic form instead of writing content directly within the raw HTML code.
-  This works by adding variables inside the HTML code (e.g. `{{article-title}}`), which will generate form fields within the editor
-  that can easily be updated by content writers who may not be well versed in writing HTML.
-	* Generated forms will have multi-lingual support, allowing writers to select a language before filling out form fields. 
-	* Generated text fields will support markdown & HTML.
-	* Allow user to select a supported language by executing a simple JavaScript method from an anchor link: `S.language.change('spanish');`
-	* Add all country flags to images folder so web developers can easily generate a language selection menu for their website

@@ -9,6 +9,7 @@
     public class Page : Datasilk.Page
     {
         public bool usePlatform = false;
+        public string theme = "default";
         private User _userInfo;
 
         public Page(global::Core DatasilkCore) : base(DatasilkCore) {
@@ -40,6 +41,7 @@
             scaffold.Data["description"] = description;
             scaffold.Data["language"] = UserInfo.language;
             scaffold.Data["head-css"] = headCss;
+            scaffold.Data["theme"] = theme;
             scaffold.Data["favicon"] = favicon;
             scaffold.Data["body"] = body;
             scaffold.Data["platform-1"] = usePlatform == true ? "1" : "";
