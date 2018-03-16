@@ -1,5 +1,5 @@
 {{editor}}
-<div class="editor-tab">
+<div class="editor-tab noselect">
     <div class="box bg">
         <div class="row hover">
             <div class="col icon large">
@@ -10,7 +10,7 @@
         </div>
     </div>
 </div>
-<div class="editor box hide {{editor-type}}">
+<div class="editor box bg hide {{editor-type}} noselect">
     {{editor-header "/Pages/Editor/header.html"}}
     <div class="relative">
         <div class="editor-drop-menu col hide">
@@ -182,25 +182,33 @@
             </div>
             <div class="tab code-editor pad-right">
                 <div id="editor"></div>
+                <div class="code-bar">
+                    <div class="code-status">Loading Editor...</div>
+                    <div class="info code-curr-line"></div>
+                    <div class="info code-curr-char"></div>
+                    <div class="info code-total-lines"></div>
+                </div>
             </div>
             <div class="tab content-fields hide">
-                <div class="row">
-                    <div class="col">
-                        <div class="row hover lang">
-                            <div class="col field pad-right">Content Language: </div>
-                            <div class="col input right">
-                                <select id="lang"></select>
+                <div class="scroller">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row hover lang">
+                                <div class="col field pad-right">Content Language: </div>
+                                <div class="col input right">
+                                    <select id="lang"></select>
+                                </div>
                             </div>
                         </div>
+                        <div class="col pad-left">
+                            <div class="row message hide"><span></span></div>
+                        </div>
                     </div>
-                    <div class="col pad-left">
-                        <div class="row message hide"><span></span></div>
-                    </div>
+                    <div class="row line pad-bottom"></div>
+                    <div class="row">&nbsp;</div>
+                    <form></form>
+                    <div class="textarea-clone"><div></div></div>
                 </div>
-                <div class="row line pad-bottom"></div>
-                <div class="row">&nbsp;</div>
-                <form></form>
-                <div class="textarea-clone"><div></div></div>
             </div>
             <div class="tab file-settings hide">
                 <h4>Page Settings</h4>
@@ -244,13 +252,11 @@
 <script language="text/html" id="template_newfile">
     <form>
         <div class="row message hide"><span></span></div>
-        <div class="row">
-            <span>Create a new file within the folder:</span>
-        </div>
-        <div class="row pad-top-sm">
+        <div class="row field">File Path</div>
+        <div class="row input pad-top-sm">
             <input type="text" id="newfilepath" value="##folder-path##"/>
         </div>
-        <div class="row field">Filename</div>
+        <div class="row field">File Name</div>
         <div class="row input">
             <input type="text" id="newfilename" placeholder="template.html"/>
         </div>
@@ -265,10 +271,8 @@
 <script language="text/html" id="template_newfolder">
         <form>
         <div class="row message hide"><span></span></div>
-            <div class="row">
-                <span>Create a new sub-folder within:</span>
-            </div>
-            <div class="row pad-top-sm">
+        <div class="row field">Folder Path</div>
+            <div class="row input">
             <input type="text" id="newfolderpath" value="##folder-path##" />
             </div>
             <div class="row field">Folder Name <span class="faded">(no spaces)</span></div>

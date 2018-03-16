@@ -55,14 +55,13 @@ body{font-family: Jaldi, Arial, Helvetica, sans-serif;}
 
 
 .box{
-    .box(transparent, transparent, #444);
+    .box(transparent, transparent, #ddd);
     .links(#0099FF, #006bff, #006bff, #0099FF);
-    .icons(#555, #0099FF, #0099FF, #555);
-    .row(transparent, #9bd7ff, #0099FF, #444, #33494C, #13474F, #009B87, #00C5C7, #00C5C7, #009B87, #0099FF, #555, #009B87, #00A46C, #fff);
-    .row-alt(#d0d0d0, #9bd7ff, #0099FF, #444, #314747, #1C4646, #009B87, #00C5C7, #00C5C7, #009B87, #0099FF, #555, #009B87, #00A46C, #fff);
-    .fonts(#222, fade(#222, 30%), #009B87, #4DA400, #FF2222, #376EB2);
-    .input(#fff, #444, #cccccc, #aaa, #fff, #444, #ddd, #fff, #444, #9bd7ff, #114b4b, #114b4b);
-    .line(#e6e6e6); 
+    .icons(#ccc, #0099FF, #0099FF, #ccc);
+    .row(transparent, #202e3c, #0e375e, #ddd, #b1d3ea, #cde4f3, #0099ff, #007aff, #007aff, #0099ff, #6ac3ff, #007aff, #007aff, #0099ff, #6ac3ff);
+    .fonts(#ddd, fade(#ddd, 30%), #009B87, #4DA400, #FF2222, #376EB2);
+    .input(#2a2a2a, #ddd, #444, #aaa, #2a2a2a, #ddd, #274052, #2a2a2a, #ddd, #185682, #7eccff, #40b4ff);
+    .line(#2a2a2a); 
     .button(default,  #0099FF, #0082ff, #0082ff, #0099FF, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
     .button(apply,    #0099FF, #0082ff, #0082ff, #0099FF, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
     .button(special,  #9b56ab, #7900b4, #7900b4, #7900b4, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
@@ -86,31 +85,39 @@ body{font-family: Jaldi, Arial, Helvetica, sans-serif;}
 }
 
 .box.bg{
-    background:#eee;
+    background:#1d1d1d;
+}
+
+.editor-drop-menu .box.bg, .file-browser, .code-bar{
+    background:#2a2a2a;
+    .line(#444); 
+}
+.code-bar{
+    color:#999;
 }
 
 .box .section, .popup{
-    .box(#fafafa, #dadada, #444); 
+    .box(#222, #444, #ddd); 
 }
 
 .box .tabs li.selected > .row{
-    border-bottom-color:#0099FF; 
+    border-bottom-color:#0099ff; 
 }
 
 .box .edit-tabs ul.tabs{ 
-    .row(#dadada, #d0d0d0, #9bd7ff, #444, #33494C, #13474F, #009B87, #00C5C7, #00C5C7, #009B87, #00B4FF, #555, #009B87, #00A46C, #185A64);
+    .row(transparent, #003c64, #035092, #ddd, #b1d3ea, #d8efff, #009B87, #007aff, #007aff, #0099ff, #6ac3ff, #007aff, #007aff, #0099ff, #6ac3ff);
 }
 
 .box header{
     .box(#222222, transparent, #ddd); 
 }
-
 .editor-tab .box{
-    &.bg{background-color:#222;}
-    .icons(#eee, #0099FF, #0099FF, #0099FF);
+    &.bg{background-color:#1d1d1d;}
+    .icons(#ddd, #0099FF, #0099FF, #0099FF);
     .row(transparent, #004d81, #004d81, #eee, #a0d9ff, #a0d9ff, #0099FF, #0099FF, #0099FF, #0099FF, #0099FF, #eee, #a0d9ff, #a0d9ff, #a0d9ff);
 }
 .editor-tab:hover > .box{
     &.bg{background-color:#00295e;}
-
 }
+
+.file-bar > .bg.row{background:#2a2a2a !important;}

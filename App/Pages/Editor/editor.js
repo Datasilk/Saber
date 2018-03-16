@@ -3,12 +3,14 @@ S.editor = {
     instance: null,
     sessions: {},
     selected: '',
-    path:'',
+    path: '',
+    theme: 'dark',
     div: $('.code-editor'),
+    divBrowser: $('.file-browser'),
     initialized: false,
 
     init: function () {
-        S.editor.initialized = true;
+        this.initialized = true;
 
         //generate path
         var path = window.location.pathname.toLowerCase();
@@ -21,9 +23,35 @@ S.editor = {
 
         //initialize code editor
         var editor = null;
-        switch (S.editor.type) {
+        switch (this.type) {
             case 0: //monaco
                 require.config({ paths: { 'vs': 'js/utility/monaco' } });
+                require(['vs/editor/editor.main'], function () {
+                    editor = monaco.editor.create(document.getElementById('editor'), {
+                        value: '',
+                        theme: "vs" + (this.theme != '' ? '-' + S.editor.theme : ''),
+                        automaticLayout: true,
+                        colorDecorators: true,
+                        dragAndDrop: false,
+                        folding: true,
+                        formatOnPaste: true,
+                        glyphMargin: false,
+                        mouseWheelZoom: true,
+                        parameterHints: true,
+                        showFoldingControls: 'always'
+                    });
+                    editor.onKeyUp((e) => {
+                        var specialkeys = [18, 37, 38, 39, 40, 20, 17, 35, 112, 113, 114, 115, 116, 117, 118, 118, 120, 121, 122, 123, 36, 144, 33, 34, 91];
+                        if (specialkeys.indexOf(e.keyCode) < 0 && e.ctrlKey == false && e.altKey == false) {
+                            //content only changes if special keys are not pressed
+                            S.editor.changed();
+                        }
+                    });
+                    editor.onMouseUp((e) => {
+                        S.editor.codebar.update();
+                    });
+                    S.editor.instance = editor;
+                });
                 break;
 
             case 1: //ace
@@ -73,7 +101,14 @@ S.editor = {
         $(window).on('keydown', S.editor.hotkey.pressed);
 
         //finally, load content resources that belong to the page
-        S.editor.explorer.openResources(dir, [fileparts[0] + '.html', fileparts[0] + '.less', fileparts[0] + '.js']);
+        S.editor.explorer.openResources(dir, [fileparts[0] + '.html', fileparts[0] + '.less', fileparts[0] + '.js'],
+            function () {
+                setTimeout(function () {
+                    S.editor.codebar.status('Ready');
+                    S.editor.codebar.update();
+                }, 500);
+            }
+        );
     },
 
     resize: function () {
@@ -93,27 +128,25 @@ S.editor = {
         $('#editor').css({ minHeight: newHeight.toString() + "px" });
         $('#editor-section').css({ minHeight: newHeight.toString() + "px" });
 
-        S.editor.resizeEditor();
-        S.editor.resizeWindow();
-    },
 
-    resizeEditor: function () {
+        //resize code editor
         switch (S.editor.type) {
-            case 0: //monaco
-
-                break;
             case 1: //ace
                 S.editor.instance.resize();
                 break;
         }
+        S.editor.resizeWindow();
     },
 
     resizeWindow: function () {
         var win = S.window.pos();
         var div = S.editor.div;
+        var browser = S.editor.divBrowser;
         var pos = div.offset();
+        var pos2 = browser.offset();
         div.css({ height: '' });
         $('.code-editor').css({ height: win.h - pos.top });
+        $('.file-browser').css({ height: win.h - pos2.top });
         
     },
 
@@ -136,7 +169,7 @@ S.editor = {
             }
         }
     },
-
+    
     changed: function (checkall) {
         var self = S.editor;
         var id = self.fileId(self.selected);
@@ -154,6 +187,7 @@ S.editor = {
                 }
             }
         }
+        S.editor.codebar.update();
         self.resize();
     },
 
@@ -199,41 +233,42 @@ S.editor = {
                     return;
             }
         }
-        if ($('.editor-drop-menu .item-save.faded').length == 1) { return;}
         var self = S.editor;
         var id = self.fileId(path);
+        var tab = $('.tab-' + id);
+        if ($('.editor-drop-menu .item-save.faded').length == 1 && tab.length > 0) { return;}
         
         self.dropmenu.hide();
-        var tab = $('.tab-' + id);
-        if (tab.hasClass('selected')) {
-            //check if we should save something besides source code
+        if (tab.length > 0) {
+            if (tab.hasClass('selected')) {
+                //check if we should save something besides source code
 
-            if ($('.tab-content-fields').hasClass('selected')) {
-                //save content fields values
-                var fields = {};
-                var texts = $('.content-fields form').find('textarea, input, select');
-                texts.each(function (txt) {
-                    var t = $(txt);
-                    fields[txt.id.replace('field_', '')] = t.val();
-                });
+                if ($('.tab-content-fields').hasClass('selected')) {
+                    //save content fields values
+                    var fields = {};
+                    var texts = $('.content-fields form').find('textarea, input, select');
+                    texts.each(function (txt) {
+                        var t = $(txt);
+                        fields[txt.id.replace('field_', '')] = t.val();
+                    });
 
-                S.ajax.post('Editor/SaveContentFields', { path: path, fields: fields, language: $('#lang').val() },
-                    function (d) {
-                        if (d == 'success') {
-                            S.editor.fields.changed = false;
-                            //html resource has changed because content fields have changed
-                            S.editor.resources.html.changed = true;
-                            S.message.show('.content-fields .message', 'confirm', 'Content fields were saved.', false, 4000, true);
-                        } else { S.editor.error(); }
-                    },
-                    function () {
-                        S.editor.error();
-                    }
-                );
-                return;
+                    S.ajax.post('Editor/SaveContentFields', { path: path, fields: fields, language: $('#lang').val() },
+                        function (d) {
+                            if (d == 'success') {
+                                S.editor.fields.changed = false;
+                                //html resource has changed because content fields have changed
+                                S.editor.resources.html.changed = true;
+                                S.message.show('.content-fields .message', 'confirm', 'Content fields were saved.', false, 4000, true);
+                            } else { S.editor.error(); }
+                        },
+                        function () {
+                            S.editor.error();
+                        }
+                    );
+                    return;
+                }
             }
         }
-
 
         //last resort, save source code to file
         S.ajax.post('Editor/SaveFile', { path: path, content: content },
@@ -268,10 +303,7 @@ S.editor = {
         if (path != '' && path != null) {
             var value = '';
             switch (S.editor.type) {
-                case 0: //monaco
-
-                    break;
-                case 1: //ace
+                case 0: case 1: //monaco & ace (apparently shares the same code)
                     value = S.editor.instance.getValue();
                     break;
             }
@@ -383,30 +415,14 @@ S.editor = {
             var editor = S.editor.instance;
             switch (S.editor.type) {
                 case 0: //monaco ////////////////////////////////////////////////////
-                    $('#editor').append('<div id="editor_' + id + '" class="instance editor-' + id + '"></div>');
                     require(['vs/editor/editor.main'], function () {
-                        var session = monaco.editor.create(document.getElementById('editor_' + id), {
-                            value: code,
-                            language: mode,
-                            automaticLayout: true,
-                            colorDecorators: true,
-                            dragAndDrop: true,
-                            folding: true
-                        });
-                        session.onKeyUp((e) => {
-                            var specialkeys = [18, 37, 38, 39, 40, 20, 17, 35, 112, 113, 114, 115, 116, 117, 118, 118, 120, 121, 122, 123, 36, 144, 33, 34, 91];
-                            if (specialkeys.indexOf(e.keyCode) < 0) {
-                                //content only changes if special keys are not pressed
-                                S.editor.changed();
-                            }
-                        });
+                        var session = monaco.editor.createModel(code, mode);
                         S.editor.sessions[id] = session;
-                        S.editor.instance = session;
 
                         if (select !== false) {
+                            S.editor.instance.setModel(session);
                             S.editor.filebar.code.show();
-                            $('#editor > .instance').addClass('hide');
-                            $('#editor_' + id).removeClass('hide');
+                            S.editor.codebar.update();
                         }
                     });
                     break;
@@ -420,6 +436,7 @@ S.editor = {
                         S.editor.filebar.code.show();
                         editor.setSession(session);
                         editor.clearSelection();
+                        S.editor.codebar.update();
                         S.editor.resize();
                         setTimeout(function () {
                             S.editor.resize();
@@ -428,7 +445,7 @@ S.editor = {
                     }
                     break;
             }
-            
+
         },
 
         remove: function (id) {
@@ -483,6 +500,7 @@ S.editor = {
             }
             $('.editor .file-browser').removeClass('hide');
             $('.editor').addClass('show-browser');
+            S.editor.resizeWindow();
         },
 
         hide: function () {
@@ -502,23 +520,27 @@ S.editor = {
             );
         },
 
-        openResources: function (path, files) {
+        openResources: function (path, files, callback) {
             //opens a group of resources (html, less, js) from a specified path
             var self = S.editor.explorer;
             files.forEach((f) => {
                 self.queue.push(path + f);
             });
-            self.runQueue(true);
+            self.runQueue(true, callback);
         },
 
-        runQueue: function (first) {
+        runQueue: function (first, callback) {
             //opens next resource in the queue
             var self = S.editor.explorer;
             var queue = self.queue;
             if (queue.length > 0) {
                 var path = queue[0].toString();
                 queue.splice(0, 1);
-                self.open(path, null, first === true, self.runQueue);
+                self.open(path, null, first === true, function () { self.runQueue(false, callback); });
+            } else {
+                if (typeof (callback) == 'function') {
+                    callback();
+                }
             }
         },
 
@@ -625,9 +647,8 @@ S.editor = {
                 S.editor.filebar.code.show();
                 switch (S.editor.type) {
                     case 0: //monaco
-                        $('#editor > .instance').addClass('hide');
-                        $('#editor_' + id).removeClass('hide');
-                        S.editor.instance = session;
+                        editor.setModel(session);
+                        editor.focus();
                         break;
                     case 1: //ace
                         editor.setSession(session);
@@ -637,6 +658,7 @@ S.editor = {
                 if (S.editor.isChanged(path) == true) {
                     S.editor.changed(true);
                 }
+                S.editor.codebar.update();
                 S.editor.resize();
                 setTimeout(function () {
                     S.editor.resize();
@@ -689,14 +711,14 @@ S.editor = {
                 if (S.editor.fields.selected != S.editor.selected || S.editor.resources.content.changed == true) {
                     S.editor.resources.content.changed = false;
                     S.editor.fields.changed = false;
-                    $('.content-fields > form').html('');
+                    $('.content-fields form').html('');
                     S.ajax.post('Editor/RenderContentFields', { path: S.editor.path, language:lang },
                         function (d) {
                             S.editor.fields.selected = S.editor.selected;
-                            $('.content-fields > form').html(d);
+                            $('.content-fields form').html(d);
 
                             //set up events for fields
-                            $('.content-fields > form textarea').on('keyup, keydown', S.editor.fields.change).each(
+                            $('.content-fields form textarea').on('keyup, keydown', S.editor.fields.change).each(
                                 function (field) {
                                     S.editor.fields.change({ target: field });
                                 }
@@ -735,11 +757,19 @@ S.editor = {
         },
 
         preview: {
+            toggle: function () {
+                var self = S.editor.filebar.preview;
+                if ($('.preview').hasClass('hide')) {
+                    self.show();
+                } else {
+                    self.hide();
+                }
+            },
             show: function () {
                 var tagcss = $('#page_css');
                 var tagjs = $('#page_js');
                 var css = tagcss.attr('href');
-                var js = tagjs.attr('src');
+                var src = tagjs.attr('src').split('?')[0];
                 var rnd = Math.floor(Math.random() * 9999);
 
                 //first, reload CSS
@@ -770,13 +800,12 @@ S.editor = {
                     if (S.editor.resources.js.changed == true) {
                         S.editor.resources.js.changed = false;
                         tagjs.remove();
-                        S.util.js.load(js + '?r=' + rnd, 'page_js',
+                        S.util.js.load(src + '?r=' + rnd, 'page_js',
                             function () { showContent(); }
                         );
                     } else {
                         if (htmlChanged === true) {
                             //reload javascript anyway since HTML changed
-                            var src = tagjs.attr('src');
                             tagjs.remove();
                             S.util.js.load(src, 'page_js',
                                 function () { showContent(); }
@@ -807,6 +836,33 @@ S.editor = {
                     S.editor.resize();
                 }, 10);
             }
+        }
+    },
+
+    codebar: {
+        update: function () {
+            var editor = S.editor.instance;
+            var linenum = 'Ln '; 
+            var charnum = 'Col ';
+            var linestotal = 'End ';
+            switch (S.editor.type) {
+                case 0: //monaco
+                    var pos = editor.getPosition();
+                    var model = editor.getModel();
+                    linenum += pos.lineNumber.toString();
+                    charnum += pos.column.toString();
+                    linestotal += model.getLineCount();
+                    break;
+                case 1: //ace
+
+                    break;
+            }
+            $('.code-curr-line').html(linenum);
+            $('.code-curr-char').html(charnum);
+            $('.code-total-lines').html(linestotal);
+        },
+        status: function (msg) {
+            $('.code-status').html(msg);
         }
     },
 
@@ -845,9 +901,22 @@ S.editor = {
                 event.preventDefault();
                 return false;
             }
+        },
+
+        pressedPreview: function (e) {
+            if (e.ctrlKey == false && e.altKey == false && e.shiftKey == false) {
+                switch (e.which) {
+                    case 27: //escape key
+                        S.editor.filebar.preview.toggle();
+                        break;
+                }
+            }
         }
     }
 };
 
 //set up editor tab
 $('.editor-tab').on('click', S.editor.filebar.preview.hide);
+
+//register hotkeys for preview mode
+$(window).on('keydown', S.editor.hotkey.pressedPreview);

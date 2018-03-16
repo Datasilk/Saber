@@ -80,6 +80,7 @@ paths.working = {
             paths.scripts + 'platform/svg.js',
             paths.scripts + 'platform/util.js',
             paths.scripts + 'platform/util.color.js',
+            paths.scripts + 'platform/util.file.js',
             paths.scripts + 'platform/validate.js',
             paths.scripts + 'platform/window.js' //  <---- End of Optional features
         ],
