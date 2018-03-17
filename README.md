@@ -28,6 +28,8 @@ A simple, straight forward CMS.
 5. Open `config.json` and make sure the database connection string for property `SqlServerTrusted` points to your database.
 6. Click Play in Visual Studio 2017
 
+![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-file.jpg)
+
 
 ## Features
 * Build web pages from within your web browser using a built-in IDE for editing HTML, CSS, LESS, & Javascript
@@ -46,6 +48,27 @@ A simple, straight forward CMS.
 * Include html files inside other html files using the following syntax `{{header "Partials/UI/header.html"}}` (`header` being the variable name and the file path is in quotes)
 * Shortcut Keys: Ctrl + S (save), escape (toggle editor / preview), F1 (Monaco editor command window)
 * Choose between [Monaco](https://microsoft.github.io/monaco-editor/) & [Ace](https://ace.c9.io/) as your preferred code editor
+    * Minimap next to scrollbar (Monaco only)
+    * Syntax Highlighting for HTML, CSS, LESS, & Javascript
+    * Code Folding
+
+
+---
+
+![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-closeup.jpg)
+Edit page resources for any URL within your domain name
+
+---
+
+![Saber IDE](http://www.markentingh.com/projects/saber/saber-file-browser.jpg)
+Browse server-side files and edit them via the IDE within Saber
+
+---
+
+![Saber IDE](http://www.markentingh.com/projects/saber/saber-scrollbar.jpg)
+Use a minimap to scroll through your code faster than ever
+
+---
 
 
 ## Future Development
