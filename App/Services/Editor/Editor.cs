@@ -45,7 +45,7 @@ namespace Saber.Services
             if (!CheckSecurity()) { return AccessDenied(); }
 
             var rawpaths = path.Split('/');
-            var rid = path.Replace("/", "_").ToLower();
+            var rid = path.Replace("/", "_");
             var pid = rid.Replace("_", "/");
             var html = new StringBuilder();
             if (pid == "/") { pid = ""; }
@@ -100,7 +100,7 @@ namespace Saber.Services
             if (rawpaths.Length > 1)
             {
                 //add parent directory;
-                html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", string.Join("/", rawpaths.SkipLast(1)).ToLower()));
+                html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", string.Join("/", rawpaths.SkipLast(1))));
             }
             else if (rawpaths[0] == "content" && rawpaths.Length == 1)
             {

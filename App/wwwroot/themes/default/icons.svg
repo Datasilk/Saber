@@ -10,6 +10,18 @@
 
 
 <defs>
+<g id="arrow_right_0_Layer1_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 18 0
+L 18 13 36 31 18 51 18 64 49 31 18 0 Z"/>
+</g>
+
+<g id="arrow_right_0_Layer0_0_FILL">
+<path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
+M 64 0
+L 0 0 0 64 64 64 64 0 Z"/>
+</g>
+
 <g id="icon_0_Layer1_0_FILL">
 <path fill="#FFFFFF" fill-opacity="0.9882352941176471" stroke="none" d="
 M 32 4.2
@@ -588,7 +600,19 @@ L 10.05 14.05 10.05 25 15.05 25 15.05 14.05 18.55 14.05 12.55 8.05 6.55 14.05
 M 23.05 2.05
 L 23.05 17.05 16.05 17.05 16.05 19.05 25 19.05 25 0 0 0 0 19.05 9.05 19.05 9.05 17.05 2.05 17.05 2.05 2.05 23.05 2.05 Z"/>
 </g>
-</defs><symbol id="icon-close" viewBox="0 0 32 32">
+</defs><symbol id="icon-arrow-right" viewBox="0 0 64 64">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#arrow_right_0_Layer1_0_FILL"/>
+</g>
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#arrow_right_0_Layer0_0_FILL"/>
+</g>
+</g>
+</symbol><symbol id="icon-close" viewBox="0 0 32 32">
 
 
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">

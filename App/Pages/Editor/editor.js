@@ -518,6 +518,12 @@ S.editor = {
                 function(d) {
                     S.editor.explorer.path = path;
                     $('.file-browser ul.menu').html(d);
+                    var url = path;
+                    if (path.indexOf('root' == 0)) {
+                        url = url.replace('root', '');
+                    }
+                    url += '/';
+                    $('.browser-path').html(url);
                 },
                 function () {
                     S.editor.error();
