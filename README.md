@@ -56,16 +56,19 @@ A simple, straight forward CMS.
 ---
 
 ![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-closeup.jpg)
+
 Edit page resources for any URL within your domain name
 
 ---
 
 ![Saber IDE](http://www.markentingh.com/projects/saber/saber-file-browser.jpg)
+
 Browse server-side files and edit them via the IDE within Saber
 
 ---
 
 ![Saber IDE](http://www.markentingh.com/projects/saber/saber-scrollbar.jpg)
+
 Use a minimap to scroll through your code faster than ever
 
 ---
