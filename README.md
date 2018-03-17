@@ -73,6 +73,11 @@ Use a minimap to scroll through your code faster than ever
 
 ---
 
+![Saber IDE](http://www.markentingh.com/projects/saber/saber-content-fields.jpg)
+
+Generate form fields by writing HTML variables (e.g. `<h2>{{hero-title}}</h2>`) and use them to fill out content for your web pages
+
+---
 
 ## Future Development
 * Publish content using other formats besides HTML & CSS, such as uploading a PDF, DOC, DOCX, MP3 (for auto-transcribing), or Excel spreadsheet.
