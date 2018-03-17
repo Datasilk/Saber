@@ -16,12 +16,8 @@ A simple, straight forward CMS.
 
 1. Clone the repository:
 
-    ```git clone --recurse-submodules http://github.com/datasilk/saber YourProjectName```
+    ```git clone --recurse-submodules http://github.com/datasilk/saber```
 
-	> NOTE: replace `YourProjectName` with the name of your project
-
-2. Replace all case-sensitive instances of `Saber` to `YourProjectName` and `saber` to `yourprojectname` in all files within the repository
-3. Rename file `Saber.sln` to `YourProjectName.sln` and file `App/Saber.csproj` to `App/YourProjectName.csproj`
 2. Run command ```npm install```
 3. Run command ```gulp default```
 4. In Visual Studio, publish the SQL project to SQL Server 2016 (or greater), with your own database name
@@ -80,4 +76,5 @@ Generate form fields by writing HTML variables (e.g. `<h2>{{hero-title}}</h2>`) 
 ---
 
 ## Future Development
+* Upload & manage photos & files related to a specific web page
 * Publish content using other formats besides HTML & CSS, such as uploading a PDF, DOC, DOCX, MP3 (for auto-transcribing), or Excel spreadsheet.
