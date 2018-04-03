@@ -6,20 +6,17 @@
         }
 
         S.ajax.post('User/Authenticate', data, function (d) {
-            console.log('auth');
-            console.log(d);
             if (d) {
                 var msg = $('.login .message');
                 if (d == 'err') {
                     S.message.show(msg, 'error', 'Your credentials are incorrect');
-                    return false;
                 } else if (d.indexOf('success') == 0) {
                     S.message.show(msg, '', 'Login success! Redirecting...');
                     window.location.href = d.split('|')[1];
                 }
             }
         }, function (err) {
-            console.log(err);
+            S.message.show(msg, 'error', 'Your credentials are incorrect');
         });
     }
 };

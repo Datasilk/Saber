@@ -10,6 +10,30 @@
 
 
 <defs>
+<g id="iconAddSmall_0_Layer1_0_FILL">
+<path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
+M 22 0
+L 0 0 0 22 22 22 22 0 Z"/>
+</g>
+
+<g id="iconAddSmall_0_Layer0_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 22 12
+L 22 10 12 10 12 0 10 0 10 10 0 10 0 12 10 12 10 22 12 22 12 12 22 12 Z"/>
+</g>
+
+<g id="icon_add_0_Layer1_0_FILL">
+<path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
+M 0 0
+L 0 15 15 15 15 0 0 0 Z"/>
+</g>
+
+<g id="icon_add_0_Layer0_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 15 8
+L 15 7 8 7 8 0 7 0 7 7 0 7 0 8 7 8 7 15 8 15 8 8 15 8 Z"/>
+</g>
+
 <g id="arrow_right_0_Layer1_0_FILL">
 <path fill="#FFFFFF" stroke="none" d="
 M 18 0
@@ -339,6 +363,24 @@ M 0 0
 L 0 64 64 64 64 0 0 0 Z"/>
 </g>
 
+<g id="fullscreen_0_Layer1_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 4 39
+L 0 39 0 64 25 64 25 60 6 60 12 54 10 52 4 58 4 39
+M 25 4
+L 25 0 0 0 0 25 4 25 4 6 10 12 12 10 6 4 25 4
+M 64 39
+L 60 39 60 58 54 52 52 54 58 60 39 60 39 64 64 64 64 39
+M 64 25
+L 64 0 39 0 39 4 58 4 52 10 54 12 60 6 60 25 64 25 Z"/>
+</g>
+
+<g id="fullscreen_0_Layer0_0_FILL">
+<path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
+M 64 0
+L 0 0 0 64 64 64 64 0 Z"/>
+</g>
+
 <g id="icon_logout_0_Layer1_0_FILL">
 <path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
 M 15 15
@@ -392,6 +434,35 @@ L 64 11 Z"/>
 <path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
 M 64 64
 L 64 0 0 0 0 64 64 64 Z"/>
+</g>
+
+<g id="new_window_0_Layer1_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 64 5
+Q 64 0 59 0
+L 5 0
+Q 0 0 0 5
+L 0 59
+Q 0 64 5 64
+L 59 64
+Q 64 64 64 59
+L 64 5
+M 56.6 2.6
+Q 57.2 2 58 2 58.8 2 59.4 2.6 60 3.2 60 4 60 4.137109375 59.95 4.25 59.8970703125 4.9029296875 59.4 5.4 58.9029296875 5.8970703125 58.25 5.95 58.137109375 6 58 6 57.2 6 56.6 5.4 56 4.8 56 4 56 3.2 56.6 2.6
+M 54 4
+Q 54 4.15 54 4.3 53.9 4.9 53.4 5.4 52.9 5.9 52.3 6 52.15 6 52 6 51.2 6 50.6 5.4 50 4.8 50 4 50 3.2 50.6 2.6 51.2 2 52 2 52.8 2 53.4 2.6 54 3.2 54 4
+M 47.4 2.6
+Q 48 3.2 48 4 48 4.15 48 4.3 47.9 4.9 47.4 5.4 46.9 5.9 46.3 6 46.15 6 46 6 45.2 6 44.6 5.4 44 4.8 44 4 44 3.2 44.6 2.6 45.2 2 46 2 46.8 2 47.4 2.6
+M 3 61
+L 3 8 61 8 61 61 3 61
+M 46 36
+L 46 32 33 32 33 19 29 19 29 32 16 32 16 36 29 36 29 49 33 49 33 36 46 36 Z"/>
+</g>
+
+<g id="new_window_0_Layer0_0_FILL">
+<path fill="#FFFFFF" fill-opacity="0" stroke="none" d="
+M 64 0
+L 0 0 0 64 64 64 64 0 Z"/>
 </g>
 
 <g id="icon_photos_0_Layer1_0_FILL">
@@ -600,7 +671,31 @@ L 10.05 14.05 10.05 25 15.05 25 15.05 14.05 18.55 14.05 12.55 8.05 6.55 14.05
 M 23.05 2.05
 L 23.05 17.05 16.05 17.05 16.05 19.05 25 19.05 25 0 0 0 0 19.05 9.05 19.05 9.05 17.05 2.05 17.05 2.05 2.05 23.05 2.05 Z"/>
 </g>
-</defs><symbol id="icon-arrow-right" viewBox="0 0 64 64">
+</defs><symbol id="icon-add-sm" viewBox="0 0 22 22">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#iconAddSmall_0_Layer1_0_FILL"/>
+</g>
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#iconAddSmall_0_Layer0_0_FILL"/>
+</g>
+</g>
+</symbol><symbol id="icon-add" viewBox="0 0 15 15">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#icon_add_0_Layer1_0_FILL"/>
+</g>
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#icon_add_0_Layer0_0_FILL"/>
+</g>
+</g>
+</symbol><symbol id="icon-arrow-right" viewBox="0 0 64 64">
 
 
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
@@ -754,6 +849,18 @@ L 23.05 17.05 16.05 17.05 16.05 19.05 25 19.05 25 0 0 0 0 19.05 9.05 19.05 9.05 
 <use xlink:href="#form_fields_0_Layer0_0_FILL"/>
 </g>
 </g>
+</symbol><symbol id="icon-fullscreen" viewBox="0 0 64 64">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#fullscreen_0_Layer1_0_FILL"/>
+</g>
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#fullscreen_0_Layer0_0_FILL"/>
+</g>
+</g>
 </symbol><symbol id="icon-logout" viewBox="0 0 15 15">
 
 
@@ -776,6 +883,18 @@ L 23.05 17.05 16.05 17.05 16.05 19.05 25 19.05 25 0 0 0 0 19.05 9.05 19.05 9.05 
 
 <g transform="matrix( 1, 0, 0, 1, 0,0) ">
 <use xlink:href="#menu_0_Layer0_0_FILL"/>
+</g>
+</g>
+</symbol><symbol id="icon-new-window" viewBox="0 0 64 64">
+
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#new_window_0_Layer1_0_FILL"/>
+</g>
+
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#new_window_0_Layer0_0_FILL"/>
 </g>
 </g>
 </symbol><symbol id="icon-photos" viewBox="0 0 36 36">

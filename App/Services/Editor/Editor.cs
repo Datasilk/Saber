@@ -19,21 +19,7 @@ namespace Saber.Services
 
         private string[] GetRelativePath(string path)
         {
-            var paths = path.Split('/');
-
-            //translate root path to relative path
-            switch (paths[0].ToLower())
-            {
-                case "root": paths[0] = ""; break;
-                case "css": paths[0] = "/CSS"; break;
-                case "pages": paths[0] = "/Pages"; break;
-                case "partials": paths[0] = "/Partials"; break;
-                case "scripts": paths[0] = "/Scripts"; break;
-                case "services": paths[0] = "/Services"; break;
-                case "content": paths[0] = "/Content/pages"; break;
-                default: return new string[] { };
-            }
-            return paths;
+            return Utility.Page.GetRelativePath(path);
         }
 
         #endregion
@@ -347,6 +333,11 @@ namespace Saber.Services
             var file = paths[paths.Length - 1];
             var fileparts = file.Split(".", 2);
             if (paths.Length == 0) { return Error(); }
+
+            //check file path on drive for (estimated) OS folder structure limitations 
+            if (S.Server.MapPath(relpath).Length > 180) {
+                return "The URL path you are accessing is too long to handle on the web server";
+            }
             var scaffold = new Scaffold(relpath, S.Server.Scaffold);
             if (scaffold.elements.Count == 0) {
                 if(S.User.userId == 0)
@@ -360,12 +351,18 @@ namespace Saber.Services
             }
 
             //load user content from json file, depending on selected language
-            var config = GetPageConfig(path);
+            var pageUtil = new Utility.Page(S);
+            var config = pageUtil.GetPageConfig(path);
             var lang = UserInfo.language;
-            var security = config.ContainsKey("security") ? (config["security"] == "1" ? true : false) : false;
 
             //check security
-            if (security == true && !CheckSecurity()) { return AccessDenied(); }
+            if (config.security.secure == true)
+            {
+                if (!CheckSecurity() || !config.security.read.Contains(S.User.userId))
+                {
+                    return AccessDenied();
+                }
+            }
 
             var contentfile = ContentFile(path, lang);
             var data = (Dictionary<string, string>)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(contentfile, true), typeof(Dictionary<string, string>));
@@ -390,17 +387,103 @@ namespace Saber.Services
         #endregion
 
         #region "Page Settings"
-
-        private Dictionary<string, string> GetPageConfig(string path)
+        public string RenderPageSettings(string path)
         {
-            var paths = GetRelativePath(path);
-            var relpath = string.Join("/", paths);
-            var file = paths[paths.Length - 1];
-            var fileparts = file.Split(".", 2);
-            var configfile = S.Server.MapPath(relpath.Replace(file, fileparts[0] + ".json"));
-            var config = (Dictionary<string, string>)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(configfile, true), typeof(Dictionary<string, string>));
-            if (config != null) { return config; }
-            return new Dictionary<string, string>();
+            if (!CheckSecurity()) { return AccessDenied(); }
+            var pageUtil = new Utility.Page(S);
+            var config = pageUtil.GetPageConfig(path);
+            var scaffold = new Scaffold("/Services/Editor/settings.html", S.Server.Scaffold);
+            var prefixes = new StringBuilder();
+            var suffixes = new StringBuilder();
+
+            //generate list of page prefixes
+            var query = new Query.PageTitles(S.Server.sqlConnectionString);
+            var titles = query.GetList(Query.PageTitles.TitleType.all);
+            prefixes.Append("<option value=\"0\">[None]</option>\n");
+            suffixes.Append("<option value=\"0\">[None]</option>\n");
+            foreach (var t in titles)
+            {
+                if(t.pos == false)
+                {
+                    prefixes.Append("<option value=\"" + t.titleId + "\"" + (config.title.prefixId == t.titleId ? " selected" : "") + ">" + t.title + "</option>\n");
+                }
+                else
+                {
+                    suffixes.Append("<option value=\"" + t.titleId + "\"" + (config.title.suffixId == t.titleId ? " selected" : "") + ">" + t.title + "</option>\n");
+                }
+            }
+
+            scaffold.Data["page-title"] = config.title.body;
+            scaffold.Data["page-title-prefixes"] = prefixes.ToString();
+            scaffold.Data["page-title-suffixes"] = suffixes.ToString();
+
+
+            return scaffold.Render();
+        }
+
+        public string UpdatePageTitle(string path, int prefixId, int suffixId, string title)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            try
+            {
+                var pageUtil = new Utility.Page(S);
+                var config = pageUtil.GetPageConfig(path);
+                config.title.body = title;
+                config.title.prefixId = prefixId;
+                config.title.suffixId = suffixId;
+                var query = new Query.PageTitles(S.Server.sqlConnectionString);
+                if (prefixId == 0)
+                {
+                    config.title.prefix = "";
+                }
+                else
+                {
+                    config.title.prefix = query.Get(prefixId);
+                }
+                if (suffixId == 0)
+                {
+                    config.title.suffix = "";
+                }
+                else
+                {
+                    config.title.suffix = query.Get(suffixId);
+                }
+                pageUtil.SavePageConfig(path, config);
+                return Success();
+            }
+            catch (Exception ex)
+            {
+                return Error();
+            }
+        }
+
+        /// <summary>
+        /// Creates a partial page title, such as the name of the website or the authors name, 
+        /// which can be used as a prefix or suffix for the web page title
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="prefix">Whether or not the page title part is a prefix (true) or suffix (false)</param>
+        /// <returns></returns>
+        public string CreatePageTitlePart(string title, bool prefix)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            //add space at end if user didn't
+            if(prefix == true)
+            {
+                if (title.Last() != ' ') { title += " "; }
+            }
+            else
+            {
+                if (title.First() != ' ') { title = " " + title; }
+            }
+            
+            try
+            {
+                var query = new Query.PageTitles(S.Server.sqlConnectionString);
+                var id = query.Create(title, !prefix);
+                return id + "|" + title;
+            }
+            catch (Exception) { return Error(); }
         }
         #endregion
 

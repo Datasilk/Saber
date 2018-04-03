@@ -1,0 +1,70 @@
+﻿<div class="row field">Page Title</div>
+<div class="row input settings-page-title">
+    <div class="col title-prefix pad-right-sm">
+        <div class="row field faded">
+            <span>Prefix</span>
+            <div class="col right pad-left-lg icon small">
+                <a href="javascript:">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-add-sm" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div class="row input hover">
+            <select id="page_title_prefix">{{page-title-prefixes}}</select>
+        </div>
+    </div>
+    <div class="col pad-right-sm">
+        <div class="row field faded">Title</div>
+        <div class="row input hover">
+            <input type="text" id="page_title" value="{{page-title}}" />
+        </div>
+    </div>
+    <div class="col title-suffix pad-right-sm">
+        <div class="row field faded">
+            <span>Suffix</span>
+            <div class="col right pad-left-lg icon small">
+                <a href="javascript:">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-add-sm" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div class="row input hover">
+            <select id="page_title_suffix">{{page-title-suffixes}}</select>
+        </div>
+    </div>
+</div>
+
+
+<script language="text/html" id="template_pagetitle_newprefix">
+    <form>
+        <div class="row message hide"><span></span></div>
+        <div class="row field">Prefix</div>
+        <div class="row input pad-top-sm">
+            <input type="text" id="page_title_new_prefix" placeholder="My Website - " />
+        </div>
+        <div class="row text-center pad-top-sm">
+            <div class="col">
+                <input type="submit" class="button apply" value="Create Prefix" />
+            </div>
+        </div>
+    </form>
+</script>
+
+<script language="text/html" id="template_pagetitle_newsuffix">
+    <form>
+        <div class="row message hide"><span></span></div>
+        <div class="row field">Suffix</div>
+        <div class="row input pad-top-sm">
+            <input type="text" id="page_title_new_suffix" placeholder=" - Have A Nice Day" />
+        </div>
+        <div class="row text-center pad-top-sm">
+            <div class="col">
+                <input type="submit" class="button apply" value="Create Suffix" />
+            </div>
+        </div>
+    </form>
+</script>

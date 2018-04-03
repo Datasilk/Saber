@@ -21,6 +21,7 @@ S.editor = {
         var file = paths[paths.length - 1];
         var dir = paths.join('/').replace(file, '');
         var fileparts = paths[paths.length - 1].split('.', 2);
+        $('.page-name').attr('href', path).html(path);
 
         //initialize code editor
         var editor = null;
@@ -77,8 +78,8 @@ S.editor = {
                 this.instance = editor;
                 break;
         }
-        
-        
+
+        //resize code editor
         this.resize();
 
         //add button events
@@ -94,6 +95,9 @@ S.editor = {
         $('.editor-drop-menu .item-content-fields').on('click', function () { S.editor.filebar.fields.show(true); });
         $('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);
         $('.editor-drop-menu .item-new-folder').on('click', S.editor.folder.create.show);
+        $('.editor-drop-menu .item-new-window').on('click', S.editor.newWindow);
+        $('.page-settings .title-prefix .icon a').on('click', S.editor.settings.title.prefix.show);
+        $('.page-settings .title-suffix .icon a').on('click', S.editor.settings.title.suffix.show);
 
         //add window resize event
         $(window).on('resize', S.editor.resizeWindow);
@@ -150,7 +154,7 @@ S.editor = {
         if (pos.top == 0) {
             pos = fields.offset();
         }
-        $('.code-editor, .content-fields').css({ height: win.h - pos.top });
+        $('.code-editor, .content-fields, .page-settings').css({ height: win.h - pos.top });
         $('.file-browser').css({ height: win.h - pos2.top });
         
     },
@@ -173,6 +177,12 @@ S.editor = {
                 $(document.body).off('click', S.editor.dropmenu.hide);
             }
         }
+    },
+
+    newWindow: function () {
+        S.editor.dropmenu.hide();
+        var id = S.editor.fileId();
+        window.open(window.location.href, 'Editor_' + id, 'width=1800,height=900,left=50,top=50,toolbar=No,location=No,scrollbars=auto,status=No,resizable=yes,fullscreen=No');
     },
     
     changed: function (checkall) {
@@ -222,8 +232,8 @@ S.editor = {
         }
     },
 
-    error: function () {
-        S.message.show('.editor .message', 'error', S.message.error.generic);
+    error: function (msg) {
+        S.message.show('.editor .message', 'error', msg || S.message.error.generic);
     },
 
     message: function (msg) {
@@ -397,6 +407,7 @@ S.editor = {
     },
 
     fileId: function (path) {
+        if (path == null) { path = 'content' + window.location.pathname.toLowerCase();}
         return path.replace(/\//g, '_').replace(/\./g, '_');
     },
 
@@ -761,9 +772,10 @@ S.editor = {
             show: function () {
                 S.editor.dropmenu.hide();
                 $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
-                $('.editor .sections > .file-settings').removeClass('hide');
+                $('.editor .sections > .page-settings').removeClass('hide');
                 $('ul.file-tabs > li').removeClass('selected');
                 $('ul.file-tabs > li.tab-file-settings').addClass('selected');
+                S.editor.settings.load();
             },
         },
 
@@ -891,6 +903,106 @@ S.editor = {
                 //enable save menu
                 $('.item-save').removeClass('faded').removeAttr('disabled');
                 S.editor.fields.changed = true;
+            }
+        }
+    },
+
+    settings: {
+        _loaded: false,
+
+        load: function () {
+            S.ajax.post('Editor/RenderPageSettings', { path: S.editor.path },
+                function (d) {
+                    $('.sections > .page-settings').append(d);
+
+                    //set up events to auto-save
+                    $('#page_title_prefix, #page_title_suffix, #page_title').on('change, keyup', S.editor.settings.title.changed);
+                }
+            );
+        },
+
+        title: {
+            _timer: null,
+
+            prefix: {
+                show: function () {
+                    console.log('wtf');
+                    S.popup.show('New Page Title Prefix',
+                        $('#template_pagetitle_newprefix').html()
+                    );
+                    $('.popup form').on('submit', S.editor.settings.title.prefix.submit);
+                },
+
+                submit: function (e) {
+                    e.preventDefault();
+                    e.cancelBubble;
+                    var data = { title: $('#page_title_new_prefix').val(), prefix:true };
+                    S.ajax.post('Editor/CreatePageTitlePart', data,
+                        function (d) {
+                            var info = d.split('|');
+                            $('#page_title_prefix').append('<option value="' + info[0] + '">' + info[1] + '</option>').val(info[0]);
+                        }
+                    );
+                    S.popup.hide();
+                    return false;
+                }
+            },
+
+            suffix: {
+                show: function () {
+                    console.log('wtf');
+                    S.popup.show('New Page Title Suffix',
+                        $('#template_pagetitle_newsuffix').html()
+                    );
+                    $('.popup form').on('submit', S.editor.settings.title.suffix.submit);
+                },
+
+                submit: function (e) {
+                    e.preventDefault();
+                    e.cancelBubble;
+                    var data = { title: $('#page_title_new_suffix').val(), prefix: false };
+                    S.ajax.post('Editor/CreatePageTitlePart', data,
+                        function (d) {
+                            var info = d.split('|');
+                            $('#page_title_suffix').append('<option value="' + info[0] + '">' + info[1] + '</option>').val(info[0]);
+                        }
+                    );
+                    S.popup.hide();
+                    return false;
+                }
+            },
+
+            changed: function () {
+                var prefix = $('#page_title_prefix')[0].selectedOptions[0].text;
+                var suffix = $('#page_title_suffix')[0].selectedOptions[0].text;
+                if (prefix == '[None]') {
+                    prefix = '';
+                } else {
+                    if (prefix[prefix.length - 1] != ' ') { prefix += ' ';}
+                }
+                if (suffix == '[None]') {
+                    suffix = '';
+                } else {
+                    if (suffix[0] != ' ') { suffix = ' ' + suffix; }
+                }
+                window.document.title = prefix + $('#page_title').val() + suffix;
+                clearTimeout(S.editor.settings.title._timer);
+                S.editor.settings.title._timer = setTimeout(function () { S.editor.settings.title.save(); }, 3000);
+            },
+
+            save: function () {
+                var data = {
+                    path: S.editor.path,
+                    prefixId: $('#page_title_prefix').val(),
+                    suffixId: $('#page_title_suffix').val(),
+                    title: $('#page_title').val()
+                };
+                S.ajax.post('Editor/UpdatePageTitle', data,
+                    function (d) { },
+                    function () {
+                        S.editor.error();
+                    }
+                );
             }
         }
     },

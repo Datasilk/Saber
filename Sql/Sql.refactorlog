@@ -7,4 +7,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="langId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="68b66369-e2a1-4cbb-9000-793a93f78c84" ChangeDateTime="04/01/2018 23:02:05">
+    <Property Name="ElementName" Value="[dbo].[Page_Titles].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Page_Titles]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="title" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="46d3fdf6-f736-4a62-a75b-5da53dc45ce3" ChangeDateTime="04/01/2018 23:02:34">
+    <Property Name="ElementName" Value="[dbo].[Page_Titles].[pos]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Page_Titles]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="prefix" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8ead5e3a-43fb-4795-ba63-13413a7decc8" ChangeDateTime="04/01/2018 23:03:19">
+    <Property Name="ElementName" Value="[dbo].[Page_Titles].[prefix]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Page_Titles]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="pos" />
+  </Operation>
 </Operations>

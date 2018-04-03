@@ -66,6 +66,7 @@
     <Folder Include="dbo\Functions" />
     <Folder Include="dbo\Stored Procedures\Users" />
     <Folder Include="dbo\Stored Procedures\Languages" />
+    <Folder Include="dbo\Stored Procedures\PageTitles" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Users.sql" />
@@ -84,6 +85,12 @@
     <Build Include="dbo\Stored Procedures\Languages\Language_Create.sql" />
     <Build Include="dbo\Stored Procedures\Languages\Languages_GetList.sql" />
     <Build Include="dbo\Stored Procedures\Languages\Language_Delete.sql" />
+    <Build Include="dbo\Tables\Page_Titles.sql" />
+    <Build Include="dbo\Sequences\SequenccePageTitles.sql" />
+    <Build Include="dbo\Stored Procedures\PageTitles\Page_Title_Create.sql" />
+    <Build Include="dbo\Stored Procedures\PageTitles\Page_Title_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\PageTitles\Page_Titles_GetList.sql" />
+    <Build Include="dbo\Stored Procedures\PageTitles\Page_Title_Get.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

@@ -1,4 +1,3 @@
-{{editor}}
 <div class="editor-tab noselect">
     <div class="box bg">
         <div class="row hover">
@@ -93,6 +92,19 @@
                                 </svg>
                             </div>
                             <div class="col text">Page Settings</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row line">&nbsp;</div>
+                    </li>
+                    <li>
+                        <div class="row hover item item-new-window">
+                            <div class="col icon pad-right">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-new-window" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                            <div class="col text">New Window</div>
                         </div>
                     </li>
                 </ul>
@@ -197,7 +209,7 @@
                     <div class="info code-total-lines"></div>
                 </div>
             </div>
-            <div class="tab content-fields hide">
+            <div class="tab content-fields hide" data-simplebar>
                 <div class="scroller">
                     <div class="row">
                         <div class="col">
@@ -218,26 +230,26 @@
                     <div class="textarea-clone"><div></div></div>
                 </div>
             </div>
-            <div class="tab file-settings hide">
-                <h4>Page Settings</h4>
-                <span class="page-name">for "/home"</span>
+            <div class="tab page-settings hide">
+                <div class="row pad-height">
+                    <h4>Page Settings</h4>
+                    for <a href="#" class="page-name">/home</a>
+                </div>
             </div>
         </div>
     </div>
 
 </div>
+
 <div class="preview">
-{{/editor}}
 
-{{header "/Partials/UI/header.html"}}
+    {{header "/Partials/UI/header.html"}}
 
-<div class="content">{{content}}</div>
+    <div class="content">{{content}}</div>
 
-{{footer "/Partials/UI/footer.html"}}
+    {{footer "/Partials/UI/footer.html"}}
 
-{{editor-foot}}
 </div>
-
 
 <script type="text/html" id="template_tab">
     <li class="tab-##id## ##selected##">
@@ -262,36 +274,35 @@
         <div class="row message hide"><span></span></div>
         <div class="row field">File Path</div>
         <div class="row input pad-top-sm">
-            <input type="text" id="newfilepath" value="##folder-path##"/>
+            <input type="text" id="newfilepath" value="##folder-path##" />
         </div>
         <div class="row field">File Name</div>
         <div class="row input">
-            <input type="text" id="newfilename" placeholder="template.html"/>
+            <input type="text" id="newfilename" placeholder="template.html" />
         </div>
         <div class="row text-center pad-top-sm">
             <div class="col">
-                <input type="submit" class="button apply" value="Create File"/>
+                <input type="submit" class="button apply" value="Create File" />
             </div>
         </div>
     </form>
 </script>
 
 <script language="text/html" id="template_newfolder">
-        <form>
+    <form>
         <div class="row message hide"><span></span></div>
         <div class="row field">Folder Path</div>
-            <div class="row input">
+        <div class="row input">
             <input type="text" id="newfolderpath" value="##folder-path##" />
+        </div>
+        <div class="row field">Folder Name <span class="faded">(no spaces)</span></div>
+        <div class="row input">
+            <input type="text" id="newfolder" placeholder="BlogEntries" />
+        </div>
+        <div class="row text-center pad-top-sm">
+            <div class="col">
+                <input type="submit" class="button apply" value="Create Folder" />
             </div>
-            <div class="row field">Folder Name <span class="faded">(no spaces)</span></div>
-            <div class="row input">
-                <input type="text" id="newfolder" placeholder="BlogEntries"/>
-            </div>
-            <div class="row text-center pad-top-sm">
-                <div class="col">
-                    <input type="submit" class="button apply" value="Create Folder"/>
-                </div>
-            </div>
-        </form>
+        </div>
+    </form>
 </script>
-{{/editor-foot}}
