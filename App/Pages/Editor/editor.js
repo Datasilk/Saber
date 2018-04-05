@@ -27,7 +27,7 @@ S.editor = {
         var editor = null;
         switch (this.type) {
             case 0: //monaco
-                require.config({ paths: { 'vs': 'js/utility/monaco' } });
+                require.config({ paths: { 'vs': '/js/utility/monaco' } });
                 require(['vs/editor/editor.main'], function () {
                     editor = monaco.editor.create(document.getElementById('editor'), {
                         value: '',
@@ -90,7 +90,8 @@ S.editor = {
         $('.editor-drop-menu .item-save-as').on('click', S.editor.saveAs);
         $('.tab-content-fields').on('click', S.editor.filebar.fields.show);
         $('.tab-file-code').on('click', S.editor.filebar.code.show);
-        $('.tab-file-settings').on('click', S.editor.filebar.settings.show);
+        $('.tab-page-settings').on('click', S.editor.filebar.settings.show);
+        $('.tab-page-resources').on('click', S.editor.filebar.resources.show);
         $('.tab-preview').on('click', S.editor.filebar.preview.show);
         $('.editor-drop-menu .item-content-fields').on('click', function () { S.editor.filebar.fields.show(true); });
         $('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);
@@ -154,9 +155,9 @@ S.editor = {
         if (pos.top == 0) {
             pos = fields.offset();
         }
-        $('.code-editor, .content-fields, .page-settings').css({ height: win.h - pos.top });
+        $('.code-editor, .content-fields').css({ height: win.h - pos.top });
+        $('.page-settings, .page-resources').css({ minHeight: win.h - pos.top });
         $('.file-browser').css({ height: win.h - pos2.top });
-        
     },
 
     dropmenu: {
@@ -241,7 +242,7 @@ S.editor = {
     },
 
     save: function (path, content) {
-        if (path == null) {
+        if (path == null || typeof path != 'string') {
             switch (S.editor.type) {
                 case 0: case 1: //monaco & ace (apparently share the same code)
                     S.editor.save(S.editor.selected, S.editor.instance.getValue());
@@ -251,15 +252,15 @@ S.editor = {
         var self = S.editor;
         var id = self.fileId(path);
         var tab = $('.tab-' + id);
-        if ($('.editor-drop-menu .item-save.faded').length == 1 && tab.length > 0) { return;}
-        
+        if ($('.editor-drop-menu .item-save.faded').length == 1) { return;}
         self.dropmenu.hide();
+
         if (tab.length > 0) {
             if (tab.hasClass('selected')) {
                 //check if we should save something besides source code
 
                 if ($('.tab-content-fields').hasClass('selected')) {
-                    //save content fields values
+                    //save content fields values ///////////////////////////////////////////////////////////////////////////////
                     var fields = {};
                     var texts = $('.content-fields form').find('textarea, input, select');
                     texts.each(function (txt) {
@@ -272,7 +273,7 @@ S.editor = {
                             if (d == 'success') {
                                 S.editor.fields.changed = false;
                                 //html resource has changed because content fields have changed
-                                S.editor.resources.html.changed = true;
+                                S.editor.files.html.changed = true;
                                 S.message.show('.content-fields .message', 'confirm', 'Content fields were saved.', false, 4000, true);
                             } else { S.editor.error(); }
                         },
@@ -281,8 +282,51 @@ S.editor = {
                         }
                     );
                     return;
+
+                } else if ($('.tab-page-settings').hasClass('selected')) {
+                    //save page settings ///////////////////////////////////////////////////////////////////////////////
+                    var settings = S.editor.settings;
+
+                    //save title
+                    if (settings.title.changed == true) {
+                        var data = {
+                            path: S.editor.path,
+                            prefixId: $('#page_title_prefix').val(),
+                            suffixId: $('#page_title_suffix').val(),
+                            title: $('#page_title').val()
+                        };
+                        S.ajax.post('Editor/UpdatePageTitle', data,
+                            function (d) {
+                                //show message to user
+                                showmsg();
+                            },
+                            function () { S.editor.error(); }
+                        );
+                    }
+                    
+
+                    //save description
+                    if (settings.description.changed == true) {
+                        var data = {
+                            path: S.editor.path,
+                            description: $('#page_description').val()
+                        };
+                        S.ajax.post('Editor/UpdatePageDescription', data,
+                            function (d) {
+                                //show message to user
+                                showmsg();
+                            },
+                            function () { S.editor.error(); }
+                        );
+                    }
+
+                    function showmsg() {
+                        S.message.show('.editor .message', 'confirm', 'Page settings have been updated successfully');
+                    }
+
+                    return;
                 }
-            }
+            } 
         }
 
         //last resort, save source code to file
@@ -294,10 +338,10 @@ S.editor = {
                     //check whether or not file was a required page resource for this page
                     if (S.editor.isResource(path)) {
                         var ext = S.editor.fileExt(path);
-                        S.editor.resources[ext].changed = true;
+                        S.editor.files[ext].changed = true;
                         if (ext == 'html') {
                             //also mark content as changed so content fields can reload
-                            S.editor.resources.content.changed = true;
+                            S.editor.files.content.changed = true;
                         }
                     }
 
@@ -479,8 +523,8 @@ S.editor = {
         return relpath.toLowerCase() == S.editor.path;
     },
 
-    resources: {
-        //required page resources, track whether or not they've 
+    files: {
+        //required page files, track whether or not they've 
         //been updated on the server via the editor
         html: { changed: false },
         less: { changed: false },
@@ -617,10 +661,10 @@ S.editor = {
             }
             
             if (isready !== false) {
-                $('.tab-content-fields, .tab-file-settings, .tab-file-photos, .tab-preview').hide();
+                $('.tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
                 if (isPageResource) {
                     //show file bar icons for page html resource
-                    $('.tab-content-fields, .tab-file-settings, .tab-file-photos, .tab-preview').show();
+                    $('.tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').show();
                 }
             }
             
@@ -728,10 +772,11 @@ S.editor = {
 
                 //disable save menu
                 $('.item-save').addClass('faded').attr('disabled', 'disabled');
+                $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
                 //load content for page
-                if (S.editor.fields.selected != S.editor.selected || S.editor.resources.content.changed == true) {
-                    S.editor.resources.content.changed = false;
+                if (S.editor.fields.selected != S.editor.selected || S.editor.files.content.changed == true) {
+                    S.editor.files.content.changed = false;
                     S.editor.fields.changed = false;
                     $('.content-fields form').html('');
                     S.ajax.post('Editor/RenderContentFields', { path: S.editor.path, language:lang },
@@ -764,6 +809,7 @@ S.editor = {
                 $('ul.file-tabs > li').removeClass('selected');
                 $('ul.file-tabs > li.tab-file-code').addClass('selected');
                 if (S.editor.isChanged(S.editor.selected)) { S.editor.changed(); }
+                $('.item-save-as').removeClass('faded').removeAttr('disabled');
                 setTimeout(function () { S.editor.resize(); }, 10);
             }
         },
@@ -774,9 +820,30 @@ S.editor = {
                 $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
                 $('.editor .sections > .page-settings').removeClass('hide');
                 $('ul.file-tabs > li').removeClass('selected');
-                $('ul.file-tabs > li.tab-file-settings').addClass('selected');
+                $('ul.file-tabs > li.tab-page-settings').addClass('selected');
+
+                //disable save menu
+                $('.item-save').addClass('faded').attr('disabled', 'disabled');
+                $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
+
                 S.editor.settings.load();
-            },
+            }
+        },
+
+        resources: {
+            show: function () {
+                S.editor.dropmenu.hide();
+                $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
+                $('.editor .sections > .page-resources').removeClass('hide');
+                $('ul.file-tabs > li').removeClass('selected');
+                $('ul.file-tabs > li.tab-page-resources').addClass('selected');
+
+                //disable save menu
+                $('.item-save').addClass('faded').attr('disabled', 'disabled');
+                $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
+
+                S.editor.resources.load();
+            }
         },
 
         preview: {
@@ -890,7 +957,7 @@ S.editor = {
     },
 
     fields: {
-        clone: $('.textarea-clone > div'),
+        clone: $('.content-fields .textarea-clone > div'),
         selected: '',
         changed: false,
         change: function (e) {
@@ -909,24 +976,46 @@ S.editor = {
 
     settings: {
         _loaded: false,
+        clone: null,
 
         load: function () {
-            S.ajax.post('Editor/RenderPageSettings', { path: S.editor.path },
+            var self = S.editor.settings;
+            if (self._loaded == true) { return; }
+            var path = S.editor.path;
+            S.ajax.post('Editor/RenderPageSettings', { path: path },
                 function (d) {
                     $('.sections > .page-settings').append(d);
+                    self._loaded = true;
+                    self.clone = $('.page-settings .textarea-clone > div');
+                    var p = path.replace('content/', '');
+                    $('.page-name').attr('href', '/' + p).html(p);
 
-                    //set up events to auto-save
-                    $('#page_title_prefix, #page_title_suffix, #page_title').on('change, keyup', S.editor.settings.title.changed);
+                    //set up events to detect changes
+                    var description = $('#page_description');
+                    $('#page_title_prefix, #page_title_suffix, #page_title').on('change, keyup', self.title.change);
+                    description.on('change, keyup, keydown', self.description.change);
+                    self.change(description, true);
                 }
             );
         },
 
+        change: function (field, changed) {
+            //update textarea height for given field
+            var clone = S.editor.settings.clone;
+            clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
+            field.css({ height: clone.height() });
+            if (changed == false) {
+                //enable save menu
+                $('.item-save').removeClass('faded').removeAttr('disabled');
+            }
+        },
+
         title: {
             _timer: null,
+            changed: false,
 
             prefix: {
                 show: function () {
-                    console.log('wtf');
                     S.popup.show('New Page Title Prefix',
                         $('#template_pagetitle_newprefix').html()
                     );
@@ -950,7 +1039,6 @@ S.editor = {
 
             suffix: {
                 show: function () {
-                    console.log('wtf');
                     S.popup.show('New Page Title Suffix',
                         $('#template_pagetitle_newsuffix').html()
                     );
@@ -972,7 +1060,7 @@ S.editor = {
                 }
             },
 
-            changed: function () {
+            change: function () {
                 var prefix = $('#page_title_prefix')[0].selectedOptions[0].text;
                 var suffix = $('#page_title_suffix')[0].selectedOptions[0].text;
                 if (prefix == '[None]') {
@@ -986,24 +1074,37 @@ S.editor = {
                     if (suffix[0] != ' ') { suffix = ' ' + suffix; }
                 }
                 window.document.title = prefix + $('#page_title').val() + suffix;
-                clearTimeout(S.editor.settings.title._timer);
-                S.editor.settings.title._timer = setTimeout(function () { S.editor.settings.title.save(); }, 3000);
-            },
-
-            save: function () {
-                var data = {
-                    path: S.editor.path,
-                    prefixId: $('#page_title_prefix').val(),
-                    suffixId: $('#page_title_suffix').val(),
-                    title: $('#page_title').val()
-                };
-                S.ajax.post('Editor/UpdatePageTitle', data,
-                    function (d) { },
-                    function () {
-                        S.editor.error();
-                    }
-                );
+                $('.item-save').removeClass('faded').removeAttr('disabled');
+                S.editor.settings.title.changed = true;
             }
+        },
+
+        description: {
+            changed: false,
+            change: function () {
+                var description = $('#page_description');
+                S.editor.settings.change(description, S.editor.settings.description.changed);
+                S.editor.settings.description.changed = true;
+                $('.item-save').removeClass('faded').removeAttr('disabled');
+            }
+        }
+    },
+
+    resources: {
+        _loaded: false,
+
+        load: function () {
+            var self = S.editor.resources;
+            if (self._loaded == true) { return; }
+            var path = S.editor.path;
+            S.ajax.post('Editor/RenderPageResources', { path: path },
+                function (d) {
+                    $('.sections > .page-resources').append(d);
+                    self._loaded = true;
+                    var p = path.replace('content/', '');
+                    $('.page-name').attr('href', '/' + p).html(p);
+                }
+            );
         }
     },
 

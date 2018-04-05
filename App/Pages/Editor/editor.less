@@ -91,7 +91,7 @@
 
 /* content fields */
 .content-fields{position:relative; padding-bottom:30px; overflow-y:auto; overflow-x:hidden;
-    & > .scroller{max-width:1250px; margin:0 auto;}
+    & > .scroller{position:relative; max-width:1250px; margin:0 auto; }
     form{
         .field{padding:16px 7px 0px 4px !important;}
         textarea{width:100%; resize: none; z-index:10; overflow:hidden; font-size:18px; font-weight:200; }
@@ -100,7 +100,7 @@
     .col.field{width:200px;}
     .col.input{width:~"calc(100% - 200px)";}
     .textarea-clone{opacity:0; position:absolute; z-index:-1; width:100%; height:0px; top:0;
-        & > div{position:absolute; width:100%; min-height:30px; font-size:18px; font-weight:200; padding:10px 10px 10px 220px; line-height:1.15;box-sizing:border-box;border-width:1px; font-family:monospace;}
+        & > div{position:absolute; width:100%; min-height:30px; font-size:18px; font-weight:200; padding:10px 10px 10px 220px; line-height:1.15; box-sizing:border-box; border-width:1px; font-family:monospace;}
     }
     .no-fields{padding: 20px 50px;
         li{padding-bottom:10px;}
@@ -109,10 +109,20 @@
 }
 
 /* page settings */
-.page-settings{width:100%; max-width:1250px; margin:0 auto;}
+.page-settings{width:100%; max-width:1250px; margin:0 auto;
+    textarea{width:100%; resize: none; z-index:10; overflow:hidden; font-size:18px; font-weight:200;}
+    .textarea-clone{opacity:0; position:absolute; z-index:-1; width:100%; height:0px; top:0;
+        & > div{position:absolute; width:100%; min-height:30px; font-size:18px; font-weight:200; padding:10px; line-height:1.15; box-sizing:border-box; border-width:1px; font-family:monospace;}
+    }
+}
 .settings-page-title{
     & > .col:nth-child(1), & > .col:nth-child(3){width:25%;}
     & > .col:nth-child(2){width:50%;padding-top:1px;}
+}
+
+/* page resources */
+.page-resources{width:100%; padding:0 20px;
+    .toolbar, .no-resources{max-width:1250px; margin:0 auto;}
 }
 
 /* Ace Editor */

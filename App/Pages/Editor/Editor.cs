@@ -44,10 +44,6 @@ namespace Saber.Pages
                 //use editor.html
                 scaffold = new Scaffold("/Pages/Editor/editor.html");
 
-                //load editor
-                scaffold.Data["editor"] = "1";
-                scaffold.Data["editor-foot"] = "1";
-
                 //load editor resources
                 switch (EditorUsed)
                 {
