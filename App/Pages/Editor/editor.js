@@ -1103,6 +1103,9 @@ S.editor = {
                     self._loaded = true;
                     var p = path.replace('content/', '');
                     $('.page-name').attr('href', '/' + p).html(p);
+
+                    //initialize uploader
+                    launchPad({ buttons: $('.button.uploader')[0] });
                 }
             );
         }

@@ -82,7 +82,8 @@ paths.working = {
             //paths.scripts + 'platform/util.color.js',
             //paths.scripts + 'platform/util.file.js',
             //paths.scripts + 'platform/validate.js',
-            paths.scripts + 'platform/window.js' //  <---- End of Optional features
+            paths.scripts + 'platform/window.js', //  <---- End of Optional features
+            paths.scripts + 'utility/launchpad/launchpad.js'
         ],
         app: paths.app + '**/*.js',
         utility: [
