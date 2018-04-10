@@ -863,8 +863,8 @@ S.editor = {
                 var rnd = Math.floor(Math.random() * 9999);
 
                 //first, reload CSS
-                if (S.editor.resources.less.changed == true) {
-                    S.editor.resources.less.changed = false;
+                if (S.editor.files.less.changed == true) {
+                    S.editor.files.less.changed = false;
                     tagcss.remove();
                     $('head').append(
                         '<link rel="stylesheet" type="text/css" id="page_css" href="' + css + '?r=' + rnd + '"></link>'
@@ -873,8 +873,8 @@ S.editor = {
 
 
                 //next, reload rendered HTML
-                if (S.editor.resources.html.changed == true) {
-                    S.editor.resources.html.changed = false;
+                if (S.editor.files.html.changed == true) {
+                    S.editor.files.html.changed = false;
                     S.ajax.post('Editor/RenderPage', { path: S.editor.path + '.html', language: window.language },
                         function (d) {
                             $('.preview > .content').html(d);
@@ -887,8 +887,8 @@ S.editor = {
 
                 //finally, reload javascript file
                 function changeJs(htmlChanged) {
-                    if (S.editor.resources.js.changed == true) {
-                        S.editor.resources.js.changed = false;
+                    if (S.editor.files.js.changed == true) {
+                        S.editor.files.js.changed = false;
                         tagjs.remove();
                         S.util.js.load(src + '?r=' + rnd, 'page_js',
                             function () { showContent(); }
@@ -1105,7 +1105,13 @@ S.editor = {
                     $('.page-name').attr('href', '/' + p).html(p);
 
                     //initialize uploader
-                    launchPad({ buttons: $('.button.uploader')[0] });
+                    launchPad({
+                        buttons: $('.button.uploader')[0],
+                        url: 'Upload/Resources',
+                        onUploadStart: function (files, xhr, data) {
+                            data.append('path', S.editor.path);
+                        }
+                    });
                 }
             );
         }

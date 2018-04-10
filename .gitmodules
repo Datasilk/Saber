@@ -7,3 +7,6 @@
 [submodule "App/Scripts/selector"]
 	path = App/Scripts/selector
 	url = http://github.com/websilk/selector
+[submodule "App/Scripts/utility/launchpad"]
+	path = App/Scripts/utility/launchpad
+	url = http://github.com/datasilk/launchpad

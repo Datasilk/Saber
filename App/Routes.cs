@@ -9,6 +9,7 @@ public class Routes : Datasilk.Routes
         switch (name)
         {
             case "login": return new Saber.Pages.Login(S);
+            case "upload": return new Saber.Pages.Upload(S);
             default: return new Saber.Pages.Editor(S);
         }
 
