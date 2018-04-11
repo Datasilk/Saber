@@ -5,6 +5,7 @@ S.editor = {
     selected: '',
     path: '',
     theme: 'dark',
+    sect: $('.sections'),
     div: $('.code-editor'),
     divFields: $('.content-fields'),
     divBrowser: $('.file-browser'),
@@ -146,17 +147,17 @@ S.editor = {
 
     resizeWindow: function () {
         var win = S.window.pos();
+        var sect = S.editor.sect;
         var div = S.editor.div;
         var browser = S.editor.divBrowser;
         var fields = S.editor.divFields;
-        var pos = div.offset();
+        var pos = sect.offset();
         var pos2 = browser.offset();
         div.css({ height: '' });
         if (pos.top == 0) {
             pos = fields.offset();
         }
-        $('.code-editor, .content-fields').css({ height: win.h - pos.top });
-        $('.page-settings, .page-resources').css({ minHeight: win.h - pos.top });
+        $('.code-editor, .content-fields, .page-settings, .page-resources').css({ height: win.h - pos.top });
         $('.file-browser').css({ height: win.h - pos2.top });
     },
 
@@ -984,11 +985,12 @@ S.editor = {
             var path = S.editor.path;
             S.ajax.post('Editor/RenderPageSettings', { path: path },
                 function (d) {
-                    $('.sections > .page-settings').append(d);
+                    $('.sections > .page-settings > .scroller').append(d);
                     self._loaded = true;
                     self.clone = $('.page-settings .textarea-clone > div');
                     var p = path.replace('content/', '');
                     $('.page-name').attr('href', '/' + p).html(p);
+                    S.editor.resizeWindow();
 
                     //set up events to detect changes
                     var description = $('#page_description');
@@ -1110,6 +1112,12 @@ S.editor = {
                         url: 'Upload/Resources',
                         onUploadStart: function (files, xhr, data) {
                             data.append('path', S.editor.path);
+                        },
+
+                        onQueueComplete: function () {
+                            S.editor.resources._loaded = false;
+                            $('.sections > .page-resources').html('');
+                            S.editor.resources.load();
                         }
                     });
                 }

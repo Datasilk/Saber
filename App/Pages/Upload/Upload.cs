@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 
 namespace Saber.Pages
 {
@@ -16,7 +17,7 @@ namespace Saber.Pages
             {
                 //save resources for page
                 var paths = Utility.Page.GetRelativePath(Form["path"].ToString());
-                var dir = string.Join("/", paths) + "/";
+                var dir = "/wwwroot/" + string.Join("/", paths) + "/";
                 if (!Directory.Exists(S.Server.MapPath(dir)))
                 {
                     Directory.CreateDirectory(S.Server.MapPath(dir));
@@ -24,12 +25,28 @@ namespace Saber.Pages
                 foreach(var file in Files)
                 {
                     var filename = file.FileName;
-                    var ms = new MemoryStream();
+                    var ext = S.Util.Str.getFileExtension(filename).ToLower();
+                    var ms = new FileStream(S.Server.MapPath(dir + filename), FileMode.Create);
                     file.CopyTo(ms);
-                    ms.Position = 0;
-                    var sr = new StreamReader(ms);
-                    var txt = sr.ReadToEnd();
-                    File.WriteAllText(S.Server.MapPath(dir + filename), txt);
+                    ms.Close();
+                    ms.Dispose();
+
+                    switch (ext)
+                    {
+                        case "jpg": case "jpeg": case "png":
+                            var img = new global::Utility.Images(S);
+                            var i = 0;
+                            while(!File.Exists(S.Server.MapPath(dir + filename)) && i < 5)
+                            {
+                                i++;
+                                Thread.Sleep(1000);
+                            }
+                            if(File.Exists(S.Server.MapPath(dir + filename)))
+                            {
+                                img.Shrink(dir + filename, dir + filename.Replace("." + ext, "_sm." + ext), 480);
+                            }
+                            break;
+                    }
                 }
             }
             return "";

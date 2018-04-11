@@ -1,4 +1,7 @@
 ﻿<li class="type-{{file-type}}">
-    <img src="{{img-src}}" alt="{{img-alt}}" />
+    <div class="img">
+        {{img}}<img src="{{img-src}}" alt="{{img-alt}}" />{{/img}}
+        {{svg}}<svg viewBox="0 0 32 32"><use xlink:href="#icon-{{icon}}" x="0" y="0" width="32" height="32"></use></svg>{{/svg}}
+    </div>
     <div class="title">{{filename}}</div>
 </li>

@@ -622,11 +622,11 @@ namespace Saber.Services
             var item = new Scaffold("/Services/Editor/resource-item.html", S.Server.Scaffold);
             var paths = GetRelativePath(path);
             paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
-            var dir = string.Join("/", paths);
-            if (Directory.Exists(S.Server.MapPath(dir)))
+            var dir = string.Join("/", paths).ToLower() + "/";
+            if (Directory.Exists(S.Server.MapPath("/wwwroot/" + dir)))
             {
                 //get list of files in directory (excluding thumbnail images)
-                var info = new DirectoryInfo(S.Server.MapPath(dir));
+                var info = new DirectoryInfo(S.Server.MapPath("/wwwroot/" + dir));
                 var files = info.GetFiles().Where((f) => !f.Name.Contains("_sm."));
 
                 //sort files
@@ -657,24 +657,77 @@ namespace Saber.Services
                     {
                         var ext = S.Util.Str.getFileExtension(f.Name);
                         var type = "file";
-                        var img = "";
+                        var icon = "";
                         switch (ext.ToLower())
                         {
-                            case "png":
+                            case "png": //images
                             case "jpg":
                             case "jpeg":
                             case "gif":
                                 type = "image";
-                                img = f.Name.Replace("." + ext, "") + "_sm" + "." + ext;
+                                item.Data["img"] = "1";
+                                item.Data["svg"] = "";
+                                item.Data["img-src"] = dir + f.Name.Replace("." + ext, "") + "_sm" + "." + ext;
+                                item.Data["img-alt"] = type + " " + f.Name;
+                                break;
+                            case "css":
+                                icon = "css";
+                                break;
+                            case "doc": //documents
+                            case "docx":
+                            case "rtf":
+                            case "txt":
+                            case "odt":
+                            case "uot":
+                                icon = "doc";
+                                break;
+                            case "exe": //executables
+                                icon = "exe";
+                                break;
+                            case "html":
+                                icon = "html";
+                                break;
+                            case "js":
+                                icon = "js";
+                                break;
+                            case "less":
+                                icon = "less";
+                                break;
+                            case "pdf":
+                                icon = "pdf";
+                                break;
+                            case "7z": //compressed files
+                            case "ace":
+                            case "arj":
+                            case "bz2":
+                            case "cab":
+                            case "gzip":
+                            case "jar":
+                            case "lzh":
+                            case "rar":
+                            case "tar":
+                            case "uue":
+                            case "xz":
+                            case "z":
+                            case "zip":
+                                icon = "zip";
+                                break;
+                            default:
+                                icon = "";
                                 break;
                         }
                         item.Data["file-type"] = type;
                         item.Data["filename"] = f.Name;
-                        item.Data["img-alt"] = type + " " + f.Name;
+                        if(type == "file")
+                        {
+                            item.Data["img"] = "";
+                            item.Data["svg"] = "1";
+                            item.Data["icon"] = "file" + (icon != "" ? "-" : "") + icon;
+                        }
                         html.Append(item.Render());
                     }
 
-                    scaffold.Data["resources"] = html.ToString();
+                    scaffold.Data["resources"] = "<ul>" + html.ToString() + "</ul>";
                 }
             }
 

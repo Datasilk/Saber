@@ -40,7 +40,7 @@ namespace Utility
         
         public void Shrink(string filename, string outfile, int width)
         {
-            using (var fs = File.OpenRead(filename))
+            using (var fs = File.OpenRead(S.Server.MapPath(filename)))
             {
                 var image = Image.Load(fs);
 
@@ -51,7 +51,7 @@ namespace Utility
                         Size = new SixLabors.Primitives.Size(width, 0)
                     });
                 }
-                image.Save(outfile);
+                image.Save(S.Server.MapPath(outfile));
                 fs.Dispose();
             }
         }
