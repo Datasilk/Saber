@@ -633,19 +633,19 @@ namespace Saber.Services
                 switch (sort)
                 {
                     case 0: //file type
-
+                        files = files.OrderBy(f => f.Extension);
                         break;
 
                     case 1: //alphabetical
-
+                        files = files.OrderBy(f => f.Name);
                         break;
 
                     case 2: //date created asc
-
+                        files = files.OrderBy(f => f.CreationTime);
                         break;
 
                     case 3: //date created desc
-
+                        files = files.OrderBy(f => f.CreationTime).Reverse();
                         break;
                 }
 

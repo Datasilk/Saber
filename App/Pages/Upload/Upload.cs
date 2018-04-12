@@ -34,6 +34,7 @@ namespace Saber.Pages
                     switch (ext)
                     {
                         case "jpg": case "jpeg": case "png":
+                            //create a thumbnail image to display in the page resources section of the editor
                             var img = new global::Utility.Images(S);
                             var i = 0;
                             while(!File.Exists(S.Server.MapPath(dir + filename)) && i < 5)
