@@ -670,9 +670,19 @@ namespace Saber.Services
                                 item.Data["img-src"] = dir + f.Name.Replace("." + ext, "") + "_sm" + "." + ext;
                                 item.Data["img-alt"] = type + " " + f.Name;
                                 break;
+
+                            //video 
+                            case "3g2":case "3gp":case "3gp2":case "3gpp":case "amv":case "asf":case "avi":case "divx":case "drc":case "dv":case "f4v":case "flv":case "gvi":case "gfx":case "m1v":case "m2v":case "m2t":case "m2ts":
+                            case "m4v":case "mkv":case "mov":case "mp2":case "mp2v":case "mp4":case "mp4v":case "mpe":case "mpeg":case "mpeg1":case "mpeg2":case "mpeg4":case "mpg":case "mpv2":case "mts":case "mtv":case "mxf":
+                            case "mxg":case "nsv":case "nuv":case "ogg":case "ogm":case "ogv":case "ogx":case "px":case "rec":case "rm":case "rmvb":case "rpl":case "thp":case "tod":case "ts":case "tts":case "tsd":case "vob":
+                            case "vro":case "webm":case "wm":case "wmv":case "wtv":case "xesc":
+                                icon = "video";
+                                break;
+
                             case "css":
                                 icon = "css";
                                 break;
+
                             case "doc": //documents
                             case "docx":
                             case "rtf":
@@ -681,37 +691,33 @@ namespace Saber.Services
                             case "uot":
                                 icon = "doc";
                                 break;
+
                             case "exe": //executables
                                 icon = "exe";
                                 break;
+
                             case "html":
                                 icon = "html";
                                 break;
+
                             case "js":
                                 icon = "js";
                                 break;
+
                             case "less":
                                 icon = "less";
                                 break;
+
                             case "pdf":
                                 icon = "pdf";
                                 break;
-                            case "7z": //compressed files
-                            case "ace":
-                            case "arj":
-                            case "bz2":
-                            case "cab":
-                            case "gzip":
-                            case "jar":
-                            case "lzh":
-                            case "rar":
-                            case "tar":
-                            case "uue":
-                            case "xz":
-                            case "z":
-                            case "zip":
+
+                            //compressed files
+                            case "7z": case "ace":case "arj":case "bz2":case "cab":case "gzip":case "jar":case "lzh":case "rar":
+                            case "tar":case "uue":case "xz":case "z":case "zip":
                                 icon = "zip";
                                 break;
+
                             default:
                                 icon = "";
                                 break;
@@ -735,6 +741,41 @@ namespace Saber.Services
             if(!scaffold.Data.ContainsKey("resources")) { scaffold.Data["resources"] = S.Server.LoadFileFromCache("/Services/Editor/no-resources.html"); }
 
             return scaffold.Render();
+        }
+
+        public string DeletePageResource(string path, string file)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            try
+            {
+                var paths = GetRelativePath(path);
+                paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
+                var dir = string.Join("/", paths).ToLower() + "/";
+                if (Directory.Exists(S.Server.MapPath("/wwwroot/" + dir)))
+                {
+                    if (File.Exists(S.Server.MapPath("/wwwroot/" + dir + file)))
+                    {
+                        //delete file from disk
+                        File.Delete(S.Server.MapPath("/wwwroot/" + dir + file));
+                    }
+                    var ext = S.Util.Str.getFileExtension(file);
+                    switch (ext.ToLower())
+                    {
+                        case "jpg":
+                        case "jpeg":
+                        case "png":
+                            //delete thumbnail, too
+                            var thumb = file.Replace("." + ext, "_sm." + ext);
+                            if (File.Exists(S.Server.MapPath("/wwwroot/" + dir + thumb)))
+                            {
+                                File.Delete(S.Server.MapPath("/wwwroot/" + dir + thumb));
+                            }
+                            break;
+                    }
+                }
+                return Success();
+            }
+            catch (Exception) { return Error(); }
         }
         #endregion
     }

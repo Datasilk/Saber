@@ -1094,6 +1094,7 @@ S.editor = {
 
     resources: {
         _loaded: false,
+        uploader: null,
 
         load: function () {
             var self = S.editor.resources;
@@ -1107,20 +1108,33 @@ S.editor = {
                     $('.page-name').attr('href', '/' + p).html(p);
 
                     //initialize uploader
-                    launchPad({
-                        buttons: $('.button.uploader')[0],
-                        url: 'Upload/Resources',
-                        onUploadStart: function (files, xhr, data) {
-                            data.append('path', S.editor.path);
-                        },
+                    if (self.uploader == null) {
+                        S.editor.resources.uploader = launchPad({
+                            url: 'Upload/Resources',
+                            onUploadStart: function (files, xhr, data) {
+                                data.append('path', S.editor.path);
+                            },
 
-                        onQueueComplete: function () {
-                            S.editor.resources._loaded = false;
-                            $('.sections > .page-resources').html('');
-                            S.editor.resources.load();
-                        }
-                    });
+                            onQueueComplete: function () {
+                                S.editor.resources._loaded = false;
+                                $('.sections .page-resources').children().remove();
+                                S.editor.resources.load();
+                            }
+                        });
+                    }
+                    $('.button.uploader').on('click', self.uploader.click);
                 }
+            );
+        },
+
+        delete: function (file, elem) {
+            if (!confirm('Do you really want to delete the file "' + file + '"? This cannot be undone.')) { return;}
+            S.ajax.post('Editor/DeletePageResource', { path: S.editor.path, file: file },
+                function (d) {
+                    $(elem).parents('li').first().remove();
+                },
+
+                function () { S.editor.error('Could not delete resource on the server.'); }
             );
         }
     },

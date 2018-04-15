@@ -26,22 +26,30 @@ namespace Saber.Pages
                 {
                     var filename = file.FileName;
                     var ext = S.Util.Str.getFileExtension(filename).ToLower();
-                    var ms = new FileStream(S.Server.MapPath(dir + filename), FileMode.Create);
-                    file.CopyTo(ms);
-                    ms.Close();
-                    ms.Dispose();
+                    try
+                    {
+                        var ms = new FileStream(S.Server.MapPath(dir + filename), FileMode.Create);
+                        file.CopyTo(ms);
+                        ms.Close();
+                        ms.Dispose();
+                    }catch(Exception ex)
+                    {
+
+                    }
+                    var i = 0;
+                    while (!File.Exists(S.Server.MapPath(dir + filename)) && i < 5)
+                    {
+                        i++;
+                        Thread.Sleep(1000);
+                    }
+                    if(!File.Exists(S.Server.MapPath(dir + filename))) { return Error(); }
 
                     switch (ext)
                     {
                         case "jpg": case "jpeg": case "png":
                             //create a thumbnail image to display in the page resources section of the editor
                             var img = new global::Utility.Images(S);
-                            var i = 0;
-                            while(!File.Exists(S.Server.MapPath(dir + filename)) && i < 5)
-                            {
-                                i++;
-                                Thread.Sleep(1000);
-                            }
+                            
                             if(File.Exists(S.Server.MapPath(dir + filename)))
                             {
                                 img.Shrink(dir + filename, dir + filename.Replace("." + ext, "_sm." + ext), 480);
