@@ -9,7 +9,9 @@
 # make sure user can't accidentally save their custom website to git
 /App/wwwroot/css/
 /App/wwwroot/js/
+/App/wwwroot/images/
 /App/wwwroot/content/pages/
+/App/Content/pages/
 /App/Partials/
 
 *.bak
