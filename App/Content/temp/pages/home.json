@@ -1,0 +1,15 @@
+{
+  "title": {
+    "prefix": "",
+    "body": "Home",
+    "suffix": " - Saber",
+    "prefixId": 0,
+    "suffixId": 1
+  },
+  "description": "You can build whatever you want with a single HTML file, JS file, and LESS file.",
+  "security": {
+    "secure": false,
+    "read": [],
+    "write": []
+  }
+}

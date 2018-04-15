@@ -1,0 +1,2 @@
+# Temporary Website
+The contents of this folder will be copied into various folders throughout the project to ensure that the user has a default website to work with after cloning the repository. The files are copied into key folders that are ignored by git, thus allowing the user to build their website and pull updates from git without overriding their website content / source code. Therefore, the Saber platform can be updated via git while ensuring that the user's custom website is left intact.

@@ -221,14 +221,14 @@ namespace Saber.Services
         {
             Process p = sender as Process;
             if (p == null) { return; }
-            Console.WriteLine(e.Data);
+            //Console.WriteLine(e.Data);
         }
 
         private void GulpErrorReceived(object sender, DataReceivedEventArgs e)
         {
             Process p = sender as Process;
             if (p == null) { return; }
-            Console.WriteLine(e.Data);
+            //Console.WriteLine(e.Data);
         }
 
         public string NewFile(string path, string filename)

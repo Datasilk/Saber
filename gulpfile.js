@@ -57,10 +57,6 @@ var paths = {
     scripts: './App/Scripts/',
     css: './App/CSS/',
     app: './App/',
-    themes: './App/Content/themes/',
-    vendor: {
-        root: './App/Vendor/**/'
-    },
     webroot: './App/wwwroot/',
 };
 
@@ -260,10 +256,24 @@ gulp.task('css', function () {
     gulp.start('css:utility');
 });
 
-//default task
+//tasks for compiling default website content ////////////////////////////////////////////
+gulp.task('default:website:less', function () {
+    var p = gulp.src(paths.app + 'Content/pages/*.less')
+        .pipe(less());
+    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    return p.pipe(gulp.dest(paths.webroot + 'content/pages/', { overwrite: true }));
+});
+
+gulp.task('default:website:js', function () {
+    return gulp.src(paths.app + 'Content/pages/*.js')
+        .pipe(gulp.dest(paths.webroot + 'content/pages/'));
+});
+gulp.task('default:website', ['default:website:less', 'default:website:js', 'less:website', 'js:app']);
+
+//default task /////////////////////////////////////////////////////////////////////
 gulp.task('default', ['js', 'less', 'css']);
 
-//specific file task
+//specific file task /////////////////////////////////////////////////////////////////////
 gulp.task('file', function () {
     var path = (arg.path || arg.p).toLowerCase();
     var pathlist = path.split('/');
@@ -284,7 +294,7 @@ gulp.task('file', function () {
     return p.pipe(gulp.dest(outputDir, { overwrite: true }));
 });
 
-//watch task
+//watch task /////////////////////////////////////////////////////////////////////
 gulp.task('watch', function () {
     //watch platform JS
     gulp.watch(paths.working.js.platform, ['js:platform']);
