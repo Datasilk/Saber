@@ -12,7 +12,9 @@
 /App/wwwroot/images/
 /App/wwwroot/content/pages/
 /App/Content/pages/
+/App/CSS/website.less
 /App/Partials/
+!/App/Partials/layout.html
 
 *.bak
 *.jfm

@@ -27,6 +27,7 @@ namespace Saber.Utility
                 case "scripts": paths[0] = "/Scripts"; break;
                 case "services": paths[0] = "/Services"; break;
                 case "content": paths[0] = "/Content/pages"; break;
+                case "resources": paths[0] = "/wwwroot"; break;
                 default: return new string[] { };
             }
             return paths;

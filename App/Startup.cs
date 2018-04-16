@@ -37,6 +37,7 @@ public class Startup : Datasilk.Startup {
             Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/resources/"), server.MapPath("/wwwroot/content/pages/"));
             Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/images/"), server.MapPath("/wwwroot/images/"));
             Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/partials/"), server.MapPath("/Partials/"));
+            File.Copy(server.MapPath("/Content/temp/css/website.less"), server.MapPath("/CSS/website.less"));
 
             Thread.Sleep(1000);
 

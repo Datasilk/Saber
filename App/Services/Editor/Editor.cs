@@ -49,8 +49,28 @@ namespace Saber.Services
                 //display root folders for website
                 items = new List<string>()
                 {
-                    "CSS", "Pages", "Partials", "Scripts", "Services", "access-denied.html", "layout.html"
+                    "wwwroot", "CSS", "Partials", "Scripts"
                 };
+            }
+            else if(paths[0] == "/wwwroot")
+            {
+                //get folder structure for resources (wwwroot) from hard drive
+                if (Directory.Exists(S.Server.MapPath(rpath)))
+                {
+                    var info = new DirectoryInfo(S.Server.MapPath(rpath));
+                    var exclude = new string[] { };
+                    if(paths.Length == 1) {
+                        //exclude internal folders
+                        exclude = new string[] { "content", "css", "editor", "js", "themes"};
+                    }
+                    foreach (var dir in info.GetDirectories())
+                    {
+                        if (!exclude.Contains(dir.Name.ToLower()))
+                        {
+                            items.Add(dir.Name);
+                        }
+                    }
+                }
             }
             else
             {
