@@ -36,7 +36,7 @@
             {
                 scripts += "<script language=\"javascript\">S.svg.load('/themes/default/icons.svg');</script>";
             }
-            var scaffold = new Scaffold("/Partials/layout.html", S.Server.Scaffold);
+            var scaffold = new Scaffold("/layout.html", S.Server.Scaffold);
             scaffold.Data["title"] = title;
             scaffold.Data["description"] = description;
             scaffold.Data["language"] = UserInfo.language;

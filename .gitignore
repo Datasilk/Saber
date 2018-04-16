@@ -14,7 +14,6 @@
 /App/Content/pages/
 /App/CSS/website.less
 /App/Partials/
-!/App/Partials/layout.html
 
 *.bak
 *.jfm
