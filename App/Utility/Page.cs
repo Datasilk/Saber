@@ -18,17 +18,29 @@ namespace Saber.Utility
             var paths = path.Split('/');
 
             //translate root path to relative path
-            switch (paths[0].ToLower())
+            if (paths[0] == "root")
             {
-                case "root": paths[0] = ""; break;
-                case "css": paths[0] = "/CSS"; break;
-                case "pages": paths[0] = "/Pages"; break;
-                case "partials": paths[0] = "/Partials"; break;
-                case "scripts": paths[0] = "/Scripts"; break;
-                case "services": paths[0] = "/Services"; break;
-                case "content": paths[0] = "/Content/pages"; break;
-                case "resources": paths[0] = "/wwwroot"; break;
-                default: return new string[] { };
+                if (paths.Length == 1) { return new string[] { "" }; }
+                var newpath = paths.Skip(1).ToArray();
+                switch (newpath[0].ToLower())
+                {
+                    case "css": newpath[0] = "/CSS"; break;
+                    case "pages": newpath[0] = "/Pages"; break;
+                    case "partials": newpath[0] = "/Partials"; break;
+                    case "scripts": newpath[0] = "/Scripts"; break;
+                    case "services": newpath[0] = "/Services"; break;
+                    default: return new string[] { };
+                }
+                return newpath;
+            }
+            else
+            {
+                switch (paths[0].ToLower())
+                {
+                    case "content": paths[0] = "/Content/pages"; break;
+                    case "wwwroot": paths[0] = "/wwwroot"; break;
+                    default: return new string[] { };
+                }
             }
             return paths;
         }

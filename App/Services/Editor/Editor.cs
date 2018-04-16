@@ -49,7 +49,7 @@ namespace Saber.Services
                 //display root folders for website
                 items = new List<string>()
                 {
-                    "wwwroot", "CSS", "Partials", "Scripts"
+                    "CSS", "Partials", "Scripts"
                 };
             }
             else if(paths[0] == "/wwwroot")
@@ -77,26 +77,38 @@ namespace Saber.Services
                 //get folder structure from hard drive
                 if (Directory.Exists(S.Server.MapPath(rpath)))
                 {
+                    //get list of directories
                     var info = new DirectoryInfo(S.Server.MapPath(rpath));
+                    var exclude = new string[] { };
+                    if(paths[0] == "/CSS" && paths.Length == 1)
+                    {
+                        exclude = new string[] { "tapestry" };
+                    }
                     foreach (var dir in info.GetDirectories())
                     {
-                        if (dir.Name.IndexOfAny(new char[] { '.', '_' }) != 0)
+                        if (dir.Name.IndexOfAny(new char[] { '.', '_' }) != 0 && !exclude.Contains(dir.Name.ToLower()))
                         {
                             items.Add(dir.Name);
                         }
                     }
+
+                    //get list of files
+                    exclude = new string[] { "gulpfile.js" };
                     foreach (var file in info.GetFiles())
                     {
-                        var f = file.Name.Split(".", 2);
-                        if (f.Length > 1)
+                        if (!exclude.Contains(file.Name.ToLower()))
                         {
-                            switch (f[1].ToLower())
+                            var f = file.Name.Split(".", 2);
+                            if (f.Length > 1)
                             {
-                                case "html":
-                                case "css":
-                                case "less":
-                                case "js":
-                                    items.Add(file.Name); break;
+                                switch (f[1].ToLower())
+                                {
+                                    case "html":
+                                    case "css":
+                                    case "less":
+                                    case "js":
+                                        items.Add(file.Name); break;
+                                }
                             }
                         }
                     }
@@ -117,6 +129,10 @@ namespace Saber.Services
             {
                 //add special directories
                 //html.Append(RenderBrowserItem(item, "content", "Content", "folder", "content"));
+                html.Append(RenderBrowserItem(item, "wwwroot", "wwwroot", "folder", "wwwroot"));
+            }else if(paths[0] == "/wwwroot")
+            {
+                html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root"));
             }
 
             foreach (var i in items)

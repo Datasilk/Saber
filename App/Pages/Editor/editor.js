@@ -89,17 +89,16 @@ S.editor = {
         $('.bg-overlay').on('click', S.editor.dropmenu.hide);
         $('.editor-drop-menu .item-save').on('click', S.editor.save);
         $('.editor-drop-menu .item-save-as').on('click', S.editor.saveAs);
+        $('.editor-drop-menu .item-content-fields').on('click', function () { S.editor.filebar.fields.show(true); });
+        $('.editor-drop-menu .item-page-settings').on('click', S.editor.filebar.settings.show);
+        $('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);
+        $('.editor-drop-menu .item-new-folder').on('click', S.editor.folder.create.show);
+        $('.editor-drop-menu .item-new-window').on('click', S.editor.newWindow);
         $('.tab-content-fields').on('click', S.editor.filebar.fields.show);
         $('.tab-file-code').on('click', S.editor.filebar.code.show);
         $('.tab-page-settings').on('click', S.editor.filebar.settings.show);
         $('.tab-page-resources').on('click', S.editor.filebar.resources.show);
         $('.tab-preview').on('click', S.editor.filebar.preview.show);
-        $('.editor-drop-menu .item-content-fields').on('click', function () { S.editor.filebar.fields.show(true); });
-        $('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);
-        $('.editor-drop-menu .item-new-folder').on('click', S.editor.folder.create.show);
-        $('.editor-drop-menu .item-new-window').on('click', S.editor.newWindow);
-        $('.page-settings .title-prefix .icon a').on('click', S.editor.settings.title.prefix.show);
-        $('.page-settings .title-suffix .icon a').on('click', S.editor.settings.title.suffix.show);
 
         //add window resize event
         $(window).on('resize', S.editor.resizeWindow);
@@ -575,7 +574,7 @@ S.editor = {
                     S.editor.explorer.path = path;
                     $('.file-browser ul.menu').html(d);
                     var url = path;
-                    if (path.indexOf('root' == 0)) {
+                    if (path.indexOf('root') == 0) {
                         url = url.replace('root', '');
                     }
                     url += '/';
@@ -997,6 +996,10 @@ S.editor = {
                     $('#page_title_prefix, #page_title_suffix, #page_title').on('change, keyup', self.title.change);
                     description.on('change, keyup, keydown', self.description.change);
                     self.change(description, true);
+
+                    //set up button events
+                    $('.page-settings .title-prefix .icon a').on('click', S.editor.settings.title.prefix.show);
+                    $('.page-settings .title-suffix .icon a').on('click', S.editor.settings.title.suffix.show);
                 }
             );
         },
