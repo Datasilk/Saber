@@ -6,6 +6,8 @@ namespace Saber.Pages
 {
     public class Upload : Page
     {
+        private string thumbdir = "_thumbs/";
+
         public Upload(Core DatasilkCore) : base(DatasilkCore)
         {
         }
@@ -17,10 +19,16 @@ namespace Saber.Pages
             {
                 //save resources for page
                 var paths = Utility.Page.GetRelativePath(Form["path"].ToString());
-                var dir = "/wwwroot/" + string.Join("/", paths) + "/";
-                if (!Directory.Exists(S.Server.MapPath(dir)))
+                var dir = string.Join("/", paths) + "/";
+                var pubdir = dir; //published directory
+                if (paths[0].ToLower() == "/content/pages")
                 {
-                    Directory.CreateDirectory(S.Server.MapPath(dir));
+                    //loading resources for specific page
+                    pubdir = "/wwwroot" + dir;
+                }
+                if (!Directory.Exists(S.Server.MapPath(pubdir)))
+                {
+                    Directory.CreateDirectory(S.Server.MapPath(pubdir));
                 }
                 foreach(var file in Files)
                 {
@@ -28,7 +36,7 @@ namespace Saber.Pages
                     var ext = S.Util.Str.getFileExtension(filename).ToLower();
                     try
                     {
-                        var ms = new FileStream(S.Server.MapPath(dir + filename), FileMode.Create);
+                        var ms = new FileStream(S.Server.MapPath(pubdir + filename), FileMode.Create);
                         file.CopyTo(ms);
                         ms.Close();
                         ms.Dispose();
@@ -37,22 +45,25 @@ namespace Saber.Pages
 
                     }
                     var i = 0;
-                    while (!File.Exists(S.Server.MapPath(dir + filename)) && i < 5)
+                    while (!File.Exists(S.Server.MapPath(pubdir + filename)) && i < 5)
                     {
                         i++;
                         Thread.Sleep(1000);
                     }
-                    if(!File.Exists(S.Server.MapPath(dir + filename))) { return Error(); }
+                    if(!File.Exists(S.Server.MapPath(pubdir + filename))) { return Error(); }
 
                     switch (ext)
                     {
                         case "jpg": case "jpeg": case "png":
                             //create a thumbnail image to display in the page resources section of the editor
                             var img = new global::Utility.Images(S);
-                            
-                            if(File.Exists(S.Server.MapPath(dir + filename)))
+                            if (!Directory.Exists(S.Server.MapPath(pubdir + thumbdir)))
                             {
-                                img.Shrink(dir + filename, dir + filename.Replace("." + ext, "_sm." + ext), 480);
+                                Directory.CreateDirectory(S.Server.MapPath(pubdir + thumbdir));
+                            }
+                            if(File.Exists(S.Server.MapPath(pubdir + filename)))
+                            {
+                                img.Shrink(pubdir + filename, pubdir + thumbdir + filename, 480);
                             }
                             break;
                     }

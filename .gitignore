@@ -7,13 +7,23 @@
 *.sln.docstates
 
 # make sure user can't accidentally save their custom website to git
-/App/wwwroot/css/
-/App/wwwroot/js/
-/App/wwwroot/images/
-/App/wwwroot/content/pages/
+/App/wwwroot/
+!/App/wwwroot/fonts/
+!/App/wwwroot/editor/
+!/App/wwwroot/themes/
 /App/Content/pages/
-/App/CSS/website.less
+/App/CSS/
+!/App/CSS/tapestry
+!/App/CSS/themes
+!/App/CSS/platform.less
 /App/Partials/
+/App/Scripts/
+!/App/Scripts/platform
+!/App/Scripts/selector
+!/App/Scripts/utility/ace/
+!/App/Scripts/utility/launchpad/
+!/App/Scripts/utility/monaco/
+!/App/Scripts/utility/velocity.min.js
 
 *.bak
 *.jfm

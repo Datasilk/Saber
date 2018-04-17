@@ -579,6 +579,23 @@ S.editor = {
                     }
                     url += '/';
                     $('.browser-path').html(url);
+                    if (path.indexOf('wwwroot') == 0) {
+                        //load resources section
+                        S.editor.filebar.resources.show(true);
+
+                        //hide all filebar icons except resources icon
+                        $('ul.file-tabs > li:not(.tab-page-resources)').hide();
+
+                        //change filebar path
+                        $('#filepath').val(path);
+                        $('.file-bar .file-icon use').attr('xlink:href', '#icon-folder');
+
+                        //deselect file tab
+                        $('.edit-bar .tabs .selected').removeClass('selected');
+                        S.editor.selected = '';
+
+                        S.editor.resources.load(path);
+                    }
                 },
                 function () {
                     S.editor.error();
@@ -664,7 +681,7 @@ S.editor = {
                 $('.tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
                 if (isPageResource) {
                     //show file bar icons for page html resource
-                    $('.tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').show();
+                    $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
                 }
             }
             
@@ -831,7 +848,8 @@ S.editor = {
         },
 
         resources: {
-            show: function () {
+            show: function (noload) {
+                if (S.editor.selected == '') { return;}
                 S.editor.dropmenu.hide();
                 $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
                 $('.editor .sections > .page-resources').removeClass('hide');
@@ -842,7 +860,8 @@ S.editor = {
                 $('.item-save').addClass('faded').attr('disabled', 'disabled');
                 $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
-                S.editor.resources.load();
+                if (noload === true) { return;}
+                S.editor.resources.load(S.editor.path);
             }
         },
 
@@ -1098,11 +1117,13 @@ S.editor = {
     resources: {
         _loaded: false,
         uploader: null,
+        path: '',
 
-        load: function () {
+        load: function (path) {
             var self = S.editor.resources;
-            if (self._loaded == true) { return; }
-            var path = S.editor.path;
+            if (self._loaded == true && self.path == path) { return; }
+            S.editor.resources.path = path;
+            $('.sections > .page-resources').html('');
             S.ajax.post('Editor/RenderPageResources', { path: path },
                 function (d) {
                     $('.sections > .page-resources').append(d);
@@ -1115,13 +1136,14 @@ S.editor = {
                         S.editor.resources.uploader = launchPad({
                             url: 'Upload/Resources',
                             onUploadStart: function (files, xhr, data) {
-                                data.append('path', S.editor.path);
+                                data.append('path', S.editor.resources.path);
+                                console.log(S.editor.resources.path);
                             },
 
                             onQueueComplete: function () {
                                 S.editor.resources._loaded = false;
                                 $('.sections .page-resources').children().remove();
-                                S.editor.resources.load();
+                                S.editor.resources.load(S.editor.resources.path);
                             }
                         });
                     }
@@ -1132,7 +1154,7 @@ S.editor = {
 
         delete: function (file, elem) {
             if (!confirm('Do you really want to delete the file "' + file + '"? This cannot be undone.')) { return;}
-            S.ajax.post('Editor/DeletePageResource', { path: S.editor.path, file: file },
+            S.ajax.post('Editor/DeletePageResource', { path: S.editor.resources.path, file: file },
                 function (d) {
                     $(elem).parents('li').first().remove();
                 },

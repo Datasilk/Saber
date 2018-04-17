@@ -11,6 +11,9 @@ namespace Saber.Services
 {
     public class Editor : Service
     {
+
+        private string thumbdir = "_thumbs/"; 
+
         public Editor(Core DatasilkCore) : base(DatasilkCore)
         {
         }
@@ -61,7 +64,11 @@ namespace Saber.Services
                     var exclude = new string[] { };
                     if(paths.Length == 1) {
                         //exclude internal folders
-                        exclude = new string[] { "content", "css", "editor", "js", "themes"};
+                        exclude = new string[] { "content", "css", "editor", "js", "themes", thumbdir.Replace("/","")};
+                    }
+                    else
+                    {
+                        exclude = new string[] { thumbdir.Replace("/", "") };
                     }
                     foreach (var dir in info.GetDirectories())
                     {
@@ -82,7 +89,7 @@ namespace Saber.Services
                     var exclude = new string[] { };
                     if(paths[0] == "/CSS" && paths.Length == 1)
                     {
-                        exclude = new string[] { "tapestry" };
+                        exclude = new string[] { "tapestry", "themes" };
                     }
                     foreach (var dir in info.GetDirectories())
                     {
@@ -94,21 +101,22 @@ namespace Saber.Services
 
                     //get list of files
                     exclude = new string[] { "gulpfile.js" };
+                    if (paths[0] == "/CSS" && paths.Length == 1)
+                    {
+                        exclude = new string[] { "platform.less" };
+                    }
                     foreach (var file in info.GetFiles())
                     {
                         if (!exclude.Contains(file.Name.ToLower()))
                         {
-                            var f = file.Name.Split(".", 2);
-                            if (f.Length > 1)
+                            var f = S.Util.Str.getFileExtension(file.Name);
+                            switch (f.ToLower())
                             {
-                                switch (f[1].ToLower())
-                                {
-                                    case "html":
-                                    case "css":
-                                    case "less":
-                                    case "js":
-                                        items.Add(file.Name); break;
-                                }
+                                case "html":
+                                case "css":
+                                case "less":
+                                case "js":
+                                    items.Add(file.Name); break;
                             }
                         }
                     }
@@ -659,29 +667,43 @@ namespace Saber.Services
             var paths = GetRelativePath(path);
             paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
             var dir = string.Join("/", paths).ToLower() + "/";
-            if (Directory.Exists(S.Server.MapPath("/wwwroot/" + dir)))
+            var pubdir = dir; //published directory
+            if(paths[0].ToLower() == "/content/pages")
+            {
+                //loading resources for specific page
+                pubdir = "/wwwroot" + dir;
+                scaffold.Data["for-page"] = "1";
+                scaffold.Data["for-type"] = "Page";
+            }
+            else
+            {
+                scaffold.Data["for-folder"] = "1";
+                scaffold.Data["for-type"] = "Website";
+                scaffold.Data["folder-path"] = dir.Replace("/wwwroot", "");
+            }
+            if (Directory.Exists(S.Server.MapPath(pubdir)))
             {
                 //get list of files in directory (excluding thumbnail images)
-                var info = new DirectoryInfo(S.Server.MapPath("/wwwroot/" + dir));
-                var files = info.GetFiles().Where((f) => !f.Name.Contains("_sm."));
+                var info = new DirectoryInfo(S.Server.MapPath(pubdir));
+                var files = info.GetFiles();
 
                 //sort files
                 switch (sort)
                 {
                     case 0: //file type
-                        files = files.OrderBy(f => f.Extension);
+                        files = files.OrderBy(f => f.Extension).ToArray();
                         break;
 
                     case 1: //alphabetical
-                        files = files.OrderBy(f => f.Name);
+                        files = files.OrderBy(f => f.Name).ToArray();
                         break;
 
                     case 2: //date created asc
-                        files = files.OrderBy(f => f.CreationTime);
+                        files = files.OrderBy(f => f.CreationTime).ToArray();
                         break;
 
                     case 3: //date created desc
-                        files = files.OrderBy(f => f.CreationTime).Reverse();
+                        files = files.OrderBy(f => f.CreationTime).Reverse().ToArray();
                         break;
                 }
 
@@ -689,8 +711,10 @@ namespace Saber.Services
                 if(files.Count() > 0)
                 {
                     var html = new StringBuilder();
+                    var exclude = new string[] { "web.config" };
                     foreach (var f in files)
                     {
+                        if (exclude.Contains(f.Name.ToLower())) { continue; }
                         var ext = S.Util.Str.getFileExtension(f.Name);
                         var type = "file";
                         var icon = "";
@@ -703,7 +727,7 @@ namespace Saber.Services
                                 type = "image";
                                 item.Data["img"] = "1";
                                 item.Data["svg"] = "";
-                                item.Data["img-src"] = dir + f.Name.Replace("." + ext, "") + "_sm" + "." + ext;
+                                item.Data["img-src"] = pubdir.Replace("/wwwroot","") + thumbdir + f.Name;
                                 item.Data["img-alt"] = type + " " + f.Name;
                                 break;
 
@@ -787,12 +811,23 @@ namespace Saber.Services
                 var paths = GetRelativePath(path);
                 paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
                 var dir = string.Join("/", paths).ToLower() + "/";
-                if (Directory.Exists(S.Server.MapPath("/wwwroot/" + dir)))
+                var pubdir = dir; //published directory
+                if (paths[0].ToLower() == "/content/pages")
                 {
-                    if (File.Exists(S.Server.MapPath("/wwwroot/" + dir + file)))
+                    //loading resources for specific page
+                    pubdir = "/wwwroot" + dir;
+                }
+
+                //check for special files that cannot be deleted
+                var exclude = new string[] { "web.config" };
+                if (exclude.Contains(file)) { return Error(); }
+
+                if (Directory.Exists(S.Server.MapPath(pubdir)))
+                {
+                    if (File.Exists(S.Server.MapPath(pubdir + file)))
                     {
                         //delete file from disk
-                        File.Delete(S.Server.MapPath("/wwwroot/" + dir + file));
+                        File.Delete(S.Server.MapPath(pubdir + file));
                     }
                     var ext = S.Util.Str.getFileExtension(file);
                     switch (ext.ToLower())
@@ -801,10 +836,9 @@ namespace Saber.Services
                         case "jpeg":
                         case "png":
                             //delete thumbnail, too
-                            var thumb = file.Replace("." + ext, "_sm." + ext);
-                            if (File.Exists(S.Server.MapPath("/wwwroot/" + dir + thumb)))
+                            if (File.Exists(S.Server.MapPath(pubdir + thumbdir + file)))
                             {
-                                File.Delete(S.Server.MapPath("/wwwroot/" + dir + thumb));
+                                File.Delete(S.Server.MapPath(pubdir + thumbdir + file));
                             }
                             break;
                     }

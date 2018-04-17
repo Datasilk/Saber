@@ -1,7 +1,8 @@
 ﻿<div class="row toolbar pad-height">
     <div class="col">
-        <h4>Page Resources</h4>
-        for <a href="#" class="page-name">/home</a>
+        <h4>{{for-type}} Resources</h4>
+        {{for-page}}for <a href="#" class="page-name">/home</a>{{/for-page}}
+        {{for-folder}}for public path <a href="javascript:">{{folder-path}}</a>{{/for-folder}}
     </div>
     <div class="col right">
         <button class="uploader button special">Upload Resources</button>
