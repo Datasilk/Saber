@@ -1,11 +1,12 @@
 ﻿using System.Linq;
-using System.Net;
+using Microsoft.AspNetCore.Http;
+using Saber.Utility;
 
 namespace Saber.Pages
 {
     public class Editor : Page
     {
-        public Editor(Core DatasilkCore) : base(DatasilkCore)
+        public Editor(HttpContext context) : base(context)
         {
         }
 
@@ -31,15 +32,14 @@ namespace Saber.Pages
             var file = pathname + ".html";
 
             //load page configuration
-            var pageUtil = new Utility.Page(S);
-            var config = pageUtil.GetPageConfig("content/" + pathname);
+            var config = PageInfo.GetPageConfig("content/" + pathname);
             title = config.title.prefix + config.title.body + config.title.suffix;
             description = config.description;
 
             //open page contents
-            var Editor = new Services.Editor(S);
+            var Editor = new Services.Editor(context);
 
-            if (S.User.userId > 0)
+            if (User.userId > 0)
             {
                 //use editor.html
                 scaffold = new Scaffold("/Pages/Editor/editor.html");
@@ -62,10 +62,10 @@ namespace Saber.Pages
                 AddCSS("/css/pages/editor/editor.css");
                 if(EditorUsed != EditorType.Monaco)
                 {
-                    scripts +=
+                    scripts.Append(
                     "<script language=\"javascript\">" +
                         "S.editor.type = " + (int)EditorUsed + ";" +
-                    "</script>";
+                    "</script>");
                 }
                 usePlatform = true;
             }
@@ -79,9 +79,9 @@ namespace Saber.Pages
             LoadHeader(ref scaffold);
 
             //add page-specific references
-            scripts += "<script language=\"javascript\">" + 
-                "window.language = '" + UserInfo.language + "';" + 
-                "</script>\n";
+            scripts.Append("<script language=\"javascript\">" + 
+                "window.language = '" + User.language + "';" + 
+                "</script>\n");
             AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
             AddScript(rpath.ToLower() + rfile + ".js", "page_js");
 

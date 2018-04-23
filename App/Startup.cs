@@ -15,7 +15,7 @@ public class Startup : Datasilk.Startup {
     {
         base.Configured(app, env, config);
         var query = new Saber.Query.Users(server.sqlConnectionString);
-        server.resetPass = query.HasPasswords();
+        var resetPass = query.HasPasswords();
         server.hasAdmin = query.HasAdmin();
 
         server.languages = new Dictionary<string, string>();
@@ -33,10 +33,10 @@ public class Startup : Datasilk.Startup {
             Directory.CreateDirectory(server.MapPath("/wwwroot/content/"));
             Directory.CreateDirectory(server.MapPath("/wwwroot/content/pages/"));
             Directory.CreateDirectory(server.MapPath("/wwwroot/images/"));
-            Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/pages/"), server.MapPath("/Content/pages/"));
-            Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/resources/"), server.MapPath("/wwwroot/content/pages/"));
-            Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/images/"), server.MapPath("/wwwroot/images/"));
-            Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/partials/"), server.MapPath("/Partials/"));
+            Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/pages/"), server.MapPath("/Content/pages/"));
+            Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/resources/"), server.MapPath("/wwwroot/content/pages/"));
+            Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/images/"), server.MapPath("/wwwroot/images/"));
+            Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/partials/"), server.MapPath("/Partials/"));
             File.Copy(server.MapPath("/Content/temp/css/website.less"), server.MapPath("/CSS/website.less"));
 
             Thread.Sleep(1000);

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using Utility.Serialization;
+using Utility.Strings;
 
 namespace Saber.Utility
 {
-    public class Page
+    public static class PageInfo
     {
-        private Core S;
-
-        public Page(Core DatasilkCore)
-        {
-            S = DatasilkCore;
-        }
 
         public static string[] GetRelativePath(string path)
         {
@@ -45,7 +39,7 @@ namespace Saber.Utility
             return paths;
         }
 
-        public string ConfigFilePath(string path)
+        public static string ConfigFilePath(string path)
         {
             var paths = GetRelativePath(path);
             var relpath = string.Join("/", paths);
@@ -54,9 +48,10 @@ namespace Saber.Utility
             return relpath.Replace(file, fileparts[0] + ".json");
         }
 
-        public Models.Page.Settings GetPageConfig(string path)
+        public static Models.Page.Settings GetPageConfig(string path)
         {
-            var config = (Models.Page.Settings)S.Util.Serializer.ReadObject(S.Server.LoadFileFromCache(ConfigFilePath(path), true), typeof(Models.Page.Settings));
+            Server server = Server.Instance;
+            var config = (Models.Page.Settings)Serializer.ReadObject(server.LoadFileFromCache(ConfigFilePath(path), true), typeof(Models.Page.Settings));
             if (config != null) { return config; }
 
             //all else fails, generate a new page settings object
@@ -68,7 +63,7 @@ namespace Saber.Utility
                 {
                     prefix = "",
                     suffix = "",
-                    body = S.Util.Str.Capitalize(file.Replace("-", " ").Replace("_", " ")),
+                    body = file.Capitalize().Replace("-", " ").Replace("_", " "),
                     prefixId = 0,
                     suffixId = 0
                 },
@@ -82,10 +77,11 @@ namespace Saber.Utility
             };
         }
 
-        public void SavePageConfig(string path, Models.Page.Settings config)
+        public static void SavePageConfig(string path, Models.Page.Settings config)
         {
+            Server server = Server.Instance;
             var filename = ConfigFilePath(path);
-            S.Server.SaveFileFromCache(filename, S.Util.Serializer.WriteObjectToString(config, Newtonsoft.Json.Formatting.Indented));
+            server.SaveFileFromCache(filename, Serializer.WriteObjectToString(config, Newtonsoft.Json.Formatting.Indented));
         }
     }
 }

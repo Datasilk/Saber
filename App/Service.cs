@@ -1,23 +1,28 @@
+using Microsoft.AspNetCore.Http;
+using Utility.Serialization;
+using Utility.Strings;
+
 namespace Saber
 {
     public class Service : Datasilk.Service
     {
-        private User _userInfo;
+        public Service(HttpContext context) : base(context) { }
 
-        public Service(global::Core DatasilkCore) : base(DatasilkCore) {}
+        //override Datasilk.User with Saber.User
+        private User user;
+        public new User User
+        {
+            get
+            {
+                if (user != null) { return user; }
+                user = User.Get(context);
+                return user;
+            }
+        }
 
         public EditorType EditorUsed
         {
             get { return EditorType.Monaco; }
-        }
-
-        public User UserInfo
-        {
-            get
-            {
-                if (_userInfo == null) { _userInfo = new User(S); }
-                return _userInfo;
-            }
         }
     }
 }

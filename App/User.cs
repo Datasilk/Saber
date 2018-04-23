@@ -1,34 +1,52 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
+using Utility.Serialization;
+using Utility.Strings;
 
 namespace Saber
 {
-    public class User
+    public class User: Datasilk.User
     {
-        private Core S;
+        //constructor
+        public User(HttpContext context) : base(context) { }
+
+        //properties
         public string language = "en";
 
-        public User(Core SaberCore)
+        //get User object from session
+        public static User Get(HttpContext context)
         {
-            S = SaberCore;
-
-            //load user session
-            if (S.Session.Get("userinfo") != null)
+            User user;
+            if (context.Session.Get("user") != null)
             {
-                var user = (User)S.Util.Serializer.ReadObject(S.Util.Str.GetString(S.Session.Get("userinfo")), GetType());
-                language = user.language;
+                user = (User)Serializer.ReadObject(context.Session.Get("user").GetString(), typeof(User));
             }
+            else
+            {
+                user = new User(context);
+            }
+            user.Init();
+            return user;
         }
 
-        private void Save()
+        //initialize user after they visit website for the first time
+        public override void Init()
         {
-            S.Session.Set("userinfo", S.Util.Serializer.WriteObject(this));
+            base.Init();
+        }
+
+        public new void Save(bool changed = false)
+        {
+            if (this.changed == true || changed == true)
+            {
+                context.Session.Set("user", Serializer.WriteObject(this));
+            }
         }
 
         public void SetLanguage(string language)
         {
             this.language = language;
-            Save();
+            changed = true;
         }
     }
 }
