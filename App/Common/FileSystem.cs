@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Saber.Utility
 {
-    public class FileSystem
+    public static class FileSystem
     {
 
         public static void CopyDirectoryContents(string targetFolder, string outputFolder)

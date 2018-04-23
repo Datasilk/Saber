@@ -12,11 +12,11 @@
 !/App/wwwroot/editor/
 !/App/wwwroot/themes/
 /App/Content/pages/
+/App/Content/partials/
 /App/CSS/
 !/App/CSS/tapestry
 !/App/CSS/themes
 !/App/CSS/platform.less
-/App/Partials/
 /App/Scripts/
 !/App/Scripts/platform
 !/App/Scripts/selector

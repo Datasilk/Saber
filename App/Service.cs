@@ -24,5 +24,10 @@ namespace Saber
         {
             get { return EditorType.Monaco; }
         }
+
+        public new void Unload()
+        {
+            if (user != null) { User.Save(); }
+        }
     }
 }

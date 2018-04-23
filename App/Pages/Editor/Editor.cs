@@ -37,8 +37,6 @@ namespace Saber.Pages
             description = config.description;
 
             //open page contents
-            var Editor = new Services.Editor(context);
-
             if (User.userId > 0)
             {
                 //use editor.html
@@ -86,7 +84,7 @@ namespace Saber.Pages
             AddScript(rpath.ToLower() + rfile + ".js", "page_js");
 
             //render page content
-            var html = Editor.RenderPage("content/" + pathname + ".html");
+            var html = Common.Editor.RenderPage("content/" + pathname + ".html", this, User);
             scaffold.Data["content"] = html;
 
             return base.Render(path, scaffold.Render(), metadata);

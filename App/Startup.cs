@@ -36,7 +36,7 @@ public class Startup : Datasilk.Startup {
             Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/pages/"), server.MapPath("/Content/pages/"));
             Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/resources/"), server.MapPath("/wwwroot/content/pages/"));
             Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/images/"), server.MapPath("/wwwroot/images/"));
-            Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/partials/"), server.MapPath("/Partials/"));
+            Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/partials/"), server.MapPath("/Content/partials/"));
             File.Copy(server.MapPath("/Content/temp/css/website.less"), server.MapPath("/CSS/website.less"));
 
             Thread.Sleep(1000);

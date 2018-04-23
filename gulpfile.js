@@ -90,8 +90,7 @@ paths.working = {
 
     less: {
         platform: [
-            paths.css + 'platform.less',
-            paths.app + 'Partials/UI/header.less'
+            paths.css + 'platform.less'
         ],
         website: paths.css + 'website.less',
         app: [

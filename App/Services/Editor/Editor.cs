@@ -368,61 +368,16 @@ namespace Saber.Services
         /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
         public string RenderPage(string path)
         {
-            //translate root path to relative path
-            var paths = PageInfo.GetRelativePath(path);
-            var relpath = string.Join("/", paths);
-            var file = paths[paths.Length - 1];
-            var fileparts = file.Split(".", 2);
-            if (paths.Length == 0) { return Error(); }
-
-            //check file path on drive for (estimated) OS folder structure limitations 
-            if (server.MapPath(relpath).Length > 180) {
-                return "The URL path you are accessing is too long to handle on the web server";
-            }
-            var scaffold = new Scaffold(relpath, server.Scaffold);
-            if (scaffold.elements.Count == 0) {
-                if(User.userId == 0)
-                {
-                    scaffold.HTML = "<p>This page does not exist. Please log into your account to write content for this page.</p>";
-                }
-                else
-                {
-                    scaffold.HTML = "<p>Write content using HTML & CSS</p>";
-                }
-            }
-
-            //load user content from json file, depending on selected language
-            var config = PageInfo.GetPageConfig(path);
-            var lang = User.language;
-
-            //check security
-            if (config.security.secure == true)
+            try
             {
-                if (!CheckSecurity() || !config.security.read.Contains(User.userId))
-                {
-                    return AccessDenied();
-                }
-            }
-
-            var contentfile = ContentFile(path, lang);
-            var data = (Dictionary<string, string>)Serializer.ReadObject(server.LoadFileFromCache(contentfile, true), typeof(Dictionary<string, string>));
-            if (data != null)
+                return Common.Editor.RenderPage(path, this, User);
+            }catch(ServiceErrorException ex)
             {
-                foreach (var item in data)
-                {
-                    if(item.Value.IndexOf("\n") >= 0)
-                    {
-                        scaffold.Data[item.Key] = CommonMarkConverter.Convert(item.Value);
-                    }
-                    else
-                    {
-                        scaffold.Data[item.Key] = item.Value;
-                    }
-                    
-                }
+                return Error(ex.Message);
+            }catch(ServiceDeniedException)
+            {
+                return AccessDenied();
             }
-
-            return scaffold.Render();
         }
         #endregion
 

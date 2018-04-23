@@ -74,5 +74,10 @@ namespace Saber
                 scaffold.Child("header").Data["no-user"] = "1";
             }
         }
+
+        public new void Unload()
+        {
+            if (user != null) { User.Save(); }
+        }
     }
 }
