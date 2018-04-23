@@ -700,7 +700,10 @@ S.editor = {
 
             //change file path
             var cleanPath = path;
-            if (path.indexOf('content/') == 0) { cleanPath = path.replace('content/', 'content/pages/'); }
+            if (path.indexOf('content/partials/') == 0) {
+            } else if (path.indexOf('content/') == 0) {
+                cleanPath = path.replace('content/', 'content/pages/');
+            }
             if (path.indexOf('root/') == 0) { cleanPath = path.replace('root/', ''); }
 
             if (isready !== false) {

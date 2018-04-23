@@ -2,7 +2,7 @@
 using Utility.Serialization;
 using Utility.Strings;
 
-namespace Saber.Utility
+namespace Saber.Common
 {
     public static class PageInfo
     {
@@ -20,20 +20,28 @@ namespace Saber.Utility
                 {
                     case "css": newpath[0] = "/CSS"; break;
                     case "pages": newpath[0] = "/Pages"; break;
-                    case "partials": newpath[0] = "/Partials"; break;
                     case "scripts": newpath[0] = "/Scripts"; break;
                     case "services": newpath[0] = "/Services"; break;
-                    default: return new string[] { };
+                    default:
+                        //prevent hackers from snooping
+                        return new string[] { };
                 }
                 return newpath;
             }
-            else
+            else if (paths[0].ToLower() == "wwwroot")
             {
-                switch (paths[0].ToLower())
+                paths[0] = "/wwwroot";
+            }
+            else if( paths[0].ToLower() == "content" && paths.Length > 1)
+            {
+                switch (paths[1].ToLower())
                 {
-                    case "content": paths[0] = "/Content/pages"; break;
-                    case "wwwroot": paths[0] = "/wwwroot"; break;
-                    default: return new string[] { };
+                    case "partials":
+                        paths[0] = "/Content";
+                        break;
+                    default:
+                        paths[0] = "/Content/pages";
+                        break;
                 }
             }
             return paths;

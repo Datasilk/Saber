@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using ImageSharp;
 
-namespace Saber.Utility
+namespace Saber.Common
 {
     public struct structImage
     {

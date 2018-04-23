@@ -33,10 +33,10 @@ public class Startup : Datasilk.Startup {
             Directory.CreateDirectory(server.MapPath("/wwwroot/content/"));
             Directory.CreateDirectory(server.MapPath("/wwwroot/content/pages/"));
             Directory.CreateDirectory(server.MapPath("/wwwroot/images/"));
-            Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/pages/"), server.MapPath("/Content/pages/"));
-            Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/resources/"), server.MapPath("/wwwroot/content/pages/"));
-            Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/images/"), server.MapPath("/wwwroot/images/"));
-            Saber.Utility.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/partials/"), server.MapPath("/Content/partials/"));
+            Saber.Common.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/pages/"), server.MapPath("/Content/pages/"));
+            Saber.Common.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/resources/"), server.MapPath("/wwwroot/content/pages/"));
+            Saber.Common.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/images/"), server.MapPath("/wwwroot/images/"));
+            Saber.Common.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/partials/"), server.MapPath("/Content/partials/"));
             File.Copy(server.MapPath("/Content/temp/css/website.less"), server.MapPath("/CSS/website.less"));
 
             Thread.Sleep(1000);

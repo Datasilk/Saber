@@ -25,14 +25,14 @@ namespace Saber
             {
                 user = new User(context);
             }
-            user.Init();
+            user.Init(context);
             return user;
         }
 
         //initialize user after they visit website for the first time
-        public override void Init()
+        public override void Init(HttpContext context)
         {
-            base.Init();
+            base.Init(context);
         }
 
         public new void Save(bool changed = false)

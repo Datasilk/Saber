@@ -4,12 +4,10 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Net;
-using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using CommonMark;
 using Utility.Serialization;
 using Utility.Strings;
-using Saber.Utility;
+using Saber.Common;
 
 namespace Saber.Services
 {
@@ -21,7 +19,7 @@ namespace Saber.Services
         public Editor(HttpContext context) : base(context)
         {
         }
-        
+
         #region "File System"
 
         public string Dir(string path)
@@ -39,7 +37,7 @@ namespace Saber.Services
             if (paths.Length == 0) { return Error(); }
             var rpath = string.Join("/", paths) + "/";
 
-            var item = new Scaffold("/Services/Editor/file.html", server.Scaffold);
+            var item = new Scaffold("/Views/FileBrowser/file.html", server.Scaffold);
             var items = new List<string>();
 
             if (paths[0] == "" && paths.Length == 1)
@@ -47,19 +45,19 @@ namespace Saber.Services
                 //display root folders for website
                 items = new List<string>()
                 {
-                    "CSS", "Partials", "Scripts"
+                    "CSS", "Scripts"
                 };
             }
-            else if(paths[0] == "/wwwroot")
+            else if (paths[0] == "/wwwroot")
             {
                 //get folder structure for resources (wwwroot) from hard drive
                 if (Directory.Exists(server.MapPath(rpath)))
                 {
                     var info = new DirectoryInfo(server.MapPath(rpath));
                     var exclude = new string[] { };
-                    if(paths.Length == 1) {
+                    if (paths.Length == 1) {
                         //exclude internal folders
-                        exclude = new string[] { "content", "css", "editor", "js", "themes", thumbdir.Replace("/","")};
+                        exclude = new string[] { "content", "css", "editor", "js", "themes", thumbdir.Replace("/", "") };
                     }
                     else
                     {
@@ -82,10 +80,15 @@ namespace Saber.Services
                     //get list of directories
                     var info = new DirectoryInfo(server.MapPath(rpath));
                     var exclude = new string[] { };
-                    if(paths[0] == "/CSS" && paths.Length == 1)
+                    if (paths[0] == "/CSS" && paths.Length == 1)
                     {
                         exclude = new string[] { "tapestry", "themes" };
                     }
+                    else if (paths[0] == "/Content/partials" && paths.Length == 1)
+                    {
+                        exclude = new string[] { "pages", "temp" };
+                    }
+
                     foreach (var dir in info.GetDirectories())
                     {
                         if (dir.Name.IndexOfAny(new char[] { '.', '_' }) != 0 && !exclude.Contains(dir.Name.ToLower()))
@@ -118,7 +121,14 @@ namespace Saber.Services
                 }
             }
 
-            if (rawpaths.Length > 1)
+            if (paths[0] == "/Content")
+            {
+                if (paths.Length == 2)
+                {
+                    html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root"));
+                }
+            }
+            else if (rawpaths.Length > 1)
             {
                 //add parent directory;
                 html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", string.Join("/", rawpaths.SkipLast(1))));
@@ -133,7 +143,9 @@ namespace Saber.Services
                 //add special directories
                 //html.Append(RenderBrowserItem(item, "content", "Content", "folder", "content"));
                 html.Append(RenderBrowserItem(item, "wwwroot", "wwwroot", "folder", "wwwroot"));
-            }else if(paths[0] == "/wwwroot")
+                html.Append(RenderBrowserItem(item, "partials", "partials", "folder", "content/partials"));
+            }
+            else if (paths[0] == "/wwwroot")
             {
                 html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root"));
             }
@@ -197,133 +209,35 @@ namespace Saber.Services
         {
             if (!CheckSecurity()) { return AccessDenied(); }
 
-            var paths = PageInfo.GetRelativePath(path);
-            if (paths.Length == 0) { return Error(); }
             try
             {
-                var dir = string.Join("/", paths.Take(paths.Length - 1));
-                dir = server.MapPath(dir);
-                var filepath = server.MapPath(string.Join("/", paths));
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-                File.WriteAllText(filepath, content);
-
-                //clean cache related to file
-                var file = paths[paths.Length - 1];
-                var ext = file.Split('.', 2)[1].ToLower();
-                switch (ext)
-                {
-                    case "html":
-                        //remove cached scaffold object
-                        server.Scaffold.Remove(path);
-                        break;
-                }
-
-                //gulp file
-                if (paths[0].ToLower() == "/content/pages")
-                {
-                    switch (ext)
-                    {
-                        case "js":
-                        case "css":
-                        case "less":
-                            var p = new Process
-                            {
-                                StartInfo = new ProcessStartInfo()
-                                {
-                                    FileName = "cmd.exe",
-                                    Arguments = "/c gulp file --path \"" + string.Join("/", paths).ToLower().Substring(1) + "\"",
-                                    WindowStyle = ProcessWindowStyle.Hidden,
-                                    UseShellExecute = false,
-                                    CreateNoWindow = true,
-                                    RedirectStandardError = true,
-                                    WorkingDirectory = server.MapPath("/").Replace("App\\", ""),
-                                    Verb = "runas"
-                                }
-                            };
-                            p.OutputDataReceived += GulpOutputReceived;
-                            p.ErrorDataReceived += GulpErrorReceived;
-                            p.Start();
-                            break;
-                    }
-                }
+                Platform.SaveFile(path, content);
             }
-            catch (Exception)
+            catch (ServiceErrorException ex)
             {
-                return Error();
+                return Error(ex.Message);
             }
-
+            catch (ServiceDeniedException)
+            {
+                return AccessDenied();
+            }
             return Success();
-        }
-
-        private void GulpOutputReceived(object sender, DataReceivedEventArgs e)
-        {
-            Process p = sender as Process;
-            if (p == null) { return; }
-            //Console.WriteLine(e.Data);
-        }
-
-        private void GulpErrorReceived(object sender, DataReceivedEventArgs e)
-        {
-            Process p = sender as Process;
-            if (p == null) { return; }
-            //Console.WriteLine(e.Data);
         }
 
         public string NewFile(string path, string filename)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
 
-            //check for root & content folders
-            if (path == "root")
-            {
-                return Error("You cannot create a file in the root folder");
-            }
-            if (path.IndexOf("content") == 0)
-            {
-                return Error("You cannot create a file in the content folder");
-            }
-
-            //check filename characters
-            if (!filename.OnlyLettersAndNumbers(new string[] { "-", "_", "." })) { return Error("Filename must be alpha-numeric and may contain dashes - and underscores _"); }
-
-            var paths = PageInfo.GetRelativePath(path.ToLower());
-            if (paths.Length == 0) { return Error(); }
-            var fileparts = filename.Split('.', 2);
-            var dir = string.Join("/", paths) + "/";
-
-            if (!Directory.Exists(server.MapPath(dir)))
-            {
-                Directory.CreateDirectory(server.MapPath(dir));
-            }
-            if(File.Exists(server.MapPath(dir + filename.Replace(" ", ""))))
-            {
-                return Error("The file alrerady exists");
-            }
-
-            //create file with dummy content
-            var content = "";
-            switch (fileparts[1])
-            {
-                case "js":
-                    content = "(function(){\n\n})();";
-                    break;
-                case "less":
-                    content = "body {\n\n}";
-                    break;
-                case "html":
-                    content = "<p></p>";
-                    break;
-            }
             try
             {
-                File.WriteAllText(server.MapPath(dir + filename.Replace(" ", "")), content);
+                Platform.NewFile(path, filename);
             }
-            catch (Exception)
+            catch (ServiceErrorException ex) {
+                return Error(ex.Message);
+            }
+            catch (ServiceDeniedException)
             {
-                return Error("Error creating file");
+                return AccessDenied();
             }
             return Success();
         }
@@ -332,26 +246,17 @@ namespace Saber.Services
         {
             if (!CheckSecurity()) { return AccessDenied(); }
 
-            //check for root & content folders
-            if (path == "root")
+            try
             {
-                return Error("You cannot create a file in the root folder");
+                Platform.NewFolder(path, folder);
             }
-            if (path.IndexOf("content") == 0)
+            catch (ServiceErrorException ex)
             {
-                return Error("You cannot create a file in the content folder");
+                return Error(ex.Message);
             }
-
-            //check folder characters
-            if (!folder.OnlyLettersAndNumbers(new string[] { "-", "_" })) { return Error("Folder must be alpha-numeric and may contain dashes - and underscores _"); }
-
-            var paths = PageInfo.GetRelativePath(path.ToLower());
-            if (paths.Length == 0) { return Error(); }
-            var dir = string.Join("/", paths) + "/" + folder.Replace(" ", "");
-
-            if (!Directory.Exists(server.MapPath(dir)))
+            catch (ServiceDeniedException)
             {
-                Directory.CreateDirectory(server.MapPath(dir));
+                return AccessDenied();
             }
             return Success();
         }
@@ -370,7 +275,7 @@ namespace Saber.Services
         {
             try
             {
-                return Common.Editor.RenderPage(path, this, User);
+                return Platform.RenderPage(path, this, User);
             }catch(ServiceErrorException ex)
             {
                 return Error(ex.Message);
@@ -382,33 +287,15 @@ namespace Saber.Services
         #endregion
 
         #region "Content Fields"
-        private string ContentFile(string path, string language)
-        {
-            var paths = PageInfo.GetRelativePath(path);
-            var relpath = string.Join("/", paths);
-            var file = paths[paths.Length - 1];
-            var fileparts = file.Split(".", 2);
-            return relpath.Replace(file, fileparts[0] + "_" + language + ".json");
-
-        }
-
-        private Dictionary<string, string> GetPageContent(string path, string language)
-        {
-            var contentfile = server.MapPath(ContentFile(path, language));
-            var content = (Dictionary<string, string>)Serializer.ReadObject(server.LoadFileFromCache(contentfile, true), typeof(Dictionary<string, string>));
-            if (content != null) { return content; }
-            return new Dictionary<string, string>();
-        }
-
         public string RenderContentFields(string path, string language)
         {
             var paths = PageInfo.GetRelativePath(path);
-            var content = GetPageContent(path, User.language);
+            var content = Platform.GetPageContent(path, User.language);
             var html = new StringBuilder();
             var scaffold = new Scaffold(string.Join("/", paths) + ".html", server.Scaffold);
-            var fieldText = new Scaffold("/Services/Editor/Fields/text.html", server.Scaffold);
+            var fieldText = new Scaffold("/Views/ContentFields/text.html", server.Scaffold);
             var fields = new Dictionary<string, string>();
-            var contentfile = ContentFile(path, language);
+            var contentfile = Platform.ContentFile(path, language);
             if (File.Exists(server.MapPath(contentfile)))
             {
                 fields = (Dictionary<string, string>)Serializer.ReadObject(server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
@@ -433,7 +320,7 @@ namespace Saber.Services
             }
             if(html.Length == 0)
             {
-                var nofields = new Scaffold("/Services/Editor/Fields/nofields.html", server.Scaffold);
+                var nofields = new Scaffold("/Views/ContentFields/nofields.html", server.Scaffold);
                 nofields.Data["filename"] = paths[paths.Length - 1];
                 return nofields.Render();
             }
@@ -466,7 +353,7 @@ namespace Saber.Services
             try
             {
                 //save fields as json
-                Serializer.WriteObjectToFile(data, server.MapPath(ContentFile(path, language)));
+                Serializer.WriteObjectToFile(data, server.MapPath(Platform.ContentFile(path, language)));
             }
             catch (Exception)
             {
@@ -495,7 +382,7 @@ namespace Saber.Services
         {
             if (!CheckSecurity()) { return AccessDenied(); }
             var config = PageInfo.GetPageConfig(path);
-            var scaffold = new Scaffold("/Services/Editor/settings.html", server.Scaffold);
+            var scaffold = new Scaffold("/Views/PageSettings/settings.html", server.Scaffold);
             var prefixes = new StringBuilder();
             var suffixes = new StringBuilder();
 
@@ -610,8 +497,8 @@ namespace Saber.Services
         public string RenderPageResources(string path, int sort = 0)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
-            var scaffold = new Scaffold("/Services/Editor/resources.html", server.Scaffold);
-            var item = new Scaffold("/Services/Editor/resource-item.html", server.Scaffold);
+            var scaffold = new Scaffold("/Views/PageResources/resources.html", server.Scaffold);
+            var item = new Scaffold("/Views/PageResources/resource-item.html", server.Scaffold);
             var paths = PageInfo.GetRelativePath(path);
             paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
             var dir = string.Join("/", paths).ToLower() + "/";
@@ -746,7 +633,9 @@ namespace Saber.Services
             }
 
             //no resources
-            if(!scaffold.Data.ContainsKey("resources")) { scaffold.Data["resources"] = server.LoadFileFromCache("/Services/Editor/no-resources.html"); }
+            if(!scaffold.Data.ContainsKey("resources")) {
+                scaffold.Data["resources"] = server.LoadFileFromCache("/Views/PageResources/no-resources.html");
+            }
 
             return scaffold.Render();
         }

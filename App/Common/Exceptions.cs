@@ -2,23 +2,15 @@
 
 namespace Saber
 {
-    public class PageErrorException : Exception
-    {
-        public PageErrorException(string message) { }
-    }
-
-    public class PageDeniedException : Exception
-    {
-        public PageDeniedException(string message) { }
-    }
-
     public class ServiceErrorException : Exception
     {
+        public ServiceErrorException() { }
         public ServiceErrorException(string message) { }
     }
 
     public class ServiceDeniedException : Exception
     {
+        public ServiceDeniedException() { }
         public ServiceDeniedException(string message) { }
     }
 }

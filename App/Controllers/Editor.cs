@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Saber.Utility;
+using Saber.Common;
 
 namespace Saber.Pages
 {
@@ -40,7 +40,7 @@ namespace Saber.Pages
             if (User.userId > 0)
             {
                 //use editor.html
-                scaffold = new Scaffold("/Pages/Editor/editor.html");
+                scaffold = new Scaffold("/Views/Editor/editor.html");
 
                 //load editor resources
                 switch (EditorUsed)
@@ -56,8 +56,8 @@ namespace Saber.Pages
                         break;
                 }
                 
-                AddScript("/js/pages/editor/editor.js");
-                AddCSS("/css/pages/editor/editor.css");
+                AddScript("/js/views/editor/editor.js");
+                AddCSS("/css/views/editor/editor.css");
                 if(EditorUsed != EditorType.Monaco)
                 {
                     scripts.Append(
@@ -70,21 +70,23 @@ namespace Saber.Pages
             else
             {
                 //use no-editor.html
-                scaffold = new Scaffold("/Pages/Editor/no-editor.html");
+                scaffold = new Scaffold("/Views/Editor/no-editor.html");
             }
             
             //load header interface
             LoadHeader(ref scaffold);
 
             //add page-specific references
-            scripts.Append("<script language=\"javascript\">" + 
-                "window.language = '" + User.language + "';" + 
-                "</script>\n");
+            scripts.Append(
+                "<script language=\"javascript\">" + 
+                    "window.language = '" + User.language + "';" + 
+                "</script>\n"
+            );
             AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
             AddScript(rpath.ToLower() + rfile + ".js", "page_js");
 
             //render page content
-            var html = Common.Editor.RenderPage("content/" + pathname + ".html", this, User);
+            var html = Platform.RenderPage("content/" + pathname + ".html", this, User);
             scaffold.Data["content"] = html;
 
             return base.Render(path, scaffold.Render(), metadata);

@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Utility.Strings;
-using Saber.Utility;
+using Saber.Common;
 
 namespace Saber.Pages
 {
@@ -59,7 +59,7 @@ namespace Saber.Pages
                     {
                         case "jpg": case "jpeg": case "png":
                             //create a thumbnail image to display in the page resources section of the editor
-                            var img = new Utility.Images();
+                            var img = new Common.Images();
                             if (!Directory.Exists(server.MapPath(pubdir + thumbdir)))
                             {
                                 Directory.CreateDirectory(server.MapPath(pubdir + thumbdir));

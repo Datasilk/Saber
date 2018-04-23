@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Saber.Utility
+namespace Saber.Common
 {
     public static class FileSystem
     {
