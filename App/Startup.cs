@@ -26,33 +26,35 @@ public class Startup : Datasilk.Startup {
         });
 
         //check if default website exists
-        if (!File.Exists(server.MapPath("/Content/pages/home.html")))
+        if (!File.Exists(Server.MapPath("/Content/pages/home.html")))
         {
             //copy default website since none exists yet
-            Directory.CreateDirectory(server.MapPath("/Content/pages/"));
-            Directory.CreateDirectory(server.MapPath("/wwwroot/content/"));
-            Directory.CreateDirectory(server.MapPath("/wwwroot/content/pages/"));
-            Directory.CreateDirectory(server.MapPath("/wwwroot/images/"));
-            Saber.Common.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/pages/"), server.MapPath("/Content/pages/"));
-            Saber.Common.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/resources/"), server.MapPath("/wwwroot/content/pages/"));
-            Saber.Common.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/images/"), server.MapPath("/wwwroot/images/"));
-            Saber.Common.FileSystem.CopyDirectoryContents(server.MapPath("/Content/temp/partials/"), server.MapPath("/Content/partials/"));
-            File.Copy(server.MapPath("/Content/temp/css/website.less"), server.MapPath("/CSS/website.less"));
+            Directory.CreateDirectory(Server.MapPath("/Content/pages/"));
+            Directory.CreateDirectory(Server.MapPath("/wwwroot/content/"));
+            Directory.CreateDirectory(Server.MapPath("/wwwroot/content/pages/"));
+            Directory.CreateDirectory(Server.MapPath("/wwwroot/images/"));
+            Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/pages/"), Server.MapPath("/Content/pages/"));
+            Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/resources/"), Server.MapPath("/wwwroot/content/pages/"));
+            Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/images/"), Server.MapPath("/wwwroot/images/"));
+            Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/partials/"), Server.MapPath("/Content/partials/"));
+            File.Copy(Server.MapPath("/Content/temp/css/website.less"), Server.MapPath("/CSS/website.less"));
 
             Thread.Sleep(1000);
 
             //run default gulp command to copy new website resources to wwwroot folder
-            var p = new Process();
-            p.StartInfo = new ProcessStartInfo()
+            var p = new Process
             {
-                FileName = "cmd.exe",
-                Arguments = "/c gulp default:website",
-                WindowStyle = ProcessWindowStyle.Hidden,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardError = true,
-                WorkingDirectory = server.MapPath("/").Replace("App\\", ""),
-                Verb = "runas"
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = "cmd.exe",
+                    Arguments = "/c gulp default:website",
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardError = true,
+                    WorkingDirectory = Server.MapPath("/").Replace("App\\", ""),
+                    Verb = "runas"
+                }
             };
             p.OutputDataReceived += GulpOutputReceived;
             p.ErrorDataReceived += GulpErrorReceived;

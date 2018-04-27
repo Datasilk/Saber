@@ -17,19 +17,19 @@ namespace Saber.Pages
             }
 
             //check for database reset
-            var scaffold = new Scaffold("/Views/Login/login.html", server.Scaffold);
+            var scaffold = new Scaffold("/Views/Login/login.html", Server.Scaffold);
 
-            if(server.environment == Server.enumEnvironment.development && server.hasAdmin == false)
+            if(Server.environment == Server.Environment.development && Server.hasAdmin == false)
             {
                 //load new administrator form
-                scaffold = new Scaffold("/Views/Login/new-admin.html", server.Scaffold);
+                scaffold = new Scaffold("/Views/Login/new-admin.html", Server.Scaffold);
                 scaffold.Data["title"] = "Create an administrator account";
                 scripts.Append("<script src=\"/js/views/login/new-admin.js\"></script>");
             }
             else if (User.resetPass == true)
             {
                 //load new password form (for admin only)
-                scaffold = new Scaffold("/Views/Login/new-pass.html", server.Scaffold);
+                scaffold = new Scaffold("/Views/Login/new-pass.html", Server.Scaffold);
                 scaffold.Data["title"] = "Create an administrator password";
                 scripts.Append("<script src=\"/js/views/login/new-pass.js\"></script>");
             }

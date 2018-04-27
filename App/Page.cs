@@ -19,18 +19,6 @@ namespace Saber
             description = "You can do everything you ever wanted";
         }
 
-        //override Datasilk.User with Saber.User
-        private User user;
-        public new User User
-        {
-            get
-            {
-                if(user != null) { return user; }
-                user = User.Get(context);
-                return user;
-            }
-        }
-
         public EditorType EditorUsed
         {
             get { return EditorType.Monaco; }
@@ -42,7 +30,7 @@ namespace Saber
             {
                 scripts.Append("<script language=\"javascript\">S.svg.load('/themes/default/icons.svg');</script>");
             }
-            var scaffold = new Scaffold("/layout.html", server.Scaffold);
+            var scaffold = new Scaffold("/layout.html", Server.Scaffold);
             scaffold.Data["title"] = title;
             scaffold.Data["description"] = description;
             scaffold.Data["language"] = User.language;
@@ -73,11 +61,6 @@ namespace Saber
             {
                 scaffold.Child("header").Data["no-user"] = "1";
             }
-        }
-
-        public new void Unload()
-        {
-            if (user != null) { User.Save(); }
         }
     }
 }

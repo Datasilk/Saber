@@ -7,7 +7,7 @@ using System.Net;
 using Microsoft.AspNetCore.Http;
 using Utility.Serialization;
 using Utility.Strings;
-using Saber.Common;
+using Saber.Common.Platform;
 
 namespace Saber.Services
 {
@@ -37,7 +37,7 @@ namespace Saber.Services
             if (paths.Length == 0) { return Error(); }
             var rpath = string.Join("/", paths) + "/";
 
-            var item = new Scaffold("/Views/FileBrowser/file.html", server.Scaffold);
+            var item = new Scaffold("/Views/FileBrowser/file.html", Server.Scaffold);
             var items = new List<string>();
 
             if (paths[0] == "" && paths.Length == 1)
@@ -51,9 +51,9 @@ namespace Saber.Services
             else if (paths[0] == "/wwwroot")
             {
                 //get folder structure for resources (wwwroot) from hard drive
-                if (Directory.Exists(server.MapPath(rpath)))
+                if (Directory.Exists(Server.MapPath(rpath)))
                 {
-                    var info = new DirectoryInfo(server.MapPath(rpath));
+                    var info = new DirectoryInfo(Server.MapPath(rpath));
                     var exclude = new string[] { };
                     if (paths.Length == 1) {
                         //exclude internal folders
@@ -75,10 +75,10 @@ namespace Saber.Services
             else
             {
                 //get folder structure from hard drive
-                if (Directory.Exists(server.MapPath(rpath)))
+                if (Directory.Exists(Server.MapPath(rpath)))
                 {
                     //get list of directories
-                    var info = new DirectoryInfo(server.MapPath(rpath));
+                    var info = new DirectoryInfo(Server.MapPath(rpath));
                     var exclude = new string[] { };
                     if (paths[0] == "/CSS" && paths.Length == 1)
                     {
@@ -190,9 +190,9 @@ namespace Saber.Services
             //translate root path to relative path
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
-            if (File.Exists(server.MapPath(string.Join("/", paths))))
+            if (File.Exists(Server.MapPath(string.Join("/", paths))))
             {
-                return WebUtility.HtmlEncode(File.ReadAllText(server.MapPath(string.Join("/", paths))));
+                return WebUtility.HtmlEncode(File.ReadAllText(Server.MapPath(string.Join("/", paths))));
             }
             var ext = paths[paths.Length - 1].Split(".")[1].ToLower();
             switch (ext)
@@ -211,7 +211,7 @@ namespace Saber.Services
 
             try
             {
-                Platform.SaveFile(path, content);
+                Website.SaveFile(path, content);
             }
             catch (ServiceErrorException ex)
             {
@@ -230,7 +230,7 @@ namespace Saber.Services
 
             try
             {
-                Platform.NewFile(path, filename);
+                Website.NewFile(path, filename);
             }
             catch (ServiceErrorException ex) {
                 return Error(ex.Message);
@@ -248,7 +248,7 @@ namespace Saber.Services
 
             try
             {
-                Platform.NewFolder(path, folder);
+                Website.NewFolder(path, folder);
             }
             catch (ServiceErrorException ex)
             {
@@ -275,7 +275,7 @@ namespace Saber.Services
         {
             try
             {
-                return Platform.RenderPage(path, this, User);
+                return Render.Page(path, this);
             }catch(ServiceErrorException ex)
             {
                 return Error(ex.Message);
@@ -290,15 +290,15 @@ namespace Saber.Services
         public string RenderContentFields(string path, string language)
         {
             var paths = PageInfo.GetRelativePath(path);
-            var content = Platform.GetPageContent(path, User.language);
+            var content = ContentFields.GetPageContent(path, User.language);
             var html = new StringBuilder();
-            var scaffold = new Scaffold(string.Join("/", paths) + ".html", server.Scaffold);
-            var fieldText = new Scaffold("/Views/ContentFields/text.html", server.Scaffold);
+            var scaffold = new Scaffold(string.Join("/", paths) + ".html", Server.Scaffold);
+            var fieldText = new Scaffold("/Views/ContentFields/text.html", Server.Scaffold);
             var fields = new Dictionary<string, string>();
-            var contentfile = Platform.ContentFile(path, language);
-            if (File.Exists(server.MapPath(contentfile)))
+            var contentfile = ContentFields.ContentFile(path, language);
+            if (File.Exists(Server.MapPath(contentfile)))
             {
-                fields = (Dictionary<string, string>)Serializer.ReadObject(server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
+                fields = (Dictionary<string, string>)Serializer.ReadObject(Server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
             }
             foreach (var elem in scaffold.elements)
             {
@@ -320,7 +320,7 @@ namespace Saber.Services
             }
             if(html.Length == 0)
             {
-                var nofields = new Scaffold("/Views/ContentFields/nofields.html", server.Scaffold);
+                var nofields = new Scaffold("/Views/ContentFields/nofields.html", Server.Scaffold);
                 nofields.Data["filename"] = paths[paths.Length - 1];
                 return nofields.Render();
             }
@@ -334,7 +334,7 @@ namespace Saber.Services
             var data = new Dictionary<string, string>();
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
-            var scaffold = new Scaffold(string.Join("/", paths), server.Scaffold);
+            var scaffold = new Scaffold(string.Join("/", paths), Server.Scaffold);
             foreach (var elem in scaffold.elements)
             {
                 if (elem.name != "")
@@ -353,7 +353,7 @@ namespace Saber.Services
             try
             {
                 //save fields as json
-                Serializer.WriteObjectToFile(data, server.MapPath(Platform.ContentFile(path, language)));
+                Serializer.WriteObjectToFile(data, Server.MapPath(ContentFields.ContentFile(path, language)));
             }
             catch (Exception)
             {
@@ -369,7 +369,7 @@ namespace Saber.Services
         public string Languages()
         {
             var html = new StringBuilder();
-            foreach(var lang in server.languages)
+            foreach(var lang in Server.languages)
             {
                 html.Append(lang.Key + ',' + lang.Value + '|');
             }
@@ -382,12 +382,12 @@ namespace Saber.Services
         {
             if (!CheckSecurity()) { return AccessDenied(); }
             var config = PageInfo.GetPageConfig(path);
-            var scaffold = new Scaffold("/Views/PageSettings/settings.html", server.Scaffold);
+            var scaffold = new Scaffold("/Views/PageSettings/settings.html", Server.Scaffold);
             var prefixes = new StringBuilder();
             var suffixes = new StringBuilder();
 
             //generate list of page prefixes
-            var query = new Query.PageTitles(server.sqlConnectionString);
+            var query = new Query.PageTitles(Server.sqlConnectionString);
             var titles = query.GetList(Query.PageTitles.TitleType.all);
             prefixes.Append("<option value=\"0\">[None]</option>\n");
             suffixes.Append("<option value=\"0\">[None]</option>\n");
@@ -420,7 +420,7 @@ namespace Saber.Services
                 config.title.body = title;
                 config.title.prefixId = prefixId;
                 config.title.suffixId = suffixId;
-                var query = new Query.PageTitles(server.sqlConnectionString);
+                var query = new Query.PageTitles(Server.sqlConnectionString);
                 if (prefixId == 0)
                 {
                     config.title.prefix = "";
@@ -468,7 +468,7 @@ namespace Saber.Services
             
             try
             {
-                var query = new Query.PageTitles(server.sqlConnectionString);
+                var query = new Query.PageTitles(Server.sqlConnectionString);
                 var id = query.Create(title, !prefix);
                 return id + "|" + title;
             }
@@ -482,7 +482,7 @@ namespace Saber.Services
             {
                 var config = PageInfo.GetPageConfig(path);
                 config.description = description;
-                var query = new Query.PageTitles(server.sqlConnectionString);
+                var query = new Query.PageTitles(Server.sqlConnectionString);
                 PageInfo.SavePageConfig(path, config);
                 return Success();
             }
@@ -497,8 +497,8 @@ namespace Saber.Services
         public string RenderPageResources(string path, int sort = 0)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
-            var scaffold = new Scaffold("/Views/PageResources/resources.html", server.Scaffold);
-            var item = new Scaffold("/Views/PageResources/resource-item.html", server.Scaffold);
+            var scaffold = new Scaffold("/Views/PageResources/resources.html", Server.Scaffold);
+            var item = new Scaffold("/Views/PageResources/resource-item.html", Server.Scaffold);
             var paths = PageInfo.GetRelativePath(path);
             paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
             var dir = string.Join("/", paths).ToLower() + "/";
@@ -516,10 +516,10 @@ namespace Saber.Services
                 scaffold.Data["for-type"] = "Website";
                 scaffold.Data["folder-path"] = dir.Replace("/wwwroot", "");
             }
-            if (Directory.Exists(server.MapPath(pubdir)))
+            if (Directory.Exists(Server.MapPath(pubdir)))
             {
                 //get list of files in directory (excluding thumbnail images)
-                var info = new DirectoryInfo(server.MapPath(pubdir));
+                var info = new DirectoryInfo(Server.MapPath(pubdir));
                 var files = info.GetFiles();
 
                 //sort files
@@ -634,7 +634,7 @@ namespace Saber.Services
 
             //no resources
             if(!scaffold.Data.ContainsKey("resources")) {
-                scaffold.Data["resources"] = server.LoadFileFromCache("/Views/PageResources/no-resources.html");
+                scaffold.Data["resources"] = Server.LoadFileFromCache("/Views/PageResources/no-resources.html");
             }
 
             return scaffold.Render();
@@ -659,12 +659,12 @@ namespace Saber.Services
                 var exclude = new string[] { "web.config" };
                 if (exclude.Contains(file)) { return Error(); }
 
-                if (Directory.Exists(server.MapPath(pubdir)))
+                if (Directory.Exists(Server.MapPath(pubdir)))
                 {
-                    if (File.Exists(server.MapPath(pubdir + file)))
+                    if (File.Exists(Server.MapPath(pubdir + file)))
                     {
                         //delete file from disk
-                        File.Delete(server.MapPath(pubdir + file));
+                        File.Delete(Server.MapPath(pubdir + file));
                     }
                     var ext = file.GetFileExtension();
                     switch (ext.ToLower())
@@ -673,9 +673,9 @@ namespace Saber.Services
                         case "jpeg":
                         case "png":
                             //delete thumbnail, too
-                            if (File.Exists(server.MapPath(pubdir + thumbdir + file)))
+                            if (File.Exists(Server.MapPath(pubdir + thumbdir + file)))
                             {
-                                File.Delete(server.MapPath(pubdir + thumbdir + file));
+                                File.Delete(Server.MapPath(pubdir + thumbdir + file));
                             }
                             break;
                     }

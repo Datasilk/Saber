@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using ImageSharp;
 
-namespace Saber.Common
+namespace Saber.Common.Utility
 {
-    public struct structImage
+    public struct ImageInfo
     {
         public string path;
         public string filename;
@@ -12,15 +12,14 @@ namespace Saber.Common
         public Image<Rgba32> bitmap;
     }
         
-
     public class Images
     {
-        private Server server { get; } = Server.Instance;
+        private Server Server { get; } = Server.Instance;
 
-        public structImage Load(string path, string filename)
+        public ImageInfo Load(string path, string filename)
         {
-            structImage newImg = new structImage();
-            using (var fs = File.OpenRead(server.MapPath(path + filename)))
+            ImageInfo newImg = new ImageInfo();
+            using (var fs = File.OpenRead(Server.MapPath(path + filename)))
             {
                 var image = Image.Load(fs);
                 newImg.bitmap = image;
@@ -34,7 +33,7 @@ namespace Saber.Common
         
         public void Shrink(string filename, string outfile, int width)
         {
-            using (var fs = File.OpenRead(server.MapPath(filename)))
+            using (var fs = File.OpenRead(Server.MapPath(filename)))
             {
                 var image = Image.Load(fs);
 
@@ -45,7 +44,7 @@ namespace Saber.Common
                         Size = new SixLabors.Primitives.Size(width, 0)
                     });
                 }
-                image.Save(server.MapPath(outfile));
+                image.Save(Server.MapPath(outfile));
                 fs.Dispose();
             }
         }

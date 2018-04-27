@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Utility.Strings;
-using Saber.Common;
+using Saber.Common.Platform;
 
 namespace Saber.Pages
 {
@@ -29,9 +29,9 @@ namespace Saber.Pages
                     //loading resources for specific page
                     pubdir = "/wwwroot" + dir;
                 }
-                if (!Directory.Exists(server.MapPath(pubdir)))
+                if (!Directory.Exists(Server.MapPath(pubdir)))
                 {
-                    Directory.CreateDirectory(server.MapPath(pubdir));
+                    Directory.CreateDirectory(Server.MapPath(pubdir));
                 }
                 foreach(var file in context.Request.Form.Files)
                 {
@@ -39,7 +39,7 @@ namespace Saber.Pages
                     var ext = filename.GetFileExtension().ToLower();
                     try
                     {
-                        var ms = new FileStream(server.MapPath(pubdir + filename), FileMode.Create);
+                        var ms = new FileStream(Server.MapPath(pubdir + filename), FileMode.Create);
                         file.CopyTo(ms);
                         ms.Close();
                         ms.Dispose();
@@ -48,23 +48,23 @@ namespace Saber.Pages
 
                     }
                     var i = 0;
-                    while (!File.Exists(server.MapPath(pubdir + filename)) && i < 5)
+                    while (!File.Exists(Server.MapPath(pubdir + filename)) && i < 5)
                     {
                         i++;
                         Thread.Sleep(1000);
                     }
-                    if(!File.Exists(server.MapPath(pubdir + filename))) { return Error(); }
+                    if(!File.Exists(Server.MapPath(pubdir + filename))) { return Error(); }
 
                     switch (ext)
                     {
                         case "jpg": case "jpeg": case "png":
                             //create a thumbnail image to display in the page resources section of the editor
-                            var img = new Common.Images();
-                            if (!Directory.Exists(server.MapPath(pubdir + thumbdir)))
+                            var img = new Common.Utility.Images();
+                            if (!Directory.Exists(Server.MapPath(pubdir + thumbdir)))
                             {
-                                Directory.CreateDirectory(server.MapPath(pubdir + thumbdir));
+                                Directory.CreateDirectory(Server.MapPath(pubdir + thumbdir));
                             }
-                            if(File.Exists(server.MapPath(pubdir + filename)))
+                            if(File.Exists(Server.MapPath(pubdir + filename)))
                             {
                                 img.Shrink(pubdir + filename, pubdir + thumbdir + filename, 480);
                             }

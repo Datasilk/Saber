@@ -2,7 +2,7 @@
 using Utility.Serialization;
 using Utility.Strings;
 
-namespace Saber.Common
+namespace Saber.Common.Platform
 {
     public static class PageInfo
     {

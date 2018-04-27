@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Saber.Common;
+using Saber.Common.Platform;
 
 namespace Saber.Pages
 {
@@ -86,7 +86,7 @@ namespace Saber.Pages
             AddScript(rpath.ToLower() + rfile + ".js", "page_js");
 
             //render page content
-            var html = Platform.RenderPage("content/" + pathname + ".html", this, User);
+            var html = Common.Platform.Render.Page("content/" + pathname + ".html", this);
             scaffold.Data["content"] = html;
 
             return base.Render(path, scaffold.Render(), metadata);
