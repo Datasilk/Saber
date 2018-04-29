@@ -1,9 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
-using Utility.Serialization;
-using Utility.Strings;
-
-namespace Datasilk
+﻿namespace Datasilk
 {
     public partial class User
     {

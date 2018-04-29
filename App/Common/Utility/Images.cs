@@ -1,5 +1,10 @@
 ﻿using System.IO;
-using ImageSharp;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors;
+using SixLabors.ImageSharp.Processing.Transforms;
+using SixLabors.Primitives;
 
 namespace Saber.Common.Utility
 {
@@ -39,10 +44,10 @@ namespace Saber.Common.Utility
 
                 if (image.Width > width)
                 {
-                    image = image.Resize(new ImageSharp.Processing.ResizeOptions()
+                    image.Mutate(img => img.Resize(new ResizeOptions()
                     {
-                        Size = new SixLabors.Primitives.Size(width, 0)
-                    });
+                        Size = new Size(width, 0)
+                    }));
                 }
                 image.Save(Server.MapPath(outfile));
                 fs.Dispose();

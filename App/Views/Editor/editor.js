@@ -10,6 +10,7 @@ S.editor = {
     divFields: $('.content-fields'),
     divBrowser: $('.file-browser'),
     initialized: false,
+    Rhino: null,
 
     init: function () {
         this.initialized = true;
@@ -115,6 +116,17 @@ S.editor = {
                 }, 500);
             }
         );
+
+        //initialize JavaScript binding into Rhinoceros (if available)
+        if (CefSharp) {
+            (async function () {
+                await CefSharp.BindObjectAsync("Rhino", "bound");
+                S.editor.Rhino = Rhino;
+
+                //change color scheme of Rhino window
+                S.editor.filebar.preview.hide();
+            })();
+        }
     },
 
     resize: function () {
@@ -907,6 +919,11 @@ S.editor = {
                     changeJs();
                 }
 
+                //update Rhino browser window (if applicable)
+                if (S.editor.Rhino) {
+                    S.editor.Rhino.defaulttheme();
+                }
+
                 //finally, reload javascript file
                 function changeJs(htmlChanged) {
                     if (S.editor.files.js.changed == true) {
@@ -947,6 +964,12 @@ S.editor = {
                 setTimeout(function () {
                     S.editor.resize();
                 }, 10);
+
+                //update Rhino browser window (if applicable)
+                if (S.editor.Rhino) {
+                    Rhino.bordercolor(34, 34, 34);
+                    Rhino.toolbarcolor(34, 34, 34);
+                }
             }
         }
     },
