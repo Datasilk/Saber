@@ -100,6 +100,14 @@ S.editor = {
         $('.tab-page-settings').on('click', S.editor.filebar.settings.show);
         $('.tab-page-resources').on('click', S.editor.filebar.resources.show);
         $('.tab-preview').on('click', S.editor.filebar.preview.show);
+        $('.edit-bar').on('mousedown', function (e) {
+            if (e.target != $('.edit-bar')[0]) { return; }
+            console.log(S.editor.Rhino);
+            if (S.editor.Rhino) {
+                console.log('drag');
+                S.editor.Rhino.drag();
+            }
+        });
 
         //add window resize event
         $(window).on('resize', S.editor.resizeWindow);
@@ -956,6 +964,14 @@ S.editor = {
             hide: function () {
                 $('.preview, .editor-tab').addClass('hide');
                 $('.editor').removeClass('hide');
+
+                //update Rhino browser window (if applicable)
+                if (S.editor.Rhino) {
+                    Rhino.bordercolor(34, 34, 34);
+                    Rhino.toolbarcolor(34, 34, 34);
+                    Rhino.toolbarfontcolor(200, 200, 200);
+                }
+
                 if (S.editor.initialized == false) {
                     S.editor.init();
                     return;
@@ -964,12 +980,6 @@ S.editor = {
                 setTimeout(function () {
                     S.editor.resize();
                 }, 10);
-
-                //update Rhino browser window (if applicable)
-                if (S.editor.Rhino) {
-                    Rhino.bordercolor(34, 34, 34);
-                    Rhino.toolbarcolor(34, 34, 34);
-                }
             }
         }
     },
