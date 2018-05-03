@@ -22,11 +22,7 @@ namespace Saber.Services
                 var user = query.AuthenticateUser(email, encrypted);
                 if (user != null)
                 {
-                    User.userId = user.userId;
-                    User.email = email;
-                    User.photo = user.photo;
-                    User.name = user.name;
-                    User.datecreated = user.datecreated;
+                    User.LogIn(user.userId, user.email, user.name, user.datecreated, "", 1, user.photo);
                     User.Save(true);
                     return "success|" + homePath;
                 }

@@ -5,21 +5,6 @@ table, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, footer,
 }
 input[type=submit], input[type=button], button{border:0;}
 
-/* grid */
-.row{width:100%; box-sizing:border-box; position:relative;
-     &:after{clear:both; content:""; display:block;}
-}
-
-.col{float:left; display:inline-block; position:relative;}
-a:link, a:visited{color:#0099FF; text-decoration:none;}
-a:hover, a:active{color:#006bff; text-decoration:underline;}
-
-/* content */
-.content{font-family:'Open Sans', arial;
-    p{padding:0 0 20px 0;}
-    h1, h2, h3, h4, h5, h6{font-family:'Open Sans', arial;}
-}
-
 /* font families */
 
 @font-face {
@@ -70,10 +55,37 @@ a:hover, a:active{color:#006bff; text-decoration:underline;}
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
 
+/* grid */
+.row{width:100%; box-sizing:border-box; position:relative;
+     &:after{clear:both; content:""; display:block;}
+}
+
+.col{float:left; display:inline-block; position:relative;}
+
+/* links */
+a:link, a:visited{color:#0099FF; text-decoration:none;}
+a:hover, a:active{color:#006bff; text-decoration:underline;}
+
+/* font styles */
+h1, h2, h3, h4, h5, h6{font-weight:400;}
+h1{font-size:5em;}
+h2{font-size:3em;}
+h3{font-size:2.5em;}
+h4{font-size:2em;}
+h5{font-size:1.25em;}
+h6{font-size:1em;}
+
+/* content */
+.content{font-family:'Open Sans', arial;
+    p{padding:0 0 20px 0;}
+    h1, h2, h3, h4, h5, h6{font-family:'Open Sans', arial;}
+}
+
 html{display:flex; min-height:100%;}
-body{background:#eee; width:100%; position:relative; overflow-x:hidden; font-family: Jaldi, Arial, Helvetica, sans-serif;
+body{background:#222; width:100%; position:relative; overflow-x:hidden; font-family: Jaldi, Arial, Helvetica, sans-serif;
     display:flex; min-height:100vh; flex-direction:column;}
 .content{flex:1;}
 
-@import "../Partials/header.less"; 
-@import "../Partials/footer.less"; 
+/* imports */
+@import "../Content/partials/header.less"; 
+@import "../Content/partials/footer.less"; 
