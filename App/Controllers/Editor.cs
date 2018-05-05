@@ -40,7 +40,7 @@ namespace Saber.Pages
             if (User.userId > 0)
             {
                 //use editor.html
-                scaffold = new Scaffold("/Views/Editor/editor.html");
+                scaffold = new Scaffold("/Views/Editor/editor.html", Server.Scaffold);
 
                 //load editor resources
                 switch (EditorUsed)
@@ -70,7 +70,7 @@ namespace Saber.Pages
             else
             {
                 //use no-editor.html
-                scaffold = new Scaffold("/Views/Editor/no-editor.html");
+                scaffold = new Scaffold("/Views/Editor/no-editor.html", Server.Scaffold);
             }
             
             //load header interface

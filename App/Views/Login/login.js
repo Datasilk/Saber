@@ -4,6 +4,7 @@
             email: $('#email').val(),
             password: $('#password').val()
         }
+        var msg = $('.login .message');
 
         S.ajax.post('User/Authenticate', data, function (d) {
             if (d) {

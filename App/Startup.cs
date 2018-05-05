@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 public class Startup : Datasilk.Startup {
 
@@ -56,33 +53,11 @@ public class Startup : Datasilk.Startup {
                     Verb = "runas"
                 }
             };
-            p.OutputDataReceived += GulpOutputReceived;
-            p.ErrorDataReceived += GulpErrorReceived;
+            p.OutputDataReceived += Saber.Common.ProcessInfo.Gulp.OutputReceived;
+            p.ErrorDataReceived += Saber.Common.ProcessInfo.Gulp.ErrorReceived;
             p.Start();
             p.WaitForExit();
             Thread.Sleep(1000);
         }
     }
-
-    public override void Run(HttpContext context)
-    {
-        context.Features.Get<IHttpMaxRequestBodySizeFeature>().MaxRequestBodySize = 1_024_000_000; //1 GB
-        base.Run(context);
-    }
-
-    #region "Gulp Events"
-    private void GulpOutputReceived(object sender, DataReceivedEventArgs e)
-    {
-        Process p = sender as Process;
-        if (p == null) { return; }
-        Console.WriteLine(e.Data);
-    }
-
-    private void GulpErrorReceived(object sender, DataReceivedEventArgs e)
-    {
-        Process p = sender as Process;
-        if (p == null) { return; }
-        Console.WriteLine(e.Data);
-    }
-    #endregion
 }
