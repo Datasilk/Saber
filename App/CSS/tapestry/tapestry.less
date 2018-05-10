@@ -3,25 +3,20 @@ html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, img, stro
 table, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, footer, header, menu, nav, section, summary, audio, video {
     margin:0; padding:0; border:none; outline:0;
 }
-input[type=submit], input[type=button], button{border:0;}
-
-/* Hide HTML5 Up and Down arrows. */
-input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {-webkit-appearance: none;margin: 0;}
-input[type="number"] { -moz-appearance: textfield;}
-
-/* body */
-body {font-size:14px;}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////// */
 /* Grid System ////////////////////////////////////////////////////////////////////////////////////////////// */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////// */
-.container{width:100%; background:transparent none !important;}
-
 .box, .row, .col{position:relative;}
 
 //outer box
 .box{
+    input[type=submit], input[type=button], button{border:0;}
+
+    /* Hide HTML5 Up and Down arrows. */
+    input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {-webkit-appearance: none;margin: 0;}
+    input[type="number"] { -moz-appearance: textfield;}
 
     width:100%;
     .section:after, .row:after{visibility:hidden; display:block; font-size:0; content:" "; clear:both; height:0;}

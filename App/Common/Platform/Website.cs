@@ -180,10 +180,11 @@ namespace Saber.Common.Platform
                             p.OutputDataReceived += ProcessInfo.Gulp.OutputReceived;
                             p.ErrorDataReceived += ProcessInfo.Gulp.ErrorReceived;
                             p.Start();
+                            p.WaitForExit();
                         }
                         catch (Exception)
                         {
-                            throw new ServiceErrorException("Error creating thumbnail image");
+                            throw new ServiceErrorException("Error generating compiled resource");
                         }
                         break;
                 }

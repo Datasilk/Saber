@@ -1,8 +1,5 @@
 @import "tapestry/tapestry.less";
 
-html{display:flex; min-height:100%;}
-body{width:100%; position:relative; overflow-x:hidden;}
-
 .box *{box-sizing:border-box;}
 
 .for-popup{background-color:rgba(0,0,0,0.75); position:absolute; top:0; right:0; bottom:0; left:0; z-index:7777;
@@ -13,20 +10,22 @@ body{width:100%; position:relative; overflow-x:hidden;}
         .btn-close{position:absolute; right:0px; z-index:5010;}
     }
 }
-a:link, a:visited{text-decoration:none;}
-.input.long{width:100%;}
-.svgicons{display:none;}
-.loader{margin:0 auto; width:48px; height:48px; box-sizing:border-box;}
-.align-left{text-align:left; display:inline-block;}
-.align-center{text-align:center; display:inline-block;}
-.align-right{text-align:right; display:inline-block;}
-.clear{clear:both;}
+.box{
+    a:link, a:visited{text-decoration:none;}
+    .input.long{width:100%;}
+    .svgicons{display:none;}
+    .loader{margin:0 auto; width:48px; height:48px; box-sizing:border-box;}
+    .align-left{text-align:left; display:inline-block;}
+    .align-center{text-align:center; display:inline-block;}
+    .align-right{text-align:right; display:inline-block;}
+    .clear{clear:both;}
 
-.noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
+    .noselect {
+      -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+           -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+                user-select: none; /* Non-prefixed version, currently
+                                      supported by Chrome and Opera */
+    }
 }

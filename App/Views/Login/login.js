@@ -8,13 +8,8 @@
 
         S.ajax.post('User/Authenticate', data, function (d) {
             if (d) {
-                var msg = $('.login .message');
-                if (d == 'err') {
-                    S.message.show(msg, 'error', 'Your credentials are incorrect');
-                } else if (d.indexOf('success') == 0) {
-                    S.message.show(msg, '', 'Login success! Redirecting...');
-                    window.location.href = d.split('|')[1];
-                }
+                S.message.show(msg, '', 'Login success! Redirecting...');
+                window.location.href = d;
             }
         }, function (err) {
             S.message.show(msg, 'error', 'Your credentials are incorrect');

@@ -44,16 +44,8 @@ S.editor = {
                         parameterHints: true,
                         showFoldingControls: 'always'
                     });
-                    editor.onKeyUp((e) => {
-                        var specialkeys = [18, 37, 38, 39, 40, 20, 17, 35, 112, 113, 114, 115, 116, 117, 118, 118, 120, 121, 122, 123, 36, 144, 33, 34, 91];
-                        if (specialkeys.indexOf(e.keyCode) < 0 && e.ctrlKey == false && e.altKey == false) {
-                            //content only changes if special keys are not pressed
-                            S.editor.changed();
-                        }
-                    });
-                    editor.onMouseUp((e) => {
-                        S.editor.codebar.update();
-                    });
+                    editor.onKeyUp((e) => { S.editor.keyUp(e); });
+                    editor.onMouseUp((e) => { S.editor.codebar.update(); });
                     S.editor.instance = editor;
                 });
                 break;
@@ -205,6 +197,14 @@ S.editor = {
         var id = S.editor.fileId();
         window.open(window.location.href, 'Editor_' + id, 'width=1800,height=900,left=50,top=50,toolbar=No,location=No,scrollbars=auto,status=No,resizable=yes,fullscreen=No');
     },
+
+    keyUp: function (e) {
+        var specialkeys = [16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 91, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 144];
+        if (specialkeys.indexOf(e.keyCode) < 0 && e.ctrlKey == false && e.altKey == false) {
+            //content only changes if special keys are not pressed
+            S.editor.changed();
+        }
+    },
     
     changed: function (checkall) {
         var self = S.editor;
@@ -349,25 +349,20 @@ S.editor = {
             } 
         }
 
-        //last resort, save source code to file
+        //last resort, save source code to file ////////////////////////////////////////////////////////////
         S.ajax.post('Editor/SaveFile', { path: path, content: content },
             function (d) {
-                if (d != "success") {
-                    S.editor.error();
-                } else {
-                    //check whether or not file was a required page resource for this page
-                    if (S.editor.isResource(path)) {
-                        var ext = S.editor.fileExt(path);
-                        S.editor.files[ext].changed = true;
-                        if (ext == 'html') {
-                            //also mark content as changed so content fields can reload
-                            S.editor.files.content.changed = true;
-                        }
+                //check whether or not file was a required page resource for this page
+                if (S.editor.isResource(path)) {
+                    var ext = S.editor.fileExt(path);
+                    S.editor.files[ext].changed = true;
+                    if (ext == 'html') {
+                        //also mark content as changed so content fields can reload
+                        S.editor.files.content.changed = true;
                     }
-
-                    self.unChanged(path);
-                    S.editor.explorer.open(path);
                 }
+                self.unChanged(path);
+                S.editor.explorer.open(path);
             },
             function () {
                 S.editor.error();
@@ -733,7 +728,7 @@ S.editor = {
             }
 
             if (session == null && nocode == true) {
-                //load new session from ajax POST
+                //load new session from ajax POST, loading code from server
                 S.ajax.post("Editor/Open", { path: path },
                     function (d) {
                         S.editor.sessions.add(id, mode, S.editor.decodeHtml(d), isready !== false);
@@ -900,7 +895,7 @@ S.editor = {
             show: function () {
                 var tagcss = $('#page_css');
                 var tagjs = $('#page_js');
-                var css = tagcss.attr('href');
+                var css = tagcss.attr('href').split('?')[0];
                 var src = tagjs.attr('src').split('?')[0];
                 var rnd = Math.floor(Math.random() * 9999);
 

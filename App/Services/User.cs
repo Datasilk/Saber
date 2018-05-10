@@ -24,7 +24,7 @@ namespace Saber.Services
                 {
                     User.LogIn(user.userId, user.email, user.name, user.datecreated, "", 1, user.photo);
                     User.Save(true);
-                    return "success|" + homePath;
+                    return homePath;
                 }
             }
             return Error();
