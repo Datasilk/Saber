@@ -7,6 +7,7 @@
 *.sln.docstates
 
 # make sure user can't accidentally save their custom website to git
+/App/config.json
 /App/wwwroot/
 !/App/wwwroot/fonts/
 !/App/wwwroot/editor/
