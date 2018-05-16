@@ -68,7 +68,7 @@ paths.working = {
             paths.scripts + 'utility/velocity.min.js',
             paths.scripts + 'platform/_super.js', // <---- Datasilk Core Js: S object
             paths.scripts + 'platform/ajax.js', //   <---- Optional platform features
-            //paths.scripts + 'platform/loader.js',
+            paths.scripts + 'platform/loader.js',
             paths.scripts + 'platform/message.js',
             //paths.scripts + 'platform/polyfill.js',
             paths.scripts + 'platform/popup.js',
@@ -156,10 +156,18 @@ gulp.task('js:utility', function () {
         .pipe(gulp.dest(paths.compiled.js + 'utility'));
 });
 
+gulp.task('js:minmaps', function () {
+    //check file changes & replace changed files in destination
+    return gulp.src([paths.scripts + 'min-maps/*.map', paths.scripts + 'min-maps/**/*.map'])
+        .pipe(changed(paths.compiled.js + 'min-maps'))
+        .pipe(gulp.dest(paths.compiled.js + 'min-maps'));
+});
+
 gulp.task('js', function () {
     gulp.start('js:app');
     gulp.start('js:platform');
     gulp.start('js:utility');
+    gulp.start('js:minmaps');
 });
 
 //tasks for compiling LESS & CSS /////////////////////////////////////////////////////////////////////

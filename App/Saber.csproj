@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Core" Version="1.4.0" />
     <PackageReference Include="CommonMark.NET" Version="0.15.1" />
+    <PackageReference Include="dotless.Core" Version="1.6.4" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.0.1" />

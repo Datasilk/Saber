@@ -29,7 +29,7 @@ S.editor = {
         var editor = null;
         switch (this.type) {
             case 0: //monaco
-                require.config({ paths: { 'vs': '/js/utility/monaco' } });
+                require.config({ paths: { 'vs': '/js/utility/monaco/' } });
                 require(['vs/editor/editor.main'], function () {
                     editor = monaco.editor.create(document.getElementById('editor'), {
                         value: '',
@@ -118,7 +118,7 @@ S.editor = {
         );
 
         //initialize JavaScript binding into Rhinoceros (if available)
-        if (CefSharp) {
+        if (typeof CefSharp != 'undefined') {
             (async function () {
                 await CefSharp.BindObjectAsync("Rhino", "bound");
                 S.editor.Rhino = Rhino;
@@ -200,8 +200,13 @@ S.editor = {
 
     keyUp: function (e) {
         var specialkeys = [16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 91, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 144];
-        if (specialkeys.indexOf(e.keyCode) < 0 && e.ctrlKey == false && e.altKey == false) {
+        var specialCodes = ['Escape'];
+        if (specialkeys.indexOf(e.keyCode) < 0 && e.ctrlKey == false && e.altKey == false && specialCodes.indexOf(e.code)) {
             //content only changes if special keys are not pressed
+            console.log('key press changed ' + e.keyCode);
+            if (e.keyCode == 9) {
+                console.log(e);
+            }
             S.editor.changed();
         }
     },
@@ -271,6 +276,7 @@ S.editor = {
         }
         var self = S.editor;
         var id = self.fileId(path);
+        var ext = S.editor.fileExt(path);
         var tab = $('.tab-' + id);
         if ($('.editor-drop-menu .item-save.faded').length == 1) { return;}
         self.dropmenu.hide();
@@ -350,16 +356,19 @@ S.editor = {
         }
 
         //last resort, save source code to file ////////////////////////////////////////////////////////////
+
+        //show loading progress animation
+        tab.find('.tab-title').prepend(S.loader());
         S.ajax.post('Editor/SaveFile', { path: path, content: content },
             function (d) {
                 //check whether or not file was a required page resource for this page
                 if (S.editor.isResource(path)) {
-                    var ext = S.editor.fileExt(path);
                     S.editor.files[ext].changed = true;
                     if (ext == 'html') {
                         //also mark content as changed so content fields can reload
                         S.editor.files.content.changed = true;
                     }
+                    tab.find('.loader').remove();
                 }
                 self.unChanged(path);
                 S.editor.explorer.open(path);
@@ -757,6 +766,7 @@ S.editor = {
                         break;
                 }
                 if (S.editor.isChanged(path) == true) {
+                    console.log('is already changed');
                     S.editor.changed(true);
                 }
                 S.editor.codebar.update();
@@ -843,7 +853,7 @@ S.editor = {
                 $('.editor .sections > .code-editor').removeClass('hide');
                 $('ul.file-tabs > li').removeClass('selected');
                 $('ul.file-tabs > li.tab-file-code').addClass('selected');
-                if (S.editor.isChanged(S.editor.selected)) { S.editor.changed(); }
+                if (S.editor.isChanged(S.editor.selected)) { console.log('code is already changed'); S.editor.changed(); }
                 $('.item-save-as').removeClass('faded').removeAttr('disabled');
                 setTimeout(function () { S.editor.resize(); }, 10);
             }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
 using Utility.Strings;
+using dotless.Core;
 
 namespace Saber.Common.Platform
 {
@@ -113,20 +113,24 @@ namespace Saber.Common.Platform
         public static void SaveFile(string path, string content)
         {
             var server = Server.Instance;
+
+            //get relative paths for file
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0)
             {
                 throw new ServiceErrorException("No path specified");
             }
+            var dir = string.Join("/", paths.Take(paths.Length - 1));  //relative path
+            var filepath = string.Join("/", paths); //relative filename & path
+            var file = paths[paths.Length - 1]; //filename only
+            var ext = file.Split('.', 2)[1].ToLower(); //file extension only
 
-            var dir = string.Join("/", paths.Take(paths.Length - 1));
-            dir = Server.MapPath(dir);
-            var filepath = Server.MapPath(string.Join("/", paths));
-            if (!Directory.Exists(dir))
+            //create folder for file
+            if (!Directory.Exists(Server.MapPath(dir)))
             {
                 try
                 {
-                    Directory.CreateDirectory(dir);
+                    Directory.CreateDirectory(Server.MapPath(dir));
                 }
                 catch (Exception)
                 {
@@ -135,7 +139,7 @@ namespace Saber.Common.Platform
             }
             try
             {
-                File.WriteAllText(filepath, content);
+                File.WriteAllText(Server.MapPath(filepath), content);
             }
             catch (Exception)
             {
@@ -143,8 +147,6 @@ namespace Saber.Common.Platform
             }
 
             //clean cache related to file
-            var file = paths[paths.Length - 1];
-            var ext = file.Split('.', 2)[1].ToLower();
             switch (ext)
             {
                 case "html":
@@ -153,34 +155,55 @@ namespace Saber.Common.Platform
                     break;
             }
 
-            //gulp file
+            //process saved files
             if (paths[0].ToLower() == "/content/pages")
             {
+                var pubdir = "/wwwroot/content/pages/" + string.Join("/", paths.Skip(1)).Replace(file, "");
+                if(pubdir[pubdir.Length - 1] != '/') { pubdir += "/"; }
                 switch (ext)
                 {
-                    case "js":
-                    case "css":
+                    case "js": case "css": case "less":
+                        //create public folder in wwwroot
+                        if (!Directory.Exists(Server.MapPath(pubdir)))
+                        {
+                            Directory.CreateDirectory(Server.MapPath(pubdir));
+                        }
+                        break;
+                }
+
+                switch (ext)
+                {
+                    case "js": case "css":
+                        //copy resource file to public wwwroot folder
+                        File.Copy(Server.MapPath(filepath), Server.MapPath(pubdir + file), true);
+                        break;
+
                     case "less":
+                        //compile less file
                         try
                         {
-                            var p = new Process
-                            {
-                                StartInfo = new ProcessStartInfo()
-                                {
-                                    FileName = "cmd.exe",
-                                    Arguments = "/c gulp file --path \"" + string.Join("/", paths).ToLower().Substring(1) + "\"",
-                                    WindowStyle = ProcessWindowStyle.Hidden,
-                                    UseShellExecute = false,
-                                    CreateNoWindow = true,
-                                    RedirectStandardError = true,
-                                    WorkingDirectory = Server.MapPath("/").Replace("App\\", ""),
-                                    Verb = "runas"
-                                }
-                            };
-                            p.OutputDataReceived += ProcessInfo.Gulp.OutputReceived;
-                            p.ErrorDataReceived += ProcessInfo.Gulp.ErrorReceived;
-                            p.Start();
-                            p.WaitForExit();
+                            var css = Less.Parse(content);
+                            File.WriteAllText(Server.MapPath(pubdir + file.Replace(".less", ".css")), css);
+
+                            //use Gulp to compile JS, CSS, & LESS
+                            //var p = new Process
+                            //{
+                            //    StartInfo = new ProcessStartInfo()
+                            //    {
+                            //        FileName = "cmd.exe",
+                            //        Arguments = "/c gulp file --path \"" + string.Join("/", paths).ToLower().Substring(1) + "\"",
+                            //        WindowStyle = ProcessWindowStyle.Hidden,
+                            //        UseShellExecute = false,
+                            //        CreateNoWindow = true,
+                            //        RedirectStandardError = true,
+                            //        WorkingDirectory = Server.MapPath("/").Replace("App\\", ""),
+                            //        Verb = "runas"
+                            //    }
+                            //};
+                            //p.OutputDataReceived += ProcessInfo.Gulp.OutputReceived;
+                            //p.ErrorDataReceived += ProcessInfo.Gulp.ErrorReceived;
+                            //p.Start();
+                            //p.WaitForExit();
                         }
                         catch (Exception)
                         {
