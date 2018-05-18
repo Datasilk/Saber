@@ -11,12 +11,13 @@ public class Startup : Datasilk.Startup {
     public override void Configured(IApplicationBuilder app, IHostingEnvironment env, IConfigurationRoot config)
     {
         base.Configured(app, env, config);
-        var query = new Saber.Query.Users(server.sqlConnectionString);
+        Saber.Query.QuerySql.connectionString = server.sqlConnectionString;
+        var query = new Saber.Query.Users();
         var resetPass = query.HasPasswords();
         server.hasAdmin = query.HasAdmin();
 
         server.languages = new Dictionary<string, string>();
-        var languages = new Saber.Query.Languages(server.sqlConnectionString);
+        var languages = new Saber.Query.Languages();
         server.languages.Add("en", "English"); //english should be the default language
         languages.GetList().ForEach((lang) => {
             server.languages.Add(lang.langId, lang.language);
@@ -27,6 +28,7 @@ public class Startup : Datasilk.Startup {
         {
             //copy default website since none exists yet
             Directory.CreateDirectory(Server.MapPath("/Content/pages/"));
+            Directory.CreateDirectory(Server.MapPath("/Content/partials/"));
             Directory.CreateDirectory(Server.MapPath("/wwwroot/content/"));
             Directory.CreateDirectory(Server.MapPath("/wwwroot/content/pages/"));
             Directory.CreateDirectory(Server.MapPath("/wwwroot/images/"));
@@ -34,7 +36,7 @@ public class Startup : Datasilk.Startup {
             Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/resources/"), Server.MapPath("/wwwroot/content/pages/"));
             Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/images/"), Server.MapPath("/wwwroot/images/"));
             Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/partials/"), Server.MapPath("/Content/partials/"));
-            File.Copy(Server.MapPath("/Content/temp/css/website.less"), Server.MapPath("/CSS/website.less"));
+            File.Copy(Server.MapPath("/Content/temp/css/website.less"), Server.MapPath("/CSS/website.less"), true);
 
             Thread.Sleep(1000);
 

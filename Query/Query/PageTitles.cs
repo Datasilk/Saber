@@ -4,9 +4,7 @@ namespace Saber.Query
 {
     public class PageTitles : QuerySql
     {
-        public PageTitles(string connectionString) : base(connectionString)
-        {
-        }
+        public PageTitles() { }
 
         public int Create(string title, bool isSuffix)
         {

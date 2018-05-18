@@ -4,9 +4,7 @@ namespace Saber.Query
 {
     public class Languages : QuerySql
     {
-        public Languages(string connectionString) : base(connectionString)
-        {
-        }
+        public Languages() { }
 
         public int Create(Models.Language lang)
         {

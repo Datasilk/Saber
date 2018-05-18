@@ -14,7 +14,7 @@ namespace Saber.Services
         {
 
             //var sqlUser = new SqlQueries.User(S);
-            var query = new Query.Users(Server.sqlConnectionString);
+            var query = new Query.Users();
             var encrypted = query.GetPassword(email);
             if (!DecryptPassword(email, password, encrypted)) { return Error(); }
             {
@@ -36,7 +36,7 @@ namespace Saber.Services
             {
                 var update = false; //security check
                 var emailAddr = "";
-                var queryUser = new Query.Users(Server.sqlConnectionString);
+                var queryUser = new Query.Users();
                 var adminId = 1;
                 if (Server.resetPass == true)
                 {
@@ -60,7 +60,7 @@ namespace Saber.Services
         {
             if (Server.hasAdmin == false && Server.environment == Server.Environment.development)
             {
-                var queryUser = new Query.Users(Server.sqlConnectionString);
+                var queryUser = new Query.Users();
                 queryUser.CreateUser(new Query.Models.User()
                 {
                     name = name,

@@ -11,7 +11,5 @@ namespace Saber.Query.Models
         public bool photo { get; set; }
         public bool active { get; set; }
         public DateTime datecreated { get; set; }
-        public int lastboard { get; set; }
-        public string lastboardName { get; set; }
     }
 }

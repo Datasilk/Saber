@@ -387,7 +387,7 @@ namespace Saber.Services
             var suffixes = new StringBuilder();
 
             //generate list of page prefixes
-            var query = new Query.PageTitles(Server.sqlConnectionString);
+            var query = new Query.PageTitles();
             var titles = query.GetList(Query.PageTitles.TitleType.all);
             prefixes.Append("<option value=\"0\">[None]</option>\n");
             suffixes.Append("<option value=\"0\">[None]</option>\n");
@@ -420,7 +420,7 @@ namespace Saber.Services
                 config.title.body = title;
                 config.title.prefixId = prefixId;
                 config.title.suffixId = suffixId;
-                var query = new Query.PageTitles(Server.sqlConnectionString);
+                var query = new Query.PageTitles();
                 if (prefixId == 0)
                 {
                     config.title.prefix = "";
@@ -468,7 +468,7 @@ namespace Saber.Services
             
             try
             {
-                var query = new Query.PageTitles(Server.sqlConnectionString);
+                var query = new Query.PageTitles();
                 var id = query.Create(title, !prefix);
                 return id + "|" + title;
             }
@@ -482,7 +482,7 @@ namespace Saber.Services
             {
                 var config = PageInfo.GetPageConfig(path);
                 config.description = description;
-                var query = new Query.PageTitles(Server.sqlConnectionString);
+                var query = new Query.PageTitles();
                 PageInfo.SavePageConfig(path, config);
                 return Success();
             }
