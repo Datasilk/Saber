@@ -40,4 +40,8 @@
     <ProjectReference Include="..\Query\Query.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\js\utility\monaco\vs\" />
+  </ItemGroup>
+
 </Project>

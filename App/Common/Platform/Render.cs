@@ -16,6 +16,7 @@ namespace Saber.Common.Platform
         {
             //translate root path to relative path
             var server = Server.Instance;
+            var content = new Scaffold("/Views/Editor/content.html", server.Scaffold);
             var paths = PageInfo.GetRelativePath(path);
             var relpath = string.Join("/", paths);
             var file = paths[paths.Length - 1];
@@ -72,7 +73,28 @@ namespace Saber.Common.Platform
                     }
                 }
             }
-            return scaffold.Render();
+
+            //load data into header & footer partials
+            var parts = new string[] { "header", "footer" };
+            foreach (var part in parts)
+            {
+                var child = content.Child(part);
+                if (request.User.userId > 0)
+                {
+                    child.Data["user"] = "1";
+                    child.Data["username"] = request.User.name;
+                    child.Data["userid"] = request.User.userId.ToString();
+                }
+                else
+                {
+                    child.Data["no-user"] = "1";
+                }
+            }
+            
+
+            //render content
+            content.Data["content"] = scaffold.Render();
+            return content.Render();
         }
     }
 }

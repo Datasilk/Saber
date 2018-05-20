@@ -40,5 +40,10 @@ namespace Datasilk
 
             context.Response.Cookies.Append("authId", auth, options);
         }
+
+        partial void VendorLogOut()
+        {
+            context.Response.Cookies.Delete("authId");
+        }
     }
 }

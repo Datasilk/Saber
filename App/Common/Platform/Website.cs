@@ -17,9 +17,9 @@ namespace Saber.Common.Platform
             {
                 throw new ServiceErrorException("You cannot create a file in the root folder");
             }
-            if (path.IndexOf("content") == 0)
+            if (path.IndexOf("content") == 0 && path.IndexOf("content/pages/") == 0)
             {
-                throw new ServiceErrorException("You cannot create a file in the content folder");
+                throw new ServiceErrorException("You cannot create a file in the content/pages folder");
             }
 
             //check filename characters
@@ -184,32 +184,37 @@ namespace Saber.Common.Platform
                         {
                             var css = Less.Parse(content);
                             File.WriteAllText(Server.MapPath(pubdir + file.Replace(".less", ".css")), css);
-
-                            //use Gulp to compile JS, CSS, & LESS
-                            //var p = new Process
-                            //{
-                            //    StartInfo = new ProcessStartInfo()
-                            //    {
-                            //        FileName = "cmd.exe",
-                            //        Arguments = "/c gulp file --path \"" + string.Join("/", paths).ToLower().Substring(1) + "\"",
-                            //        WindowStyle = ProcessWindowStyle.Hidden,
-                            //        UseShellExecute = false,
-                            //        CreateNoWindow = true,
-                            //        RedirectStandardError = true,
-                            //        WorkingDirectory = Server.MapPath("/").Replace("App\\", ""),
-                            //        Verb = "runas"
-                            //    }
-                            //};
-                            //p.OutputDataReceived += ProcessInfo.Gulp.OutputReceived;
-                            //p.ErrorDataReceived += ProcessInfo.Gulp.ErrorReceived;
-                            //p.Start();
-                            //p.WaitForExit();
                         }
                         catch (Exception)
                         {
                             throw new ServiceErrorException("Error generating compiled resource");
                         }
                         break;
+                }
+            }else if(paths[0].ToLower() == "/content")
+            {
+                switch (paths[1].ToLower())
+                {
+                    case "partials":
+                        switch (paths[2].ToLower())
+                        {
+                            case "header.less": case "footer.less":
+                                //compile website.less
+                                Directory.SetCurrentDirectory(Server.MapPath("/CSS"));
+                                var css = Less.Parse(File.ReadAllText(Server.MapPath("/CSS/website.less")));
+                                File.WriteAllText(Server.MapPath("/wwwroot/css/website.css"), css);
+                                Directory.SetCurrentDirectory(Server.MapPath("/"));
+                                break;
+                        }
+                        break;
+                }
+            }else if(paths[0].ToLower() == "/scripts")
+            {
+                if(ext == "js")
+                {
+                    //copy javascript files from /Scripts to /wwwroot/js
+                    var pubdir = "/wwwroot/js/" + string.Join("/", paths.Skip(1)).Replace(file, "");
+                    File.Copy(Server.MapPath(filepath), Server.MapPath(pubdir + file), true);
                 }
             }
         }

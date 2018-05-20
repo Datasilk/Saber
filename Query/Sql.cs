@@ -9,7 +9,6 @@ namespace Saber.Query
 {
     public class Sql
     {
-
         private SqlConnection conn = new SqlConnection();
         private SqlCommand cmd = new SqlCommand();
         private string connString = "";

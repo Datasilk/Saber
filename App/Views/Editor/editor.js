@@ -10,6 +10,7 @@ S.editor = {
     divFields: $('.content-fields'),
     divBrowser: $('.file-browser'),
     initialized: false,
+    savedTabs:[],
     Rhino: null,
 
     init: function () {
@@ -94,9 +95,7 @@ S.editor = {
         $('.tab-preview').on('click', S.editor.filebar.preview.show);
         $('.edit-bar').on('mousedown', function (e) {
             if (e.target != $('.edit-bar')[0]) { return; }
-            console.log(S.editor.Rhino);
             if (S.editor.Rhino) {
-                console.log('drag');
                 S.editor.Rhino.drag();
             }
         });
@@ -108,7 +107,11 @@ S.editor = {
         $(window).on('keydown', S.editor.hotkey.pressed);
 
         //finally, load content resources that belong to the page
-        S.editor.explorer.openResources(dir, [fileparts[0] + '.html', fileparts[0] + '.less', fileparts[0] + '.js'],
+        var tabs = [fileparts[0] + '.html', fileparts[0] + '.less', fileparts[0] + '.js'];
+        if (this.savedTabs.length > 0) {
+            tabs.concat(this.savedTabs);
+        }
+        S.editor.explorer.openResources(dir, tabs,
             function () {
                 setTimeout(function () {
                     S.editor.codebar.status('Ready');
@@ -203,10 +206,6 @@ S.editor = {
         var specialCodes = ['Escape'];
         if (specialkeys.indexOf(e.keyCode) < 0 && e.ctrlKey == false && e.altKey == false && specialCodes.indexOf(e.code)) {
             //content only changes if special keys are not pressed
-            console.log('key press changed ' + e.keyCode);
-            if (e.keyCode == 9) {
-                console.log(e);
-            }
             S.editor.changed();
         }
     },
@@ -362,14 +361,19 @@ S.editor = {
         S.ajax.post('Editor/SaveFile', { path: path, content: content },
             function (d) {
                 //check whether or not file was a required page resource for this page
-                if (S.editor.isResource(path)) {
+                if (S.editor.isResource(path) || S.editor.isResource(path, 'partial')) {
                     S.editor.files[ext].changed = true;
                     if (ext == 'html') {
                         //also mark content as changed so content fields can reload
                         S.editor.files.content.changed = true;
                     }
-                    tab.find('.loader').remove();
+                } else if(S.editor.isResource(path, 'website.css')) {
+                    S.editor.files.website.css.changed = true;
+                } else if (S.editor.isResource(path, 'website.js')) {
+                    S.editor.files.website.js.changed = true;
+                    S.editor.files.js.changed = true;
                 }
+                tab.find('.loader').remove();
                 self.unChanged(path);
                 S.editor.explorer.open(path);
             },
@@ -538,13 +542,33 @@ S.editor = {
         }
     },
 
-    isResource: function (path) {
-        var paths = path.split('/');
+    isResource: function (path, type) {
+        var paths = path.toLowerCase().split('/');
         var file = paths[paths.length - 1];
         var dir = paths.join('/').replace(file, '');
         var fileparts = paths[paths.length - 1].split('.', 2);
         var relpath = dir + fileparts[0];
-        return relpath.toLowerCase() == S.editor.path;
+        if (typeof type == 'undefined') {
+            return relpath == S.editor.path;
+        } else if (type == 'website.css') {
+            switch (dir + fileparts.join('.')) {
+                case 'content/partials/header.less':
+                case 'content/partials/footer.less':
+                case 'root/css/website.less':
+                    return true;
+            }
+        } else if (type == 'website.js') {
+            switch (dir + fileparts.join('.')) {
+                case 'root/scripts/website.js':
+                    return true;
+            }
+        } else if (type == 'partial') {
+            switch (dir + fileparts.join('.')) {
+                case 'content/partials/header.html':
+                case 'content/partials/footer.html':
+                    return true;
+            }
+        }
     },
 
     files: {
@@ -553,6 +577,10 @@ S.editor = {
         html: { changed: false },
         less: { changed: false },
         js: { changed: false },
+        website: {
+            css: { changed: false },
+            js: { changed: false }
+        },
         content: {changed: false}
     },
 
@@ -766,7 +794,6 @@ S.editor = {
                         break;
                 }
                 if (S.editor.isChanged(path) == true) {
-                    console.log('is already changed');
                     S.editor.changed(true);
                 }
                 S.editor.codebar.update();
@@ -853,7 +880,7 @@ S.editor = {
                 $('.editor .sections > .code-editor').removeClass('hide');
                 $('ul.file-tabs > li').removeClass('selected');
                 $('ul.file-tabs > li.tab-file-code').addClass('selected');
-                if (S.editor.isChanged(S.editor.selected)) { console.log('code is already changed'); S.editor.changed(); }
+                if (S.editor.isChanged(S.editor.selected)) { S.editor.changed(); }
                 $('.item-save-as').removeClass('faded').removeAttr('disabled');
                 setTimeout(function () { S.editor.resize(); }, 10);
             }
@@ -918,18 +945,25 @@ S.editor = {
                     );
                 }
 
+                if (S.editor.files.website.css.changed == true) {
+                    //reload website.css
+                    S.editor.files.website.css.changed = false;
+                    $(website_css).attr('href', '/css/website.css?r=' + rnd);
+                }
 
                 //next, reload rendered HTML
-                if (S.editor.files.html.changed == true) {
+                if (S.editor.files.html.changed == true || S.editor.files.content.changed == true) {
                     S.editor.files.html.changed = false;
                     S.ajax.post('Editor/RenderPage', { path: S.editor.path + '.html', language: window.language },
                         function (d) {
-                            $('.preview > .content').html(d);
+                            $('.preview').html(d);
                             changeJs(true);
                         }
                     );
-                } else {
+                } else if (S.editor.files.js.changed == true) {
                     changeJs();
+                } else {
+                    showContent();
                 }
 
                 //update Rhino browser window (if applicable)
@@ -939,24 +973,29 @@ S.editor = {
 
                 //finally, reload javascript file
                 function changeJs(htmlChanged) {
-                    if (S.editor.files.js.changed == true) {
-                        S.editor.files.js.changed = false;
-                        tagjs.remove();
-                        S.util.js.load(src + '?r=' + rnd, 'page_js',
-                            function () { showContent(); }
-                        );
-                    } else {
-                        if (htmlChanged === true) {
-                            //reload javascript anyway since HTML changed
-                            tagjs.remove();
-                            S.util.js.load(src, 'page_js',
-                                function () { showContent(); }
-                            );
-                        } else {
-                            //no need to reload Js, HTML didn't change
-                            showContent();
+                    $('#website_js').remove();
+                    S.util.js.load('/js/website.js' + '?r=' + rnd, 'website_js',
+                        function () { 
+                            if (S.editor.files.js.changed == true) {
+                                S.editor.files.js.changed = false;
+                                tagjs.remove();
+                                S.util.js.load(src + '?r=' + rnd, 'page_js',
+                                    function () { showContent(); }
+                                );
+                            } else {
+                                if (htmlChanged === true) {
+                                    //reload javascript anyway since HTML changed
+                                    tagjs.remove();
+                                    S.util.js.load(src, 'page_js',
+                                        function () { showContent(); }
+                                    );
+                                } else {
+                                    //no need to reload Js, HTML didn't change
+                                    showContent();
+                                }
+                            }
                         }
-                    }
+                    );
                 }
 
                 function showContent() {
@@ -992,6 +1031,7 @@ S.editor = {
     codebar: {
         update: function () {
             var editor = S.editor.instance;
+            if (typeof editor == 'undefined') { return;}
             var linenum = 'Ln '; 
             var charnum = 'Col ';
             var linestotal = 'End ';
@@ -1178,7 +1218,6 @@ S.editor = {
                             url: 'Upload/Resources',
                             onUploadStart: function (files, xhr, data) {
                                 data.append('path', S.editor.resources.path);
-                                console.log(S.editor.resources.path);
                             },
 
                             onQueueComplete: function () {

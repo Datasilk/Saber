@@ -35,6 +35,7 @@ namespace Saber.Pages
             var config = PageInfo.GetPageConfig("content/" + pathname);
             title = config.title.prefix + config.title.body + config.title.suffix;
             description = config.description;
+            favicon = "/images/favicon.ico";
 
             //open page contents
             if (User.userId > 0)
@@ -72,9 +73,6 @@ namespace Saber.Pages
                 //use no-editor.html
                 scaffold = new Scaffold("/Views/Editor/no-editor.html", Server.Scaffold);
             }
-            
-            //load header interface
-            LoadHeader(ref scaffold);
 
             //add page-specific references
             scripts.Append(

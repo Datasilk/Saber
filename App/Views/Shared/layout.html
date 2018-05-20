@@ -12,13 +12,14 @@
     <link type="text/css" rel="stylesheet" href="/css/platform.css" />
     <link type="text/css" rel="stylesheet" href="/css/themes/{{theme}}.css" />
     {{/platform-1}}
-    <link type="text/css" rel="stylesheet" href="/css/website.css" />
+    <link type="text/css" rel="stylesheet" href="/css/website.css" id="website_css" />
     {{head-css}}
     <link rel="icon" type="image/ico" href="{{favicon}}" />
 </head>
 <body>
-    
-    {{platform-2}}<div class="bg for-popup hide" onclick="S.popup.bg(event)"></div>{{/platform-2}}
+
+    {{platform-2}}
+    <div class="bg for-popup hide" onclick="S.popup.bg(event)"></div>{{/platform-2}}
     {{body}}
     {{platform-3}}
     <div class="svgicons">{{svg-icons}}</div>
@@ -38,5 +39,6 @@
     <script src="/js/platform.js"></script>
     {{/platform-3}}
     {{scripts}}
+    <script src="/js/website.js" id="website_js"></script>
 </body>
 </html>

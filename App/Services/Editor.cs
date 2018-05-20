@@ -39,6 +39,7 @@ namespace Saber.Services
 
             var item = new Scaffold("/Views/FileBrowser/file.html", Server.Scaffold);
             var items = new List<string>();
+            var exclude = new string[] { };
 
             if (paths[0] == "" && paths.Length == 1)
             {
@@ -54,7 +55,6 @@ namespace Saber.Services
                 if (Directory.Exists(Server.MapPath(rpath)))
                 {
                     var info = new DirectoryInfo(Server.MapPath(rpath));
-                    var exclude = new string[] { };
                     if (paths.Length == 1) {
                         //exclude internal folders
                         exclude = new string[] { "content", "css", "editor", "js", "themes", thumbdir.Replace("/", "") };
@@ -79,14 +79,13 @@ namespace Saber.Services
                 {
                     //get list of directories
                     var info = new DirectoryInfo(Server.MapPath(rpath));
-                    var exclude = new string[] { };
                     if (paths[0] == "/CSS" && paths.Length == 1)
                     {
-                        exclude = new string[] { "tapestry", "themes" };
+                        exclude = exclude.Concat(new string[]{ "tapestry", "themes" }).ToArray();
                     }
-                    else if (paths[0] == "/Content/partials" && paths.Length == 1)
+                    else if (paths[0] == "/Scripts")
                     {
-                        exclude = new string[] { "pages", "temp" };
+                        exclude = exclude.Concat(new string[] { "min-maps", "platform", "selector", "utility" }).ToArray();
                     }
 
                     foreach (var dir in info.GetDirectories())

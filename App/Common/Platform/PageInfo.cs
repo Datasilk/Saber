@@ -59,7 +59,8 @@ namespace Saber.Common.Platform
         public static Models.Page.Settings GetPageConfig(string path)
         {
             Server server = Server.Instance;
-            var config = (Models.Page.Settings)Serializer.ReadObject(server.LoadFileFromCache(ConfigFilePath(path), true), typeof(Models.Page.Settings));
+            var filename = ConfigFilePath(path);
+            var config = (Models.Page.Settings)Serializer.ReadObject(server.LoadFileFromCache(filename, true), typeof(Models.Page.Settings));
             if (config != null) { return config; }
 
             //all else fails, generate a new page settings object

@@ -21,6 +21,7 @@
 /App/Scripts/
 !/App/Scripts/platform
 !/App/Scripts/selector
+!/App/Scripts/min-maps
 !/App/Scripts/utility/ace/
 !/App/Scripts/utility/launchpad/
 !/App/Scripts/utility/monaco/

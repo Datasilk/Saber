@@ -26,11 +26,11 @@ namespace Saber
 
         public override string Render(string[] path, string body = "", object metadata = null)
         {
-            if (scripts.ToString().IndexOf("S.svg.load") < 0 && usePlatform == true)
+            if (usePlatform == true)
             {
                 scripts.Append("<script language=\"javascript\">S.svg.load('/themes/default/icons.svg');</script>");
             }
-            var scaffold = new Scaffold("/layout.html", Server.Scaffold);
+            var scaffold = new Scaffold("/Views/Shared/layout.html", Server.Scaffold);
             scaffold.Data["title"] = title;
             scaffold.Data["description"] = description;
             scaffold.Data["language"] = User.language;
@@ -46,21 +46,6 @@ namespace Saber
             scaffold.Data["scripts"] = scripts.ToString();
 
             return scaffold.Render();
-        }
-
-        public void LoadHeader(ref Scaffold scaffold)
-        {
-            if(User.userId > 0)
-            {
-                var child = scaffold.Child("header");
-                child.Data["user"] = "1";
-                child.Data["username"] = User.name;
-                
-            }
-            else
-            {
-                scaffold.Child("header").Data["no-user"] = "1";
-            }
         }
     }
 }

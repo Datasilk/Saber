@@ -1,9 +1,8 @@
 ﻿
 namespace Saber.Query
 {
-    public class QuerySql
+    public abstract class QuerySql
     {
-
         public Sql Sql;
         public static string connectionString;
 
