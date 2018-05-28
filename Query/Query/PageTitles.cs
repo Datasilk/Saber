@@ -2,7 +2,7 @@
 
 namespace Saber.Query
 {
-    public class PageTitles : QuerySql
+    public class PageTitles : global::Query.QuerySql
     {
         public PageTitles() { }
 

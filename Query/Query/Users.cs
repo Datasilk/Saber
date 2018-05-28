@@ -2,7 +2,7 @@
 
 namespace Saber.Query
 {
-    public class Users : QuerySql
+    public class Users : global::Query.QuerySql
     {
         public Users() { }
 

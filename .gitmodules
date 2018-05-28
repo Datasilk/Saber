@@ -10,3 +10,6 @@
 [submodule "App/Scripts/utility/launchpad"]
 	path = App/Scripts/utility/launchpad
 	url = http://github.com/datasilk/launchpad
+[submodule "Query/Core"]
+	path = Query/Core
+	url = https://github.com/datasilk/corequery

@@ -2,6 +2,7 @@ S.editor = {
     type: 0, //0 = Monaco, 1 = Ace
     instance: null,
     sessions: {},
+    viewstates: {},
     selected: '',
     path: '',
     theme: 'dark',
@@ -506,8 +507,12 @@ S.editor = {
                     require(['vs/editor/editor.main'], function () {
                         var session = monaco.editor.createModel(code, mode);
                         S.editor.sessions[id] = session;
-
+                        S.editor.viewstates[id] = null;
+                        if (S.editor.selected != '') {
+                            S.editor.sessions.saveViewState(S.editor.fileId(S.editor.selected));
+                        }
                         if (select !== false) {
+                            S.editor.instance.saveViewState();
                             S.editor.instance.setModel(session);
                             S.editor.filebar.code.show();
                             S.editor.codebar.update();
@@ -539,6 +544,25 @@ S.editor = {
         remove: function (id) {
             S.editor.sessions[id].destroy();
             delete S.editor.sessions[id];
+        },
+
+        saveViewState(id) {
+            //save previous viewstate
+            switch (S.editor.type) {
+                case 0: //monaco
+                    S.editor.viewstates[id] = S.editor.instance.saveViewState();
+                    break;
+            }
+        },
+
+        restoreViewState(id) {
+            if (S.editor.viewstates[id]) {
+                switch (S.editor.type) {
+                    case 0: //monaco
+                        S.editor.instance.restoreViewState(S.editor.viewstates[id]);
+                        break;
+                }
+            }
         }
     },
 
@@ -682,6 +706,10 @@ S.editor = {
         open: function (path, code, isready, callback) {
             //opens a resource that exists on the server
             var id = S.editor.fileId(path);
+            var prevId = '';
+            if (S.editor.selected != '') {
+                prevId = S.editor.fileId(S.editor.selected);
+            }
 
             if (isready !== false) {
                 //update selected session
@@ -785,7 +813,14 @@ S.editor = {
                 S.editor.filebar.code.show();
                 switch (S.editor.type) {
                     case 0: //monaco
+                        //save viewstate for currently viewed session
+                        S.editor.sessions.saveViewState(prevId);
+
+                        //load selected session
                         editor.setModel(session);
+
+                        //restore viewstate for selected session
+                        S.editor.sessions.restoreViewState(id);
                         editor.focus();
                         break;
                     case 1: //ace
@@ -962,9 +997,8 @@ S.editor = {
                     );
                 } else if (S.editor.files.js.changed == true) {
                     changeJs();
-                } else {
-                    showContent();
                 }
+                showContent();
 
                 //update Rhino browser window (if applicable)
                 if (S.editor.Rhino) {
@@ -976,23 +1010,10 @@ S.editor = {
                     $('#website_js').remove();
                     S.util.js.load('/js/website.js' + '?r=' + rnd, 'website_js',
                         function () { 
-                            if (S.editor.files.js.changed == true) {
+                            if (S.editor.files.js.changed == true || htmlChanged == true) {
                                 S.editor.files.js.changed = false;
                                 tagjs.remove();
-                                S.util.js.load(src + '?r=' + rnd, 'page_js',
-                                    function () { showContent(); }
-                                );
-                            } else {
-                                if (htmlChanged === true) {
-                                    //reload javascript anyway since HTML changed
-                                    tagjs.remove();
-                                    S.util.js.load(src, 'page_js',
-                                        function () { showContent(); }
-                                    );
-                                } else {
-                                    //no need to reload Js, HTML didn't change
-                                    showContent();
-                                }
+                                S.util.js.load(src + '?r=' + rnd, 'page_js');
                             }
                         }
                     );

@@ -2,7 +2,7 @@
 
 namespace Saber.Query
 {
-    public class Languages : QuerySql
+    public class Languages : global::Query.QuerySql
     {
         public Languages() { }
 

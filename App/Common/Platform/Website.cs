@@ -156,21 +156,16 @@ namespace Saber.Common.Platform
             }
 
             //process saved files
+            var pubdir = "/wwwroot/content/pages/" + string.Join("/", paths.Skip(1)).Replace(file, "");
+            if (pubdir[pubdir.Length - 1] != '/') { pubdir += "/"; }
+
             if (paths[0].ToLower() == "/content/pages")
             {
-                var pubdir = "/wwwroot/content/pages/" + string.Join("/", paths.Skip(1)).Replace(file, "");
-                if(pubdir[pubdir.Length - 1] != '/') { pubdir += "/"; }
-                switch (ext)
+                //create public folder in wwwroot
+                if (!Directory.Exists(Server.MapPath(pubdir)))
                 {
-                    case "js": case "css": case "less":
-                        //create public folder in wwwroot
-                        if (!Directory.Exists(Server.MapPath(pubdir)))
-                        {
-                            Directory.CreateDirectory(Server.MapPath(pubdir));
-                        }
-                        break;
+                    Directory.CreateDirectory(Server.MapPath(pubdir));
                 }
-
                 switch (ext)
                 {
                     case "js": case "css":
@@ -212,8 +207,14 @@ namespace Saber.Common.Platform
             {
                 if(ext == "js")
                 {
+                    pubdir = "/wwwroot/js/" + string.Join("/", paths.Skip(1)).Replace(file, "");
+                    if (pubdir[pubdir.Length - 1] != '/') { pubdir += "/"; }
+                    //create public folder in wwwroot
+                    if (!Directory.Exists(Server.MapPath(pubdir)))
+                    {
+                        Directory.CreateDirectory(Server.MapPath(pubdir));
+                    }
                     //copy javascript files from /Scripts to /wwwroot/js
-                    var pubdir = "/wwwroot/js/" + string.Join("/", paths.Skip(1)).Replace(file, "");
                     File.Copy(Server.MapPath(filepath), Server.MapPath(pubdir + file), true);
                 }
             }
