@@ -386,8 +386,7 @@ namespace Saber.Services
             var suffixes = new StringBuilder();
 
             //generate list of page prefixes
-            var query = new Query.PageTitles();
-            var titles = query.GetList(Query.PageTitles.TitleType.all);
+            var titles = Query.PageTitles.GetList(Query.PageTitles.TitleType.all);
             prefixes.Append("<option value=\"0\">[None]</option>\n");
             suffixes.Append("<option value=\"0\">[None]</option>\n");
             foreach (var t in titles)
@@ -419,14 +418,13 @@ namespace Saber.Services
                 config.title.body = title;
                 config.title.prefixId = prefixId;
                 config.title.suffixId = suffixId;
-                var query = new Query.PageTitles();
                 if (prefixId == 0)
                 {
                     config.title.prefix = "";
                 }
                 else
                 {
-                    config.title.prefix = query.Get(prefixId);
+                    config.title.prefix = Query.PageTitles.Get(prefixId);
                 }
                 if (suffixId == 0)
                 {
@@ -434,7 +432,7 @@ namespace Saber.Services
                 }
                 else
                 {
-                    config.title.suffix = query.Get(suffixId);
+                    config.title.suffix = Query.PageTitles.Get(suffixId);
                 }
                 PageInfo.SavePageConfig(path, config);
                 return Success();
@@ -467,8 +465,7 @@ namespace Saber.Services
             
             try
             {
-                var query = new Query.PageTitles();
-                var id = query.Create(title, !prefix);
+                var id = Query.PageTitles.Create(title, !prefix);
                 return id + "|" + title;
             }
             catch (Exception) { return Error(); }
@@ -481,7 +478,6 @@ namespace Saber.Services
             {
                 var config = PageInfo.GetPageConfig(path);
                 config.description = description;
-                var query = new Query.PageTitles();
                 PageInfo.SavePageConfig(path, config);
                 return Success();
             }

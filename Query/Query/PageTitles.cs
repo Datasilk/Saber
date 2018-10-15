@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace Saber.Query
+namespace Query
 {
-    public class PageTitles : global::Query.QuerySql
+    public static class PageTitles
     {
-        public PageTitles() { }
-
-        public int Create(string title, bool isSuffix)
+        public static int Create(string title, bool isSuffix)
         {
             return Sql.ExecuteScalar<int>(
                 "Page_Title_Create",
@@ -18,7 +16,7 @@ namespace Saber.Query
             );
         }
 
-        public void Delete(int id)
+        public static void Delete(int id)
         {
             Sql.ExecuteNonQuery(
                 "Page_Title_Delete",
@@ -36,7 +34,7 @@ namespace Saber.Query
             suffix = 1
         }
 
-        public List<Models.PageTitle>GetList(TitleType suffix)
+        public static List<Models.PageTitle>GetList(TitleType suffix)
         {
             return Sql.Populate<Models.PageTitle>(
                 "Page_Titles_GetList",
@@ -47,7 +45,7 @@ namespace Saber.Query
             );
         }
 
-        public string Get(int titleId)
+        public static string Get(int titleId)
         {
             return Sql.ExecuteScalar<string>("Page_Title_Get",
                 new Dictionary<string, object>()

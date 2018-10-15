@@ -43,10 +43,7 @@ namespace Saber.Pages
                         file.CopyTo(ms);
                         ms.Close();
                         ms.Dispose();
-                    }catch(Exception ex)
-                    {
-
-                    }
+                    }catch(Exception){}
                     var i = 0;
                     while (!File.Exists(Server.MapPath(pubdir + filename)) && i < 5)
                     {

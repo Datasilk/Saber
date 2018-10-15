@@ -14,12 +14,11 @@ namespace Saber.Services
         {
 
             //var sqlUser = new SqlQueries.User(S);
-            var query = new Query.Users();
-            var encrypted = query.GetPassword(email);
+            var encrypted = Query.Users.GetPassword(email);
             if (!DecryptPassword(email, password, encrypted)) { return Error(); }
             {
                 //password verified by Bcrypt
-                var user = query.AuthenticateUser(email, encrypted);
+                var user = Query.Users.AuthenticateUser(email, encrypted);
                 if (user != null)
                 {
                     User.LogIn(user.userId, user.email, user.name, user.datecreated, "", 1, user.photo);
@@ -36,18 +35,17 @@ namespace Saber.Services
             {
                 var update = false; //security check
                 var emailAddr = "";
-                var queryUser = new Query.Users();
                 var adminId = 1;
                 if (Server.resetPass == true)
                 {
                     //securely change admin password
                     //get admin email address from database
-                    emailAddr = queryUser.GetEmail(adminId);
+                    emailAddr = Query.Users.GetEmail(adminId);
                     if (emailAddr != "" && emailAddr != null) { update = true; }
                 }
                 if (update == true)
                 {
-                    queryUser.UpdatePassword(adminId, EncryptPassword(emailAddr, password));
+                    Query.Users.UpdatePassword(adminId, EncryptPassword(emailAddr, password));
                     Server.resetPass = false;
                 }
                 return Success();
@@ -60,8 +58,7 @@ namespace Saber.Services
         {
             if (Server.hasAdmin == false && Server.environment == Server.Environment.development)
             {
-                var queryUser = new Query.Users();
-                queryUser.CreateUser(new Query.Models.User()
+                Query.Users.CreateUser(new Query.Models.User()
                 {
                     name = name,
                     email = email,

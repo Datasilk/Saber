@@ -11,15 +11,13 @@ public class Startup : Datasilk.Startup {
     public override void Configured(IApplicationBuilder app, IHostingEnvironment env, IConfigurationRoot config)
     {
         base.Configured(app, env, config);
-        Query.QuerySql.connectionString = server.sqlConnectionString;
-        var query = new Saber.Query.Users();
-        var resetPass = query.HasPasswords();
-        server.hasAdmin = query.HasAdmin();
+        Query.Sql.connectionString = server.sqlConnectionString;
+        var resetPass = Query.Users.HasPasswords();
+        server.hasAdmin = Query.Users.HasAdmin();
 
         server.languages = new Dictionary<string, string>();
-        var languages = new Saber.Query.Languages();
         server.languages.Add("en", "English"); //english should be the default language
-        languages.GetList().ForEach((lang) => {
+        Query.Languages.GetList().ForEach((lang) => {
             server.languages.Add(lang.langId, lang.language);
         });
 

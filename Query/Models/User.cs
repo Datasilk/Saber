@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Saber.Query.Models
+namespace Query.Models
 {
     public class User
     {

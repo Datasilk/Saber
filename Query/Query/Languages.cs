@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace Saber.Query
+namespace Query
 {
-    public class Languages : global::Query.QuerySql
+    public static class Languages
     {
-        public Languages() { }
-
-        public int Create(Models.Language lang)
+        public static int Create(Models.Language lang)
         {
             return Sql.ExecuteScalar<int>(
                 "Language_Create",
@@ -18,7 +16,7 @@ namespace Saber.Query
             );
         }
 
-        public void Delete(string langId)
+    public static void Delete(string langId)
         {
             if(langId == "en") { return;  }
             Sql.ExecuteNonQuery(
@@ -30,7 +28,7 @@ namespace Saber.Query
             );
         }
 
-        public List<Models.Language> GetList()
+    public static List<Models.Language> GetList()
         {
             return Sql.Populate<Models.Language>("Languages_GetList",
                 new Dictionary<string, object>() {}
