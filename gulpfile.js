@@ -34,7 +34,6 @@ const arg = (argList => {
 var gulp = require('gulp'),
     concat = require('gulp-concat'),
     uglify = require('gulp-uglify'),
-    compile = require('google-closure-compiler-js').gulp(),
     cleancss = require('gulp-clean-css'),
     less = require('gulp-less'),
     rename = require('gulp-rename'),
