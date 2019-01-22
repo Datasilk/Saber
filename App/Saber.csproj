@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\content\pages\login.js" />
+    <Content Remove="wwwroot\js\tools\dragscroll.js" />
+    <Content Remove="wwwroot\js\website.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,14 +36,12 @@
 
   <ItemGroup>
     <None Include="wwwroot\content\pages\login.js" />
+    <None Include="wwwroot\js\tools\dragscroll.js" />
+    <None Include="wwwroot\js\website.js" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Query\Query.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\js\utility\monaco\vs\" />
   </ItemGroup>
 
   <ItemGroup>

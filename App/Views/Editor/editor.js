@@ -667,7 +667,7 @@ S.editor = {
                         $('.file-bar .file-icon use').attr('xlink:href', '#icon-folder');
 
                         //deselect file tab
-                        $('.edit-bar .tabs .selected').removeClass('selected');
+                        $('.edit-bar ul.row .selected').removeClass('selected');
                         S.editor.selected = '';
 
                         S.editor.resources.load(path);
@@ -715,13 +715,13 @@ S.editor = {
                 //update selected session
                 S.editor.selected = path;
                 //deselect tabs
-                $('.edit-tabs ul.tabs li, .edit-tabs ul.tabs > li > div').removeClass('selected');
+                $('.edit-tabs ul.row li, .edit-tabs ul.row > li > div').removeClass('selected');
                 //disable save menu
                 $('.item-save').addClass('faded').attr('disabled', 'disabled');
             }
 
             //check for existing tab
-            var tab = $('.edit-tabs ul.tabs .tab-' + id);
+            var tab = $('.edit-tabs ul.row .tab-' + id);
             var paths = path.split('/');
             var file = paths[paths.length - 1];
             var fileparts = paths[paths.length - 1].split('.', 2);
@@ -732,7 +732,7 @@ S.editor = {
                 var temp = $('#template_tab').html().trim();
                 var title = file;
                 if (fileparts[0].length > 18) { title = '...' + fileparts[0].substr(fileparts[0].length - 15) + '.' + fileparts[1];}
-                $('.edit-tabs ul.tabs').append(temp
+                $('.edit-tabs ul.row').append(temp
                     .replace(/\#\#id\#\#/g, id)
                     .replace('##path##', path)
                     .replace('##title##', title)
