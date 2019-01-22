@@ -34,7 +34,6 @@ const arg = (argList => {
 var gulp = require('gulp'),
     concat = require('gulp-concat'),
     uglify = require('gulp-uglify'),
-    compile = require('google-closure-compiler-js').gulp(),
     cleancss = require('gulp-clean-css'),
     less = require('gulp-less'),
     rename = require('gulp-rename'),
@@ -54,10 +53,10 @@ if (environment != 'dev' && environment != 'development' && environment != null)
 
 //paths
 var paths = {
-    scripts: './App/Scripts/',
-    css: './App/CSS/',
-    app: './App/',
-    webroot: './App/wwwroot/',
+    scripts: 'App/Scripts/',
+    css: 'App/CSS/',
+    app: 'App/',
+    webroot: 'App/wwwroot/',
 };
 
 //working paths
@@ -97,7 +96,11 @@ paths.working = {
             paths.app + '**/*.less'
         ],
         themes: paths.css + 'themes/*.less',
-        tapestry: paths.css + 'tapestry/tapestry.less',
+        tapestry: [
+            paths.css + 'tapestry/tapestry.less',
+            paths.css + 'tapestry/less/theme.less',
+            paths.css + 'tapestry/less/util.less'
+        ],
         utility: paths.css + 'utility/*.less'
     },
 
@@ -109,12 +112,13 @@ paths.working = {
 
     exclude: {
         app: [
-            '!' + paths.app + 'wwwroot/**/',
-            '!' + paths.app + 'Content/**/',
-            '!' + paths.app + 'CSS/**/',
-            '!' + paths.app + 'CSS/',
-            '!' + paths.app + 'Scripts/**/',
-            '!' + paths.app + 'obj/**/*'
+            '!' + paths.app + 'wwwroot/**/*',
+            '!' + paths.app + 'Content/**/*',
+            '!' + paths.app + 'CSS/**/*',
+            '!' + paths.app + 'CSS/*',
+            '!' + paths.app + 'Scripts/**/*',
+            '!' + paths.app + 'obj/**/*',
+            '!' + paths.app + 'bin/**/*'
         ]
     }
 };
@@ -164,19 +168,11 @@ gulp.task('js:minmaps', function () {
         .pipe(gulp.dest(paths.compiled.js + 'min-maps'));
 });
 
-gulp.task('js', function () {
-    gulp.start('js:app');
-    gulp.start('js:platform');
-    gulp.start('js:utility');
-    gulp.start('js:minmaps');
-});
+gulp.task('js', gulp.series('js:app', 'js:platform', 'js:utility', 'js:minmaps'));
 
 //tasks for compiling LESS & CSS /////////////////////////////////////////////////////////////////////
 gulp.task('less:app', function () {
-    var pathlist = paths.working.exclude.app.slice(0);
-    for (var x = paths.working.less.app.length - 1; x >= 0; x--) {
-        pathlist.unshift(paths.working.less.app[x]);
-    }
+    var pathlist = [...paths.working.less.app, ...paths.working.exclude.app.map(a => a + '*.less')];
     var p = gulp.src(pathlist)
         .pipe(less())
         .pipe(rename(function (path) {
@@ -251,18 +247,9 @@ gulp.task('css:utility', function () {
     return p.pipe(gulp.dest(paths.compiled.css + 'utility', { overwrite: true }));
 });
 
-gulp.task('less', function () {
-    gulp.start('less:platform');
-    gulp.start('less:app');
-    gulp.start('less:themes');
-    gulp.start('less:utility');
-});
+gulp.task('less', gulp.series('less:platform', 'less:app', 'less:themes', 'less:utility'));
 
-gulp.task('css', function () {
-    gulp.start('css:themes');
-    gulp.start('css:app');
-    gulp.start('css:utility');
-});
+gulp.task('css', gulp.series('css:themes', 'css:app', 'css:utility'));
 
 //tasks for compiling default website content ////////////////////////////////////////////
 gulp.task('default:website:less', function () {
@@ -276,10 +263,10 @@ gulp.task('default:website:js', function () {
     return gulp.src(paths.app + 'Content/pages/*.js')
         .pipe(gulp.dest(paths.webroot + 'content/pages/'));
 });
-gulp.task('default:website', ['default:website:less', 'default:website:js', 'less:website', 'js:app']);
+gulp.task('default:website', gulp.series('default:website:less', 'default:website:js', 'less:website', 'js:app'));
 
 //default task /////////////////////////////////////////////////////////////////////
-gulp.task('default', ['js', 'less', 'css']);
+gulp.task('default', gulp.series('js', 'less', 'css'));
 
 //specific file task /////////////////////////////////////////////////////////////////////
 gulp.task('file', function () {
@@ -305,68 +292,38 @@ gulp.task('file', function () {
 //watch task /////////////////////////////////////////////////////////////////////
 gulp.task('watch', function () {
     //watch platform JS
-    gulp.watch(paths.working.js.platform, ['js:platform']);
+    gulp.watch(paths.working.js.platform, gulp.series('js:platform'));
 
     //watch app JS
-    var pathjs = paths.working.exclude.app.slice(0);
-    for (var x = 0; x < pathjs.length; x++) {
-        pathjs[x] += '*.js';
-    }
-    pathjs.unshift(paths.working.js.app);
-    gulp.watch(pathjs, ['js:app']);
+    var pathjs = [paths.working.js.app, ...paths.working.exclude.app.map(a => a + '*.js')];
+    gulp.watch(pathjs, gulp.series('js:app'));
 
     //watch utility JS
-    gulp.watch(paths.working.js.utility, ['js:utility']);
+    gulp.watch(paths.working.js.utility, gulp.series('js:utility'));
 
     //watch app LESS
-    var pathless = paths.working.exclude.app.slice(0);
-    for (var x = 0; x < pathless.length; x++) {
-        pathless[x] += '*.less';
-    }
-    for (var x = paths.working.less.app.length - 1; x >= 0; x--) {
-        pathless.unshift(paths.working.less.app[x]);
-    }
-    gulp.watch(pathless, ['less:app']);
+    var pathless = [...paths.working.less.app, ...paths.working.exclude.app.map(a => a + '*.less')];
+    gulp.watch(pathless, gulp.series('less:app'));
 
     //watch platform LESS
     gulp.watch([
-        paths.working.less.platform,
-        paths.working.less.tapestry
-    ], ['less:platform']);
+        ...paths.working.less.platform,
+        ...paths.working.less.tapestry
+    ], gulp.series('less:platform'));
 
     //watch website LESS
     gulp.watch([
-        [
-            paths.working.less.website,
-            paths.app + 'Partials/**/*.less'
-        ]
-    ], ['less:website']);
+        paths.working.less.website,
+        paths.app + 'Content/partials/**/*.less'
+    ], gulp.series('less:website'));
 
     //watch themes LESS
     gulp.watch([
         paths.working.less.themes
-    ], ['less:themes', 'less:platform']);
-
-    //watch utility LESS
-    gulp.watch([
-        paths.working.less.utility
-    ], ['less:utility']);
+    ], gulp.series('less:themes', 'less:platform'));
 
     //watch app CSS
-    var pathcss = paths.working.exclude.app.slice(0);
-    for (var x = 0; x < pathcss.length; x++) {
-        pathcss[x] += '*.css';
-    }
-    pathcss.unshift(paths.working.css.app);
-    gulp.watch(pathcss, ['css:app']);
+    var pathcss = [paths.working.css.app, ...paths.working.exclude.app.map(a => a + '*.css')];
+    gulp.watch(pathcss, gulp.series('css:app'));
 
-    //watch themes CSS
-    gulp.watch([
-        paths.working.css.themes
-    ], ['css:themes']);
-
-    //watch utility CSS
-    gulp.watch([
-        paths.working.css.utility
-    ], ['css:utility']);
 });

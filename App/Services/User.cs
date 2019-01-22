@@ -12,9 +12,8 @@ namespace Saber.Services
 
         public string Authenticate(string email, string password)
         {
-
-            //var sqlUser = new SqlQueries.User(S);
             var encrypted = Query.Users.GetPassword(email);
+            if(encrypted == null) { return Error(); }
             if (!DecryptPassword(email, password, encrypted)) { return Error(); }
             {
                 //password verified by Bcrypt

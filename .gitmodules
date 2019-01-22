@@ -13,3 +13,6 @@
 [submodule "Query/Core"]
 	path = Query/Core
 	url = https://github.com/datasilk/corequery
+[submodule "App/CSS/tapestry"]
+	path = App/CSS/tapestry
+	url = https://github.com/websilk/tapestry
