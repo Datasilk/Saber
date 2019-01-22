@@ -1,10 +1,6 @@
 var svgstore = require('./index')
 var gulp = require('gulp')
-var mocha = require('gulp-mocha')
 var cheerio = require('gulp-cheerio')
-var connect = require('connect')
-var serveStatic = require('serve-static')
-var http = require('http')
 var inject = require('gulp-inject')
 var replace = require('gulp-replace');
 
