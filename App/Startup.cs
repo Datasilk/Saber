@@ -11,29 +11,31 @@ public class Startup : Datasilk.Startup {
     public override void Configured(IApplicationBuilder app, IHostingEnvironment env, IConfigurationRoot config)
     {
         base.Configured(app, env, config);
-        Query.Sql.connectionString = server.sqlConnectionString;
+        Query.Sql.connectionString = Server.sqlConnectionString;
         var resetPass = Query.Users.HasPasswords();
-        server.hasAdmin = Query.Users.HasAdmin();
+        Server.hasAdmin = Query.Users.HasAdmin();
 
-        server.languages = new Dictionary<string, string>();
-        server.languages.Add("en", "English"); //english should be the default language
+        Server.languages = new Dictionary<string, string>();
+        Server.languages.Add("en", "English"); //english should be the default language
         Query.Languages.GetList().ForEach((lang) => {
-            server.languages.Add(lang.langId, lang.language);
+            Server.languages.Add(lang.langId, lang.language);
         });
 
         //check if default website exists
         if (!File.Exists(Server.MapPath("/Content/pages/home.html")))
         {
             //copy default website since none exists yet
-            Directory.CreateDirectory(Server.MapPath("/Content/pages/"));
-            Directory.CreateDirectory(Server.MapPath("/Content/partials/"));
             Directory.CreateDirectory(Server.MapPath("/wwwroot/content/"));
             Directory.CreateDirectory(Server.MapPath("/wwwroot/content/pages/"));
             Directory.CreateDirectory(Server.MapPath("/wwwroot/images/"));
-            Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/pages/"), Server.MapPath("/Content/pages/"));
+            Directory.CreateDirectory(Server.MapPath("/wwwroot/js/"));
+            Directory.CreateDirectory(Server.MapPath("/Content/pages/"));
+            Directory.CreateDirectory(Server.MapPath("/Content/partials/"));
             Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/resources/"), Server.MapPath("/wwwroot/content/pages/"));
             Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/images/"), Server.MapPath("/wwwroot/images/"));
+            Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/scripts/"), Server.MapPath("/wwwroot/js/"));
             Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/partials/"), Server.MapPath("/Content/partials/"));
+            Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/pages/"), Server.MapPath("/Content/pages/"));
             File.Copy(Server.MapPath("/Content/temp/css/website.less"), Server.MapPath("/CSS/website.less"), true);
 
             Thread.Sleep(1000);

@@ -31,7 +31,7 @@ S.editor = {
         var editor = null;
         switch (this.type) {
             case 0: //monaco
-                require.config({ paths: { 'vs': '/js/utility/monaco/' } });
+                require.config({ paths: { 'vs': '/js/utility/monaco' } });
                 require(['vs/editor/editor.main'], function () {
                     editor = monaco.editor.create(document.getElementById('editor'), {
                         value: '',

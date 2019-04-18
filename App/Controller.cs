@@ -8,13 +8,13 @@ namespace Saber
         Ace = 1
     }
 
-    public class Page : Datasilk.Page
+    public class Controller : Datasilk.Mvc.Controller
     {
         public bool usePlatform = false;
         public string theme = "default";
 
-        //constructor
-        public Page(HttpContext context) : base(context) {
+        public Controller(HttpContext context, Parameters parameters) : base(context, parameters)
+        {
             title = "Saber";
             description = "You can do everything you ever wanted";
         }
@@ -30,7 +30,7 @@ namespace Saber
             {
                 scripts.Append("<script language=\"javascript\">S.svg.load('/themes/default/icons.svg');</script>");
             }
-            var scaffold = new Scaffold("/Views/Shared/layout.html", Server.Scaffold);
+            var scaffold = new Scaffold("/Views/Shared/layout.html");
             scaffold.Data["title"] = title;
             scaffold.Data["description"] = description;
             scaffold.Data["language"] = User.language;

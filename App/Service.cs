@@ -4,10 +4,11 @@ using Utility.Strings;
 
 namespace Saber
 {
-    public class Service : Datasilk.Service
+    public class Service : Datasilk.Web.Service
     {
-        public Service(HttpContext context) : base(context) { }
-
+        public Service(HttpContext context, Parameters parameters) : base(context, parameters)
+        {
+        }
 
         public EditorType EditorUsed
         {

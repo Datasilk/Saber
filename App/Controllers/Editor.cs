@@ -4,9 +4,9 @@ using Saber.Common.Platform;
 
 namespace Saber.Pages
 {
-    public class Editor : Page
+    public class Editor : Controller
     {
-        public Editor(HttpContext context) : base(context)
+        public Editor(HttpContext context, Parameters parameters) : base(context, parameters)
         {
         }
 
@@ -41,7 +41,7 @@ namespace Saber.Pages
             if (User.userId > 0)
             {
                 //use editor.html
-                scaffold = new Scaffold("/Views/Editor/editor.html", Server.Scaffold);
+                scaffold = new Scaffold("/Views/Editor/editor.html");
 
                 //load editor resources
                 switch (EditorUsed)
@@ -71,7 +71,7 @@ namespace Saber.Pages
             else
             {
                 //use no-editor.html
-                scaffold = new Scaffold("/Views/Editor/no-editor.html", Server.Scaffold);
+                scaffold = new Scaffold("/Views/Editor/no-editor.html");
             }
 
             //add page-specific references

@@ -7,8 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\js\tools\**" />
+    <Content Remove="wwwroot\js\tools\**" />
+    <EmbeddedResource Remove="wwwroot\js\tools\**" />
+    <None Remove="wwwroot\js\tools\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="wwwroot\content\pages\login.js" />
-    <Content Remove="wwwroot\js\tools\dragscroll.js" />
     <Content Remove="wwwroot\js\website.js" />
   </ItemGroup>
 
@@ -36,7 +42,6 @@
 
   <ItemGroup>
     <None Include="wwwroot\content\pages\login.js" />
-    <None Include="wwwroot\js\tools\dragscroll.js" />
     <None Include="wwwroot\js\website.js" />
   </ItemGroup>
 

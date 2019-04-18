@@ -10,8 +10,6 @@ namespace Saber.Common.Platform
     {
         public static void NewFile(string path, string filename)
         {
-            var server = Server.Instance;
-
             //check for root & content folders
             if (path == "root")
             {
@@ -71,8 +69,6 @@ namespace Saber.Common.Platform
 
         public static void NewFolder(string path, string folder)
         {
-            var server = Server.Instance;
-
             //check for root & content folders
             if (path == "root")
             {
@@ -112,8 +108,6 @@ namespace Saber.Common.Platform
 
         public static void SaveFile(string path, string content)
         {
-            var server = Server.Instance;
-
             //get relative paths for file
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0)
@@ -151,7 +145,7 @@ namespace Saber.Common.Platform
             {
                 case "html":
                     //remove cached scaffold object
-                    server.Scaffold.Remove(path);
+                    ScaffoldCache.cache.Remove(path);
                     break;
             }
 

@@ -12,11 +12,10 @@ namespace Saber.Common.Platform
         /// </summary>
         /// <param name="path">relative path to content (e.g. "content/home")</param>
         /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
-        public static string Page(string path, Datasilk.Request request)
+        public static string Page(string path, Datasilk.Web.Request request)
         {
             //translate root path to relative path
-            var server = Server.Instance;
-            var content = new Scaffold("/Views/Editor/content.html", server.Scaffold);
+            var content = new Scaffold("/Views/Editor/content.html");
             var paths = PageInfo.GetRelativePath(path);
             var relpath = string.Join("/", paths);
             var file = paths[paths.Length - 1];
@@ -31,7 +30,7 @@ namespace Saber.Common.Platform
             {
                 throw new ServiceErrorException("The URL path you are accessing is too long to handle for the web server");
             }
-            var scaffold = new Scaffold(relpath, server.Scaffold);
+            var scaffold = new Scaffold(relpath);
             if (scaffold.elements.Count == 0)
             {
                 if (request.User.userId == 0)
@@ -58,7 +57,7 @@ namespace Saber.Common.Platform
             }
 
             var contentfile = ContentFields.ContentFile(path, lang);
-            var data = (Dictionary<string, string>)Serializer.ReadObject(server.LoadFileFromCache(contentfile, true), typeof(Dictionary<string, string>));
+            var data = (Dictionary<string, string>)Serializer.ReadObject(Server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
             if (data != null)
             {
                 foreach (var item in data)
