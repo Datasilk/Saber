@@ -35,10 +35,12 @@ namespace Saber.Common.Platform
             {
                 if (request.User.userId == 0)
                 {
+                    //TODO: Show user-generated 404 error
                     scaffold.HTML = "<p>This page does not exist. Please log into your account to write content for this page.</p>";
                 }
                 else
                 {
+                    //try to load template page from parent
                     scaffold.HTML = "<p>Write content using HTML & CSS</p>";
                 }
             }

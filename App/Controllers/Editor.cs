@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Saber.Common.Platform;
 
@@ -82,9 +83,20 @@ namespace Saber.Pages
             );
             AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
             AddScript(rpath.ToLower() + rfile + ".js", "page_js");
+            
+            var html = "";
+            if (path.Length == 1 || File.Exists(Server.MapPath("/content/" + pathname + ".html")))
+            {
+                //page exists
+                html = Common.Platform.Render.Page("content/" + pathname + ".html", this);
+            }
+            else if(path.Length > 1)
+            {
+                //page does not exist, try to load template page from parent
+                html = Common.Platform.Render.Page("content/" + string.Join('/', path.Take(path.Length - 1).ToArray()) + "/template.html", this);
+            }
 
             //render page content
-            var html = Common.Platform.Render.Page("content/" + pathname + ".html", this);
             scaffold.Data["content"] = html;
 
             return base.Render(path, scaffold.Render(), metadata);

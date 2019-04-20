@@ -28,7 +28,7 @@ namespace Saber.Services
 
             var rawpaths = path.Split('/');
             var rid = path.Replace("/", "_");
-            var pid = rid.Replace("_", "/");
+            var pid = path;
             var html = new StringBuilder();
             if (pid == "/") { pid = ""; }
 
@@ -38,15 +38,16 @@ namespace Saber.Services
             var rpath = string.Join("/", paths) + "/";
 
             var item = new Scaffold("/Views/FileBrowser/file.html");
-            var items = new List<string>();
+            var items = new List<KeyValuePair<string, string>>();
             var exclude = new string[] { };
 
             if (paths[0] == "" && paths.Length == 1)
             {
                 //display root folders for website
-                items = new List<string>()
+                items = new List<KeyValuePair<string, string>>()
                 {
-                    "CSS", "Scripts"
+                    new KeyValuePair<string, string>("CSS", "CSS"),
+                    new KeyValuePair<string, string>("Scripts", "Scripts")
                 };
             }
             else if (paths[0] == "/wwwroot")
@@ -67,7 +68,7 @@ namespace Saber.Services
                     {
                         if (!exclude.Contains(dir.Name.ToLower()))
                         {
-                            items.Add(dir.Name);
+                            items.Add(new KeyValuePair<string, string>(dir.Name, dir.Name));
                         }
                     }
                 }
@@ -92,7 +93,7 @@ namespace Saber.Services
                     {
                         if (dir.Name.IndexOfAny(new char[] { '.', '_' }) != 0 && !exclude.Contains(dir.Name.ToLower()))
                         {
-                            items.Add(dir.Name);
+                            items.Add(new KeyValuePair<string, string>(dir.Name, dir.Name));
                         }
                     }
 
@@ -113,7 +114,7 @@ namespace Saber.Services
                                 case "css":
                                 case "less":
                                 case "js":
-                                    items.Add(file.Name); break;
+                                    items.Add(new KeyValuePair<string, string>(file.Name, file.Name)); break;
                             }
                         }
                     }
@@ -140,7 +141,6 @@ namespace Saber.Services
             else if (rawpaths.Length == 1 && paths[0] == "")
             {
                 //add special directories
-                //html.Append(RenderBrowserItem(item, "content", "Content", "folder", "content"));
                 html.Append(RenderBrowserItem(item, "wwwroot", "wwwroot", "folder", "wwwroot"));
                 html.Append(RenderBrowserItem(item, "partials", "partials", "folder", "content/partials"));
             }
@@ -153,11 +153,11 @@ namespace Saber.Services
             {
                 //add directories and files
                 var icon = "folder";
-                if (i.IndexOf(".") > 0)
+                if (i.Key.IndexOf(".") > 0)
                 {
-                    icon = "file-" + i.Split('.', 2)[1].ToLower();
+                    icon = "file-" + i.Key.Split('.', 2)[1].ToLower();
                 }
-                html.Append(RenderBrowserItem(item, rid + "_" + i.Replace(".", "_").ToLower(), i, icon, (pid != "" ? pid + "/" : "") + i));
+                html.Append(RenderBrowserItem(item, rid + "_" + i.Key.Replace(".", "_").ToLower(), i.Key, icon, (pid != "" ? pid + "/" : "") + i.Value));
             }
             return html.ToString();
         }
@@ -405,6 +405,7 @@ namespace Saber.Services
             scaffold.Data["page-title-prefixes"] = prefixes.ToString();
             scaffold.Data["page-title-suffixes"] = suffixes.ToString();
             scaffold.Data["page-description"] = config.description;
+            scaffold.Data["page-template"] = path.Replace("content/", "") + "/template";
 
             return scaffold.Render();
         }

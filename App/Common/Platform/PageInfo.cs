@@ -20,12 +20,15 @@ namespace Saber.Common.Platform
                 {
                     case "css": newpath[0] = "/CSS"; break;
                     case "pages": newpath[0] = "/Pages"; break;
-                    case "scripts": newpath[0] = "/Scripts"; break;
+                    case "scripts":
+                        newpath[0] = "/Scripts";
+                        break;
                     case "services": newpath[0] = "/Services"; break;
                     default:
                         //prevent hackers from snooping
                         return new string[] { };
                 }
+
                 return newpath;
             }
             else if (paths[0].ToLower() == "wwwroot")

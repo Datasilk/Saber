@@ -180,7 +180,8 @@ namespace Saber.Common.Platform
                         }
                         break;
                 }
-            }else if(paths[0].ToLower() == "/content")
+            }
+            else if(paths[0].ToLower() == "/content")
             {
                 switch (paths[1].ToLower())
                 {
@@ -189,15 +190,22 @@ namespace Saber.Common.Platform
                         {
                             case "header.less": case "footer.less":
                                 //compile website.less
-                                Directory.SetCurrentDirectory(Server.MapPath("/CSS"));
-                                var css = Less.Parse(File.ReadAllText(Server.MapPath("/CSS/website.less")));
-                                File.WriteAllText(Server.MapPath("/wwwroot/css/website.css"), css);
-                                Directory.SetCurrentDirectory(Server.MapPath("/"));
+                                SaveLessFile(File.ReadAllText(Server.MapPath("/CSS/website.less")), "/wwwroot/css/website.css", "/CSS");
                                 break;
                         }
                         break;
                 }
-            }else if(paths[0].ToLower() == "/scripts")
+            }
+            else if (paths[0].ToLower() == "/css")
+            {
+                switch (paths[1].ToLower())
+                {
+                    case "website.less":
+                        SaveLessFile(content, "/wwwroot/css/website.css", "/CSS");
+                        break;
+                }
+            }
+            else if(paths[0].ToLower() == "/scripts")
             {
                 if(ext == "js")
                 {
@@ -212,6 +220,14 @@ namespace Saber.Common.Platform
                     File.Copy(Server.MapPath(filepath), Server.MapPath(pubdir + file), true);
                 }
             }
+        }
+
+        private static void SaveLessFile(string content, string outputFile, string pathLESS)
+        {
+            Directory.SetCurrentDirectory(Server.MapPath(pathLESS));
+            var css = Less.Parse(content);
+            File.WriteAllText(Server.MapPath(outputFile), css);
+            Directory.SetCurrentDirectory(Server.MapPath("/"));
         }
     }
 }

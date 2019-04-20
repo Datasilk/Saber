@@ -967,8 +967,8 @@ S.editor = {
             show: function () {
                 var tagcss = $('#page_css');
                 var tagjs = $('#page_js');
-                var css = tagcss.attr('href').split('?')[0];
-                var src = tagjs.attr('src').split('?')[0];
+                var css = S.editor.path + '.css';
+                var src = S.editor.path + '.js';
                 var rnd = Math.floor(Math.random() * 9999);
 
                 //first, reload CSS
