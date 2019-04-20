@@ -81,19 +81,22 @@ namespace Saber.Pages
                     "window.language = '" + User.language + "';" + 
                 "</script>\n"
             );
-            AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
-            AddScript(rpath.ToLower() + rfile + ".js", "page_js");
             
             var html = "";
             if (path.Length == 1 || File.Exists(Server.MapPath("/content/" + pathname + ".html")))
             {
                 //page exists
                 html = Common.Platform.Render.Page("content/" + pathname + ".html", this);
+                AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
+                AddScript(rpath.ToLower() + rfile + ".js", "page_js");
             }
             else if(path.Length > 1)
             {
                 //page does not exist, try to load template page from parent
-                html = Common.Platform.Render.Page("content/" + string.Join('/', path.Take(path.Length - 1).ToArray()) + "/template.html", this);
+                var templatePath = string.Join('/', path.Take(path.Length - 1).ToArray());
+                html = Common.Platform.Render.Page("content/" + templatePath + "/template.html", this);
+                AddCSS(rpath.ToLower() + "template.css", "page_css");
+                AddScript(rpath.ToLower() + "template.js", "page_js");
             }
 
             //render page content

@@ -794,7 +794,7 @@ S.editor = {
 
             if (session == null && nocode == true) {
                 //load new session from ajax POST, loading code from server
-                S.ajax.post("Editor/Open", { path: path },
+                S.ajax.post("Editor/Open", { path: path, pageResource: isPageResource === true },
                     function (d) {
                         S.editor.sessions.add(id, mode, S.editor.decodeHtml(d), isready !== false);
                         if (typeof callback == 'function') { callback();}
@@ -967,8 +967,8 @@ S.editor = {
             show: function () {
                 var tagcss = $('#page_css');
                 var tagjs = $('#page_js');
-                var css = S.editor.path + '.css';
-                var src = S.editor.path + '.js';
+                var css = '/' + S.editor.path.replace('content/', 'content/pages/') + '.css';
+                var src = '/' + S.editor.path.replace('content/', 'content/pages/') + '.js';
                 var rnd = Math.floor(Math.random() * 9999);
 
                 //first, reload CSS
@@ -1035,6 +1035,14 @@ S.editor = {
                     Rhino.bordercolor(34, 34, 34);
                     Rhino.toolbarcolor(34, 34, 34);
                     Rhino.toolbarfontcolor(200, 200, 200);
+                    Rhino.toolbarbuttoncolors(
+                        S.util.color.argbToInt(255, 34, 34, 34), //bg
+                        S.util.color.argbToInt(255, 40, 40, 40), //bg hover
+                        S.util.color.argbToInt(255, 0, 153, 255), //bg mouse down
+                        S.util.color.argbToInt(255, 200, 200, 200), //font
+                        S.util.color.argbToInt(255, 200, 200, 200), //font hover
+                        S.util.color.argbToInt(255, 200, 200, 200) //font mouse down
+                    );
                 }
 
                 if (S.editor.initialized == false) {

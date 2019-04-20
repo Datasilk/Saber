@@ -169,15 +169,7 @@ namespace Saber.Common.Platform
 
                     case "less":
                         //compile less file
-                        try
-                        {
-                            var css = Less.Parse(content);
-                            File.WriteAllText(Server.MapPath(pubdir + file.Replace(".less", ".css")), css);
-                        }
-                        catch (Exception)
-                        {
-                            throw new ServiceErrorException("Error generating compiled resource");
-                        }
+                        SaveLessFile(content, pubdir + file.Replace(".less", ".css"), dir);
                         break;
                 }
             }
@@ -224,10 +216,17 @@ namespace Saber.Common.Platform
 
         private static void SaveLessFile(string content, string outputFile, string pathLESS)
         {
-            Directory.SetCurrentDirectory(Server.MapPath(pathLESS));
-            var css = Less.Parse(content);
-            File.WriteAllText(Server.MapPath(outputFile), css);
-            Directory.SetCurrentDirectory(Server.MapPath("/"));
+            try
+            {
+                Directory.SetCurrentDirectory(Server.MapPath(pathLESS));
+                var css = Less.Parse(content);
+                File.WriteAllText(Server.MapPath(outputFile), css);
+                Directory.SetCurrentDirectory(Server.MapPath("/"));
+            }
+            catch (Exception)
+            {
+                throw new ServiceErrorException("Error generating compiled resource");
+            }
         }
     }
 }

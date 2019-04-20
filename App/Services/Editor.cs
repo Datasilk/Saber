@@ -182,7 +182,7 @@ namespace Saber.Services
             return item.Render();
         }
 
-        public string Open(string path)
+        public string Open(string path, bool pageResource = false)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
 
@@ -192,6 +192,15 @@ namespace Saber.Services
             if (File.Exists(Server.MapPath(string.Join("/", paths))))
             {
                 return WebUtility.HtmlEncode(File.ReadAllText(Server.MapPath(string.Join("/", paths))));
+            }
+            else if(pageResource == true)
+            {
+                //try to load template page content
+                var templatePath = string.Join('/', paths.Take(paths.Length - 1).ToArray()) + "/template." + paths[paths.Length - 1].GetFileExtension();
+                if (File.Exists(Server.MapPath(templatePath)))
+                {
+                    return WebUtility.HtmlEncode(File.ReadAllText(Server.MapPath(templatePath)));
+                }
             }
             var ext = paths[paths.Length - 1].Split(".")[1].ToLower();
             switch (ext)
@@ -405,7 +414,7 @@ namespace Saber.Services
             scaffold.Data["page-title-prefixes"] = prefixes.ToString();
             scaffold.Data["page-title-suffixes"] = suffixes.ToString();
             scaffold.Data["page-description"] = config.description;
-            scaffold.Data["page-template"] = path.Replace("content/", "") + "/template";
+            scaffold.Data["page-template"] = path.Replace("content/", "/") + "/template";
 
             return scaffold.Render();
         }
