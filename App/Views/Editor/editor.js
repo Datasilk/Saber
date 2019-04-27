@@ -962,7 +962,7 @@ S.editor = {
         preview: {
             toggle: function () {
                 var self = S.editor.filebar.preview;
-                if ($('.preview').hasClass('hide')) {
+                if ($('.editor-preview').hasClass('hide')) {
                     self.show();
                 } else {
                     self.hide();
@@ -995,7 +995,7 @@ S.editor = {
                     S.editor.files.html.changed = false;
                     S.ajax.post('Editor/RenderPage', { path: S.editor.path + '.html', language: window.language },
                         function (d) {
-                            $('.preview').html(d);
+                            $('.editor-preview').html(d);
                             changeJs(true);
                         }
                     );
@@ -1024,14 +1024,14 @@ S.editor = {
                 }
 
                 function showContent() {
-                    $('.preview, .editor-tab').removeClass('hide');
+                    $('.editor-preview, .editor-tab').removeClass('hide');
                     $('.editor').addClass('hide');
                 }
 
             },
 
             hide: function () {
-                $('.preview, .editor-tab').addClass('hide');
+                $('.editor-preview, .editor-tab').addClass('hide');
                 $('.editor').removeClass('hide');
 
                 //update Rhino browser window (if applicable)
