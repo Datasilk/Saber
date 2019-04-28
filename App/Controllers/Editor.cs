@@ -83,10 +83,10 @@ namespace Saber.Pages
             );
             
             var html = "";
-            if (path.Length == 1 || File.Exists(Server.MapPath("/content/" + pathname + ".html")))
+            if (File.Exists(Server.MapPath(rpath + rfile + ".html")))
             {
                 //page exists
-                html = Common.Platform.Render.Page("content/" + pathname + ".html", this);
+                html = Common.Platform.Render.Page("content/" + pathname + ".html", this, config);
                 AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
                 AddScript(rpath.ToLower() + rfile + ".js", "page_js");
             }
@@ -94,7 +94,7 @@ namespace Saber.Pages
             {
                 //page does not exist, try to load template page from parent
                 var templatePath = string.Join('/', path.Take(path.Length - 1).ToArray());
-                html = Common.Platform.Render.Page("content/" + templatePath + "/template.html", this);
+                html = Common.Platform.Render.Page("content/" + templatePath + "/template.html", this, config);
                 AddCSS(rpath.ToLower() + "template.css", "page_css");
                 AddScript(rpath.ToLower() + "template.js", "page_js");
             }

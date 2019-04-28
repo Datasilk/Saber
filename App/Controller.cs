@@ -34,7 +34,7 @@ namespace Saber
             scaffold.Data["title"] = title;
             scaffold.Data["description"] = description;
             scaffold.Data["language"] = User.language;
-            scaffold.Data["head-css"] = headCss.ToString();
+            scaffold.Data["head-css"] = css.ToString();
             scaffold.Data["theme"] = theme;
             scaffold.Data["favicon"] = favicon;
             scaffold.Data["body"] = body;

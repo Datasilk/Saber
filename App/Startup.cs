@@ -2,11 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Http;
 using Utility.Strings;
 

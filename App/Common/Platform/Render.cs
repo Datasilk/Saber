@@ -12,10 +12,12 @@ namespace Saber.Common.Platform
         /// </summary>
         /// <param name="path">relative path to content (e.g. "content/home")</param>
         /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
-        public static string Page(string path, Datasilk.Web.Request request)
+        public static string Page(string path, Datasilk.Web.Request request, Models.Page.Settings config)
         {
             //translate root path to relative path
             var content = new Scaffold("/Views/Editor/content.html");
+            var header = new Scaffold("/Content/partials/" + (config.header != "" ? config.header : "header.html"));
+            var footer = new Scaffold("/Content/partials/" + (config.footer != "" ? config.footer : "footer.html"));
             var paths = PageInfo.GetRelativePath(path);
             var relpath = string.Join("/", paths);
             var file = paths[paths.Length - 1];
@@ -45,10 +47,6 @@ namespace Saber.Common.Platform
                 }
             }
 
-            //load user content from json file, depending on selected language
-            var config = PageInfo.GetPageConfig(path);
-            var lang = request.User.language;
-
             //check security
             if (config.security.secure == true)
             {
@@ -58,6 +56,8 @@ namespace Saber.Common.Platform
                 }
             }
 
+            //load user content from json file, depending on selected language
+            var lang = request.User.language;
             var contentfile = ContentFields.ContentFile(path, lang);
             var data = (Dictionary<string, string>)Serializer.ReadObject(Server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
             if (data != null)
@@ -76,7 +76,7 @@ namespace Saber.Common.Platform
             }
 
             //load platform-specific data into scaffold template
-            var results = GetPlatformData(scaffold.fields, request);
+            var results = GetPlatformData(scaffold, request);
             if (results.Count > 0)
             {
                 foreach (var item in results)
@@ -84,34 +84,36 @@ namespace Saber.Common.Platform
                     scaffold.Data[item.Key] = item.Value;
                 }
             }
-            var parts = new string[] { "header", "footer" };
-            foreach (var part in parts)
+            results = GetPlatformData(header, request);
+            if (results.Count > 0)
             {
-                //load platform-specific data into child scaffold templates
-                var child = content.Child(part);
-                results = GetPlatformData(child.fields, request);
-                if(results.Count > 0)
+                foreach (var item in results)
                 {
-                    foreach(var item in results)
-                    {
-                        child.Data[item.Key] = item.Value;
-                    }
+                    header.Data[item.Key] = item.Value;
                 }
             }
-            
+            results = GetPlatformData(footer, request);
+            if (results.Count > 0)
+            {
+                foreach (var item in results)
+                {
+                    footer.Data[item.Key] = item.Value;
+                }
+            }
+
 
             //render content
             content.Data["content"] = scaffold.Render();
-            return content.Render();
+            return header.Render() + content.Render() + footer.Render();
         }
 
-        private static List<KeyValuePair<string, string>> GetPlatformData(Dictionary<string, int[]> fields, Datasilk.Web.Request request)
+        private static List<KeyValuePair<string, string>> GetPlatformData(Scaffold scaffold, Datasilk.Web.Request request)
         {
             var results = new List<KeyValuePair<string, string>>();
             if(request.User.userId > 0)
             {
                 //user logged in
-                if (fields.ContainsKey("user"))
+                if (scaffold.fields.ContainsKey("user"))
                 {
                     results.Add(new KeyValuePair<string, string>("user", "1"));
                     results.Add(new KeyValuePair<string, string>("username", request.User.name));
@@ -121,9 +123,28 @@ namespace Saber.Common.Platform
             else
             {
                 //user not logged in
-                if (fields.ContainsKey("no-user"))
+                if (scaffold.fields.ContainsKey("no-user"))
                 {
                     results.Add(new KeyValuePair<string, string>("no-user", "1"));
+                }
+            }
+
+            //finally, get platform data from the Scaffold Data Binder
+            var vars = ScaffoldDataBinder.Binder.HtmlVars;
+            foreach(var item in vars)
+            {
+                if (scaffold.fields.ContainsKey(item.Key))
+                {
+                    var index = results.FindAll(f => f.Key == item.Key).Count();
+                    var elemIndex = scaffold.fields[item.Key][index];
+                    var args = scaffold.elements[elemIndex].vars ?? new Dictionary<string, string>();
+                    var argList = args.Select(a => a.Key + ":\"" + a.Value + "\"").ToArray();
+                    var argsStr = "";
+                    if(argList.Length > 0)
+                    {
+                        argsStr = string.Join(',', argList);
+                    }
+                    results.Add(new KeyValuePair<string, string>(item.Key, item.Value(request, argsStr)));
                 }
             }
 

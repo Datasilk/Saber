@@ -192,6 +192,7 @@ namespace Saber.Services
             if (File.Exists(Server.MapPath(string.Join("/", paths))))
             {
                 if (pageResource == false) {
+                    //save open tab to user's session
                     User.AddOpenTab(path);
                 }
                 return WebUtility.HtmlEncode(File.ReadAllText(Server.MapPath(string.Join("/", paths))));
@@ -218,6 +219,7 @@ namespace Saber.Services
 
         public string Close(string path)
         {
+            //remove open tab from user's session
             User.RemoveOpenTab(path);
             return Success();
         }
@@ -297,7 +299,7 @@ namespace Saber.Services
         {
             try
             {
-                return Render.Page(path, this);
+                return Render.Page(path, this, PageInfo.GetPageConfig(path));
             }catch(ServiceErrorException ex)
             {
                 return Error(ex.Message);
@@ -424,10 +426,46 @@ namespace Saber.Services
                 }
             }
 
+            //generate list of page headers & footers
+            var headers = new List<string>();
+            var footers = new List<string>();
+            var files = Directory.GetFiles(Server.MapPath("/Content/partials/"), "*.html", SearchOption.AllDirectories);
+            foreach(var file in files)
+            {
+                var paths = file.Split('\\').ToList();
+                var startIndex = paths.FindIndex(f => f == "partials");
+                paths = paths.Skip(startIndex + 1).ToList();
+                var filepath = string.Join('/', paths.ToArray());
+                var filename = paths[paths.Count - 1];
+                if(filename.IndexOf("header") >= 0)
+                {
+                    headers.Add(filepath);
+                }else if(filename.IndexOf("footer") >= 0)
+                {
+                    footers.Add(filepath);
+                }
+            }
+            var headerList = new StringBuilder();
+            var footerList = new StringBuilder();
+            foreach(var header in headers)
+            {
+                headerList.Append("<option value=\"" + header + "\"" +
+                    (config.header == header || config.header == "" ? " selected" : "") +
+                    ">" + header + "</option>\n");
+            }
+            foreach (var footer in footers)
+            {
+                footerList.Append("<option value=\"" + footer + "\"" +
+                    (config.footer == footer || config.footer == "" ? " selected" : "") +
+                    ">" + footer + "</option>\n");
+            }
+
             scaffold.Data["page-title"] = config.title.body;
             scaffold.Data["page-title-prefixes"] = prefixes.ToString();
             scaffold.Data["page-title-suffixes"] = suffixes.ToString();
             scaffold.Data["page-description"] = config.description;
+            scaffold.Data["page-header-list"] = headerList.ToString();
+            scaffold.Data["page-footer-list"] = footerList.ToString();
             scaffold.Data["page-template"] = path.Replace("content/", "/") + "/template";
 
             return scaffold.Render();
