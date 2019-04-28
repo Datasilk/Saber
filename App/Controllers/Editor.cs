@@ -104,7 +104,7 @@ namespace Saber.Pages
                 html = Common.Platform.Render.Page("content/" + pathname + ".html", this, config);
                 AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
                 AddScript(rpath.ToLower() + rfile + ".js", "page_js");
-            }
+            } 
 
             //render page content
             scaffold.Data["content"] = html;
