@@ -108,18 +108,35 @@ S.editor = {
         $(window).on('keydown', S.editor.hotkey.pressed);
 
         //finally, load content resources that belong to the page
-        var tabs = [fileparts[0] + '.html', fileparts[0] + '.less', fileparts[0] + '.js'];
+        var tabs = [dir + fileparts[0] + '.html', dir + fileparts[0] + '.less', dir + fileparts[0] + '.js'];
         if (this.savedTabs.length > 0) {
-            tabs.concat(this.savedTabs);
+            tabs = tabs.concat(this.savedTabs);
         }
-        S.editor.explorer.openResources(dir, tabs,
-            function () {
-                setTimeout(function () {
-                    S.editor.codebar.status('Ready');
-                    S.editor.codebar.update();
-                }, 500);
+        //get saved tabs from server
+        S.ajax.post('Editor/GetOpenedTabs', {},
+            function (d) {
+                console.log(JSON.parse(d));
+                tabs = tabs.concat(JSON.parse(d));
+                console.log(tabs);
+                openTabs();
+            },
+            function (err) {
+                openTabs();
             }
         );
+
+        function openTabs() {
+            S.editor.explorer.openResources(tabs,
+                function () {
+                    setTimeout(function () {
+                        S.editor.codebar.status('Ready');
+                        S.editor.codebar.update();
+                    }, 500);
+                }
+            );
+        }
+
+        
 
         //initialize JavaScript binding into Rhinoceros (if available)
         if (typeof CefSharp != 'undefined') {
@@ -546,7 +563,7 @@ S.editor = {
         },
 
         remove: function (id) {
-            S.editor.sessions[id].destroy();
+            S.editor.sessions[id].dispose();
             delete S.editor.sessions[id];
         },
 
@@ -624,6 +641,9 @@ S.editor = {
             if (S.editor.selected == path && sibling.length == 1) {
                 sibling[0].click();
             }
+
+            //update user session
+            S.ajax.post('Editor/Close', { path: path });
         }
     },
     
@@ -683,11 +703,11 @@ S.editor = {
             );
         },
 
-        openResources: function (path, files, callback) {
+        openResources: function (files, callback) {
             //opens a group of resources (html, less, js) from a specified path
             var self = S.editor.explorer;
             files.forEach((f) => {
-                self.queue.push(path + f);
+                self.queue.push(f);
             });
             self.runQueue(true, callback);
         },

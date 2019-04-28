@@ -161,14 +161,7 @@ gulp.task('js:utility', function () {
         .pipe(gulp.dest(paths.compiled.js + 'utility'));
 });
 
-gulp.task('js:minmaps', function () {
-    //check file changes & replace changed files in destination
-    return gulp.src([paths.scripts + 'min-maps/*.map', paths.scripts + 'min-maps/**/*.map'])
-        .pipe(changed(paths.compiled.js + 'min-maps'))
-        .pipe(gulp.dest(paths.compiled.js + 'min-maps'));
-});
-
-gulp.task('js', gulp.series('js:app', 'js:platform', 'js:utility', 'js:minmaps'));
+gulp.task('js', gulp.series('js:app', 'js:platform', 'js:utility'));
 
 //tasks for compiling LESS & CSS /////////////////////////////////////////////////////////////////////
 gulp.task('less:app', function () {

@@ -191,6 +191,9 @@ namespace Saber.Services
             if (paths.Length == 0) { return Error(); }
             if (File.Exists(Server.MapPath(string.Join("/", paths))))
             {
+                if (pageResource == false) {
+                    User.AddOpenTab(path);
+                }
                 return WebUtility.HtmlEncode(File.ReadAllText(Server.MapPath(string.Join("/", paths))));
             }
             else if(pageResource == true)
@@ -211,6 +214,17 @@ namespace Saber.Services
                 case "js": return WebUtility.HtmlEncode("(function(){\n    //do stuff\n})();");
             }
             return "";
+        }
+
+        public string Close(string path)
+        {
+            User.RemoveOpenTab(path);
+            return Success();
+        }
+
+        public string GetOpenedTabs()
+        {
+            return Serializer.WriteObjectToString(User.GetOpenTabs());
         }
 
         public string SaveFile(string path, string content)

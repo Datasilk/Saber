@@ -2,9 +2,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.Http;
+using Utility.Strings;
 
 public class Startup : Datasilk.Startup {
 
@@ -31,7 +35,6 @@ public class Startup : Datasilk.Startup {
             Directory.CreateDirectory(Server.MapPath("/wwwroot/js/"));
             Directory.CreateDirectory(Server.MapPath("/Content/pages/"));
             Directory.CreateDirectory(Server.MapPath("/Content/partials/"));
-            Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/resources/"), Server.MapPath("/wwwroot/content/pages/"));
             Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/images/"), Server.MapPath("/wwwroot/images/"));
             Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/scripts/"), Server.MapPath("/wwwroot/js/"));
             Saber.Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/scripts/"), Server.MapPath("/Scripts/"));
@@ -62,5 +65,27 @@ public class Startup : Datasilk.Startup {
             p.WaitForExit();
             Thread.Sleep(1000);
         }
+
+        //handle missing static files
+        app.Use(async (context, next) => {
+            await next.Invoke();
+            if (context.Response.StatusCode == 404 && context.Request.Path.Value.Contains("/content/pages/"))
+            {
+                //missing static files that belong to Saber webpages that haven't been saved yet, 
+                //or the user saved the html file using the Editor UI, but haven't saved the less or js files
+                var extension = context.Request.Path.Value.GetFileExtension().ToLower();
+                switch (extension)
+                {
+                    case "js":
+                        context.Response.StatusCode = 200;
+                        await context.Response.WriteAsync("(function(){\n\n})();");
+                        break;
+                    case "css":
+                        context.Response.StatusCode = 200;
+                        await context.Response.WriteAsync("");
+                        break;
+                }
+            }
+        });
     }
 }
