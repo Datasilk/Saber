@@ -75,20 +75,27 @@ namespace Saber.Common.Platform
                 }
             }
 
-            //load data into header & footer partials
+            //load platform-specific data into scaffold template
+            var results = GetPlatformData(scaffold.fields, request);
+            if (results.Count > 0)
+            {
+                foreach (var item in results)
+                {
+                    scaffold.Data[item.Key] = item.Value;
+                }
+            }
             var parts = new string[] { "header", "footer" };
             foreach (var part in parts)
             {
+                //load platform-specific data into child scaffold templates
                 var child = content.Child(part);
-                if (request.User.userId > 0)
+                results = GetPlatformData(child.fields, request);
+                if(results.Count > 0)
                 {
-                    child.Data["user"] = "1";
-                    child.Data["username"] = request.User.name;
-                    child.Data["userid"] = request.User.userId.ToString();
-                }
-                else
-                {
-                    child.Data["no-user"] = "1";
+                    foreach(var item in results)
+                    {
+                        child.Data[item.Key] = item.Value;
+                    }
                 }
             }
             
@@ -96,6 +103,31 @@ namespace Saber.Common.Platform
             //render content
             content.Data["content"] = scaffold.Render();
             return content.Render();
+        }
+
+        private static List<KeyValuePair<string, string>> GetPlatformData(Dictionary<string, int[]> fields, Datasilk.Web.Request request)
+        {
+            var results = new List<KeyValuePair<string, string>>();
+            if(request.User.userId > 0)
+            {
+                //user logged in
+                if (fields.ContainsKey("user"))
+                {
+                    results.Add(new KeyValuePair<string, string>("user", "1"));
+                    results.Add(new KeyValuePair<string, string>("username", request.User.name));
+                    results.Add(new KeyValuePair<string, string>("userid", request.User.userId.ToString()));
+                }
+            }
+            else
+            {
+                //user not logged in
+                if (fields.ContainsKey("no-user"))
+                {
+                    results.Add(new KeyValuePair<string, string>("no-user", "1"));
+                }
+            }
+
+            return results;
         }
     }
 }
