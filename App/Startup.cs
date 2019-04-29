@@ -7,12 +7,25 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using Utility.Strings;
+using Microsoft.Extensions.DependencyInjection;
 
-public class Startup : Datasilk.Startup {
+public partial class Startup : Datasilk.Startup {
+
+    //vendor-specific startup methods
+    partial void ConfigureVendorServices(IServiceCollection services);
+    partial void ConfigureVendors(IApplicationBuilder app);
+
+    public override void ConfiguringServices(IServiceCollection services)
+    {
+        base.ConfiguringServices(services);
+        ConfigureVendorServices(services);
+    }
+
 
     public override void Configured(IApplicationBuilder app, IHostingEnvironment env, IConfigurationRoot config)
     {
         base.Configured(app, env, config);
+
         Query.Sql.connectionString = Server.sqlConnectionString;
         var resetPass = Query.Users.HasPasswords();
         Server.hasAdmin = Query.Users.HasAdmin();
@@ -63,6 +76,8 @@ public class Startup : Datasilk.Startup {
             p.WaitForExit();
             Thread.Sleep(1000);
         }
+
+        ConfigureVendors(app);
 
         //handle missing static files
         app.Use(async (context, next) => {

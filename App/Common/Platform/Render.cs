@@ -32,6 +32,12 @@ namespace Saber.Common.Platform
             {
                 throw new ServiceErrorException("The URL path you are accessing is too long to handle for the web server");
             }
+
+            var uselayout = true;
+            if (request.parameters.ContainsKey("nolayout"))
+            {
+                uselayout = false;
+            }
             var scaffold = new Scaffold(relpath);
             if (scaffold.elements.Count == 0)
             {
@@ -84,27 +90,34 @@ namespace Saber.Common.Platform
                     scaffold.Data[item.Key] = item.Value;
                 }
             }
-            results = GetPlatformData(header, request);
-            if (results.Count > 0)
-            {
-                foreach (var item in results)
-                {
-                    header.Data[item.Key] = item.Value;
-                }
-            }
-            results = GetPlatformData(footer, request);
-            if (results.Count > 0)
-            {
-                foreach (var item in results)
-                {
-                    footer.Data[item.Key] = item.Value;
-                }
-            }
 
-
-            //render content
-            content.Data["content"] = scaffold.Render();
-            return header.Render() + content.Render() + footer.Render();
+            if(uselayout)
+            {
+                //render all content
+                results = GetPlatformData(header, request);
+                if (results.Count > 0)
+                {
+                    foreach (var item in results)
+                    {
+                        header.Data[item.Key] = item.Value;
+                    }
+                }
+                results = GetPlatformData(footer, request);
+                if (results.Count > 0)
+                {
+                    foreach (var item in results)
+                    {
+                        footer.Data[item.Key] = item.Value;
+                    }
+                }
+                content.Data["content"] = scaffold.Render();
+                return header.Render() + content.Render() + footer.Render();
+            }
+            else
+            {
+                //don't render header or footer
+                return scaffold.Render();
+            }
         }
 
         private static List<KeyValuePair<string, string>> GetPlatformData(Scaffold scaffold, Datasilk.Web.Request request)
