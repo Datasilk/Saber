@@ -1,1 +1,7 @@
 remote_theme: nielsenramon/chalk
+blog_theme: light # Or use dark
+name: Saber
+paginate: 25
+url: https://www.datasilk.io
+social:
+  github: https://github.com/Datasilk/Saber
