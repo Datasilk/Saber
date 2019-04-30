@@ -26,7 +26,8 @@
 !/App/Scripts/utility/launchpad/
 !/App/Scripts/utility/monaco/
 !/App/Scripts/utility/velocity.min.js
-/App/Vendor/**/*.*
+/App/Vendor/**
+!/App/Vendor/README.md
 
 *.bak
 *.jfm

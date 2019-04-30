@@ -1,15 +1,15 @@
 [submodule "App/Core"]
 	path = App/Core
-	url = http://github.com/datasilk/Core
+	url = https://github.com/datasilk/Core
 [submodule "App/Scripts/platform"]
 	path = App/Scripts/platform
-	url = http://github.com/datasilk/corejs
+	url = https://github.com/datasilk/corejs
 [submodule "App/Scripts/selector"]
 	path = App/Scripts/selector
-	url = http://github.com/websilk/selector
+	url = https://github.com/websilk/selector
 [submodule "App/Scripts/utility/launchpad"]
 	path = App/Scripts/utility/launchpad
-	url = http://github.com/datasilk/launchpad
+	url = https://github.com/datasilk/launchpad
 [submodule "Query/Core"]
 	path = Query/Core
 	url = https://github.com/datasilk/corequery
