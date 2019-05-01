@@ -13,9 +13,11 @@ S.editor = {
     initialized: false,
     savedTabs:[],
     Rhino: null,
+    visible:false,
 
     init: function () {
         this.initialized = true;
+        this.visible = true;
 
         //generate path
         var path = window.location.pathname.toLowerCase();
@@ -115,9 +117,7 @@ S.editor = {
         //get saved tabs from server
         S.ajax.post('Editor/GetOpenedTabs', {},
             function (d) {
-                console.log(JSON.parse(d));
                 tabs = tabs.concat(JSON.parse(d));
-                console.log(tabs);
                 openTabs();
             },
             function (err) {
@@ -1046,11 +1046,13 @@ S.editor = {
                 function showContent() {
                     $('.editor-preview, .editor-tab').removeClass('hide');
                     $('.editor').addClass('hide');
+                    S.editor.visible = false;
                 }
 
             },
 
             hide: function () {
+                S.editor.visible = true;
                 $('.editor-preview, .editor-tab').addClass('hide');
                 $('.editor').removeClass('hide');
 
@@ -1130,14 +1132,23 @@ S.editor = {
     settings: {
         _loaded: false,
         clone: null,
-
+        headers: [],
+        footers: [],
+        
         load: function () {
             var self = S.editor.settings;
             if (self._loaded == true) { return; }
             var path = S.editor.path;
             S.ajax.post('Editor/RenderPageSettings', { path: path },
                 function (d) {
-                    $('.sections > .page-settings > .scroller').append(d);
+                    data = JSON.parse(d);
+                    S.ajax.inject(data);
+
+                    //load settings header & footer fields
+                    self.headers = data.json.headers;
+                    self.footers = data.json.footers;
+
+                    //set up settings title
                     self._loaded = true;
                     self.clone = $('.page-settings .textarea-clone > div');
                     var p = path.replace('content/', '');
@@ -1159,12 +1170,14 @@ S.editor = {
 
         change: function (field, changed) {
             //update textarea height for given field
-            var clone = S.editor.settings.clone;
-            clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
-            field.css({ height: clone.height() });
-            if (changed == false) {
-                //enable save menu
-                $('.item-save').removeClass('faded').removeAttr('disabled');
+            if (S.editor.visible == true) {
+                var clone = S.editor.settings.clone;
+                clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
+                field.css({ height: clone.height() });
+                if (changed == false) {
+                    //enable save menu
+                    $('.item-save').removeClass('faded').removeAttr('disabled');
+                }
             }
         },
 

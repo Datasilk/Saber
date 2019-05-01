@@ -16,8 +16,8 @@ namespace Saber.Common.Platform
         {
             //translate root path to relative path
             var content = new Scaffold("/Views/Editor/content.html");
-            var header = new Scaffold("/Content/partials/" + (config.header != "" ? config.header : "header.html"));
-            var footer = new Scaffold("/Content/partials/" + (config.footer != "" ? config.footer : "footer.html"));
+            var header = new Scaffold("/Content/partials/" + (config.header.file != "" ? config.header.file : "header.html"));
+            var footer = new Scaffold("/Content/partials/" + (config.footer.file != "" ? config.footer.file : "footer.html"));
             var paths = PageInfo.GetRelativePath(path);
             var relpath = string.Join("/", paths);
             var file = paths[paths.Length - 1];
@@ -143,7 +143,7 @@ namespace Saber.Common.Platform
             }
 
             //finally, get platform data from the Scaffold Data Binder
-            var vars = ScaffoldDataBinder.Binder.HtmlVars;
+            var vars = ScaffoldDataBinder.HtmlVars;
             foreach(var item in vars)
             {
                 if (scaffold.fields.ContainsKey(item.Key))
@@ -157,7 +157,7 @@ namespace Saber.Common.Platform
                     {
                         argsStr = string.Join(',', argList);
                     }
-                    results.Add(new KeyValuePair<string, string>(item.Key, item.Value(request, argsStr)));
+                    results.Add(new KeyValuePair<string, string>(item.Key, item.Value.Callback(request, argsStr)));
                 }
             }
 

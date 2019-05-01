@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
-using Utility.Strings;
 using Microsoft.Extensions.DependencyInjection;
+using Utility.Strings;
+using Saber.Common.Platform;
 
 public partial class Startup : Datasilk.Startup {
 
@@ -77,6 +78,10 @@ public partial class Startup : Datasilk.Startup {
             Thread.Sleep(1000);
         }
 
+        //initialize platform-specific html variables for scaffolding
+        ScaffoldDataBinder.Initialize();
+
+        //configure vendor startup
         ConfigureVendors(app);
 
         //handle missing static files
