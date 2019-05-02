@@ -95,6 +95,7 @@ namespace Saber.Common.Platform
             {
                 //render all content
                 results = GetPlatformData(header, request);
+                results.AddRange(config.header.fields);
                 if (results.Count > 0)
                 {
                     foreach (var item in results)
@@ -103,6 +104,7 @@ namespace Saber.Common.Platform
                     }
                 }
                 results = GetPlatformData(footer, request);
+                results.AddRange(config.footer.fields);
                 if (results.Count > 0)
                 {
                     foreach (var item in results)

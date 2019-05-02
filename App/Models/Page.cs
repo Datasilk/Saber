@@ -40,6 +40,6 @@ namespace Saber.Models.Page
     public class Template
     {
         public string file { get; set; } = "";
-        public List<KeyValuePair<string, string>> fields { get; set; } = new List<KeyValuePair<string, string>>();
+        public Dictionary<string, string> fields { get; set; } = new Dictionary<string, string>();
     }
 }

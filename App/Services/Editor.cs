@@ -476,9 +476,9 @@ namespace Saber.Services
                                     configElem = config.footer;
                                     break;
                             }
-                            return new KeyValuePair<string, string>(a.Key, 
-                                configElem.fields.Find(b => b.Key == a.Key).Value ?? "");
-                        }).Where(a => !htmlVars.Contains(a.Key)).ToList()
+                            return new KeyValuePair<string, string>(a.Key,
+                                configElem.fields.ContainsKey(a.Key) ? configElem.fields[a.Key] : "");
+                        }).Where(a => !htmlVars.Contains(a.Key)).ToDictionary(a => a.Key, b => b.Value)
                     };
                     switch (filetype)
                     {
@@ -500,7 +500,7 @@ namespace Saber.Services
             var footerFields = new StringBuilder();
             foreach (var header in headers)
             {
-                headerList.Append("<option value=\"" + header + "\"" +
+                headerList.Append("<option value=\"" + header.file + "\"" +
                     (config.header.file == header.file || config.header.file == "" ? " selected" : "") +
                     ">" + header.file + "</option>\n");
                 if(config.header.file == header.file)
@@ -517,7 +517,7 @@ namespace Saber.Services
             }
             foreach (var footer in footers)
             {
-                footerList.Append("<option value=\"" + footer + "\"" +
+                footerList.Append("<option value=\"" + footer.file + "\"" +
                     (config.footer.file == footer.file || config.footer.file == "" ? " selected" : "") +
                     ">" + footer.file + "</option>\n");
                 if (config.footer.file == footer.file)
@@ -549,7 +549,7 @@ namespace Saber.Services
             //build JSON Response object
             return Serializer.WriteObjectToString(
                 new Datasilk.Web.Response(scaffold.Render(), scripts.ToString(), css.ToString(), 
-                Serializer.WriteObjectToString(new {headers, footers}),
+                Serializer.WriteObjectToString(new {headers, footers, field_template = fieldScaffold.HTML}),
                 ".sections > .page-settings .settings-contents")
             );
         }
@@ -623,6 +623,23 @@ namespace Saber.Services
             {
                 var config = PageInfo.GetPageConfig(path);
                 config.description = description;
+                PageInfo.SavePageConfig(path, config);
+                return Success();
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        public string UpdatePagePartials(string path, Models.Page.Template header, Models.Page.Template footer)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            try
+            {
+                var config = PageInfo.GetPageConfig(path);
+                config.header = header;
+                config.footer = footer;
                 PageInfo.SavePageConfig(path, config);
                 return Success();
             }
