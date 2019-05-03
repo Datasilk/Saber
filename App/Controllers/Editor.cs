@@ -101,7 +101,7 @@ namespace Saber.Pages
                     AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
                     AddScript(rpath.ToLower() + rfile + ".js", "page_js");
                 }
-                else if (File.Exists(Server.MapPath(rpath + rfile + "/template.html")))
+                else if (File.Exists(Server.MapPath(rpath + "/template.html")))
                 {
                     //page does not exist, try to load template page from parent
                     var templatePath = string.Join('/', path.Take(path.Length - 1).ToArray());

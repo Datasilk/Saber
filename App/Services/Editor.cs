@@ -448,6 +448,7 @@ namespace Saber.Services
                 paths = paths.Skip(startIndex + 1).ToList();
                 var filepath = string.Join('/', paths.ToArray());
                 var filename = paths[paths.Count - 1];
+
                 //get list of fields within html template
                 TemplateFileType filetype = TemplateFileType.none;
                 if (filename.IndexOf("header") >= 0)
@@ -478,7 +479,18 @@ namespace Saber.Services
                             }
                             return new KeyValuePair<string, string>(a.Key,
                                 configElem.fields.ContainsKey(a.Key) ? configElem.fields[a.Key] : "");
-                        }).Where(a => !htmlVars.Contains(a.Key)).ToDictionary(a => a.Key, b => b.Value)
+                        }).Where(a => {
+                            var partial = fileScaffold.partials.Where(b => a.Key.IndexOf(b.Prefix) == 0)
+                                .OrderByDescending(o => o.Prefix.Length).FirstOrDefault();
+                            var prefix = "";
+                            var naturalKey = a.Key;
+                            if (partial != null) {
+                                prefix = partial.Prefix;
+                                naturalKey = a.Key.Replace(prefix, "");
+                            }
+                            return !htmlVars.Contains(naturalKey);
+                            }
+                    ).ToDictionary(a => a.Key, b => b.Value)
                     };
                     switch (filetype)
                     {
