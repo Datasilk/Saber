@@ -387,6 +387,8 @@ S.editor = {
                             function (d) {
                                 //show message to user
                                 showmsg();
+                                //html resource has changed because header & footer partials have changed
+                                S.editor.files.html.changed = true;
                             },
                             function () { S.editor.error(); }
                         );
@@ -1180,6 +1182,9 @@ S.editor = {
                     //update settings header & footer events
                     $('#page_header').on('change', S.editor.settings.partials.header.update);
                     $('#page_footer').on('change', S.editor.settings.partials.footer.update);
+                    $('.settings-header-footer input[type="text"]').on('keyup', () => {
+                        S.editor.settings.partials.changed = true;
+                    })
 
                     //set up settings title
                     S.editor.settings._loaded = true;

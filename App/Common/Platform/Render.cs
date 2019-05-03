@@ -125,43 +125,52 @@ namespace Saber.Common.Platform
         private static List<KeyValuePair<string, string>> GetPlatformData(Scaffold scaffold, Datasilk.Web.Request request)
         {
             var results = new List<KeyValuePair<string, string>>();
-            if(request.User.userId > 0)
+            var prefix = "";
+            for(var x = -1; x < scaffold.partials.Count; x++)
             {
-                //user logged in
-                if (scaffold.fields.ContainsKey("user"))
+                if(x >= 0)
                 {
-                    results.Add(new KeyValuePair<string, string>("user", "1"));
-                    results.Add(new KeyValuePair<string, string>("username", request.User.name));
-                    results.Add(new KeyValuePair<string, string>("userid", request.User.userId.ToString()));
+                    prefix = scaffold.partials[x].Prefix;
                 }
-            }
-            else
-            {
-                //user not logged in
-                if (scaffold.fields.ContainsKey("no-user"))
+                if (request.User.userId > 0)
                 {
-                    results.Add(new KeyValuePair<string, string>("no-user", "1"));
-                }
-            }
-
-            //finally, get platform data from the Scaffold Data Binder
-            var vars = ScaffoldDataBinder.HtmlVars;
-            foreach(var item in vars)
-            {
-                if (scaffold.fields.ContainsKey(item.Key))
-                {
-                    var index = results.FindAll(f => f.Key == item.Key).Count();
-                    var elemIndex = scaffold.fields[item.Key][index];
-                    var args = scaffold.elements[elemIndex].vars ?? new Dictionary<string, string>();
-                    var argList = args.Select(a => a.Key + ":\"" + a.Value + "\"").ToArray();
-                    var argsStr = "";
-                    if(argList.Length > 0)
+                    //user logged in
+                    if (scaffold.fields.ContainsKey(prefix + "user"))
                     {
-                        argsStr = string.Join(',', argList);
+                        results.Add(new KeyValuePair<string, string>(prefix + "user", "1"));
+                        results.Add(new KeyValuePair<string, string>(prefix + "username", request.User.name));
+                        results.Add(new KeyValuePair<string, string>(prefix + "userid", request.User.userId.ToString()));
                     }
-                    results.Add(new KeyValuePair<string, string>(item.Key, item.Value.Callback(request, argsStr)));
+                }
+                else
+                {
+                    //user not logged in
+                    if (scaffold.fields.ContainsKey(prefix + "no-user"))
+                    {
+                        results.Add(new KeyValuePair<string, string>(prefix + "no-user", "1"));
+                    }
+                }
+
+                //finally, get platform data from the Scaffold Data Binder
+                var vars = ScaffoldDataBinder.HtmlVars;
+                foreach (var item in vars)
+                {
+                    if (scaffold.fields.ContainsKey(prefix + item.Key))
+                    {
+                        var index = results.FindAll(f => f.Key == item.Key).Count();
+                        var elemIndex = scaffold.fields[prefix + item.Key][index];
+                        var args = scaffold.elements[elemIndex].vars ?? new Dictionary<string, string>();
+                        var argList = args.Select(a => a.Key + ":\"" + a.Value + "\"").ToArray();
+                        var argsStr = "";
+                        if (argList.Length > 0)
+                        {
+                            argsStr = string.Join(',', argList);
+                        }
+                        results.Add(new KeyValuePair<string, string>(prefix + item.Key, item.Value.Callback(request, argsStr)));
+                    }
                 }
             }
+            
 
             return results;
         }
