@@ -130,28 +130,11 @@ namespace Saber.Common.Platform
             {
                 if(x >= 0)
                 {
+                    //find variables within html template partials (child templates)
                     prefix = scaffold.partials[x].Prefix;
                 }
-                if (request.User.userId > 0)
-                {
-                    //user logged in
-                    if (scaffold.fields.ContainsKey(prefix + "user"))
-                    {
-                        results.Add(new KeyValuePair<string, string>(prefix + "user", "1"));
-                        results.Add(new KeyValuePair<string, string>(prefix + "username", request.User.name));
-                        results.Add(new KeyValuePair<string, string>(prefix + "userid", request.User.userId.ToString()));
-                    }
-                }
-                else
-                {
-                    //user not logged in
-                    if (scaffold.fields.ContainsKey(prefix + "no-user"))
-                    {
-                        results.Add(new KeyValuePair<string, string>(prefix + "no-user", "1"));
-                    }
-                }
 
-                //finally, get platform data from the Scaffold Data Binder
+                //get platform data from the Scaffold Data Binder
                 var vars = ScaffoldDataBinder.HtmlVars;
                 foreach (var item in vars)
                 {
@@ -160,13 +143,21 @@ namespace Saber.Common.Platform
                         var index = results.FindAll(f => f.Key == item.Key).Count();
                         var elemIndex = scaffold.fields[prefix + item.Key][index];
                         var args = scaffold.elements[elemIndex].vars ?? new Dictionary<string, string>();
+                        //prepare html template variable arguments for the Data Binder
                         var argList = args.Select(a => a.Key + ":\"" + a.Value + "\"").ToArray();
                         var argsStr = "";
                         if (argList.Length > 0)
                         {
                             argsStr = string.Join(',', argList);
                         }
-                        results.Add(new KeyValuePair<string, string>(prefix + item.Key, item.Value.Callback(request, argsStr)));
+
+                        //run the Data Binder callback method
+                        var range = item.Value.Callback(request, argsStr, prefix);
+                        if(range.Count > 0)
+                        {
+                            //add Data Binder callback method results to list
+                            results.AddRange(range);
+                        }
                     }
                 }
             }
