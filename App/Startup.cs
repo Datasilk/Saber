@@ -27,10 +27,12 @@ public partial class Startup : Datasilk.Startup {
     {
         base.Configured(app, env, config);
 
+        //set up database connection
         Query.Sql.connectionString = Server.sqlConnectionString;
         var resetPass = Query.Users.HasPasswords();
         Server.hasAdmin = Query.Users.HasAdmin();
 
+        //set up Saber language support
         Server.languages = new Dictionary<string, string>();
         Server.languages.Add("en", "English"); //english should be the default language
         Query.Languages.GetList().ForEach((lang) => {

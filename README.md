@@ -2,7 +2,10 @@
 
 # Saber
 
-A simple, straight forward CMS.
+A simple, straight forward CMS. 
+
+### Principals
+Saber was built with a focus on traditional web development by utilizing HTML, CSS (LESS), and Javascript in their respective file formats. On top of that, Saber gives the developer the ability to make live updates to their website whi`le using a GUI source code editor inside their favorite web browser.
 
 ## Requirements
 
