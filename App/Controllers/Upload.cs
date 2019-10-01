@@ -17,7 +17,7 @@ namespace Saber.Pages
 
         public override string Render(string[] path, string body = "", object metadata = null)
         {
-            if (!CheckSecurity()) { return AccessDenied(true, new Login(context, parameters)); }
+            if (!CheckSecurity()) { return AccessDenied(new Login(context, parameters)); }
             if (context.Request.Form.Files.Count > 0 && context.Request.Form.ContainsKey("path"))
             {
                 //save resources for page

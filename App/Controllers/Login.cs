@@ -23,14 +23,14 @@ namespace Saber.Pages
             {
                 //load new administrator form
                 scaffold = new Scaffold("/Views/Login/new-admin.html");
-                scaffold.Data["title"] = "Create an administrator account";
+                scaffold["title"] = "Create an administrator account";
                 scripts.Append("<script src=\"/js/views/login/new-admin.js\"></script>");
             }
             else if (User.resetPass == true)
             {
                 //load new password form (for admin only)
                 scaffold = new Scaffold("/Views/Login/new-pass.html");
-                scaffold.Data["title"] = "Create an administrator password";
+                scaffold["title"] = "Create an administrator password";
                 scripts.Append("<script src=\"/js/views/login/new-pass.js\"></script>");
             }
             else

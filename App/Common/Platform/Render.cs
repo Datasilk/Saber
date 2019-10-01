@@ -31,7 +31,7 @@ namespace Saber.Common.Platform
                 throw new ServiceErrorException("The URL path you are accessing is too long to handle for the web server");
             }
             var scaffold = new Scaffold(relpath);
-            if (scaffold.elements.Count == 0)
+            if (scaffold.Elements.Count == 0)
             {
                 if (request.User.userId == 0)
                 {
@@ -66,22 +66,22 @@ namespace Saber.Common.Platform
                 {
                     if (item.Value.IndexOf("\n") >= 0)
                     {
-                        scaffold.Data[item.Key] = CommonMarkConverter.Convert(item.Value);
+                        scaffold[item.Key] = CommonMarkConverter.Convert(item.Value);
                     }
                     else
                     {
-                        scaffold.Data[item.Key] = item.Value;
+                        scaffold[item.Key] = item.Value;
                     }
                 }
             }
 
             //load platform-specific data into scaffold template
-            var results = GetPlatformData(scaffold.fields, request);
+            var results = GetPlatformData(scaffold.Fields, request);
             if (results.Count > 0)
             {
                 foreach (var item in results)
                 {
-                    scaffold.Data[item.Key] = item.Value;
+                    scaffold[item.Key] = item.Value;
                 }
             }
             var parts = new string[] { "header", "footer" };
@@ -89,19 +89,19 @@ namespace Saber.Common.Platform
             {
                 //load platform-specific data into child scaffold templates
                 var child = content.Child(part);
-                results = GetPlatformData(child.fields, request);
+                results = GetPlatformData(child.Fields, request);
                 if(results.Count > 0)
                 {
                     foreach(var item in results)
                     {
-                        child.Data[item.Key] = item.Value;
+                        child[item.Key] = item.Value;
                     }
                 }
             }
             
 
             //render content
-            content.Data["content"] = scaffold.Render();
+            content["content"] = scaffold.Render();
             return content.Render();
         }
 
@@ -113,7 +113,7 @@ namespace Saber.Common.Platform
                 //user logged in
                 if (fields.ContainsKey("user"))
                 {
-                    results.Add(new KeyValuePair<string, string>("user", "1"));
+                    results.Add(new KeyValuePair<string, string>("user", "True"));
                     results.Add(new KeyValuePair<string, string>("username", request.User.name));
                     results.Add(new KeyValuePair<string, string>("userid", request.User.userId.ToString()));
                 }
@@ -123,7 +123,7 @@ namespace Saber.Common.Platform
                 //user not logged in
                 if (fields.ContainsKey("no-user"))
                 {
-                    results.Add(new KeyValuePair<string, string>("no-user", "1"));
+                    results.Add(new KeyValuePair<string, string>("no-user", "True"));
                 }
             }
 

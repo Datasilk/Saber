@@ -31,19 +31,22 @@ namespace Saber
                 scripts.Append("<script language=\"javascript\">S.svg.load('/themes/default/icons.svg');</script>");
             }
             var scaffold = new Scaffold("/Views/Shared/layout.html");
-            scaffold.Data["title"] = title;
-            scaffold.Data["description"] = description;
-            scaffold.Data["language"] = User.language;
-            scaffold.Data["head-css"] = headCss.ToString();
-            scaffold.Data["theme"] = theme;
-            scaffold.Data["favicon"] = favicon;
-            scaffold.Data["body"] = body;
-            scaffold.Data["platform-1"] = usePlatform == true ? "1" : "";
-            scaffold.Data["platform-2"] = usePlatform == true ? "1" : "";
-            scaffold.Data["platform-3"] = usePlatform == true ? "1" : "";
+            scaffold["title"] = title;
+            scaffold["description"] = description;
+            scaffold["language"] = User.language;
+            scaffold["theme"] = theme;
+            scaffold["head-css"] = css.ToString();
+            scaffold["favicon"] = favicon;
+            scaffold["body"] = body;
+            if (usePlatform)
+            {
+                scaffold.Show("platform-1");
+                scaffold.Show("platform-2");
+                scaffold.Show("platform-3");
+            }
 
             //add initialization script
-            scaffold.Data["scripts"] = scripts.ToString();
+            scaffold["scripts"] = scripts.ToString();
 
             return scaffold.Render();
         }

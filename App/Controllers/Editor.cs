@@ -49,12 +49,12 @@ namespace Saber.Pages
                 {
                     case EditorType.Monaco:
                         AddScript("/js/utility/monaco/loader.js");
-                        scaffold.Data["editor-type"] = "monaco";
+                        scaffold["editor-type"] = "monaco";
                         break;
 
                     case EditorType.Ace:
                         AddScript("/js/utility/ace/ace.js");
-                        scaffold.Data["editor-type"] = "ace";
+                        scaffold["editor-type"] = "ace";
                         break;
                 }
                 
@@ -100,7 +100,7 @@ namespace Saber.Pages
             }
 
             //render page content
-            scaffold.Data["content"] = html;
+            scaffold["content"] = html;
 
             return base.Render(path, scaffold.Render(), metadata);
         }
