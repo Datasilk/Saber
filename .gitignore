@@ -33,6 +33,7 @@
 *.jfm
 *.sh
 /.vs/
+*.pubxml*
 
 # Build results
 [Dd]ebug/
