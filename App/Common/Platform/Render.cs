@@ -39,7 +39,7 @@ namespace Saber.Common.Platform
                 uselayout = false;
             }
             var scaffold = new Scaffold(relpath);
-            if (scaffold.elements.Count == 0)
+            if (scaffold.Elements.Count == 0)
             {
                 if (request.User.userId == 0)
                 {
@@ -72,11 +72,11 @@ namespace Saber.Common.Platform
                 {
                     if (item.Value.IndexOf("\n") >= 0)
                     {
-                        scaffold.Data[item.Key] = CommonMarkConverter.Convert(item.Value);
+                        scaffold[item.Key] = CommonMarkConverter.Convert(item.Value);
                     }
                     else
                     {
-                        scaffold.Data[item.Key] = item.Value;
+                        scaffold[item.Key] = item.Value;
                     }
                 }
             }
@@ -87,7 +87,7 @@ namespace Saber.Common.Platform
             {
                 foreach (var item in results)
                 {
-                    scaffold.Data[item.Key] = item.Value;
+                    scaffold[item.Key] = item.Value;
                 }
             }
 
@@ -100,7 +100,7 @@ namespace Saber.Common.Platform
                 {
                     foreach (var item in results)
                     {
-                        header.Data[item.Key] = item.Value;
+                        header[item.Key] = item.Value;
                     }
                 }
                 results = GetPlatformData(footer, request);
@@ -109,10 +109,10 @@ namespace Saber.Common.Platform
                 {
                     foreach (var item in results)
                     {
-                        footer.Data[item.Key] = item.Value;
+                        footer[item.Key] = item.Value;
                     }
                 }
-                content.Data["content"] = scaffold.Render();
+                content["content"] = scaffold.Render();
                 return header.Render() + content.Render() + footer.Render();
             }
             else
@@ -126,23 +126,23 @@ namespace Saber.Common.Platform
         {
             var results = new List<KeyValuePair<string, string>>();
             var prefix = "";
-            for(var x = -1; x < scaffold.partials.Count; x++)
+            for(var x = -1; x < scaffold.Partials.Count; x++)
             {
                 if(x >= 0)
                 {
                     //find variables within html template partials (child templates)
-                    prefix = scaffold.partials[x].Prefix;
+                    prefix = scaffold.Partials[x].Prefix;
                 }
 
                 //get platform data from the Scaffold Data Binder
                 var vars = ScaffoldDataBinder.HtmlVars;
                 foreach (var item in vars)
                 {
-                    if (scaffold.fields.ContainsKey(prefix + item.Key))
+                    if (scaffold.Fields.ContainsKey(prefix + item.Key))
                     {
                         var index = results.FindAll(f => f.Key == item.Key).Count();
-                        var elemIndex = scaffold.fields[prefix + item.Key][index];
-                        var args = scaffold.elements[elemIndex].vars ?? new Dictionary<string, string>();
+                        var elemIndex = scaffold.Fields[prefix + item.Key][index];
+                        var args = scaffold.Elements[elemIndex].Vars ?? new Dictionary<string, string>();
                         //prepare html template variable arguments for the Data Binder
                         var argList = args.Select(a => a.Key + ":\"" + a.Value + "\"").ToArray();
                         var argsStr = "";

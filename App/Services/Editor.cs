@@ -164,19 +164,19 @@ namespace Saber.Services
 
         private string RenderBrowserItem(Scaffold item, string id, string title, string icon, string path)
         {
-            item.Data["id"] = id;
-            item.Data["title"] = title;
-            item.Data["icon"] = "folder";
+            item["id"] = id;
+            item["title"] = title;
+            item["icon"] = "folder";
 
             if (title.IndexOf(".") > 0)
             {
-                item.Data["icon"] = "file-" + title.Split('.', 2)[1].ToLower();
-                item.Data["onclick"] = "S.editor.explorer.open('" + path + "')";
+                item["icon"] = "file-" + title.Split('.', 2)[1].ToLower();
+                item["onclick"] = "S.editor.explorer.open('" + path + "')";
             }
             else
             {
-                item.Data["icon"] = icon;
-                item.Data["onclick"] = "S.editor.explorer.dir('" + path + "')";
+                item["icon"] = icon;
+                item["onclick"] = "S.editor.explorer.dir('" + path + "')";
             }
 
             return item.Render();
@@ -324,28 +324,28 @@ namespace Saber.Services
             {
                 fields = (Dictionary<string, string>)Serializer.ReadObject(Server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
             }
-            foreach (var elem in scaffold.elements)
+            foreach (var elem in scaffold.Elements)
             {
-                if(elem.name != "")
+                if(elem.Name != "")
                 {
                     var val = "";
-                    if (fields.ContainsKey(elem.name))
+                    if (fields.ContainsKey(elem.Name))
                     {
                         //get existing content for field
-                        val = fields[elem.name];
+                        val = fields[elem.Name];
                     }
 
                     //load text field
-                    fieldText.Data["title"] = elem.name.Capitalize().Replace("-", " ").Replace("_", " ");
-                    fieldText.Data["id"] = "field_" + elem.name.Replace("-", "").Replace("_", "");
-                    fieldText.Data["default"] = val;
+                    fieldText["title"] = elem.Name.Capitalize().Replace("-", " ").Replace("_", " ");
+                    fieldText["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
+                    fieldText["default"] = val;
                     html.Append(fieldText.Render());
                 }
             }
             if(html.Length == 0)
             {
                 var nofields = new Scaffold("/Views/ContentFields/nofields.html");
-                nofields.Data["filename"] = paths[paths.Length - 1];
+                nofields["filename"] = paths[paths.Length - 1];
                 return nofields.Render();
             }
             return html.ToString();
@@ -359,16 +359,16 @@ namespace Saber.Services
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
             var scaffold = new Scaffold(string.Join("/", paths));
-            foreach (var elem in scaffold.elements)
+            foreach (var elem in scaffold.Elements)
             {
-                if (elem.name != "")
+                if (elem.Name != "")
                 {
-                    var name = elem.name.Replace("-", "").Replace("_", "");
+                    var name = elem.Name.Replace("-", "").Replace("_", "");
                     if (fields.ContainsKey(name))
                     {
                         if(fields[name] != "")
                         {
-                            data.Add(elem.name, fields[name]);
+                            data.Add(elem.Name, fields[name]);
                         }
                     }
                 }
@@ -465,7 +465,7 @@ namespace Saber.Services
                     var details = new Models.Page.Template()
                     {
                         file = filepath,
-                        fields = fileScaffold.fields.Select(a =>
+                        fields = fileScaffold.Fields.Select(a =>
                         {
                             var configElem = new Models.Page.Template();
                             switch (filetype)
@@ -480,7 +480,7 @@ namespace Saber.Services
                             return new KeyValuePair<string, string>(a.Key,
                                 configElem.fields.ContainsKey(a.Key) ? configElem.fields[a.Key] : "");
                         }).Where(a => {
-                            var partial = fileScaffold.partials.Where(b => a.Key.IndexOf(b.Prefix) == 0)
+                            var partial = fileScaffold.Partials.Where(b => a.Key.IndexOf(b.Prefix) == 0)
                                 .OrderByDescending(o => o.Prefix.Length).FirstOrDefault();
                             var prefix = "";
                             var naturalKey = a.Key;
@@ -519,9 +519,9 @@ namespace Saber.Services
                 {
                     foreach(var field in header.fields)
                     {
-                        fieldScaffold.Data["label"] = field.Key.Replace("-", " ").Capitalize();
-                        fieldScaffold.Data["name"] = field.Key;
-                        fieldScaffold.Data["value"] = field.Value;
+                        fieldScaffold["label"] = field.Key.Replace("-", " ").Capitalize();
+                        fieldScaffold["name"] = field.Key;
+                        fieldScaffold["value"] = field.Value;
                         headerFields.Append(fieldScaffold.Render() + "\n");
                     }
                 }
@@ -536,9 +536,9 @@ namespace Saber.Services
                 {
                     foreach (var field in footer.fields)
                     {
-                        fieldScaffold.Data["label"] = field.Key.Replace("-", " ").Capitalize();
-                        fieldScaffold.Data["name"] = field.Key;
-                        fieldScaffold.Data["value"] = field.Value;
+                        fieldScaffold["label"] = field.Key.Replace("-", " ").Capitalize();
+                        fieldScaffold["name"] = field.Key;
+                        fieldScaffold["value"] = field.Value;
                         headerFields.Append(fieldScaffold.Render() + "\n");
                     }
                 }
@@ -546,17 +546,17 @@ namespace Saber.Services
             
 
             //render template elements
-            scaffold.Data["page-title"] = config.title.body;
-            scaffold.Data["page-title-prefixes"] = prefixes.ToString();
-            scaffold.Data["page-title-suffixes"] = suffixes.ToString();
-            scaffold.Data["page-description"] = config.description;
-            scaffold.Data["page-header-list"] = headerList.ToString();
-            scaffold.Data["page-footer-list"] = footerList.ToString();
-            scaffold.Data["page-template"] = path.Replace("content/", "/") + "/template";
-            scaffold.Data["no-header-fields"] = headerFields.Length == 0 ? "1" : "";
-            scaffold.Data["no-footer-fields"] = footerFields.Length == 0 ? "1" : "";
-            scaffold.Data["header-fields"] = headerFields.ToString();
-            scaffold.Data["footer-fields"] = footerFields.ToString();
+            scaffold["page-title"] = config.title.body;
+            scaffold["page-title-prefixes"] = prefixes.ToString();
+            scaffold["page-title-suffixes"] = suffixes.ToString();
+            scaffold["page-description"] = config.description;
+            scaffold["page-header-list"] = headerList.ToString();
+            scaffold["page-footer-list"] = footerList.ToString();
+            scaffold["page-template"] = path.Replace("content/", "/") + "/template";
+            scaffold["no-header-fields"] = headerFields.Length == 0 ? "1" : "";
+            scaffold["no-footer-fields"] = footerFields.Length == 0 ? "1" : "";
+            scaffold["header-fields"] = headerFields.ToString();
+            scaffold["footer-fields"] = footerFields.ToString();
 
             //build JSON Response object
             return Serializer.WriteObjectToString(
@@ -676,14 +676,14 @@ namespace Saber.Services
             {
                 //loading resources for specific page
                 pubdir = "/wwwroot" + dir;
-                scaffold.Data["for-page"] = "1";
-                scaffold.Data["for-type"] = "Page";
+                scaffold.Show("for-page");
+                scaffold["for-type"] = "Page";
             }
             else
             {
-                scaffold.Data["for-folder"] = "1";
-                scaffold.Data["for-type"] = "Website";
-                scaffold.Data["folder-path"] = dir.Replace("/wwwroot", "");
+                scaffold.Show("for-folder");
+                scaffold["for-type"] = "Website";
+                scaffold["folder-path"] = dir.Replace("/wwwroot", "");
             }
             if (Directory.Exists(Server.MapPath(pubdir)))
             {
@@ -729,10 +729,10 @@ namespace Saber.Services
                             case "jpeg":
                             case "gif":
                                 type = "image";
-                                item.Data["img"] = "1";
-                                item.Data["svg"] = "";
-                                item.Data["img-src"] = pubdir.Replace("/wwwroot","") + thumbdir + f.Name;
-                                item.Data["img-alt"] = type + " " + f.Name;
+                                item.Show("img");
+                                item["svg"] = "";
+                                item["img-src"] = pubdir.Replace("/wwwroot","") + thumbdir + f.Name;
+                                item["img-alt"] = type + " " + f.Name;
                                 break;
 
                             //video 
@@ -786,24 +786,24 @@ namespace Saber.Services
                                 icon = "";
                                 break;
                         }
-                        item.Data["file-type"] = type;
-                        item.Data["filename"] = f.Name;
+                        item["file-type"] = type;
+                        item["filename"] = f.Name;
                         if(type == "file")
                         {
-                            item.Data["img"] = "";
-                            item.Data["svg"] = "1";
-                            item.Data["icon"] = "file" + (icon != "" ? "-" : "") + icon;
+                            item["img"] = "";
+                            item.Show("svg");
+                            item["icon"] = "file" + (icon != "" ? "-" : "") + icon;
                         }
                         html.Append(item.Render());
                     }
 
-                    scaffold.Data["resources"] = "<ul>" + html.ToString() + "</ul>";
+                    scaffold["resources"] = "<ul>" + html.ToString() + "</ul>";
                 }
             }
 
             //no resources
-            if(!scaffold.Data.ContainsKey("resources")) {
-                scaffold.Data["resources"] = Server.LoadFileFromCache("/Views/PageResources/no-resources.html");
+            if(!scaffold.ContainsKey("resources")) {
+                scaffold["resources"] = Server.LoadFileFromCache("/Views/PageResources/no-resources.html");
             }
 
             return scaffold.Render();

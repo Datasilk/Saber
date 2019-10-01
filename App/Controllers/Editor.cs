@@ -60,13 +60,17 @@ namespace Saber.Pages
                     switch (EditorUsed)
                     {
                         case EditorType.Monaco:
-                            AddScript("/js/utility/monaco/loader.js");
-                            scaffold.Data["editor-type"] = "monaco";
+                            AddCSS("/js/utility/monaco/min/vs/editor/editor.main.css");
+                            //scripts.Append("var require = { paths: { 'vs': '/js/monaco/min/vs' } };");
+                            AddScript("/js/utility/monaco/min/vs/loader.js");
+                            //AddScript("/js/utility/monaco/min/vs/editor/editor.main.nls.js");
+                            //AddScript("/js/utility/monaco/min/vs/editor/editor.main.js");
+                            scaffold["editor-type"] = "monaco";
                             break;
 
                         case EditorType.Ace:
                             AddScript("/js/utility/ace/ace.js");
-                            scaffold.Data["editor-type"] = "ace";
+                            scaffold["editor-type"] = "ace";
                             break;
                     }
 
@@ -118,7 +122,7 @@ namespace Saber.Pages
                 }
 
                 //render page content
-                scaffold.Data["content"] = html;
+                scaffold["content"] = html;
 
                 return base.Render(path, scaffold.Render(), metadata);
             }
