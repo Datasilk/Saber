@@ -16,9 +16,8 @@ namespace Saber.Common.Platform
 
         public static Dictionary<string, string> GetPageContent(string path, string language)
         {
-            var server = Server.Instance;
             var contentfile = Server.MapPath(ContentFile(path, language));
-            var content = (Dictionary<string, string>)Serializer.ReadObject(server.LoadFileFromCache(contentfile, true), typeof(Dictionary<string, string>));
+            var content = (Dictionary<string, string>)Serializer.ReadObject(Server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
             if (content != null) { return content; }
             return new Dictionary<string, string>();
         }

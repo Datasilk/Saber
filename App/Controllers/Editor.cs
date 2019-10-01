@@ -1,12 +1,13 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Saber.Common.Platform;
 
 namespace Saber.Pages
 {
-    public class Editor : Page
+    public class Editor : Controller
     {
-        public Editor(HttpContext context) : base(context)
+        public Editor(HttpContext context, Parameters parameters) : base(context, parameters)
         {
         }
 
@@ -28,66 +29,105 @@ namespace Saber.Pages
             {
                 rfile = path[0].ToLower();
             }
-            if (pathname == "") { pathname = "home"; rfile = pathname; }
+            if (pathname == "") {
+                pathname = "home";
+                rfile = pathname;
+            }
             var file = pathname + ".html";
+            var html = "";
 
             //load page configuration
-            var config = PageInfo.GetPageConfig("content/" + pathname);
-            title = config.title.prefix + config.title.body + config.title.suffix;
-            description = config.description;
-            favicon = "/images/favicon.ico";
-
-            //open page contents
-            if (User.userId > 0)
+            var uselayout = true;
+            if (parameters.ContainsKey("nolayout"))
             {
-                //use editor.html
-                scaffold = new Scaffold("/Views/Editor/editor.html", Server.Scaffold);
+                uselayout = false;
+            }
+            var config = PageInfo.GetPageConfig("content/" + pathname);
 
-                //load editor resources
-                switch (EditorUsed)
+            if (uselayout)
+            {
+                //load page layout
+                title = config.title.prefix + config.title.body + config.title.suffix;
+                description = config.description;
+                favicon = "/images/favicon.ico";
+
+                if (User.userId > 0)
                 {
-                    case EditorType.Monaco:
-                        AddScript("/js/utility/monaco/loader.js");
-                        scaffold.Data["editor-type"] = "monaco";
-                        break;
+                    //use editor.html
+                    scaffold = new Scaffold("/Views/Editor/editor.html");
 
-                    case EditorType.Ace:
-                        AddScript("/js/utility/ace/ace.js");
-                        scaffold.Data["editor-type"] = "ace";
-                        break;
+                    //load editor resources
+                    switch (EditorUsed)
+                    {
+                        case EditorType.Monaco:
+                            AddScript("/js/utility/monaco/loader.js");
+                            scaffold.Data["editor-type"] = "monaco";
+                            break;
+
+                        case EditorType.Ace:
+                            AddScript("/js/utility/ace/ace.js");
+                            scaffold.Data["editor-type"] = "ace";
+                            break;
+                    }
+
+                    AddScript("/js/views/editor/editor.js");
+                    AddCSS("/css/views/editor/editor.css");
+                    if (EditorUsed != EditorType.Monaco)
+                    {
+                        scripts.Append(
+                        "<script language=\"javascript\">" +
+                            "S.editor.type = " + (int)EditorUsed + ";" +
+                        "</script>");
+                    }
+                    usePlatform = true;
                 }
-                
-                AddScript("/js/views/editor/editor.js");
-                AddCSS("/css/views/editor/editor.css");
-                if(EditorUsed != EditorType.Monaco)
+                else
                 {
-                    scripts.Append(
+                    //use no-editor.html
+                    scaffold = new Scaffold("/Views/Editor/no-editor.html");
+                }
+
+                //add page-specific references
+                scripts.Append(
                     "<script language=\"javascript\">" +
-                        "S.editor.type = " + (int)EditorUsed + ";" +
-                    "</script>");
+                        "window.language = '" + User.language + "';" +
+                    "</script>\n"
+                );
+                
+                if (File.Exists(Server.MapPath(rpath + rfile + ".html")))
+                {
+                    //page exists
+                    html = Common.Platform.Render.Page("content/" + pathname + ".html", this, config);
+                    AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
+                    AddScript(rpath.ToLower() + rfile + ".js", "page_js");
                 }
-                usePlatform = true;
+                else if (File.Exists(Server.MapPath(rpath + "/template.html")))
+                {
+                    //page does not exist, try to load template page from parent
+                    var templatePath = string.Join('/', path.Take(path.Length - 1).ToArray());
+                    html = Common.Platform.Render.Page("content/" + templatePath + "/template.html", this, config);
+                    AddCSS(rpath.ToLower() + "template.css", "page_css");
+                    AddScript(rpath.ToLower() + "template.js", "page_js");
+                }
+                else
+                {
+                    //last resort, page & template doesn't exists
+                    html = Common.Platform.Render.Page("content/" + pathname + ".html", this, config);
+                    AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
+                    AddScript(rpath.ToLower() + rfile + ".js", "page_js");
+                }
+
+                //render page content
+                scaffold.Data["content"] = html;
+
+                return base.Render(path, scaffold.Render(), metadata);
             }
             else
             {
-                //use no-editor.html
-                scaffold = new Scaffold("/Views/Editor/no-editor.html", Server.Scaffold);
+                //don't load layout, which includes CSS & Javascript files
+                return "<span style=\"display:none;\"></span>\n" + //CORS fix: add empty span at top of page to trick CORB validation
+                    Common.Platform.Render.Page("content/" + pathname + ".html", this, config);
             }
-
-            //add page-specific references
-            scripts.Append(
-                "<script language=\"javascript\">" + 
-                    "window.language = '" + User.language + "';" + 
-                "</script>\n"
-            );
-            AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
-            AddScript(rpath.ToLower() + rfile + ".js", "page_js");
-
-            //render page content
-            var html = Common.Platform.Render.Page("content/" + pathname + ".html", this);
-            scaffold.Data["content"] = html;
-
-            return base.Render(path, scaffold.Render(), metadata);
         }
     }
 }

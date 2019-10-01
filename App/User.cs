@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Utility.Serialization;
+using Utility.Strings;
 
 namespace Datasilk
 {
@@ -43,5 +47,45 @@ namespace Datasilk
         {
             context.Response.Cookies.Delete("authId");
         }
+
+        #region "Editor UI"
+        public string[] GetOpenTabs()
+        {
+            //gets a list of open tabs within the Editor UI
+            if (context.Session.Get("open-tabs") != null)
+            {
+                return (string[])Serializer.ReadObject(context.Session.Get("open-tabs").GetString(), typeof(string[]));
+            }
+            else
+            {
+                return new string[] { };
+            }
+        }
+
+        public void SaveOpenTabs(string[] tabs)
+        {
+            context.Session.Set("open-tabs", Serializer.WriteObject(tabs));
+        }
+
+        public void AddOpenTab(string filePath)
+        {
+            var tabs = GetOpenTabs().ToList();
+            if (!tabs.Contains(filePath))
+            {
+                tabs.Add(filePath);
+            }
+            SaveOpenTabs(tabs.ToArray());
+        }
+
+        public void RemoveOpenTab(string filePath)
+        {
+            var tabs = GetOpenTabs().ToList();
+            if (tabs.Contains(filePath))
+            {
+                tabs.Remove(filePath);
+            }
+            SaveOpenTabs(tabs.ToArray());
+        }
+        #endregion
     }
 }

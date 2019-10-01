@@ -2,7 +2,6 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Processing.Transforms;
 using SixLabors.Primitives;
 
 namespace Saber.Common.Utility
@@ -18,8 +17,6 @@ namespace Saber.Common.Utility
         
     public class Images
     {
-        private Server Server { get; } = Server.Instance;
-
         public ImageInfo Load(string path, string filename)
         {
             ImageInfo newImg = new ImageInfo();

@@ -70,7 +70,7 @@ a:link, a:visited{color:#0099FF; text-decoration:none;}
 a:hover, a:active{color:#006bff; text-decoration:underline;}
 
 /* font styles */
-h1, h2, h3, h4, h5, h6{font-weight:400;}
+h1, h2, h3, h4, h5, h6{font-weight:400; font-family:'Open Sans', arial;}
 h1{font-size:5em;}
 h2{font-size:3em;}
 h3{font-size:2.5em;}
@@ -78,16 +78,13 @@ h4{font-size:2em;}
 h5{font-size:1.25em;}
 h6{font-size:1em;}
 
-/* content */
-.content{font-family:'Open Sans', arial;
-    p{padding:0 0 20px 0;}
-    h1, h2, h3, h4, h5, h6{font-family:'Open Sans', arial;}
-}
-
+/* body */
 html{display:flex; min-height:100%;}
-body{background:#222; width:100%; position:relative; overflow-x:hidden; font-family: Jaldi, Arial, Helvetica, sans-serif;
+body{background:#fff; color:#333; width:100%; position:relative; overflow-x:hidden; font-family: 'Open Sans', Arial, Helvetica, sans-serif;
     display:flex; min-height:100vh; flex-direction:column;}
-.content{flex:1;}
+.content{flex:1; display:flex; align-self:stretch; flex-direction:column; font-family:'Open Sans', arial;
+    p{padding:0 0 20px 0;}
+  }
 
 /* imports */
 @import "../Content/partials/header.less"; 

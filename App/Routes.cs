@@ -1,30 +1,25 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Datasilk;
+using Datasilk.Mvc;
+using Saber.Pages;
 
-public class Routes : Datasilk.Routes
+public class Routes : Datasilk.Web.Routes
 {
-    public override Page FromPageRoutes(HttpContext context, string name)
+    public override Controller FromControllerRoutes(HttpContext context, Parameters parameters, string name)
     {
-        Server Server = Server.Instance;
         switch (name)
         {
             case "login":
-                if(Server.hasAdmin == false || Server.resetPass == true)
+                if (Server.hasAdmin == false || Server.resetPass == true)
                 {
-                    return new Saber.Pages.Login(context);
+                    return new Login(context, parameters);
                 }
                 else
                 {
-                    return new Saber.Pages.Editor(context);
+                    return new Editor(context, parameters);
                 }
-                
-            case "upload": return new Saber.Pages.Upload(context);
-            default: return new Saber.Pages.Editor(context);
+            case "logout": return new Logout(context, parameters);
+            case "upload": return new Upload(context, parameters);
+            default: return new Editor(context, parameters);
         }
-    }
-
-    public override Service FromServiceRoutes(HttpContext context, string name)
-    {
-        return null;
     }
 }

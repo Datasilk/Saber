@@ -12,11 +12,12 @@ namespace Saber.Common.Platform
         /// </summary>
         /// <param name="path">relative path to content (e.g. "content/home")</param>
         /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
-        public static string Page(string path, Datasilk.Request request)
+        public static string Page(string path, Datasilk.Web.Request request, Models.Page.Settings config)
         {
             //translate root path to relative path
-            var server = Server.Instance;
-            var content = new Scaffold("/Views/Editor/content.html", server.Scaffold);
+            var content = new Scaffold("/Views/Editor/content.html");
+            var header = new Scaffold("/Content/partials/" + (config.header.file != "" ? config.header.file : "header.html"));
+            var footer = new Scaffold("/Content/partials/" + (config.footer.file != "" ? config.footer.file : "footer.html"));
             var paths = PageInfo.GetRelativePath(path);
             var relpath = string.Join("/", paths);
             var file = paths[paths.Length - 1];
@@ -31,22 +32,26 @@ namespace Saber.Common.Platform
             {
                 throw new ServiceErrorException("The URL path you are accessing is too long to handle for the web server");
             }
-            var scaffold = new Scaffold(relpath, server.Scaffold);
+
+            var uselayout = true;
+            if (request.parameters.ContainsKey("nolayout"))
+            {
+                uselayout = false;
+            }
+            var scaffold = new Scaffold(relpath);
             if (scaffold.elements.Count == 0)
             {
                 if (request.User.userId == 0)
                 {
+                    //TODO: Show user-generated 404 error
                     scaffold.HTML = "<p>This page does not exist. Please log into your account to write content for this page.</p>";
                 }
                 else
                 {
+                    //try to load template page from parent
                     scaffold.HTML = "<p>Write content using HTML & CSS</p>";
                 }
             }
-
-            //load user content from json file, depending on selected language
-            var config = PageInfo.GetPageConfig(path);
-            var lang = request.User.language;
 
             //check security
             if (config.security.secure == true)
@@ -57,8 +62,10 @@ namespace Saber.Common.Platform
                 }
             }
 
+            //load user content from json file, depending on selected language
+            var lang = request.User.language;
             var contentfile = ContentFields.ContentFile(path, lang);
-            var data = (Dictionary<string, string>)Serializer.ReadObject(server.LoadFileFromCache(contentfile, true), typeof(Dictionary<string, string>));
+            var data = (Dictionary<string, string>)Serializer.ReadObject(Server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
             if (data != null)
             {
                 foreach (var item in data)
@@ -74,27 +81,89 @@ namespace Saber.Common.Platform
                 }
             }
 
-            //load data into header & footer partials
-            var parts = new string[] { "header", "footer" };
-            foreach (var part in parts)
+            //load platform-specific data into scaffold template
+            var results = GetPlatformData(scaffold, request);
+            if (results.Count > 0)
             {
-                var child = content.Child(part);
-                if (request.User.userId > 0)
+                foreach (var item in results)
                 {
-                    child.Data["user"] = "1";
-                    child.Data["username"] = request.User.name;
-                    child.Data["userid"] = request.User.userId.ToString();
+                    scaffold.Data[item.Key] = item.Value;
                 }
-                else
+            }
+
+            if(uselayout)
+            {
+                //render all content
+                results = GetPlatformData(header, request);
+                results.AddRange(config.header.fields);
+                if (results.Count > 0)
                 {
-                    child.Data["no-user"] = "1";
+                    foreach (var item in results)
+                    {
+                        header.Data[item.Key] = item.Value;
+                    }
+                }
+                results = GetPlatformData(footer, request);
+                results.AddRange(config.footer.fields);
+                if (results.Count > 0)
+                {
+                    foreach (var item in results)
+                    {
+                        footer.Data[item.Key] = item.Value;
+                    }
+                }
+                content.Data["content"] = scaffold.Render();
+                return header.Render() + content.Render() + footer.Render();
+            }
+            else
+            {
+                //don't render header or footer
+                return scaffold.Render();
+            }
+        }
+
+        private static List<KeyValuePair<string, string>> GetPlatformData(Scaffold scaffold, Datasilk.Web.Request request)
+        {
+            var results = new List<KeyValuePair<string, string>>();
+            var prefix = "";
+            for(var x = -1; x < scaffold.partials.Count; x++)
+            {
+                if(x >= 0)
+                {
+                    //find variables within html template partials (child templates)
+                    prefix = scaffold.partials[x].Prefix;
+                }
+
+                //get platform data from the Scaffold Data Binder
+                var vars = ScaffoldDataBinder.HtmlVars;
+                foreach (var item in vars)
+                {
+                    if (scaffold.fields.ContainsKey(prefix + item.Key))
+                    {
+                        var index = results.FindAll(f => f.Key == item.Key).Count();
+                        var elemIndex = scaffold.fields[prefix + item.Key][index];
+                        var args = scaffold.elements[elemIndex].vars ?? new Dictionary<string, string>();
+                        //prepare html template variable arguments for the Data Binder
+                        var argList = args.Select(a => a.Key + ":\"" + a.Value + "\"").ToArray();
+                        var argsStr = "";
+                        if (argList.Length > 0)
+                        {
+                            argsStr = string.Join(',', argList);
+                        }
+
+                        //run the Data Binder callback method
+                        var range = item.Value.Callback(request, argsStr, prefix);
+                        if(range.Count > 0)
+                        {
+                            //add Data Binder callback method results to list
+                            results.AddRange(range);
+                        }
+                    }
                 }
             }
             
 
-            //render content
-            content.Data["content"] = scaffold.Render();
-            return content.Render();
+            return results;
         }
     }
 }

@@ -36,7 +36,7 @@
 }
 
 /* preview mode */
-.preview:not(.hide){display:flex; min-height:100vh; flex-direction:column;}
+.editor-preview:not(.hide){display:flex; min-height:100vh; flex-direction:column;}
 
 /* drop down menu */
 .editor-drop-menu{position:absolute; z-index:1000; top:40px; cursor:default;
@@ -71,6 +71,7 @@
 .file-browser{float:left; width:250px; position:relative; top:-48px; margin-bottom:-48px;
     .icon-folder-add{padding-top:4px;}
     .label{font-size:17px;}
+    .item{cursor:default;}
 }
 .browser-path{white-space:pre-wrap; word-wrap:break-word; width:~"calc(100% - 40px)" !important; min-height:23px;}
 

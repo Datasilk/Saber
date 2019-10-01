@@ -10,8 +10,6 @@ namespace Saber.Common.Platform
     {
         public static void NewFile(string path, string filename)
         {
-            var server = Server.Instance;
-
             //check for root & content folders
             if (path == "root")
             {
@@ -71,8 +69,6 @@ namespace Saber.Common.Platform
 
         public static void NewFolder(string path, string folder)
         {
-            var server = Server.Instance;
-
             //check for root & content folders
             if (path == "root")
             {
@@ -112,8 +108,6 @@ namespace Saber.Common.Platform
 
         public static void SaveFile(string path, string content)
         {
-            var server = Server.Instance;
-
             //get relative paths for file
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0)
@@ -151,7 +145,7 @@ namespace Saber.Common.Platform
             {
                 case "html":
                     //remove cached scaffold object
-                    server.Scaffold.Remove(path);
+                    ScaffoldCache.cache.Remove(path);
                     break;
             }
 
@@ -175,18 +169,11 @@ namespace Saber.Common.Platform
 
                     case "less":
                         //compile less file
-                        try
-                        {
-                            var css = Less.Parse(content);
-                            File.WriteAllText(Server.MapPath(pubdir + file.Replace(".less", ".css")), css);
-                        }
-                        catch (Exception)
-                        {
-                            throw new ServiceErrorException("Error generating compiled resource");
-                        }
+                        SaveLessFile(content, pubdir + file.Replace(".less", ".css"), dir);
                         break;
                 }
-            }else if(paths[0].ToLower() == "/content")
+            }
+            else if(paths[0].ToLower() == "/content")
             {
                 switch (paths[1].ToLower())
                 {
@@ -195,15 +182,34 @@ namespace Saber.Common.Platform
                         {
                             case "header.less": case "footer.less":
                                 //compile website.less
-                                Directory.SetCurrentDirectory(Server.MapPath("/CSS"));
-                                var css = Less.Parse(File.ReadAllText(Server.MapPath("/CSS/website.less")));
-                                File.WriteAllText(Server.MapPath("/wwwroot/css/website.css"), css);
-                                Directory.SetCurrentDirectory(Server.MapPath("/"));
+                                SaveLessFile(File.ReadAllText(Server.MapPath("/CSS/website.less")), "/wwwroot/css/website.css", "/CSS");
+                                break;
+                            default:
+                                if(paths[2].Right(5) == ".less")
+                                {
+                                    //compile less file
+                                    var pubpath = "/wwwroot/css/" + string.Join('/', paths.Skip(1).ToArray()).Replace(paths[paths.Length - 1], "");
+                                    if (!Directory.Exists(Server.MapPath(pubpath)))
+                                    {
+                                        Directory.CreateDirectory(Server.MapPath(pubpath));
+                                    }
+                                    SaveLessFile(File.ReadAllText(Server.MapPath(filepath)), pubpath + paths[paths.Length - 1].Replace(".less", ".css"), dir);
+                                }
                                 break;
                         }
                         break;
                 }
-            }else if(paths[0].ToLower() == "/scripts")
+            }
+            else if (paths[0].ToLower() == "/css")
+            {
+                switch (paths[1].ToLower())
+                {
+                    case "website.less":
+                        SaveLessFile(content, "/wwwroot/css/website.css", "/CSS");
+                        break;
+                }
+            }
+            else if(paths[0].ToLower() == "/scripts")
             {
                 if(ext == "js")
                 {
@@ -217,6 +223,21 @@ namespace Saber.Common.Platform
                     //copy javascript files from /Scripts to /wwwroot/js
                     File.Copy(Server.MapPath(filepath), Server.MapPath(pubdir + file), true);
                 }
+            }
+        }
+
+        private static void SaveLessFile(string content, string outputFile, string pathLESS)
+        {
+            try
+            {
+                Directory.SetCurrentDirectory(Server.MapPath(pathLESS));
+                var css = Less.Parse(content);
+                File.WriteAllText(Server.MapPath(outputFile), css);
+                Directory.SetCurrentDirectory(Server.MapPath("/"));
+            }
+            catch (Exception)
+            {
+                throw new ServiceErrorException("Error generating compiled resource");
             }
         }
     }

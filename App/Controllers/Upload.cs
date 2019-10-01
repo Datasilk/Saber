@@ -7,17 +7,17 @@ using Saber.Common.Platform;
 
 namespace Saber.Pages
 {
-    public class Upload : Page
+    public class Upload : Controller
     {
         private string thumbdir = "_thumbs/";
 
-        public Upload(HttpContext context) : base(context)
+        public Upload(HttpContext context, Parameters parameters) : base(context, parameters)
         {
         }
 
         public override string Render(string[] path, string body = "", object metadata = null)
         {
-            if (!CheckSecurity()) { return AccessDenied(true, new Login(context)); }
+            if (!CheckSecurity()) { return AccessDenied(new Login(context, parameters)); }
             if (context.Request.Form.Files.Count > 0 && context.Request.Form.ContainsKey("path"))
             {
                 //save resources for page
