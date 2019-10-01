@@ -192,6 +192,7 @@ namespace Saber.Services
             if (File.Exists(Server.MapPath(string.Join("/", paths))))
             {
                 if (pageResource == false) {
+                    //save open tab to user's session
                     User.AddOpenTab(path);
                 }
                 return WebUtility.HtmlEncode(File.ReadAllText(Server.MapPath(string.Join("/", paths))));
@@ -218,6 +219,7 @@ namespace Saber.Services
 
         public string Close(string path)
         {
+            //remove open tab from user's session
             User.RemoveOpenTab(path);
             return Success();
         }
@@ -297,7 +299,7 @@ namespace Saber.Services
         {
             try
             {
-                return Render.Page(path, this);
+                return Render.Page(path, this, PageInfo.GetPageConfig(path));
             }catch(ServiceErrorException ex)
             {
                 return Error(ex.Message);
@@ -400,11 +402,19 @@ namespace Saber.Services
         #endregion
 
         #region "Page Settings"
+        private enum TemplateFileType
+        {
+            none = 0,
+            header = 1,
+            footer = 2
+        }
+
         public string RenderPageSettings(string path)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
             var config = PageInfo.GetPageConfig(path);
             var scaffold = new Scaffold("/Views/PageSettings/settings.html");
+            var fieldScaffold = new Scaffold("/Views/PageSettings/partial-field.html");
             var prefixes = new StringBuilder();
             var suffixes = new StringBuilder();
 
@@ -424,13 +434,136 @@ namespace Saber.Services
                 }
             }
 
+            //get all platform-specific html variables
+            var htmlVars = ScaffoldDataBinder.GetHtmlVariables();
+
+            //generate list of page headers & footers
+            var headers = new List<Models.Page.Template>();
+            var footers = new List<Models.Page.Template>();
+            var files = Directory.GetFiles(Server.MapPath("/Content/partials/"), "*.html", SearchOption.AllDirectories);
+            foreach(var file in files)
+            {
+                var paths = file.Split('\\').ToList();
+                var startIndex = paths.FindIndex(f => f == "partials");
+                paths = paths.Skip(startIndex + 1).ToList();
+                var filepath = string.Join('/', paths.ToArray());
+                var filename = paths[paths.Count - 1];
+
+                //get list of fields within html template
+                TemplateFileType filetype = TemplateFileType.none;
+                if (filename.IndexOf("header") >= 0)
+                {
+                    filetype = TemplateFileType.header;
+                }
+                else if (filename.IndexOf("footer") >= 0)
+                {
+                    filetype = TemplateFileType.footer;
+                }
+                if(filetype > 0)
+                {
+                    var fileScaffold = new Scaffold("/Content/partials/" + filepath);
+                    var details = new Models.Page.Template()
+                    {
+                        file = filepath,
+                        fields = fileScaffold.Fields.Select(a =>
+                        {
+                            var configElem = new Models.Page.Template();
+                            switch (filetype)
+                            {
+                                case TemplateFileType.header:
+                                    configElem = config.header;
+                                    break;
+                                case TemplateFileType.footer:
+                                    configElem = config.footer;
+                                    break;
+                            }
+                            return new KeyValuePair<string, string>(a.Key,
+                                configElem.fields.ContainsKey(a.Key) ? configElem.fields[a.Key] : "");
+                        }).Where(a => {
+                            var partial = fileScaffold.Partials.Where(b => a.Key.IndexOf(b.Prefix) == 0)
+                                .OrderByDescending(o => o.Prefix.Length).FirstOrDefault();
+                            var prefix = "";
+                            var naturalKey = a.Key;
+                            if (partial != null) {
+                                prefix = partial.Prefix;
+                                naturalKey = a.Key.Replace(prefix, "");
+                            }
+                            return !htmlVars.Contains(naturalKey);
+                            }
+                    ).ToDictionary(a => a.Key, b => b.Value)
+                    };
+                    switch (filetype)
+                    {
+                        case TemplateFileType.header:
+                            headers.Add(details);
+                            break;
+                        case TemplateFileType.footer:
+                            footers.Add(details);
+                            break;
+                    }
+                }
+                
+            }
+
+            //render header & footer select lists
+            var headerList = new StringBuilder();
+            var footerList = new StringBuilder();
+            var headerFields = new StringBuilder();
+            var footerFields = new StringBuilder();
+            foreach (var header in headers)
+            {
+                headerList.Append("<option value=\"" + header.file + "\"" +
+                    (config.header.file == header.file || config.header.file == "" ? " selected" : "") +
+                    ">" + header.file + "</option>\n");
+                if(config.header.file == header.file)
+                {
+                    foreach(var field in header.fields)
+                    {
+                        fieldScaffold["label"] = field.Key.Replace("-", " ").Capitalize();
+                        fieldScaffold["name"] = field.Key;
+                        fieldScaffold["value"] = field.Value;
+                        headerFields.Append(fieldScaffold.Render() + "\n");
+                    }
+                }
+                
+            }
+            foreach (var footer in footers)
+            {
+                footerList.Append("<option value=\"" + footer.file + "\"" +
+                    (config.footer.file == footer.file || config.footer.file == "" ? " selected" : "") +
+                    ">" + footer.file + "</option>\n");
+                if (config.footer.file == footer.file)
+                {
+                    foreach (var field in footer.fields)
+                    {
+                        fieldScaffold["label"] = field.Key.Replace("-", " ").Capitalize();
+                        fieldScaffold["name"] = field.Key;
+                        fieldScaffold["value"] = field.Value;
+                        headerFields.Append(fieldScaffold.Render() + "\n");
+                    }
+                }
+            }
+            
+
+            //render template elements
             scaffold["page-title"] = config.title.body;
             scaffold["page-title-prefixes"] = prefixes.ToString();
             scaffold["page-title-suffixes"] = suffixes.ToString();
             scaffold["page-description"] = config.description;
+            scaffold["page-header-list"] = headerList.ToString();
+            scaffold["page-footer-list"] = footerList.ToString();
             scaffold["page-template"] = path.Replace("content/", "/") + "/template";
+            scaffold["no-header-fields"] = headerFields.Length == 0 ? "1" : "";
+            scaffold["no-footer-fields"] = footerFields.Length == 0 ? "1" : "";
+            scaffold["header-fields"] = headerFields.ToString();
+            scaffold["footer-fields"] = footerFields.ToString();
 
-            return scaffold.Render();
+            //build JSON Response object
+            return Serializer.WriteObjectToString(
+                new Datasilk.Web.Response(scaffold.Render(), scripts.ToString(), css.ToString(), 
+                Serializer.WriteObjectToString(new {headers, footers, field_template = fieldScaffold.HTML}),
+                ".sections > .page-settings .settings-contents")
+            );
         }
 
         public string UpdatePageTitle(string path, int prefixId, int suffixId, string title)
@@ -502,6 +635,23 @@ namespace Saber.Services
             {
                 var config = PageInfo.GetPageConfig(path);
                 config.description = description;
+                PageInfo.SavePageConfig(path, config);
+                return Success();
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        public string UpdatePagePartials(string path, Models.Page.Template header, Models.Page.Template footer)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            try
+            {
+                var config = PageInfo.GetPageConfig(path);
+                config.header = header;
+                config.footer = footer;
                 PageInfo.SavePageConfig(path, config);
                 return Success();
             }

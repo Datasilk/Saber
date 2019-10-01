@@ -2,23 +2,37 @@ using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Utility.Strings;
+using Saber.Common.Platform;
 
-public class Startup : Datasilk.Startup {
+public partial class Startup : Datasilk.Startup {
+
+    //vendor-specific startup methods
+    partial void ConfigureVendorServices(IServiceCollection services);
+    partial void ConfigureVendors(IApplicationBuilder app);
+
+    public override void ConfiguringServices(IServiceCollection services)
+    {
+        base.ConfiguringServices(services);
+        ConfigureVendorServices(services);
+    }
+
 
     public override void Configured(IApplicationBuilder app, IHostingEnvironment env, IConfigurationRoot config)
     {
         base.Configured(app, env, config);
+
+        //set up database connection
         Query.Sql.connectionString = Server.sqlConnectionString;
         var resetPass = Query.Users.HasPasswords();
         Server.hasAdmin = Query.Users.HasAdmin();
 
+        //set up Saber language support
         Server.languages = new Dictionary<string, string>();
         Server.languages.Add("en", "English"); //english should be the default language
         Query.Languages.GetList().ForEach((lang) => {
@@ -65,6 +79,12 @@ public class Startup : Datasilk.Startup {
             p.WaitForExit();
             Thread.Sleep(1000);
         }
+
+        //initialize platform-specific html variables for scaffolding
+        ScaffoldDataBinder.Initialize();
+
+        //configure vendor startup
+        ConfigureVendors(app);
 
         //handle missing static files
         app.Use(async (context, next) => {

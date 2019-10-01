@@ -12,10 +12,12 @@ namespace Saber.Common.Platform
         /// </summary>
         /// <param name="path">relative path to content (e.g. "content/home")</param>
         /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
-        public static string Page(string path, Datasilk.Web.Request request)
+        public static string Page(string path, Datasilk.Web.Request request, Models.Page.Settings config)
         {
             //translate root path to relative path
             var content = new Scaffold("/Views/Editor/content.html");
+            var header = new Scaffold("/Content/partials/" + (config.header.file != "" ? config.header.file : "header.html"));
+            var footer = new Scaffold("/Content/partials/" + (config.footer.file != "" ? config.footer.file : "footer.html"));
             var paths = PageInfo.GetRelativePath(path);
             var relpath = string.Join("/", paths);
             var file = paths[paths.Length - 1];
@@ -29,6 +31,12 @@ namespace Saber.Common.Platform
             if (Server.MapPath(relpath).Length > 180)
             {
                 throw new ServiceErrorException("The URL path you are accessing is too long to handle for the web server");
+            }
+
+            var uselayout = true;
+            if (request.parameters.ContainsKey("nolayout"))
+            {
+                uselayout = false;
             }
             var scaffold = new Scaffold(relpath);
             if (scaffold.Elements.Count == 0)
@@ -45,10 +53,6 @@ namespace Saber.Common.Platform
                 }
             }
 
-            //load user content from json file, depending on selected language
-            var config = PageInfo.GetPageConfig(path);
-            var lang = request.User.language;
-
             //check security
             if (config.security.secure == true)
             {
@@ -58,6 +62,8 @@ namespace Saber.Common.Platform
                 }
             }
 
+            //load user content from json file, depending on selected language
+            var lang = request.User.language;
             var contentfile = ContentFields.ContentFile(path, lang);
             var data = (Dictionary<string, string>)Serializer.ReadObject(Server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
             if (data != null)
@@ -76,7 +82,7 @@ namespace Saber.Common.Platform
             }
 
             //load platform-specific data into scaffold template
-            var results = GetPlatformData(scaffold.Fields, request);
+            var results = GetPlatformData(scaffold, request);
             if (results.Count > 0)
             {
                 foreach (var item in results)
@@ -84,48 +90,78 @@ namespace Saber.Common.Platform
                     scaffold[item.Key] = item.Value;
                 }
             }
-            var parts = new string[] { "header", "footer" };
-            foreach (var part in parts)
+
+            if(uselayout)
             {
-                //load platform-specific data into child scaffold templates
-                var child = content.Child(part);
-                results = GetPlatformData(child.Fields, request);
-                if(results.Count > 0)
+                //render all content
+                results = GetPlatformData(header, request);
+                results.AddRange(config.header.fields);
+                if (results.Count > 0)
                 {
-                    foreach(var item in results)
+                    foreach (var item in results)
                     {
-                        child[item.Key] = item.Value;
+                        header[item.Key] = item.Value;
+                    }
+                }
+                results = GetPlatformData(footer, request);
+                results.AddRange(config.footer.fields);
+                if (results.Count > 0)
+                {
+                    foreach (var item in results)
+                    {
+                        footer[item.Key] = item.Value;
+                    }
+                }
+                content["content"] = scaffold.Render();
+                return header.Render() + content.Render() + footer.Render();
+            }
+            else
+            {
+                //don't render header or footer
+                return scaffold.Render();
+            }
+        }
+
+        private static List<KeyValuePair<string, string>> GetPlatformData(Scaffold scaffold, Datasilk.Web.Request request)
+        {
+            var results = new List<KeyValuePair<string, string>>();
+            var prefix = "";
+            for(var x = -1; x < scaffold.Partials.Count; x++)
+            {
+                if(x >= 0)
+                {
+                    //find variables within html template partials (child templates)
+                    prefix = scaffold.Partials[x].Prefix;
+                }
+
+                //get platform data from the Scaffold Data Binder
+                var vars = ScaffoldDataBinder.HtmlVars;
+                foreach (var item in vars)
+                {
+                    if (scaffold.Fields.ContainsKey(prefix + item.Key))
+                    {
+                        var index = results.FindAll(f => f.Key == item.Key).Count();
+                        var elemIndex = scaffold.Fields[prefix + item.Key][index];
+                        var args = scaffold.Elements[elemIndex].Vars ?? new Dictionary<string, string>();
+                        //prepare html template variable arguments for the Data Binder
+                        var argList = args.Select(a => a.Key + ":\"" + a.Value + "\"").ToArray();
+                        var argsStr = "";
+                        if (argList.Length > 0)
+                        {
+                            argsStr = string.Join(',', argList);
+                        }
+
+                        //run the Data Binder callback method
+                        var range = item.Value.Callback(request, argsStr, prefix);
+                        if(range.Count > 0)
+                        {
+                            //add Data Binder callback method results to list
+                            results.AddRange(range);
+                        }
                     }
                 }
             }
             
-
-            //render content
-            content["content"] = scaffold.Render();
-            return content.Render();
-        }
-
-        private static List<KeyValuePair<string, string>> GetPlatformData(Dictionary<string, int[]> fields, Datasilk.Web.Request request)
-        {
-            var results = new List<KeyValuePair<string, string>>();
-            if(request.User.userId > 0)
-            {
-                //user logged in
-                if (fields.ContainsKey("user"))
-                {
-                    results.Add(new KeyValuePair<string, string>("user", "True"));
-                    results.Add(new KeyValuePair<string, string>("username", request.User.name));
-                    results.Add(new KeyValuePair<string, string>("userid", request.User.userId.ToString()));
-                }
-            }
-            else
-            {
-                //user not logged in
-                if (fields.ContainsKey("no-user"))
-                {
-                    results.Add(new KeyValuePair<string, string>("no-user", "True"));
-                }
-            }
 
             return results;
         }

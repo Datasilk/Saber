@@ -1,5 +1,5 @@
 ﻿<div class="row field">Page Title</div>
-<div class="row input settings-page-title">
+<div class="row settings-page-title">
     <div class="col title-prefix pad-right-sm">
         <div class="row field faded">
             <span>Prefix</span>
@@ -39,9 +39,33 @@
 </div>
 
 <div class="row field">Page Description</div>
-<div class="row input"><textarea id="page_description">{{page-description}}</textarea></div>
+<div class="row input hover"><textarea id="page_description">{{page-description}}</textarea></div>
 
 <div class="textarea-clone"><div></div></div>
+
+<div class="row pad-top-lg"><h5>Page Header & Footer</h5></div>
+<div class="row settings-header-footer">
+    <div class="col pad-right-sm">
+        <div class="row field faded">Header</div>
+        <div class="row input hover">
+            <select id="page_header">{{page-header-list}}</select>
+        </div>
+        <div class="header-fields pad-top {{no-header-fields}}hide{{/no-header-fields}}">
+            <h5>Header Fields</h5>
+            <div class="fields">{{header-fields}}</div>
+        </div>
+    </div>
+    <div class="col pad-right-sm">
+        <div class="row field faded">Footer</div>
+        <div class="row input hover">
+            <select id="page_footer">{{page-footer-list}}</select>
+        </div>
+        <div class="footer-fields pad-top {{no-footer-fields}}hide{{/no-footer-fields}}">
+            <h5>Footer Fields</h5>
+            <div class="fields">{{footer-fields}}</div>
+        </div>
+    </div>
+</div>
 
 <div class="row pad-top-lg"><h5>Subpage Template</h5></div>
 <div class="template-info"><a href="{{page-template}}" target="_blank">Modify</a> the webpage that will be used to generate new subpages</div>

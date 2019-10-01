@@ -105,7 +105,10 @@ paths.working = {
     },
 
     css: {
-        utility: paths.css + 'utility/**/*.css',
+        utility: [
+            paths.css + 'utility/**/*.css',
+            paths.scripts + 'utility/**/*.css'
+        ],
         themes: paths.themes + '**/*.css',
         app: paths.app + '**/*.css'
     },

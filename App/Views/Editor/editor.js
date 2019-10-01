@@ -13,9 +13,11 @@ S.editor = {
     initialized: false,
     savedTabs:[],
     Rhino: null,
+    visible:false,
 
     init: function () {
         this.initialized = true;
+        this.visible = true;
 
         //generate path
         var path = window.location.pathname.toLowerCase();
@@ -31,7 +33,7 @@ S.editor = {
         var editor = null;
         switch (this.type) {
             case 0: //monaco
-                require.config({ paths: { 'vs': '/js/utility/monaco' } });
+                require.config({ paths: { 'vs': '/js/utility/monaco/min/vs' } });
                 require(['vs/editor/editor.main'], function () {
                     editor = monaco.editor.create(document.getElementById('editor'), {
                         value: '',
@@ -115,9 +117,7 @@ S.editor = {
         //get saved tabs from server
         S.ajax.post('Editor/GetOpenedTabs', {},
             function (d) {
-                console.log(JSON.parse(d));
                 tabs = tabs.concat(JSON.parse(d));
-                console.log(tabs);
                 openTabs();
             },
             function (err) {
@@ -299,9 +299,7 @@ S.editor = {
         var id = self.fileId(path);
         var ext = S.editor.fileExt(path);
         var tab = $('.tab-' + id);
-        if ($('.editor-drop-menu .item-save.faded').length == 1) { return;}
         self.dropmenu.hide();
-
         if (tab.length > 0) {
             if (tab.hasClass('selected')) {
                 //check if we should save something besides source code
@@ -367,8 +365,37 @@ S.editor = {
                         );
                     }
 
+                    //save header & footer with fields
+                    if (settings.partials.changed == true) {
+                        //get list of field values
+                        var header_fields = {};
+                        var footer_fields = {};
+                        var elems = $('.header-fields .fields input');
+                        elems.each(a => {
+                            header_fields[a.name] = $(a).val();
+                        });
+                        elems = $('.footer-fields .fields input');
+                        elems.each(a => {
+                            footer_fields[a.name] = $(a).val();
+                        });
+                        var data = {
+                            path: S.editor.path,
+                            header: { file: $('#page_header').val(), fields: header_fields },
+                            footer: { file: $('#page_footer').val(), fields: footer_fields }
+                        };
+                        S.ajax.post('Editor/UpdatePagePartials', data,
+                            function (d) {
+                                //show message to user
+                                showmsg();
+                                //html resource has changed because header & footer partials have changed
+                                S.editor.files.html.changed = true;
+                            },
+                            function () { S.editor.error(); }
+                        );
+                    }
+
                     function showmsg() {
-                        S.message.show('.editor .message', 'confirm', 'Page settings have been updated successfully');
+                        S.message.show('.page-settings .message', 'confirm', 'Page settings have been updated successfully');
                     }
 
                     return;
@@ -377,6 +404,7 @@ S.editor = {
         }
 
         //last resort, save source code to file ////////////////////////////////////////////////////////////
+        if ($('.editor-drop-menu .item-save.faded').length == 1) { return; }
 
         //show loading progress animation
         tab.find('.tab-title').prepend(S.loader());
@@ -501,7 +529,7 @@ S.editor = {
     },
 
     fileId: function (path) {
-        if (path == null) { path = 'content' + window.location.pathname.toLowerCase();}
+        if (path == null) { path = 'content' + window.location.pathname.toLowerCase(); }
         return path.replace(/\//g, '_').replace(/\./g, '_');
     },
 
@@ -1046,11 +1074,13 @@ S.editor = {
                 function showContent() {
                     $('.editor-preview, .editor-tab').removeClass('hide');
                     $('.editor').addClass('hide');
+                    S.editor.visible = false;
                 }
 
             },
 
             hide: function () {
+                S.editor.visible = true;
                 $('.editor-preview, .editor-tab').addClass('hide');
                 $('.editor').removeClass('hide');
 
@@ -1130,16 +1160,35 @@ S.editor = {
     settings: {
         _loaded: false,
         clone: null,
-
+        headers: [],
+        footers: [],
+        field_template:'',
+        
         load: function () {
             var self = S.editor.settings;
             if (self._loaded == true) { return; }
             var path = S.editor.path;
             S.ajax.post('Editor/RenderPageSettings', { path: path },
                 function (d) {
-                    $('.sections > .page-settings > .scroller').append(d);
-                    self._loaded = true;
-                    self.clone = $('.page-settings .textarea-clone > div');
+                    var data = JSON.parse(d);
+                    var json = JSON.parse(data.json);
+                    S.ajax.inject(data);
+
+                    //load settings header & footer fields
+                    S.editor.settings.headers = json.headers;
+                    S.editor.settings.footers = json.footers;
+                    S.editor.settings.field_template = json.field_template;
+
+                    //update settings header & footer events
+                    $('#page_header').on('change', S.editor.settings.partials.header.update);
+                    $('#page_footer').on('change', S.editor.settings.partials.footer.update);
+                    $('.settings-header-footer input[type="text"]').on('keyup', () => {
+                        S.editor.settings.partials.changed = true;
+                    })
+
+                    //set up settings title
+                    S.editor.settings._loaded = true;
+                    S.editor.settings.clone = $('.page-settings .textarea-clone > div');
                     var p = path.replace('content/', '');
                     $('.page-name').attr('href', '/' + p).html(p);
                     S.editor.resizeWindow();
@@ -1159,12 +1208,14 @@ S.editor = {
 
         change: function (field, changed) {
             //update textarea height for given field
-            var clone = S.editor.settings.clone;
-            clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
-            field.css({ height: clone.height() });
-            if (changed == false) {
-                //enable save menu
-                $('.item-save').removeClass('faded').removeAttr('disabled');
+            if (S.editor.visible == true) {
+                var clone = S.editor.settings.clone;
+                clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
+                field.css({ height: clone.height() });
+                if (changed == false) {
+                    //enable save menu
+                    $('.item-save').removeClass('faded').removeAttr('disabled');
+                }
             }
         },
 
@@ -1245,6 +1296,47 @@ S.editor = {
                 S.editor.settings.description.changed = true;
                 $('.item-save').removeClass('faded').removeAttr('disabled');
             }
+        },
+
+        partials: {
+            changed: false,
+
+            header: {
+                update: function () {
+                    S.editor.settings.partials.changed = true;
+                    var template = S.editor.settings.field_template;
+                    var headers = S.editor.settings.headers;
+                    var header = headers[headers.map(a => a.file).indexOf($('#page_header').val())];
+                    html = [];
+                    for (field in header.fields) {
+                        html.push(template
+                            .replace('{{label}}', S.util.str.Capitalize(field.replace('-', ' ')))
+                            .replace('{{name}}', field)
+                            .replace('{{value}}', header.fields[field])
+                        );
+                    }
+                    $('.header-fields .fields').html(html.join('\n'));
+                }
+            },
+
+            footer: {
+                update: function () {
+                    S.editor.settings.partials.changed = true;
+                    var template = S.editor.settings.field_template;
+                    var footers = S.editor.settings.footers;
+                    var footer = footers[footers.map(a => a.file).indexOf($('#page_footer').val())];
+                    html = [];
+                    for (field in footer.fields) {
+                        html.push(template
+                            .replace('{{label}}', S.util.str.Capitalize(field.replace('-', ' ')))
+                            .replace('{{name}}', field)
+                            .replace('{{value}}', footer.fields[field])
+                        );
+                    }
+                    $('.footer-fields .fields').html(html.join('\n'));
+                }
+            }
+
         }
     },
 
@@ -1299,6 +1391,7 @@ S.editor = {
 
     hotkey: {
         pressed: function (e) {
+            if (S.editor.visible == false) { return;}
             var has = false;
             var key = String.fromCharCode(e.which).toLowerCase();
             if (e.ctrlKey == true) {
