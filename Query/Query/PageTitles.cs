@@ -8,22 +8,15 @@ namespace Query
         {
             return Sql.ExecuteScalar<int>(
                 "Page_Title_Create",
-                new Dictionary<string, object>()
-                {
-                    {"title", title },
-                    {"pos", isSuffix }
-                }
+                new {title, pos = isSuffix }
             );
         }
 
-        public static void Delete(int id)
+        public static void Delete(int titleId)
         {
             Sql.ExecuteNonQuery(
                 "Page_Title_Delete",
-                new Dictionary<string, object>()
-                {
-                    {"titleId", id }
-                }
+                new {titleId}
             );
         }
 
@@ -38,20 +31,14 @@ namespace Query
         {
             return Sql.Populate<Models.PageTitle>(
                 "Page_Titles_GetList",
-                new Dictionary<string, object>()
-                {
-                    {"pos", suffix }
-                }
+                new {pos = (int)suffix}
             );
         }
 
         public static string Get(int titleId)
         {
             return Sql.ExecuteScalar<string>("Page_Title_Get",
-                new Dictionary<string, object>()
-                {
-                    {"titleId", titleId }
-                }
+                new { titleId }
             );
         }
     }

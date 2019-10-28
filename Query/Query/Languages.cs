@@ -8,11 +8,7 @@ namespace Query
         {
             return Sql.ExecuteScalar<int>(
                 "Language_Create",
-                new Dictionary<string, object>()
-                {
-                    {"langId", lang.langId},
-                    {"language", lang.language}
-                }
+                new { lang.langId, lang.language }
             );
         }
 
@@ -21,18 +17,13 @@ namespace Query
             if(langId == "en") { return;  }
             Sql.ExecuteNonQuery(
                 "Language_Delete",
-                new Dictionary<string, object>()
-                {
-                    {"langId", langId}
-                }
+                new { langId }
             );
         }
 
     public static List<Models.Language> GetList()
         {
-            return Sql.Populate<Models.Language>("Languages_GetList",
-                new Dictionary<string, object>() {}
-            );
+            return Sql.Populate<Models.Language>("Languages_GetList");
         }
     }
 }

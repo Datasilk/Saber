@@ -23,7 +23,7 @@ public partial class Startup : Datasilk.Startup {
     }
 
 
-    public override void Configured(IApplicationBuilder app, IHostingEnvironment env, IConfigurationRoot config)
+    public override void Configured(IApplicationBuilder app, IWebHostEnvironment env, IConfigurationRoot config)
     {
         base.Configured(app, env, config);
 
