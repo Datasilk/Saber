@@ -2,16 +2,16 @@
 
 # Saber
 
-A simple, straight forward CMS. 
+A simple, straight forward CMS and IDE. 
 
 ### Principals
-Saber was built with a focus on traditional web development by utilizing HTML, CSS (LESS), and Javascript in their respective file formats. On top of that, Saber gives the developer the ability to make live updates to their website whi`le using a GUI source code editor inside their favorite web browser.
+Saber was built with a focus on traditional web development by utilizing HTML, CSS (LESS), and Javascript in their respective file formats. On top of that, Saber gives the developer the ability to make live updates to their website while using an integrated development environment (IDE) inside their favorite web browser.
 
 ## Requirements
 
-* Visual Studio 2017
-* ASP.NET Core 2.0
-* SQL Server 2016
+* Visual Studio 2019
+* ASP.NET Core 3.0
+* SQL Server 2019
 * Node.js
 * Gulp
 
@@ -23,11 +23,8 @@ Saber was built with a focus on traditional web development by utilizing HTML, C
 
 2. Run command ```npm install```
 3. Run command ```gulp default```
-4. In Visual Studio, build & publish the SQL project to SQL Server 2016 (or greater), with your own database name
-5. Copy `/App/Core/config.json` into `/App/` and open copied file for modification
-   1. update `namespace` property to reflect the name of your project `Saber` by default
-   2. update `data:SqlServerTrusted` to reflect the connection string to your local Sql Server
-6. Click Play in Visual Studio 2017
+4. In Visual Studio, build & publish the SQL project to SQL Server 2019 (or greater), with your own database name
+5. Click Play in Visual Studio 2017
 
 ![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-file.jpg)
 *Screenshot of Saber's Editor UI*
@@ -39,14 +36,13 @@ Build web pages from within your web browser using a built-in IDE for editing HT
 Convert any URL within your website to a valid web page simply by navigating to the URL and writing some HTML & CSS within the built-in IDE. The editor initially opens 3 files (HTML, LESS, & JS) that are resources for the web page being viewed.
 
 #### Create & Modify Website Resources
-Use a folder browser within the built-in IDE to open website resources (HTML, CSS, LESS, & JS files) in new tabs. Use the *File* drop down menu to create new files & folders.
+Use a folder browser within the built-in IDE to open website resources (HTML, CSS, LESS, & JS files) in new tabs. Use the *File* drop down menu to create new files & folders. The initial folder structure is described below: 
 
-Important file & folders (located in `/App/`) include: 
 * **wwwroot** is a public folder where you can upload files & images to utilize within your website
 * **partials** is a server-side folder used for partial HTML files that are included within web pages throughout your website (such as  *header.html* & *footer.html* files)
 * **CSS/website.less** is compiled to `wwwroot/css/website.css` using `gulp` and is loaded on every page within your website
 * **Scripts** is a server-side folder that contains various Javascript libraries used within the Saber editor
-	* **Scripts/website.js** is loaded on every page within your website and can be modified within *Saber's Editor UI*
+	* **Scripts/website.js** is loaded on every page within your website and can be modified within *Saber's Editor IDE*
 
 
 
@@ -131,7 +127,7 @@ Upload images & other resources
 Generate form fields by writing HTML variables (e.g. `<h2>{{hero-title}}</h2>`) and use them to fill out content for your web pages
 
 ## Under The Hood
-Saber uses many technologies developed by [Mark Entingh](http://www.github.com/markentingh), including [Datasilk Core](http://www.github.com/datasilk/core) as an MVC framework for ASP.NET Core, [Tapestry](http://www.github.com/websilk/tapestry) for frontend CSS UI design, [Datasilk Core JS](http://www.github.com/datasilk/corejs) as a frontend JavaScript framework, and [Selector](http://www.github.com/websilk/selector) as a replacement for jQuery at only 5kb in size.
+Saber uses many technologies developed by [Mark Entingh](http://www.github.com/markentingh), including [Datasilk Core MVC](http://www.github.com/datasilk/core) as the MVC middleware for ASP.NET Core, [Tapestry](http://www.github.com/websilk/tapestry) for frontend CSS UI design, [Datasilk Core JS](http://www.github.com/datasilk/corejs) as a frontend JavaScript framework, and [Selector](http://www.github.com/websilk/selector) as a replacement for jQuery at only 5kb in size.
 
 ## Future Development
 * Upload & manage photos & files related to a specific web page
