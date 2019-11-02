@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Utility.Serialization;
+using System.Text.Json;
 using CommonMark;
 
 namespace Saber.Common.Platform
@@ -12,16 +12,14 @@ namespace Saber.Common.Platform
         /// </summary>
         /// <param name="path">relative path to content (e.g. "content/home")</param>
         /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
-        public static string Page(string path, Datasilk.Web.Request request, Models.Page.Settings config)
+        public static string Page(string path, Request request, Models.Page.Settings config)
         {
             //translate root path to relative path
-            var content = new Scaffold("/Views/Editor/content.html");
-            var header = new Scaffold("/Content/partials/" + (config.header.file != "" ? config.header.file : "header.html"));
-            var footer = new Scaffold("/Content/partials/" + (config.footer.file != "" ? config.footer.file : "footer.html"));
+            var content = new View("/Views/Editor/content.html");
+            var header = new View("/Content/partials/" + (config.header.file != "" ? config.header.file : "header.html"));
+            var footer = new View("/Content/partials/" + (config.footer.file != "" ? config.footer.file : "footer.html"));
             var paths = PageInfo.GetRelativePath(path);
             var relpath = string.Join("/", paths);
-            var file = paths[paths.Length - 1];
-            var fileparts = file.Split(".", 2);
             if (paths.Length == 0)
             {
                 throw new ServiceErrorException("No path specified");
@@ -34,22 +32,22 @@ namespace Saber.Common.Platform
             }
 
             var uselayout = true;
-            if (request.parameters.ContainsKey("nolayout"))
+            if (request.Parameters.ContainsKey("noLayout"))
             {
                 uselayout = false;
             }
-            var scaffold = new Scaffold(relpath);
-            if (scaffold.Elements.Count == 0)
+            var view = new View(relpath);
+            if (view.Elements.Count == 0)
             {
                 if (request.User.userId == 0)
                 {
                     //TODO: Show user-generated 404 error
-                    scaffold.HTML = "<p>This page does not exist. Please log into your account to write content for this page.</p>";
+                    view.HTML = "<p>This page does not exist. Please log into your account to write content for this page.</p>";
                 }
                 else
                 {
                     //try to load template page from parent
-                    scaffold.HTML = "<p>Write content using HTML & CSS</p>";
+                    view.HTML = "<p>Write content using HTML & CSS</p>";
                 }
             }
 
@@ -65,29 +63,34 @@ namespace Saber.Common.Platform
             //load user content from json file, depending on selected language
             var lang = request.User.language;
             var contentfile = ContentFields.ContentFile(path, lang);
-            var data = (Dictionary<string, string>)Serializer.ReadObject(Server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
-            if (data != null)
+            var contents = Server.LoadFileFromCache(contentfile);
+            if(contents != "")
             {
-                foreach (var item in data)
+                var data = JsonSerializer.Deserialize<Dictionary<string, string>>(Server.LoadFileFromCache(contentfile));
+                if (data != null)
                 {
-                    if (item.Value.IndexOf("\n") >= 0)
+                    foreach (var item in data)
                     {
-                        scaffold[item.Key] = CommonMarkConverter.Convert(item.Value);
-                    }
-                    else
-                    {
-                        scaffold[item.Key] = item.Value;
+                        if (item.Value.IndexOf("\n") >= 0)
+                        {
+                            view[item.Key] = CommonMarkConverter.Convert(item.Value);
+                        }
+                        else
+                        {
+                            view[item.Key] = item.Value;
+                        }
                     }
                 }
             }
+            
 
             //load platform-specific data into scaffold template
-            var results = GetPlatformData(scaffold, request);
+            var results = GetPlatformData(view, request);
             if (results.Count > 0)
             {
                 foreach (var item in results)
                 {
-                    scaffold[item.Key] = item.Value;
+                    view[item.Key] = item.Value;
                 }
             }
 
@@ -112,37 +115,37 @@ namespace Saber.Common.Platform
                         footer[item.Key] = item.Value;
                     }
                 }
-                content["content"] = scaffold.Render();
+                content["content"] = view.Render();
                 return header.Render() + content.Render() + footer.Render();
             }
             else
             {
                 //don't render header or footer
-                return scaffold.Render();
+                return view.Render();
             }
         }
 
-        private static List<KeyValuePair<string, string>> GetPlatformData(Scaffold scaffold, Datasilk.Web.Request request)
+        private static List<KeyValuePair<string, string>> GetPlatformData(View view, Request request)
         {
             var results = new List<KeyValuePair<string, string>>();
             var prefix = "";
-            for(var x = -1; x < scaffold.Partials.Count; x++)
+            for(var x = -1; x < view.Partials.Count; x++)
             {
                 if(x >= 0)
                 {
                     //find variables within html template partials (child templates)
-                    prefix = scaffold.Partials[x].Prefix;
+                    prefix = view.Partials[x].Prefix;
                 }
 
                 //get platform data from the Scaffold Data Binder
-                var vars = ScaffoldDataBinder.HtmlVars;
+                var vars = ViewDataBinder.HtmlVars;
                 foreach (var item in vars)
                 {
-                    if (scaffold.Fields.ContainsKey(prefix + item.Key))
+                    if (view.Fields.ContainsKey(prefix + item.Key))
                     {
                         var index = results.FindAll(f => f.Key == item.Key).Count();
-                        var elemIndex = scaffold.Fields[prefix + item.Key][index];
-                        var args = scaffold.Elements[elemIndex].Vars ?? new Dictionary<string, string>();
+                        var elemIndex = view.Fields[prefix + item.Key][index];
+                        var args = view.Elements[elemIndex].Vars ?? new Dictionary<string, string>();
                         //prepare html template variable arguments for the Data Binder
                         var argList = args.Select(a => a.Key + ":\"" + a.Value + "\"").ToArray();
                         var argsStr = "";

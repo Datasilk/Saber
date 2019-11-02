@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Net;
-using Microsoft.AspNetCore.Http;
-using Utility.Serialization;
-using Utility.Strings;
 using Saber.Common.Platform;
+using Saber.Common.Extensions.Strings;
+using Datasilk.Core.Web;
 
 namespace Saber.Services
 {
@@ -15,10 +15,6 @@ namespace Saber.Services
     {
 
         private string thumbdir = "_thumbs/";
-
-        public Editor(HttpContext context, Parameters parameters) : base(context, parameters)
-        {
-        }
 
         #region "File System"
 
@@ -37,7 +33,7 @@ namespace Saber.Services
             if (paths.Length == 0) { return Error(); }
             var rpath = string.Join("/", paths) + "/";
 
-            var item = new Scaffold("/Views/FileBrowser/file.html");
+            var item = new View("/Views/FileBrowser/file.html");
             var items = new List<KeyValuePair<string, string>>();
             var exclude = new string[] { };
 
@@ -162,7 +158,7 @@ namespace Saber.Services
             return html.ToString();
         }
 
-        private string RenderBrowserItem(Scaffold item, string id, string title, string icon, string path)
+        private string RenderBrowserItem(View item, string id, string title, string icon, string path)
         {
             item["id"] = id;
             item["title"] = title;
@@ -226,9 +222,10 @@ namespace Saber.Services
 
         public string GetOpenedTabs()
         {
-            return Serializer.WriteObjectToString(User.GetOpenTabs());
+            return JsonSerializer.Serialize(User.GetOpenTabs());
         }
 
+        [POST]
         public string SaveFile(string path, string content)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
@@ -285,7 +282,6 @@ namespace Saber.Services
             return Success();
         }
 
-
         #endregion
 
         #region "Render Page"
@@ -316,13 +312,13 @@ namespace Saber.Services
             var paths = PageInfo.GetRelativePath(path);
             var content = ContentFields.GetPageContent(path, User.language);
             var html = new StringBuilder();
-            var scaffold = new Scaffold(string.Join("/", paths) + ".html");
-            var fieldText = new Scaffold("/Views/ContentFields/text.html");
+            var scaffold = new View(string.Join("/", paths) + ".html");
+            var fieldText = new View("/Views/ContentFields/text.html");
             var fields = new Dictionary<string, string>();
             var contentfile = ContentFields.ContentFile(path, language);
             if (File.Exists(Server.MapPath(contentfile)))
             {
-                fields = (Dictionary<string, string>)Serializer.ReadObject(Server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
+                fields = JsonSerializer.Deserialize<Dictionary<string, string>>(Server.LoadFileFromCache(contentfile));
             }
             foreach (var elem in scaffold.Elements)
             {
@@ -344,7 +340,7 @@ namespace Saber.Services
             }
             if(html.Length == 0)
             {
-                var nofields = new Scaffold("/Views/ContentFields/nofields.html");
+                var nofields = new View("/Views/ContentFields/nofields.html");
                 nofields["filename"] = paths[paths.Length - 1];
                 return nofields.Render();
             }
@@ -358,7 +354,7 @@ namespace Saber.Services
             var data = new Dictionary<string, string>();
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
-            var scaffold = new Scaffold(string.Join("/", paths));
+            var scaffold = new View(string.Join("/", paths));
             foreach (var elem in scaffold.Elements)
             {
                 if (elem.Name != "")
@@ -377,7 +373,8 @@ namespace Saber.Services
             try
             {
                 //save fields as json
-                Serializer.WriteObjectToFile(data, Server.MapPath(ContentFields.ContentFile(path, language)));
+                var json = JsonSerializer.Serialize(data);
+                File.WriteAllText(Server.MapPath(ContentFields.ContentFile(path, language)), json);
             }
             catch (Exception)
             {
@@ -413,8 +410,8 @@ namespace Saber.Services
         {
             if (!CheckSecurity()) { return AccessDenied(); }
             var config = PageInfo.GetPageConfig(path);
-            var scaffold = new Scaffold("/Views/PageSettings/settings.html");
-            var fieldScaffold = new Scaffold("/Views/PageSettings/partial-field.html");
+            var scaffold = new View("/Views/PageSettings/settings.html");
+            var fieldScaffold = new View("/Views/PageSettings/partial-field.html");
             var prefixes = new StringBuilder();
             var suffixes = new StringBuilder();
 
@@ -435,7 +432,7 @@ namespace Saber.Services
             }
 
             //get all platform-specific html variables
-            var htmlVars = ScaffoldDataBinder.GetHtmlVariables();
+            var htmlVars = ViewDataBinder.GetHtmlVariables();
 
             //generate list of page headers & footers
             var headers = new List<Models.Page.Template>();
@@ -461,7 +458,7 @@ namespace Saber.Services
                 }
                 if(filetype > 0)
                 {
-                    var fileScaffold = new Scaffold("/Content/partials/" + filepath);
+                    var fileScaffold = new View("/Content/partials/" + filepath);
                     var details = new Models.Page.Template()
                     {
                         file = filepath,
@@ -559,9 +556,9 @@ namespace Saber.Services
             scaffold["footer-fields"] = footerFields.ToString();
 
             //build JSON Response object
-            return Serializer.WriteObjectToString(
-                new Datasilk.Web.Response(scaffold.Render(), scripts.ToString(), css.ToString(), 
-                Serializer.WriteObjectToString(new {headers, footers, field_template = fieldScaffold.HTML}),
+            return JsonSerializer.Serialize(
+                new Datasilk.Core.Web.Response(scaffold.Render(), Scripts.ToString(), Css.ToString(), 
+                JsonSerializer.Serialize(new {headers, footers, field_template = fieldScaffold.HTML}),
                 ".sections > .page-settings .settings-contents")
             );
         }
@@ -666,8 +663,8 @@ namespace Saber.Services
         public string RenderPageResources(string path, int sort = 0)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
-            var scaffold = new Scaffold("/Views/PageResources/resources.html");
-            var item = new Scaffold("/Views/PageResources/resource-item.html");
+            var scaffold = new View("/Views/PageResources/resources.html");
+            var item = new View("/Views/PageResources/resource-item.html");
             var paths = PageInfo.GetRelativePath(path);
             paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
             var dir = string.Join("/", paths).ToLower() + "/";

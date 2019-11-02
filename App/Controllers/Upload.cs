@@ -1,27 +1,22 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using Microsoft.AspNetCore.Http;
-using Utility.Strings;
 using Saber.Common.Platform;
+using Saber.Common.Extensions.Strings;
 
-namespace Saber.Pages
+namespace Saber.Controllers
 {
     public class Upload : Controller
     {
         private string thumbdir = "_thumbs/";
 
-        public Upload(HttpContext context, Parameters parameters) : base(context, parameters)
+        public override string Render(string body = "")
         {
-        }
-
-        public override string Render(string[] path, string body = "", object metadata = null)
-        {
-            if (!CheckSecurity()) { return AccessDenied(new Login(context, parameters)); }
-            if (context.Request.Form.Files.Count > 0 && context.Request.Form.ContainsKey("path"))
+            if (!CheckSecurity()) { return AccessDenied<Login>(); }
+            if (Context.Request.Form.Files.Count > 0 && Context.Request.Form.ContainsKey("path"))
             {
                 //save resources for page
-                var paths = PageInfo.GetRelativePath(context.Request.Form["path"].ToString());
+                var paths = PageInfo.GetRelativePath(Context.Request.Form["path"].ToString());
                 var dir = string.Join("/", paths) + "/";
                 var pubdir = dir; //published directory
                 if (paths[0].ToLower() == "/content/pages")
@@ -33,7 +28,7 @@ namespace Saber.Pages
                 {
                     Directory.CreateDirectory(Server.MapPath(pubdir));
                 }
-                foreach(var file in context.Request.Form.Files)
+                foreach(var file in Context.Request.Form.Files)
                 {
                     var filename = file.FileName;
                     var ext = filename.GetFileExtension().ToLower();

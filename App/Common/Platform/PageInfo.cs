@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Utility.Serialization;
-using Utility.Strings;
+using System.Text.Json;
+using Saber.Common.Extensions.Strings;
 
 namespace Saber.Common.Platform
 {
@@ -63,13 +63,15 @@ namespace Saber.Common.Platform
         public static Models.Page.Settings GetPageConfig(string path)
         {
             var filename = ConfigFilePath(path);
-            var config = (Models.Page.Settings)Serializer.ReadObject(Server.LoadFileFromCache(filename), typeof(Models.Page.Settings));
+            var contents = Server.LoadFileFromCache(filename);
+            if(contents == "") { return new Models.Page.Settings(); }
+            var config = JsonSerializer.Deserialize<Models.Page.Settings>(contents);
             if (config != null) { return config; }
 
             //try to get the template config
             var paths = GetRelativePath(path);
             var file = paths[paths.Length - 1];
-            config = (Models.Page.Settings)Serializer.ReadObject(Server.LoadFileFromCache(string.Join('/', paths.Take(paths.Length - 1).ToArray()) + "/template.json"), typeof(Models.Page.Settings));
+            config = JsonSerializer.Deserialize<Models.Page.Settings>(Server.LoadFileFromCache(string.Join('/', paths.Take(paths.Length - 1).ToArray()) + "/template.json"));
             if (config != null) { return config; }
 
             //all else fails, generate a new page settings object
@@ -97,7 +99,7 @@ namespace Saber.Common.Platform
         public static void SavePageConfig(string path, Models.Page.Settings config)
         {
             var filename = ConfigFilePath(path);
-            Server.SaveFileFromCache(filename, Serializer.WriteObjectToString(config, Newtonsoft.Json.Formatting.Indented));
+            Server.SaveFileFromCache(filename, JsonSerializer.Serialize(config, new JsonSerializerOptions() { WriteIndented = true }));
         }
     }
 }

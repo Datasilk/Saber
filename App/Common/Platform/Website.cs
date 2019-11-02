@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Utility.Strings;
+using Saber.Common.Extensions.Strings;
 using dotless.Core;
+
 
 namespace Saber.Common.Platform
 {
@@ -145,7 +146,7 @@ namespace Saber.Common.Platform
             {
                 case "html":
                     //remove cached scaffold object
-                    ScaffoldCache.cache.Remove(path);
+                    ViewCache.cache.Remove(path);
                     break;
             }
 

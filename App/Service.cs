@@ -1,18 +1,19 @@
-using Microsoft.AspNetCore.Http;
-using Utility.Serialization;
-using Utility.Strings;
+using Datasilk.Core.Web;
 
 namespace Saber
 {
-    public class Service : Datasilk.Web.Service
+    public class Service : Request, IService
     {
-        public Service(HttpContext context, Parameters parameters) : base(context, parameters)
-        {
-        }
-
         public EditorType EditorUsed
         {
             get { return EditorType.Monaco; }
         }
+
+        public string Success()
+        {
+            return "success";
+        }
+
+        public string Empty() { return "{}"; }
     }
 }

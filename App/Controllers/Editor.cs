@@ -1,44 +1,27 @@
 ﻿using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
+using Datasilk.Core.Web;
 using Saber.Common.Platform;
 
-namespace Saber.Pages
+namespace Saber.Controllers
 {
     public class Editor : Controller
     {
-        public Editor(HttpContext context, Parameters parameters) : base(context, parameters)
-        {
-        }
-
-        public override string Render(string[] path, string body = "", object metadata = null)
+        public override string Render(string body = "")
         {
             theme = "dark";
-            Scaffold scaffold;
+            View view;
 
             //get relative paths
-            var rpath = "/Content/pages/";
-            var rfile = "";
-            var pathname = string.Join("/", path);
-            if (path.Length > 1)
+            var pathname = string.Join("/", PathParts);
+            if (pathname == "")
             {
-                rpath += string.Join("/", path.Take(path.Length - 1)) + "/";
-                rfile = path[path.Length - 1].ToLower();
-            }
-            else
-            {
-                rfile = path[0].ToLower();
-            }
-            if (pathname == "") {
                 pathname = "home";
-                rfile = pathname;
             }
-            var file = pathname + ".html";
-            var html = "";
 
             //load page configuration
             var uselayout = true;
-            if (parameters.ContainsKey("nolayout"))
+            if (Parameters.ContainsKey("nolayout"))
             {
                 uselayout = false;
             }
@@ -46,6 +29,23 @@ namespace Saber.Pages
 
             if (uselayout)
             {
+                var rpath = "/Content/pages/";
+                string html;
+                string rfile;
+                if (PathParts.Length > 1)
+                {
+                    rpath += string.Join("/", PathParts.Take(PathParts.Length - 1)) + "/";
+                    rfile = PathParts[PathParts.Length - 1].ToLower();
+                }
+                else
+                {
+                    rfile = PathParts[0].ToLower();
+                }
+                if (pathname == "home")
+                {
+                    rfile = pathname;
+                }
+
                 //load page layout
                 title = config.title.prefix + config.title.body + config.title.suffix;
                 description = config.description;
@@ -54,23 +54,20 @@ namespace Saber.Pages
                 if (User.userId > 0)
                 {
                     //use editor.html
-                    scaffold = new Scaffold("/Views/Editor/editor.html");
+                    view = new View("/Views/Editor/editor.html");
 
                     //load editor resources
                     switch (EditorUsed)
                     {
                         case EditorType.Monaco:
                             AddCSS("/js/utility/monaco/min/vs/editor/editor.main.css");
-                            //scripts.Append("var require = { paths: { 'vs': '/js/monaco/min/vs' } };");
                             AddScript("/js/utility/monaco/min/vs/loader.js");
-                            //AddScript("/js/utility/monaco/min/vs/editor/editor.main.nls.js");
-                            //AddScript("/js/utility/monaco/min/vs/editor/editor.main.js");
-                            scaffold["editor-type"] = "monaco";
+                            view["editor-type"] = "monaco";
                             break;
 
                         case EditorType.Ace:
                             AddScript("/js/utility/ace/ace.js");
-                            scaffold["editor-type"] = "ace";
+                            view["editor-type"] = "ace";
                             break;
                     }
 
@@ -78,7 +75,7 @@ namespace Saber.Pages
                     AddCSS("/css/views/editor/editor.css");
                     if (EditorUsed != EditorType.Monaco)
                     {
-                        scripts.Append(
+                        Scripts.Append(
                         "<script language=\"javascript\">" +
                             "S.editor.type = " + (int)EditorUsed + ";" +
                         "</script>");
@@ -88,11 +85,11 @@ namespace Saber.Pages
                 else
                 {
                     //use no-editor.html
-                    scaffold = new Scaffold("/Views/Editor/no-editor.html");
+                    view = new View("/Views/Editor/no-editor.html");
                 }
 
                 //add page-specific references
-                scripts.Append(
+                Scripts.Append(
                     "<script language=\"javascript\">" +
                         "window.language = '" + User.language + "';" +
                     "</script>\n"
@@ -108,7 +105,7 @@ namespace Saber.Pages
                 else if (File.Exists(Server.MapPath(rpath + "/template.html")))
                 {
                     //page does not exist, try to load template page from parent
-                    var templatePath = string.Join('/', path.Take(path.Length - 1).ToArray());
+                    var templatePath = string.Join('/', PathParts.Take(PathParts.Length - 1).ToArray());
                     html = Common.Platform.Render.Page("content/" + templatePath + "/template.html", this, config);
                     AddCSS(rpath.ToLower() + "template.css", "page_css");
                     AddScript(rpath.ToLower() + "template.js", "page_js");
@@ -122,9 +119,9 @@ namespace Saber.Pages
                 }
 
                 //render page content
-                scaffold["content"] = html;
+                view["content"] = html;
 
-                return base.Render(path, scaffold.Render(), metadata);
+                return base.Render(view.Render());
             }
             else
             {

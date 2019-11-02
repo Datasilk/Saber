@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Utility.Serialization;
+using System.Text.Json;
 
 namespace Saber.Common.Platform
 {
@@ -17,7 +17,7 @@ namespace Saber.Common.Platform
         public static Dictionary<string, string> GetPageContent(string path, string language)
         {
             var contentfile = Server.MapPath(ContentFile(path, language));
-            var content = (Dictionary<string, string>)Serializer.ReadObject(Server.LoadFileFromCache(contentfile), typeof(Dictionary<string, string>));
+            var content = JsonSerializer.Deserialize<Dictionary<string, string>>(Server.LoadFileFromCache(contentfile));
             if (content != null) { return content; }
             return new Dictionary<string, string>();
         }

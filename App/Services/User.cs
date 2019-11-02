@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Text.Json;
 
 namespace Saber.Services
 {
     public class User : Service
     {
         public string homePath = "home"; //user home path used to redirect after user log in success
-
-        public User(HttpContext context, Parameters parameters) : base(context, parameters)
-        {
-        }
 
         public string Authenticate(string email, string password)
         {
@@ -22,7 +18,7 @@ namespace Saber.Services
                 {
                     User.LogIn(user.userId, user.email, user.name, user.datecreated, "", 1, user.photo);
                     User.Save(true);
-                    return  homePath;
+                    return JsonSerializer.Serialize(new { redirect = homePath });
                 }
             }
             return Error();
@@ -49,7 +45,7 @@ namespace Saber.Services
                 }
                 return Success();
             }
-            context.Response.StatusCode = 500;
+            Context.Response.StatusCode = 500;
             return "";
         }
 
@@ -67,7 +63,7 @@ namespace Saber.Services
                 Server.resetPass = false;
                 return "success";
             }
-            context.Response.StatusCode = 500;
+            Context.Response.StatusCode = 500;
             return "";
         }
 

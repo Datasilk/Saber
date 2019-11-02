@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Datasilk.Core.Web;
 
 namespace Saber
 {
@@ -8,47 +8,92 @@ namespace Saber
         Ace = 1
     }
 
-    public class Controller : Datasilk.Mvc.Controller
+    public class Controller : Request, IController
     {
-        public bool usePlatform = false;
-        public string theme = "default";
 
-        public Controller(HttpContext context, Parameters parameters) : base(context, parameters)
-        {
-            title = "Saber";
-            description = "You can do everything you ever wanted";
-        }
+        public bool usePlatform = false;
+        public string title = "Datasilk";
+        public string description = "";
+        public string favicon = "/images/favicon.png";
+        public string theme = "default";
 
         public EditorType EditorUsed
         {
             get { return EditorType.Monaco; }
         }
 
-        public override string Render(string[] path, string body = "", object metadata = null)
+        public virtual string Render(string body = "")
         {
             if (usePlatform == true)
             {
-                scripts.Append("<script language=\"javascript\">S.svg.load('/themes/default/icons.svg');</script>");
+                Scripts.Append("<script language=\"javascript\">S.svg.load('/themes/default/icons.svg');</script>");
             }
-            var scaffold = new Scaffold("/Views/Shared/layout.html");
-            scaffold["title"] = title;
-            scaffold["description"] = description;
-            scaffold["language"] = User.language;
-            scaffold["theme"] = theme;
-            scaffold["head-css"] = css.ToString();
-            scaffold["favicon"] = favicon;
-            scaffold["body"] = body;
+            var view = new View("/Views/Shared/layout.html");
+            view["title"] = title;
+            view["description"] = description;
+            view["language"] = User.language;
+            view["theme"] = theme;
+            view["head-css"] = Css.ToString();
+            view["favicon"] = favicon;
+            view["body"] = body;
             if (usePlatform)
             {
-                scaffold.Show("platform-1");
-                scaffold.Show("platform-2");
-                scaffold.Show("platform-3");
+                view.Show("platform-1");
+                view.Show("platform-2");
+                view.Show("platform-3");
             }
 
             //add initialization script
-            scaffold["scripts"] = scripts.ToString();
+            view["scripts"] = Scripts.ToString();
 
-            return scaffold.Render();
+            return view.Render();
+        }
+
+        public override void Unload()
+        {
+            User.Save();
+        }
+
+        public override bool CheckSecurity()
+        {
+            if (!base.CheckSecurity()) { 
+                return false; 
+            }
+            if (User.userId > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public string AccessDenied<T>() where T : IController
+        {
+            return IController.AccessDenied<T>();
+        }
+
+        public string Redirect(string url)
+        {
+            return "<script language=\"javascript\">window.location.href = '" + url + "';</script>";
+        }
+
+        public override void AddScript(string url, string id = "", string callback = "")
+        {
+            if (ContainsResource(url)) { return; }
+            Scripts.Append("<script language=\"javascript\"" + (id != "" ? " id=\"" + id + "\"" : "") + " src=\"" + url + "\"" +
+                (callback != "" ? " onload=\"" + callback + "\"" : "") + "></script>");
+        }
+
+        public override void AddCSS(string url, string id = "")
+        {
+            if (ContainsResource(url)) { return; }
+            Css.Append("<link rel=\"stylesheet\" type=\"text/css\"" + (id != "" ? " id=\"" + id + "\"" : "") + " href=\"" + url + "\"></link>");
+        }
+
+        public bool ContainsResource(string url)
+        {
+            if (Resources.Contains(url)) { return true; }
+            Resources.Add(url);
+            return false;
         }
     }
 }
