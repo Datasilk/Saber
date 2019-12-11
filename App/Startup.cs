@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Threading;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -17,7 +19,8 @@ namespace Saber
 {
     public class Startup
     {
-        protected static IConfigurationRoot config;
+        private static IConfigurationRoot config;
+        private Dictionary<string, Type> vendors = new Dictionary<string, Type>();
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
@@ -36,16 +39,55 @@ namespace Saber
             //add session
             services.AddSession();
 
-            //add hsts
-            //services.AddHsts(options => { });
-            services.AddHttpsRedirection(options => { });
+            //add health checks
+            services.AddHealthChecks();
+
+            //get list of vendor classes that inherit IVendorStartup interface
+            var assemblies = new List<Assembly> { Assembly.GetCallingAssembly() };
+            if (!assemblies.Contains(Assembly.GetExecutingAssembly()))
+            {
+                assemblies.Add(Assembly.GetExecutingAssembly());
+            }
+            if (!assemblies.Contains(Assembly.GetEntryAssembly()))
+            {
+                assemblies.Add(Assembly.GetEntryAssembly());
+            }
+
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorStartup).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    if (!type.Equals(typeof(Vendor.IVendorStartup)))
+                    {
+                        vendors.Add(type.FullName, type);
+                    }
+                }
+            }
+
+            Console.WriteLine("Found " + vendors.Count + " Vendor" + (vendors.Count != 1 ? "s" : "") + " that inherit IVendorStartup");
+
+            //execute ConfigureServices method for all vendors that use IVendorStartup interface
+            foreach(var kv in vendors)
+            {
+                var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
+                try
+                {
+                    vendor.ConfigureServices(services);
+                    Console.WriteLine("Configured Service " + kv.Key);
+                }
+                catch (Exception) { }
+            }
         }
 
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //set root Server path
             var path = env.ContentRootPath + "\\";
-
+            Server.IsDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+            if (Server.IsDocker) { path = ""; }
             Server.RootPath = path;
 
             //get environment based on application build
@@ -63,7 +105,9 @@ namespace Saber
             }
 
             //load application-wide cache
-            var configFile = "config" + (Server.environment == Server.Environment.production ? ".prod" : "") + ".json";
+            var configFile = "config" +
+                (Server.IsDocker ? ".docker" : "") +
+                (Server.environment == Server.Environment.production ? ".prod" : "") + ".json";
             config = new ConfigurationBuilder()
                 .AddJsonFile(Server.MapPath(configFile))
                 .AddEnvironmentVariables().Build();
@@ -71,10 +115,7 @@ namespace Saber
             Server.config = config;
 
             //configure Server defaults
-            Server.nameSpace = config.GetSection("assembly").Value;
-            Server.defaultController = config.GetSection("defaultController").Value;
-            Server.defaultServiceMethod = config.GetSection("defaultServiceMethod").Value;
-            Server.hostUrl = config.GetSection("hostUrl").Value;
+            Server.hostUri = config.GetSection("hostUri").Value;
             var servicepaths = config.GetSection("servicePaths").Value;
             if (servicepaths != null && servicepaths != "")
             {
@@ -86,19 +127,18 @@ namespace Saber
             }
 
             //configure Server database connection strings
-            Server.sqlActive = config.GetSection("sql:Active").Value;
-            Server.sqlConnectionString = config.GetSection("sql:" + Server.sqlActive).Value;
+            Query.Sql.ConnectionString = config.GetSection("sql:" + config.GetSection("sql:Active").Value).Value;
 
             //configure Server security
             Server.bcrypt_workfactor = int.Parse(config.GetSection("Encryption:bcrypt_work_factor").Value);
             Server.salt = config.GetSection("Encryption:salt").Value;
 
             //configure cookie-based authentication
-            var expires = !string.IsNullOrEmpty(config.GetSection("Session:Expires").Value) ? int.Parse(config.GetSection("Session:Expires").Value) : 60;
+            var expires = !string.IsNullOrWhiteSpace(config.GetSection("Session:Expires").Value) ? int.Parse(config.GetSection("Session:Expires").Value) : 60;
 
             //use session
             var sessionOpts = new SessionOptions();
-            sessionOpts.Cookie.Name = Server.nameSpace;
+            sessionOpts.Cookie.Name = "Gmaster";
             sessionOpts.IdleTimeout = TimeSpan.FromMinutes(expires);
 
             app.UseSession(sessionOpts);
@@ -122,13 +162,20 @@ namespace Saber
                     SourceCodeLineCount = 10
                 });
             }
+            else
+            {
+                //use HTTPS
+                //app.UseHsts();
+                //app.UseHttpsRedirection();
 
-            //use HTTPS
-            app.UseHsts();
-            app.UseHttpsRedirection();
+                //use health checks
+                app.UseHealthChecks("/health");
+            }
 
-            //set up database connection
-            Query.Sql.connectionString = Server.sqlConnectionString;
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            //set up database
+            Server.hasAdmin = Query.Users.HasAdmin();
             var resetPass = Query.Users.HasPasswords();
             Server.hasAdmin = Query.Users.HasAdmin();
 
@@ -183,12 +230,30 @@ namespace Saber
             //initialize platform-specific html variables for scaffolding
             ViewDataBinder.Initialize();
 
+            //execute Configure method for all vendors that use IVendorStartup interface
+            foreach (var kv in vendors)
+            {
+                var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
+                try
+                {
+                    vendor.Configure(app, env, config);
+                    Console.WriteLine("Configured " + kv.Key);
+                }
+                catch (Exception) { }
+            }
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
             //run Datasilk application
             app.UseDatasilkMvc(new MvcOptions()
             {
                 IgnoreRequestBodySize = true,
-                Routes = new Routes(),
-                WriteDebugInfoToConsole = true
+                WriteDebugInfoToConsole = true,
+                ServicePaths = new string[] { "api", "gmail" },
+                Routes = new Routes()
             });
 
             //handle missing static files
@@ -212,6 +277,8 @@ namespace Saber
                 }
                 //await next.Invoke();
             });
+
+            Console.WriteLine("Running Saber Server in " + Server.environment.ToString() + " environment");
         }
 
         private string GetFileExtension(string filename)

@@ -137,7 +137,7 @@ namespace Saber.Common.Platform
                     prefix = view.Partials[x].Prefix;
                 }
 
-                //get platform data from the Scaffold Data Binder
+                //get platform data from the View Data Binder
                 var vars = ViewDataBinder.HtmlVars;
                 foreach (var item in vars)
                 {

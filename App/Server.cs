@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.IO;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +16,7 @@ public static class Server
         production = 2
     }
     public static Environment environment = Environment.development;
-    public static string hostUrl = "https://localhost:5000/";
+    public static string hostUri = "https://localhost:5000/";
 
     //server properties
     public static DateTime serverStart = DateTime.Now;
@@ -27,19 +28,18 @@ public static class Server
 
     //config properties
     public static IConfiguration config;
-    public static string nameSpace = "";
-    public static string defaultController = "Home";
-    public static string defaultServiceMethod = "Index";
     public static string[] servicePaths = new string[] { "api" };
-    public static string sqlActive = "";
-    public static string sqlConnectionString = "";
     public static int bcrypt_workfactor = 10;
     public static string salt = "";
     public static bool hasAdmin = false; //no admin account exists
     public static bool resetPass = false; //force admin to reset password
-    public static Dictionary<string, string> languages;
 
-    private static string _path = "";
+    //other settings
+    public static string ServerId = "";
+    public static Dictionary<string, string> languages;
+    public static bool IsDocker { get; set; }
+
+    private static string[] _path = new string[] { };
 
     //Dictionary used for caching non-serialized objects, files from disk, or raw text
     public static Dictionary<string, object> Cache = new Dictionary<string, object>();
@@ -49,14 +49,15 @@ public static class Server
         set
         {
             //set the root path of the server
-            _path = value;
+            _path = value.Replace("\\", "/").Split('/');
         }
     }
 
-    public static string MapPath(string strPath = "") {
-        var str = strPath.Replace("/", "\\");
-        if (str.Substring(0, 1) == "\\") { str = str.Substring(1); }
-        return _path + str;
+    public static string MapPath(string strPath = "")
+    {
+        var str = strPath.Replace("\\", "/");
+        if (str.Substring(0, 1) == "/") { str = str.Substring(1); }
+        return Path.Combine(_path.Concat(str.Split('/')).ToArray());
     }
 
     #region "Cache"
@@ -66,7 +67,7 @@ public static class Server
     /// <param name="filename">The relevant path to the file</param>
     /// <param name="noDevEnvCache">If true, it will not load a file from cache if the app is running in a development environment. Instead, it will always load the file from a drive.</param>
     /// <param name="noCache">If true, will not save to cache, but will instead load file from disk every time</param>
-        /// <returns></returns>
+    /// <returns></returns>
     public static string LoadFileFromCache(string filename)
     {
         if (environment != Environment.development)
@@ -117,7 +118,7 @@ public static class Server
 
     public static T LoadFromCache<T>(string key, Func<T> value, bool serialize = true)
     {
-        if(Cache[key] == null)
+        if (Cache[key] == null)
         {
             var obj = value();
             SaveToCache(key, serialize ? (object)JsonSerializer.Serialize(obj) : obj);

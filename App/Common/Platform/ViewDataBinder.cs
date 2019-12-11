@@ -14,7 +14,7 @@ namespace Saber.Common.Platform
 
         public static void Initialize()
         {
-            //find all derived types of ScaffoldDataBinder, then execute the Bind() method of each derived type
+            //find all derived types of ViewDataBinder, then execute the Bind() method of each derived type
             //so that all Vendor-specific html variables will be added to the HtmlVars dictionary
             var binders = (from domainAssembly in AppDomain.CurrentDomain.GetAssemblies()
                            from assemblyType in domainAssembly.GetTypes()

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Saber
 {
@@ -17,9 +19,18 @@ namespace Saber
                     options =>
                     {
                         options.Limits.MaxRequestBodySize = null;
+                        //options.ListenAnyIP(80); //for docker
                     }
                 )
                 .UseStartup<Startup>();
+            })
+            .ConfigureServices(services =>
+            {
+                services.AddLogging(cfg =>
+                    cfg.AddConsole(opts =>
+                    {
+                        opts.IncludeScopes = false;
+                    }));
             });
 
 
