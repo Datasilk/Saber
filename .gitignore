@@ -28,6 +28,8 @@
 !/App/Scripts/utility/velocity.min.js
 /App/Vendor/**
 !/App/Vendor/README.md
+/AWS/
+compose.bat
 
 *.bak
 *.jfm

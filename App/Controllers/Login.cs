@@ -13,7 +13,7 @@
             //check for database reset
             var view = new View("/Views/Login/login.html");
 
-            if(Server.environment == Server.Environment.development && Server.hasAdmin == false)
+            if(Server.hasAdmin == false)
             {
                 //load new administrator form
                 view = new View("/Views/Login/new-admin.html");

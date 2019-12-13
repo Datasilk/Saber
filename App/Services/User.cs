@@ -51,7 +51,7 @@ namespace Saber.Services
 
         public string CreateAdminAccount(string name, string email, string password)
         {
-            if (Server.hasAdmin == false && Server.environment == Server.Environment.development)
+            if (Server.hasAdmin == false)
             {
                 Query.Users.CreateUser(new Query.Models.User()
                 {

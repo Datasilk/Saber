@@ -2,43 +2,34 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81;</PackageTargetFallback>
     <StartupObject></StartupObject>
     <UserSecretsId>9a847bc6-13f3-4478-8479-dc34f3467551</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\js\tools\**" />
-    <Content Remove="wwwroot\js\tools\**" />
-    <EmbeddedResource Remove="wwwroot\js\tools\**" />
-    <None Remove="wwwroot\js\tools\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="wwwroot\content\pages\login.js" />
-    <Content Remove="wwwroot\js\website.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Content\temp\css\website.less" />
-    <None Remove="Content\temp\images\favicon.ico" />
-    <None Remove="Content\temp\images\logo-xs.png" />
-    <None Remove="Content\temp\images\logo.png" />
-    <None Remove="Content\temp\images\_thumbs\logo-xs.png" />
-    <None Remove="Content\temp\images\_thumbs\logo.png" />
-    <None Remove="Content\temp\pages\access-denied.html" />
-    <None Remove="Content\temp\pages\home.html" />
-    <None Remove="Content\temp\pages\home.js" />
-    <None Remove="Content\temp\pages\home.less" />
-    <None Remove="Content\temp\pages\login.html" />
-    <None Remove="Content\temp\pages\login.js" />
-    <None Remove="Content\temp\pages\login.less" />
-    <None Remove="Content\temp\partials\footer.html" />
-    <None Remove="Content\temp\partials\footer.less" />
-    <None Remove="Content\temp\partials\header.html" />
-    <None Remove="Content\temp\partials\header.less" />
-    <None Remove="Content\temp\scripts\website.js" />
+    <None Remove="Views\ContentFields\nofields.html" />
+    <None Remove="Views\ContentFields\text.html" />
+    <None Remove="Views\Editor\content.html" />
+    <None Remove="Views\Editor\editor.html" />
+    <None Remove="Views\Editor\editor.js" />
+    <None Remove="Views\Editor\editor.less" />
+    <None Remove="Views\Editor\header.html" />
+    <None Remove="Views\Editor\header.less" />
+    <None Remove="Views\Editor\no-editor.html" />
+    <None Remove="Views\FileBrowser\file.html" />
+    <None Remove="Views\Login\login.html" />
+    <None Remove="Views\Login\login.js" />
+    <None Remove="Views\Login\new-admin.html" />
+    <None Remove="Views\Login\new-admin.js" />
+    <None Remove="Views\Login\new-pass.html" />
+    <None Remove="Views\Login\new-pass.js" />
+    <None Remove="Views\PageResources\no-resources.html" />
+    <None Remove="Views\PageResources\resource-item.html" />
+    <None Remove="Views\PageResources\resources.html" />
+    <None Remove="Views\PageSettings\partial-field.html" />
+    <None Remove="Views\PageSettings\settings.html" />
+    <None Remove="Views\Shared\layout.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -96,6 +87,72 @@
     <Content Include="Content\temp\scripts\website.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\ContentFields\nofields.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ContentFields\text.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Editor\content.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Editor\editor.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Editor\editor.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Editor\editor.less">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Editor\header.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Editor\header.less">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Editor\no-editor.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\FileBrowser\file.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Login\login.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Login\login.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Login\new-admin.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Login\new-admin.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Login\new-pass.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Login\new-pass.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PageResources\no-resources.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PageResources\resource-item.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PageResources\resources.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PageSettings\partial-field.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PageSettings\settings.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\layout.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -114,11 +171,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\content\pages\login.js" />
-    <None Include="wwwroot\js\website.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Query\Query.csproj" />
   </ItemGroup>
 
@@ -129,74 +181,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Views\ContentFields\nofields.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\ContentFields\text.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Editor\content.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Editor\editor.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Editor\editor.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Editor\editor.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Editor\header.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Editor\header.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Editor\no-editor.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\FileBrowser\file.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Login\login.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Login\login.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Login\new-admin.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Login\new-admin.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Login\new-pass.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Login\new-pass.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\PageResources\no-resources.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\PageResources\resource-item.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\PageResources\resources.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\PageSettings\settings.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Shared\layout.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\content\pages\home\" />
-    <Folder Include="wwwroot\css\partials\" />
+    <Folder Include="wwwroot\content" />
+    <Folder Include="wwwroot\css" />
+    <Folder Include="wwwroot\editor" />
+    <Folder Include="wwwroot\fonts" />
+    <Folder Include="wwwroot\images" />
+    <Folder Include="wwwroot\js" />
+    <Folder Include="wwwroot\themes" />
   </ItemGroup>
 
 </Project>
