@@ -21,6 +21,84 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Content\temp\css\website.less" />
+    <None Remove="Content\temp\images\favicon.ico" />
+    <None Remove="Content\temp\images\logo-xs.png" />
+    <None Remove="Content\temp\images\logo.png" />
+    <None Remove="Content\temp\images\_thumbs\logo-xs.png" />
+    <None Remove="Content\temp\images\_thumbs\logo.png" />
+    <None Remove="Content\temp\pages\access-denied.html" />
+    <None Remove="Content\temp\pages\home.html" />
+    <None Remove="Content\temp\pages\home.js" />
+    <None Remove="Content\temp\pages\home.less" />
+    <None Remove="Content\temp\pages\login.html" />
+    <None Remove="Content\temp\pages\login.js" />
+    <None Remove="Content\temp\pages\login.less" />
+    <None Remove="Content\temp\partials\footer.html" />
+    <None Remove="Content\temp\partials\footer.less" />
+    <None Remove="Content\temp\partials\header.html" />
+    <None Remove="Content\temp\partials\header.less" />
+    <None Remove="Content\temp\scripts\website.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Content\temp\css\website.less">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\images\favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\images\logo-xs.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\images\logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\images\_thumbs\logo-xs.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\images\_thumbs\logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\access-denied.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\home.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\home.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\home.less">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\login.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\login.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\login.less">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\partials\footer.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\partials\footer.less">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\partials\header.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\partials\header.less">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\scripts\website.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="CommonMark.NET" Version="0.15.1" />
     <PackageReference Include="dotless.Core" Version="1.6.7" />
