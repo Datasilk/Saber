@@ -88,6 +88,7 @@ S.editor = {
         $('.editor-drop-menu .item-save-as').on('click', S.editor.saveAs);
         $('.editor-drop-menu .item-content-fields').on('click', function () { S.editor.filebar.fields.show(true); });
         $('.editor-drop-menu .item-page-settings').on('click', S.editor.filebar.settings.show);
+        $('.editor-drop-menu .item-app-settings').on('click', S.editor.appsettings.show);
         $('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);
         $('.editor-drop-menu .item-new-folder').on('click', S.editor.folder.create.show);
         $('.editor-drop-menu .item-new-window').on('click', S.editor.newWindow);
@@ -115,7 +116,7 @@ S.editor = {
             tabs = tabs.concat(this.savedTabs);
         }
         //get saved tabs from server
-        S.ajax.post('Editor/GetOpenedTabs', {},
+        S.ajax.post('Files/GetOpenedTabs', {},
             function (d) {
                 tabs = tabs.concat(JSON.parse(d));
                 openTabs();
@@ -189,7 +190,7 @@ S.editor = {
         if (pos.top == 0) {
             pos = fields.offset();
         }
-        $('.code-editor, .content-fields, .page-settings, .page-resources').css({ height: win.h - pos.top });
+        $('.editor > div > .sections > .tab:nth-child(n+2)').css({ height: win.h - pos.top });
         $('.file-browser').css({ height: win.h - pos2.top });
     },
 
@@ -313,7 +314,7 @@ S.editor = {
                         fields[txt.id.replace('field_', '')] = t.val();
                     });
 
-                    S.ajax.post('Editor/SaveContentFields', { path: path, fields: fields, language: $('#lang').val() },
+                    S.ajax.post('ContentFields/Save', { path: path, fields: fields, language: $('#lang').val() },
                         function (d) {
                             if (d == 'success') {
                                 S.editor.fields.changed = false;
@@ -340,7 +341,7 @@ S.editor = {
                             suffixId: $('#page_title_suffix').val(),
                             title: $('#page_title').val()
                         };
-                        S.ajax.post('Editor/UpdatePageTitle', data,
+                        S.ajax.post('PageSettings/UpdatePageTitle', data,
                             function (d) {
                                 //show message to user
                                 showmsg();
@@ -356,7 +357,7 @@ S.editor = {
                             path: S.editor.path,
                             description: $('#page_description').val()
                         };
-                        S.ajax.post('Editor/UpdatePageDescription', data,
+                        S.ajax.post('PageSettings/UpdatePageDescription', data,
                             function (d) {
                                 //show message to user
                                 showmsg();
@@ -383,7 +384,7 @@ S.editor = {
                             header: { file: $('#page_header').val(), fields: header_fields },
                             footer: { file: $('#page_footer').val(), fields: footer_fields }
                         };
-                        S.ajax.post('Editor/UpdatePagePartials', data,
+                        S.ajax.post('PageSettings/UpdatePagePartials', data,
                             function (d) {
                                 //show message to user
                                 showmsg();
@@ -408,7 +409,7 @@ S.editor = {
 
         //show loading progress animation
         tab.find('.tab-title').prepend(S.loader());
-        S.ajax.post('Editor/SaveFile', { path: path, content: content },
+        S.ajax.post('Files/SaveFile', { path: path, content: content },
             function (d) {
                 //check whether or not file was a required page resource for this page
                 if (S.editor.isResource(path) || S.editor.isResource(path, 'partial')) {
@@ -471,7 +472,7 @@ S.editor = {
                     S.message.show('.popup .message', 'error', 'You cannot create files in the root folder');
                     return false;
                 }
-                S.ajax.post('Editor/NewFile', data,
+                S.ajax.post('Files/NewFile', data,
                     function(d) {
                         //reload file browser
                         if (data.path == S.editor.explorer.path) {
@@ -511,7 +512,7 @@ S.editor = {
                     S.message.show('.popup .message', 'error', 'You cannot create folders within the root folder');
                     return false;
                 }
-                S.ajax.post('Editor/NewFolder', data,
+                S.ajax.post('Files/NewFolder', data,
                     function(d) {
                         //reload file browser
                         if (data.path == S.editor.explorer.path) {
@@ -671,7 +672,7 @@ S.editor = {
             }
 
             //update user session
-            S.ajax.post('Editor/Close', { path: path });
+            S.ajax.post('Files/Close', { path: path });
         }
     },
     
@@ -697,7 +698,7 @@ S.editor = {
         },
 
         dir: function (path) {
-            S.ajax.post('Editor/Dir', { path: path },
+            S.ajax.post('Files/Dir', { path: path },
                 function(d) {
                     S.editor.explorer.path = path;
                     $('.file-browser ul.menu').html(d);
@@ -846,7 +847,7 @@ S.editor = {
 
             if (session == null && nocode == true) {
                 //load new session from ajax POST, loading code from server
-                S.ajax.post("Editor/Open", { path: path, pageResource: isPageResource === true },
+                S.ajax.post("Files/Open", { path: path, pageResource: isPageResource === true },
                     function (d) {
                         S.editor.sessions.add(id, mode, S.editor.decodeHtml(d), isready !== false);
                         if (typeof callback == 'function') { callback();}
@@ -911,7 +912,7 @@ S.editor = {
 
                 if ($('#lang').children().length == 0) {
                     //load list of languages
-                    S.ajax.post('Editor/Languages', {},
+                    S.ajax.post('Languages/Get', {},
                         function (d) {
                             var html = '';
                             var langs = d.split('|');
@@ -938,7 +939,7 @@ S.editor = {
                     S.editor.files.content.changed = false;
                     S.editor.fields.changed = false;
                     $('.content-fields form').html('');
-                    S.ajax.post('Editor/RenderContentFields', { path: S.editor.path, language:lang },
+                    S.ajax.post('ContentFields/Render', { path: S.editor.path, language:lang },
                         function (d) {
                             S.editor.fields.selected = S.editor.selected;
                             $('.content-fields form').html(d);
@@ -1041,7 +1042,7 @@ S.editor = {
                 //next, reload rendered HTML
                 if (S.editor.files.html.changed == true || S.editor.files.content.changed == true) {
                     S.editor.files.html.changed = false;
-                    S.ajax.post('Editor/RenderPage', { path: S.editor.path + '.html', language: window.language },
+                    S.ajax.post('Page/Render', { path: S.editor.path + '.html', language: window.language },
                         function (d) {
                             $('.editor-preview').html(d);
                             changeJs(true);
@@ -1168,7 +1169,7 @@ S.editor = {
             var self = S.editor.settings;
             if (self._loaded == true) { return; }
             var path = S.editor.path;
-            S.ajax.post('Editor/RenderPageSettings', { path: path },
+            S.ajax.post('PageSettings/Render', { path: path },
                 function (d) {
                     var data = JSON.parse(d);
                     var json = JSON.parse(data.json);
@@ -1235,7 +1236,7 @@ S.editor = {
                     e.preventDefault();
                     e.cancelBubble;
                     var data = { title: $('#page_title_new_prefix').val(), prefix:true };
-                    S.ajax.post('Editor/CreatePageTitlePart', data,
+                    S.ajax.post('PageSettings/CreatePageTitlePart', data,
                         function (d) {
                             var info = d.split('|');
                             $('#page_title_prefix').append('<option value="' + info[0] + '">' + info[1] + '</option>').val(info[0]);
@@ -1258,7 +1259,7 @@ S.editor = {
                     e.preventDefault();
                     e.cancelBubble;
                     var data = { title: $('#page_title_new_suffix').val(), prefix: false };
-                    S.ajax.post('Editor/CreatePageTitlePart', data,
+                    S.ajax.post('PageSettings/CreatePageTitlePart', data,
                         function (d) {
                             var info = d.split('|');
                             $('#page_title_suffix').append('<option value="' + info[0] + '">' + info[1] + '</option>').val(info[0]);
@@ -1340,6 +1341,25 @@ S.editor = {
         }
     },
 
+    appsettings: {
+        show: function() {
+            S.editor.dropmenu.hide();
+            $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
+            $('.editor .sections > .app-settings').removeClass('hide');
+
+            //disable save menu
+            $('.item-save').addClass('faded').attr('disabled', 'disabled');
+            $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
+
+            S.ajax.post('AppSettings/Render', {},
+                function (d) {
+                    var data = JSON.parse(d);
+                    S.ajax.inject(data);
+                }
+            );
+        }
+    },
+
     resources: {
         _loaded: false,
         uploader: null,
@@ -1350,7 +1370,7 @@ S.editor = {
             if (self._loaded == true && self.path == path) { return; }
             S.editor.resources.path = path;
             $('.sections > .page-resources').html('');
-            S.ajax.post('Editor/RenderPageResources', { path: path },
+            S.ajax.post('PageResources/Render', { path: path },
                 function (d) {
                     $('.sections > .page-resources').html(d);
                     self._loaded = true;
@@ -1379,7 +1399,7 @@ S.editor = {
 
         delete: function (file, elem) {
             if (!confirm('Do you really want to delete the file "' + file + '"? This cannot be undone.')) { return;}
-            S.ajax.post('Editor/DeletePageResource', { path: S.editor.resources.path, file: file },
+            S.ajax.post('PageResources/Delete', { path: S.editor.resources.path, file: file },
                 function (d) {
                     $(elem).parents('li').first().remove();
                 },

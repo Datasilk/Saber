@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Saber.Common.Platform
 {
     /// <summary>
-    /// Used to bind scaffold html variables to platform data
+    /// Used to bind view html variables to platform data
     /// </summary>
     public class ViewDataBinder
     {

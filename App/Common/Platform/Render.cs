@@ -84,7 +84,7 @@ namespace Saber.Common.Platform
             }
             
 
-            //load platform-specific data into scaffold template
+            //load platform-specific data into view template
             var results = GetPlatformData(view, request);
             if (results.Count > 0)
             {

@@ -145,7 +145,7 @@ namespace Saber.Common.Platform
             switch (ext)
             {
                 case "html":
-                    //remove cached scaffold object
+                    //remove cached view object
                     ViewCache.cache.Remove(path);
                     break;
             }
