@@ -1,54 +1,64 @@
 ﻿<div class="pad">
     <div class="row import-export">
         <div class="col six tablet-sm-twelve pad-bottom-lg">
-            <h5>Import Website Content</h5>
-            <p class="hide">
-                Add content to your website, including HTML, CSS, LESS, & Javascript. Make sure
-                the zip file you upload contains files within the following folder structure. Include
-                at least one of the folders below within your zip file.
-            </p>
-            <ul class="hide">
-                <li>
-                    <b>wwwroot/**</b>
-                    <div>
-                        Any files or sub folders located within wwwroot will be copied over.
-                    </div>
-                </li>
-                <li>
-                    <b>content/pages</b>
-                    <div>
-                        Each web page should contain the following files: <strong>{page}.html</strong>, <strong>{page}.less</strong>, 
-                        <strong>{page}.js</strong>, <strong>{page}.json</strong>, and <strong>{page}_{lang}.json</strong>.
-                        <span class="note">
-                            Replace {page} with the name of your page, such as blog.html. 
-                            Also, replace {lang} with your preferred language, such as "en" (English).
-                        </span>
-                    </div>
-                </li>
-                <li>
-                    <b>content/partials</b>
-                    <div>
-                        Each partial should contain a <strong>html</strong> & <strong>less</strong> file.
-                    </div>
-                </li>
-                <li>
-                    <b>css/website.less</b>
-                    <div>
-                        You are able to overwrite the site-wide LESS file if it is required.
-                    </div>
-                </li>
-            </ul>
+            <div class="tooltip-container">
+                <h5>Import Website Content</h5>
+                <div class="tooltip below">
+                    <p>
+                        Add content to your website, including HTML, CSS, LESS, & Javascript. Make sure
+                        the zip file you upload contains files within the following folder structure. Include
+                        at least one of the folders below within your zip file.
+                    </p>
+                    <ul>
+                        <li>
+                            <b>wwwroot/**</b>
+                            <div>
+                                Any files or sub folders located within wwwroot will be copied over.
+                            </div>
+                        </li>
+                        <li>
+                            <b>content/pages</b>
+                            <div>
+                                Each web page should contain the following files: <strong>{page}.html</strong>, <strong>{page}.less</strong>, 
+                                <strong>{page}.js</strong>, <strong>{page}.json</strong>, and <strong>{page}_{lang}.json</strong>.
+                                <span class="note">
+                                    Replace {page} with the name of your page, such as blog.html. 
+                                    Also, replace {lang} with your preferred language, such as "en" (English).
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <b>content/partials</b>
+                            <div>
+                                Each partial should contain a <strong>html</strong> & <strong>less</strong> file.
+                            </div>
+                        </li>
+                        <li>
+                            <b>css/website.less</b>
+                            <div>
+                                You are able to overwrite the site-wide LESS file if it is required.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
             <div class="pad-top">
                 <button>Import Content</button>
             </div>
         </div>
     
         <div class="col six tablet-sm-twelve pad-bottom-lg">
-            <h5>Export Website Content</h5>
-            <p class="hide">
-                Download a zip file containing all of the HTML, CSS, LESS, & Javascript content
-                belonging to this website.
-            </p>
+            <div class="tooltip-container">
+                <h5>Export Website Content</h5>
+                <div class="tooltip below">
+                    <p>
+                        Download all content from your website for backup purposes. This will download
+                        all web page files (HTML, CSS, LESS, JSON) along with site-wide content, such as
+                        <strong>website.less</strong>, <strong>website.css</strong>, <strong>website.js</strong>, 
+                        and all user content from <strong>wwwroot</strong>.
+                    </p>
+                </div>
+            </div>
             <div class="pad-top">
                 <button>Export Content</button>
             </div>

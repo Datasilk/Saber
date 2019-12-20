@@ -155,5 +155,22 @@
     li:hover .close-btn{display:block;}
 }
 
+/* tooltip */
+.tooltip-container{ position:relative;
+    & > *:not(.tooltip){cursor:default;}
+    .tooltip{display:none; position:absolute; z-index:1000; padding:10px; border-radius:6px; width:~"calc(100% - 10px)";
+        ul{padding-left:15px;}
+    }
+    .tooltip.below{top:~"calc(100% + 12px)";
+        &:after{
+            bottom: 100%; left: 30%; border: solid transparent; content: " "; height: 0; width: 0; position: absolute; 
+            pointer-events: none; border-bottom-color: #2a2a2a; border-width: 15px; margin-left: -15px;
+        }
+    }
+    &:hover{
+        .tooltip{display:block; }
+    }
+}
+
 /* Ace Editor */
 .ace_gutter-active-line, .ace_active-line{background-color:transparent !important;background:transparent !important;}
