@@ -8,84 +8,62 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Views\ContentFields\nofields.html" />
-    <None Remove="Views\ContentFields\text.html" />
-    <None Remove="Views\Editor\content.html" />
-    <None Remove="Views\Editor\editor.html" />
-    <None Remove="Views\Editor\editor.js" />
-    <None Remove="Views\Editor\editor.less" />
-    <None Remove="Views\Editor\header.html" />
-    <None Remove="Views\Editor\header.less" />
-    <None Remove="Views\Editor\no-editor.html" />
-    <None Remove="Views\FileBrowser\file.html" />
-    <None Remove="Views\Login\login.html" />
-    <None Remove="Views\Login\login.js" />
-    <None Remove="Views\Login\new-admin.html" />
-    <None Remove="Views\Login\new-admin.js" />
-    <None Remove="Views\Login\new-pass.html" />
-    <None Remove="Views\Login\new-pass.js" />
-    <None Remove="Views\PageResources\no-resources.html" />
-    <None Remove="Views\PageResources\resource-item.html" />
-    <None Remove="Views\PageResources\resources.html" />
-    <None Remove="Views\PageSettings\partial-field.html" />
-    <None Remove="Views\PageSettings\settings.html" />
-    <None Remove="Views\Shared\layout.html" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Content\temp\css\website.less">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\images\favicon.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\images\logo-xs.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\images\logo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\images\_thumbs\logo-xs.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\images\_thumbs\logo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\pages\access-denied.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\pages\home.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\pages\home.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\pages\home.less">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\pages\login.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\pages\login.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\pages\login.less">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\partials\footer.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\partials\footer.less">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\partials\header.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\partials\header.less">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\scripts\website.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\AppSettings\appsettings.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\ContentFields\nofields.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -147,7 +125,7 @@
     <Content Include="Views\PageSettings\partial-field.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PageSettings\settings.html">
+    <Content Include="Views\PageSettings\pagesettings.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Shared\layout.html">

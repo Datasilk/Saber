@@ -22,7 +22,7 @@ namespace Saber.Services
         {
             if (!CheckSecurity()) { return AccessDenied(); }
             var config = PageInfo.GetPageConfig(path);
-            var view = new View("/Views/PageSettings/settings.html");
+            var view = new View("/Views/PageSettings/pagesettings.html");
             var fieldScaffold = new View("/Views/PageSettings/partial-field.html");
             var prefixes = new StringBuilder();
             var suffixes = new StringBuilder();
@@ -174,7 +174,7 @@ namespace Saber.Services
                 new Datasilk.Core.Web.Response()
                 {
                     selector = ".sections > .page-settings .settings-contents",
-                    html = view.Render(),
+                    html = RenderView(view),
                     css = Css.ToString(),
                     javascript = Scripts.ToString(),
                     json = JsonSerializer.Serialize(new { headers, footers, field_template = fieldScaffold.HTML })

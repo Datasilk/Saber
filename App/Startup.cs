@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Threading;
 using System.Reflection;
+using System.Runtime;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -42,7 +43,6 @@ namespace Saber
             //add health checks
             services.AddHealthChecks();
 
-            //get list of vendor classes that inherit IVendorStartup interface
             var assemblies = new List<Assembly> { Assembly.GetCallingAssembly() };
             if (!assemblies.Contains(Assembly.GetExecutingAssembly()))
             {
@@ -53,6 +53,53 @@ namespace Saber
                 assemblies.Add(Assembly.GetEntryAssembly());
             }
 
+            //get list of vendor classes that inherit IVendorViewRenderer interface
+            var vendorCount = 0;
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorController).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    if (!type.Equals(typeof(Vendor.IVendorController)))
+                    {
+                        Server.vendorControllers.Add(type.Name.ToLower(), type);
+                    }
+                }
+            }
+
+            Console.WriteLine("Found " + vendorCount + " Vendor Controller" + (vendorCount != 1 ? "s" : "") + " that inherit IVendorController");
+            vendorCount = 0;
+
+            //get list of vendor classes that inherit IVendorViewRenderer interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorViewRenderer).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    if (!type.Equals(typeof(Vendor.IVendorViewRenderer)))
+                    {
+                        var attributes = type.GetCustomAttributes<Vendor.ViewPathAttribute>();
+                        foreach (var attr in attributes)
+                        {
+                            if (!Server.viewRenderers.ContainsKey(attr.Path))
+                            {
+                                Server.viewRenderers.Add(attr.Path, new List<Vendor.IVendorViewRenderer>());
+                            }
+                            Server.viewRenderers[attr.Path].Add((Vendor.IVendorViewRenderer)Activator.CreateInstance(type));
+                            vendorCount += 1;
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine("Found " + vendorCount + " Vendor View Renderer" + (vendorCount != 1 ? "s" : "") + " that inherit IVendorViewRenderer");
+            vendorCount = 0;
+
+            //get list of vendor classes that inherit IVendorStartup interface
             foreach (var assembly in assemblies)
             {
                 //get a list of interfaces from the assembly

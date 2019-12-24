@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Datasilk.Core.Web;
 
 namespace Saber
@@ -20,8 +21,14 @@ namespace Saber
                     }
                 case "logout": return new Controllers.Logout();
                 case "upload": return new Controllers.Upload();
-                default: return new Controllers.Editor();
             }
+            if (Server.vendorControllers.ContainsKey(name))
+            {
+                //load Vendor controller
+                return (Controller)Activator.CreateInstance(Server.vendorControllers[name]);
+            }
+            //if all else fails, render Saber Editor
+            return new Controllers.Editor();
         }
     }
 }

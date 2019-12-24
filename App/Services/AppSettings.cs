@@ -8,12 +8,12 @@ namespace Saber.Services
         {
             //display all application settings
             if (!CheckSecurity()) { return AccessDenied(); }
-            var view = new View("/Views/AppSettings/settings.html");
+            var view = new View("/Views/AppSettings/appsettings.html");
             return JsonSerializer.Serialize(
                 new Datasilk.Core.Web.Response()
                 {
                     selector = ".sections > .app-settings .settings-contents",
-                    html = view.Render(),
+                    html = RenderView(view),
                     css = Css.ToString(),
                     javascript = Scripts.ToString()
                 }

@@ -39,6 +39,10 @@ public static class Server
     public static Dictionary<string, string> languages;
     public static bool IsDocker { get; set; }
 
+    //vendor properties
+    public static Dictionary<string, List<Saber.Vendor.IVendorViewRenderer>> viewRenderers { get; set; } = new Dictionary<string, List<Saber.Vendor.IVendorViewRenderer>>();
+    public static Dictionary<string, Type> vendorControllers { get; set; } = new Dictionary<string, Type>();
+
     private static string[] _path = new string[] { };
 
     //Dictionary used for caching non-serialized objects, files from disk, or raw text
