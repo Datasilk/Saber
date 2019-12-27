@@ -1,0 +1,28 @@
+{
+  "title": {
+    "prefix": "Gmaster - ",
+    "body": "Gmail Campaign Tool",
+    "suffix": "",
+    "prefixId": 3,
+    "suffixId": 0
+  },
+  "description": "You can build whatever you want with a single HTML file, JS file, and LESS file.",
+  "thumbnail": "",
+  "datecreated": "2019-04-20T11:00:00",
+  "security": {
+    "secure": false,
+    "read": [],
+    "write": []
+  },
+  "header": {
+    "file": "header.html",
+    "fields": {
+      "path": "magic",
+      "path-name": "Magic"
+    }
+  },
+  "footer": {
+    "file": "footer.html",
+    "fields": {}
+  }
+}

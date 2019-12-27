@@ -38,7 +38,8 @@ namespace Saber.Services
                 items = new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>("CSS", "CSS"),
-                    new KeyValuePair<string, string>("Scripts", "Scripts")
+                    new KeyValuePair<string, string>("Scripts", "Scripts"),
+                    new KeyValuePair<string, string>("backups", "backups")
                 };
             }
             else if (paths[0] == "/wwwroot")
@@ -106,6 +107,7 @@ namespace Saber.Services
                                 case "css":
                                 case "less":
                                 case "js":
+                                case "zip":
                                     items.Add(new KeyValuePair<string, string>(file.Name, file.Name)); break;
                             }
                         }

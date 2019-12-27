@@ -1,0 +1,27 @@
+{
+  "title": {
+    "prefix": "Gmaster - ",
+    "body": "Getting Started",
+    "suffix": "",
+    "prefixId": 3,
+    "suffixId": 0
+  },
+  "description": "Learn how to start sending campaigns from within Gmail while using the Gmaster Chrome extension",
+  "thumbnail": "",
+  "datecreated": "2019-04-28T23:45:54.6646807-07:00",
+  "security": {
+    "secure": false,
+    "read": [],
+    "write": []
+  },
+  "header": {
+    "file": "support-header.html",
+    "fields": {
+      "subtitle": "Getting Started"
+    }
+  },
+  "footer": {
+    "file": "support-footer.html",
+    "fields": {}
+  }
+}
