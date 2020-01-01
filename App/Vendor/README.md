@@ -11,13 +11,16 @@ Authorize Web API calls from cross-origin domains.
 * [Github repository](https://github.com/Datasilk/Saber-CORS)
 
 #### Import Export
-A vendor plugin for Saber that allows webmasters to backup & restore web content for their Saber website using a simple zip file. 
+A vendor plugin for Saber that allows webmasters to backup & restore web content for their Saber website using a simple zip file.
 * [Github repository](https://github.com/Datasilk/Saber-ImportExport)
 
 
 #### Page List
 Display a list of webpages associated with your website, such as blog posts or wiki pages. 
 * [Github repository](https://github.com/Datasilk/Saber-PageList)
+
+#### Reset Cache
+A vendor plugin for Saber that allows webmasters to manually reset the stored cache of objects across all networked servers and executes gulp tasks to copy modified resources to **wwwroot**. This could be useful if your website isn't loading correctly.
 
 ## Vendor-Specific Functionality
 
