@@ -2,6 +2,6 @@
 {
     public interface IVendorViewRenderer
     {
-        void Render(Request request, View view);
+        string Render(Request request, View view);
     }
 }

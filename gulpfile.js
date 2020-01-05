@@ -67,6 +67,7 @@ paths.working = {
             paths.scripts + 'utility/velocity.min.js',
             paths.scripts + 'platform/_super.js', // <---- Datasilk Core Js: S object
             paths.scripts + 'platform/ajax.js', //   <---- Optional platform features
+            paths.scripts + 'platform/clipboard.js',
             paths.scripts + 'platform/loader.js',
             paths.scripts + 'platform/message.js',
             //paths.scripts + 'platform/polyfill.js',

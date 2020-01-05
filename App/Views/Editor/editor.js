@@ -110,6 +110,11 @@ S.editor = {
         //register hotkeys
         $(window).on('keydown', S.editor.hotkey.pressed);
 
+        //register explorer routes
+        S.editor.explorer.routes = [
+            {}
+        ];
+
         //finally, load content resources that belong to the page
         var tabs = [dir + fileparts[0] + '.html', dir + fileparts[0] + '.less', dir + fileparts[0] + '.js'];
         if (this.savedTabs.length > 0) {
@@ -280,12 +285,14 @@ S.editor = {
         }
     },
 
-    error: function (msg) {
-        S.message.show('.editor .message', 'error', msg || S.message.error.generic);
+    error: function (elem, msg) {
+        $('.editor > div > .messages').append('<div class="message error"><span>' +
+            (msg || S.message.error.generic) + "</span></div>");
     },
 
-    message: function (msg) {
-        S.message.show('.editor .message', 'confirm', msg);
+    message: function (msg, type) {
+        $('.editor > div > .messages').append('<div class="message' (type != null ? " " + type : '') + '"><span>' +
+            msg + "</span></div>");
     },
 
     save: function (path, content) {
@@ -592,8 +599,10 @@ S.editor = {
         },
 
         remove: function (id) {
-            S.editor.sessions[id].dispose();
-            delete S.editor.sessions[id];
+            if(S.editor.sessions[id] != null){
+                S.editor.sessions[id].dispose();
+                delete S.editor.sessions[id];
+            }
         },
 
         saveViewState(id) {
@@ -659,8 +668,70 @@ S.editor = {
     },
 
     tabs: {
-        close: function (path) {
-            var id = S.editor.fileId(path);
+        create: function (title, path, options, onfocus, onblur, onsave) {
+            //build options
+            var opts = {
+                selected: options ? (options.selected != null ? options.selected : true) : true,
+                canSave: options ? (options.canSave != null ? options.canSave : false) : false,
+                changed: options ? (options.changed != null ? options.changed : false) : false,
+                isPageResource: options ? (options.isPageResource !== null ? options.isPageResource : false) : false,
+            };
+            var id = path.replace('/', '_');
+            var route = {};
+
+            //deselect other tabs
+            if (opts.selected == true) {
+                $('.edit-tabs ul.row li, .edit-tabs ul.row > li > div').removeClass('selected');
+            }
+            var elem = $('.edit-tabs ul.row .tab-' + id);
+            if (elem.length == 0) {
+                //load new tab
+                var temp = $('#template_tab').html().trim();
+                $('.edit-tabs ul.row').append(temp
+                    .replace(/\#\#id\#\#/g, id)
+                    .replace('##path##', path)
+                    .replace('##title##', title)
+                    .replace(/\#\#selected\#\#/g, opts.selected == true ? 'selected' : '')
+                    .replace('##resource-icon##', 'hide')
+                );
+                var elems = $('.edit-tabs ul.row').children();
+                elem = $(elems[elems.length - 1]);
+
+                //close button
+                $('.tab-' + id + ' .btn-close').on('click', function (e) {
+                    S.editor.tabs.close(id, path);
+                    e.preventDefault();
+                    e.cancelBubble = true;
+                });
+
+                route = {
+                    id: id,
+                    path: path,
+                    elem: elem,
+                    options: opts,
+                    onfocus: () => {
+                        if (opts.isPageResource == true) {
+                            $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
+                        } else {
+                            $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
+                        }
+                        elem.addClass('selected');
+                        if (typeof onfocus == 'function') { onfocus(); }
+                    },
+                    onblur: onblur,
+                    onsave: onsave
+                };
+                S.editor.explorer.routes.push(route);
+                if (opts.selected == true) {
+                    route.onfocus();
+                }
+            } else {
+                route = S.editor.explorer.routes.filter(a => a.path == path)[0];
+                route.onfocus();
+            }
+            S.editor.selected = path;
+        },
+        close: function (id, path) {
             var tab = $('.tab-' + id);
             var sibling = tab.prev().find('.row.hover');
             tab.remove();
@@ -678,7 +749,7 @@ S.editor = {
     
     explorer: {
         path: 'root',
-
+        routes:[],
         queue: [],
 
         show: function () {
@@ -734,11 +805,10 @@ S.editor = {
 
         openResources: function (files, callback) {
             //opens a group of resources (html, less, js) from a specified path
-            var self = S.editor.explorer;
             files.forEach((f) => {
-                self.queue.push(f);
+                S.editor.explorer.queue.push(f);
             });
-            self.runQueue(true, callback);
+            S.editor.explorer.runQueue(true, callback);
         },
 
         runQueue: function (first, callback) {
@@ -758,6 +828,7 @@ S.editor = {
 
         open: function (path, code, isready, callback) {
             //opens a resource that exists on the server
+            var paths = path.split('/');
             var id = S.editor.fileId(path);
             var prevId = '';
             if (S.editor.selected != '') {
@@ -775,7 +846,22 @@ S.editor = {
 
             //check for existing tab
             var tab = $('.edit-tabs ul.row .tab-' + id);
-            var paths = path.split('/');
+
+            //find route that matches path (if route exists)
+            var route = S.editor.explorer.routes.filter(a => a.path == paths[0]);
+            if (route.length > 0) {
+                route = route[0];
+                var routes = S.editor.explorer.routes.filter(a => a.path != paths[0]);
+                routes.forEach(a => {
+                    if (typeof a.onblur == 'function') { a.onblur();}
+                });
+                tab.addClass('selected').find('.row.hover').addClass('selected');
+                $('.editor > div > .sections > div').addClass('hide');
+                route.onfocus();
+                return;
+            }
+
+            //get file info
             var file = paths[paths.length - 1];
             var fileparts = paths[paths.length - 1].split('.', 2);
             var isPageResource = S.editor.isResource(path);
@@ -898,9 +984,18 @@ S.editor = {
         fields: {
             show: function (loadtab) {
                 S.editor.dropmenu.hide();
-                if (loadtab === true) {
-                    S.editor.explorer.open(S.editor.path + '.html');
-                }
+                S.editor.tabs.create("Content Fields", "content-fields-section", { isPageResource:true },
+                    () => { //onfocus
+                        $('.tab.content-fields').removeClass('hide');
+                    },
+                    () => { //onblur
+
+                    },
+                    () => { //onsave
+
+                    }
+                );
+
 
                 //show content fields section & hide other sections
                 $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
@@ -976,6 +1071,17 @@ S.editor = {
 
         settings: {
             show: function () {
+                S.editor.tabs.create("Page Settings", "page-settings-section", { isPageResource: true },
+                    () => { //onfocus
+                        $('.tab.page-settings').removeClass('hide');
+                    },
+                    () => { //onblur
+
+                    },
+                    () => { //onsave
+
+                    }
+                );
                 S.editor.dropmenu.hide();
                 $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
                 $('.editor .sections > .page-settings').removeClass('hide');
@@ -1115,7 +1221,7 @@ S.editor = {
     codebar: {
         update: function () {
             var editor = S.editor.instance;
-            if (typeof editor == 'undefined') { return;}
+            if (typeof editor == 'undefined' || editor == null) { return;}
             var linenum = 'Ln '; 
             var charnum = 'Col ';
             var linestotal = 'End ';
@@ -1167,6 +1273,17 @@ S.editor = {
         
         load: function () {
             var self = S.editor.settings;
+            S.editor.tabs.create("Page Settings", "page-settings-section", { isPageResource: true },
+                () => { //onfocus
+                    $('.tab.page-settings').removeClass('hide');
+                },
+                () => { //onblur
+
+                },
+                () => { //onsave
+
+                }
+            );
             if (self._loaded == true) { return; }
             var path = S.editor.path;
             S.ajax.post('PageSettings/Render', { path: path },
@@ -1342,7 +1459,18 @@ S.editor = {
     },
 
     appsettings: {
-        show: function() {
+        show: function () {
+            S.editor.tabs.create("App Settings", "app-settings-section", {},
+                () => { //onfocus
+                    $('.tab.app-settings').removeClass('hide');
+                },
+                () => { //onblur
+
+                },
+                () => { //onsave
+
+                }
+            );
             S.editor.dropmenu.hide();
             $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
             $('.editor .sections > .app-settings').removeClass('hide');
@@ -1367,6 +1495,17 @@ S.editor = {
 
         load: function (path) {
             var self = S.editor.resources;
+            S.editor.tabs.create("Page Resources", "page-resources-section", { isPageResource: true },
+                () => { //onfocus
+                    $('.tab.page-resources').removeClass('hide');
+                },
+                () => { //onblur
+
+                },
+                () => { //onsave
+
+                }
+            );
             if (self._loaded == true && self.path == path) { return; }
             S.editor.resources.path = path;
             $('.sections > .page-resources').html('');

@@ -1,4 +1,5 @@
-﻿namespace Saber
+﻿using System.Text;
+namespace Saber
 {
     public class Request : Datasilk.Core.Web.Request
     {
@@ -18,14 +19,20 @@
         protected virtual string RenderView(View view)
         {
             //check for vendor-related View rendering
+            var vendors = new StringBuilder();
             if (Server.viewRenderers.ContainsKey(view.Filename)) 
             {
                 var renderers = Server.viewRenderers[view.Filename];
                 foreach(var renderer in renderers)
                 {
-                    renderer.Render(this, view);
+                    vendors.Append(renderer.Render(this, view));
                 }
             }
+            if(vendors.Length > 0)
+            {
+                view["vendor"] = vendors.ToString();
+            }
+            
             return view.Render();
         }
     }

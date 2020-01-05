@@ -2,7 +2,7 @@
 
 namespace Saber.Services
 {
-    public class Languages
+    public class Languages: Service
     {
         public string Get()
         {

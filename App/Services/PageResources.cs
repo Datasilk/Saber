@@ -72,6 +72,8 @@ namespace Saber.Services
                         var ext = f.Name.GetFileExtension();
                         var type = "file";
                         var icon = "";
+                        item["img-src-full"] = pubdir.Replace("/wwwroot", "") + f.Name;
+                        item["img-src-rel"] = pubdir.Replace("/wwwroot", "") + f.Name;
                         switch (ext.ToLower())
                         {
                             case "png": //images
@@ -83,6 +85,8 @@ namespace Saber.Services
                                 item["svg"] = "";
                                 item["img-src"] = pubdir.Replace("/wwwroot", "") + Settings.ThumbDir + f.Name;
                                 item["img-alt"] = type + " " + f.Name;
+                                item.Show("menu-full");
+                                item.Show("menu-copy");
                                 break;
 
                             //video 
@@ -210,6 +214,7 @@ namespace Saber.Services
                             item["img"] = "";
                             item.Show("svg");
                             item["icon"] = "file" + (icon != "" ? "-" : "") + icon;
+                            item.Show("menu-copy");
                         }
                         html.Append(item.Render());
                     }

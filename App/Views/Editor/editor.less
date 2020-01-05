@@ -100,6 +100,15 @@
 /* sections */
 .scroller{position:relative; max-width:1250px; margin:0 auto; }
 
+/* image menu */
+.img{
+    .menu{position:absolute; bottom: 10px; right: 10px;
+        ul{list-style:none;display:block;}
+        li{padding:6px 10px; font-size:13px; display:block;}
+        a{text-decoration:none;}
+    }
+}
+
 /* content fields */
 .content-fields{position:relative; padding-bottom:30px; overflow-y:auto; overflow-x:hidden;
     form{
@@ -135,8 +144,8 @@
     .toolbar, .no-resources{max-width:1250px; margin:0 auto;}
 }
 .resources-list{max-width:1250px; margin:0 auto;
-    ul::after{content:" "; overflow:hidden; clear:both; display:block; font-size:0px; height:0px;}
-    li{float:left; padding:20px; list-style:none; width:250px; height:270px;}
+    & > ul::after{content:" "; overflow:hidden; clear:both; display:block; font-size:0px; height:0px;}
+    & > ul > li{float:left; padding:20px; list-style:none; width:250px; height:270px;}
     .img{position:relative; width:250px; height:200px; overflow:hidden; display:table-cell; text-align:center; vertical-align:middle; background-color:#000; background-image:url(/editor/grid.png); background-repeat:repeat; line-height:0;
          .pic{display:inline-block; overflow:hidden; max-height:200px; max-width:250px;}
         img{width:100%;}
@@ -144,15 +153,22 @@
         .svgicon{padding:50px; box-sizing:border-box;}
     }
     .img:hover{background-color:#111;}
-    li.type-file .img{padding:15px 50px 0px 50px;}
+    & > ul > li.type-file .img{padding:15px 50px 0px 50px;}
     .title{width:100%; text-align:center; font-size:15px; line-height:1.1; padding-top:10px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;}
     .close-btn{position:absolute; z-index:100; top:10px; right:10px; display:none;
         use{color:#cc0000; fill:#cc0000; opacity:0.7;}
     }
     .close-btn:hover{
         use{color:#ff0000; fill:#ff0000; opacity:1;}
+    } 
+    & > ul > li:hover .close-btn{display:block;}
+}
+
+/* vendor settings */
+ul.vendors{list-style:none;
+    li{padding:10px;
+       button, .button{cursor:pointer;}
     }
-    li:hover .close-btn{display:block;}
 }
 
 /* tooltip */

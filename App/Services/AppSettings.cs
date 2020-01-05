@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 
 namespace Saber.Services
 {
@@ -18,6 +19,26 @@ namespace Saber.Services
                     javascript = Scripts.ToString()
                 }
             );
+        }
+
+        protected override string RenderView(View view)
+        {
+            //check for vendor-related View rendering
+            var vendors = new StringBuilder("<ul class=\"vendors\">");
+            if (Server.viewRenderers.ContainsKey(view.Filename))
+            {
+                var renderers = Server.viewRenderers[view.Filename];
+                foreach (var renderer in renderers)
+                {
+                    vendors.Append("<li>" + renderer.Render(this, view) + "</li>");
+                }
+            }
+            if (vendors.Length > 0)
+            {
+                view["vendor"] = vendors.ToString();
+            }
+
+            return view.Render();
         }
     }
 }

@@ -64,6 +64,7 @@ namespace Saber
                     if (!type.Equals(typeof(Vendor.IVendorController)))
                     {
                         Server.vendorControllers.Add(type.Name.ToLower(), type);
+                        vendorCount++;
                     }
                 }
             }
@@ -109,11 +110,12 @@ namespace Saber
                     if (!type.Equals(typeof(Vendor.IVendorStartup)))
                     {
                         vendors.Add(type.FullName, type);
+                        vendorCount++;
                     }
                 }
             }
 
-            Console.WriteLine("Found " + vendors.Count + " Vendor" + (vendors.Count != 1 ? "s" : "") + " that inherit IVendorStartup");
+            Console.WriteLine("Found " + vendorCount + " Vendor" + (vendorCount != 1 ? "s" : "") + " that inherit IVendorStartup");
 
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
             foreach(var kv in vendors)
@@ -283,7 +285,7 @@ namespace Saber
                 try
                 {
                     vendor.Configure(app, env, config);
-                    Console.WriteLine("Configured " + kv.Key);
+                    Console.WriteLine("Configured Startup for " + kv.Key);
                 }
                 catch (Exception) { }
             }

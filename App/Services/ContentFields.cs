@@ -10,19 +10,13 @@ namespace Saber.Services
 {
     public class ContentFields : Service
     {
-        public string RenderContentFields(string path, string language)
+        public string Render(string path, string language)
         {
             var paths = PageInfo.GetRelativePath(path);
-            var content = Common.Platform.ContentFields.GetPageContent(path, User.language);
+            var fields = Common.Platform.ContentFields.GetPageContent(path, User.language);
             var html = new StringBuilder();
             var view = new View(string.Join("/", paths) + ".html");
             var fieldText = new View("/Views/ContentFields/text.html");
-            var fields = new Dictionary<string, string>();
-            var contentfile = Common.Platform.ContentFields.ContentFile(path, language);
-            if (File.Exists(Server.MapPath(contentfile)))
-            {
-                fields = JsonSerializer.Deserialize<Dictionary<string, string>>(Server.LoadFileFromCache(contentfile));
-            }
             foreach (var elem in view.Elements)
             {
                 if (elem.Name != "")
@@ -50,7 +44,7 @@ namespace Saber.Services
             return html.ToString();
         }
 
-        public string SaveContentFields(string path, string language, Dictionary<string, string> fields)
+        public string Save(string path, string language, Dictionary<string, string> fields)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
 

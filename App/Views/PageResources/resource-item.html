@@ -5,6 +5,14 @@
         </div>
         {{img}}<div class="pic"><img src="{{img-src}}" alt="{{img-alt}}" /></div>{{/img}}
         {{svg}}<svg viewBox="0 0 32 32"><use xlink:href="#icon-{{icon}}" x="0" y="0" width="32" height="32"></use></svg>{{/svg}}
+        <ul class="menu hover-only">
+            {{menu-full}}
+            <li><a href="{{img-src-full}}" target="_blank">Full Screen</a></li>
+            {{/menu-full}}
+            {{menu-copy}}
+            <li><a href="{{img-src-rel}}" onclick="S.clipboard.copy('{{img-src-rel}}'); event.preventDefault(); return false;">Copy File Path</a></li>
+            {{/menu-copy}}
+        </ul>
     </div>
     <div class="title">{{filename}}</div>
 </li>
