@@ -18,19 +18,19 @@
                 //load new administrator form
                 view = new View("/Views/Login/new-admin.html");
                 view["title"] = "Create an administrator account";
-                Scripts.Append("<script src=\"/js/views/login/new-admin.js\"></script>");
+                Scripts.Append("<script src=\"/editor/js/views/login/new-admin.js\"></script>");
             }
             else if (User.resetPass == true)
             {
                 //load new password form (for admin only)
                 view = new View("/Views/Login/new-pass.html");
                 view["title"] = "Create an administrator password";
-                Scripts.Append("<script src=\"/js/views/login/new-pass.js\"></script>");
+                Scripts.Append("<script src=\"/editor/js/views/login/new-pass.js\"></script>");
             }
             else
             {
                 //load login form (default)
-                Scripts.Append("<script src=\"/js/views/login/login.js\"></script>");
+                Scripts.Append("<script src=\"/editor/js/views/login/login.js\"></script>");
             }
 
             //load login page

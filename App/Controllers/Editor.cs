@@ -49,7 +49,6 @@ namespace Saber.Controllers
                 //load page layout
                 title = config.title.prefix + config.title.body + config.title.suffix;
                 description = config.description;
-                favicon = "/images/favicon.ico";
 
                 if (User.userId > 0)
                 {
@@ -60,19 +59,19 @@ namespace Saber.Controllers
                     switch (EditorUsed)
                     {
                         case EditorType.Monaco:
-                            AddCSS("/js/utility/monaco/min/vs/editor/editor.main.css");
-                            AddScript("/js/utility/monaco/min/vs/loader.js");
+                            AddCSS("/editor/js/utility/monaco/min/vs/editor/editor.main.css");
+                            AddScript("/editor/js/utility/monaco/min/vs/loader.js");
                             view["editor-type"] = "monaco";
                             break;
 
                         case EditorType.Ace:
-                            AddScript("/js/utility/ace/ace.js");
+                            AddScript("/editor/js/utility/ace/ace.js");
                             view["editor-type"] = "ace";
                             break;
                     }
 
-                    AddScript("/js/views/editor/editor.js");
-                    AddCSS("/css/views/editor/editor.css");
+                    AddScript("/editor/js/views/editor/editor.js");
+                    AddCSS("/editor/css/views/editor/editor.css");
                     if (EditorUsed != EditorType.Monaco)
                     {
                         Scripts.Append(

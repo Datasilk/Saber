@@ -23,7 +23,8 @@
         req.onload = function () {
             if (req.status >= 200 && req.status < 400) {
                 //request success
-                document.location.href = '/' + req.responseText;
+                response = JSON.parse(req.responseText);
+                document.location.href = '/' + response.redirect;
             } else {
                 //connected to server, but returned an error
                 error('Incorrect email and/or password');

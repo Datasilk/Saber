@@ -67,6 +67,7 @@ paths.working = {
             paths.scripts + 'utility/velocity.min.js',
             paths.scripts + 'platform/_super.js', // <---- Datasilk Core Js: S object
             paths.scripts + 'platform/ajax.js', //   <---- Optional platform features
+            paths.scripts + 'platform/accordion.js',
             paths.scripts + 'platform/clipboard.js',
             paths.scripts + 'platform/loader.js',
             paths.scripts + 'platform/message.js',
@@ -129,11 +130,11 @@ paths.working = {
 
 //compiled paths
 paths.compiled = {
-    platform: paths.webroot + 'js/platform.js',
-    js: paths.webroot + 'js/',
-    css: paths.webroot + 'css/',
-    app: paths.webroot + 'css/',
-    themes: paths.webroot + 'css/themes/'
+    platform: paths.webroot + 'editor/js/platform.js',
+    js: paths.webroot + 'editor/js/',
+    css: paths.webroot + 'editor/css/',
+    app: paths.webroot + 'editor/css/',
+    themes: paths.webroot + 'editor/css/themes/'
 };
 
 //tasks for compiling javascript //////////////////////////////////////////////////////////////
@@ -253,7 +254,12 @@ gulp.task('default:website:less', function () {
     var p = gulp.src(paths.app + 'Content/pages/*.less')
         .pipe(less());
     if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
-    return p.pipe(gulp.dest(paths.webroot + 'content/pages/', { overwrite: true }));
+    p.pipe(gulp.dest(paths.webroot + 'content/pages/', { overwrite: true }));
+
+    p = gulp.src(paths.app + 'Content/partials/*.less')
+        .pipe(less());
+    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    return p.pipe(gulp.dest(paths.webroot + 'content/partials/', { overwrite: true }));
 });
 
 gulp.task('default:website:js', function () {

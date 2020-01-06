@@ -25,7 +25,7 @@ gulp.task('svg', function () {
     '</style>\n\n\n' + 
     '<defs>'))
     //.pipe(gulp.dest('test/compiled'))
-	.pipe(gulp.dest('../../App/wwwroot/themes/default'));
+	.pipe(gulp.dest('../../App/wwwroot/editor'));
 });
 
 

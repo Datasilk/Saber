@@ -1,4 +1,5 @@
-﻿using Datasilk.Core.Web;
+﻿using System.IO;
+using Datasilk.Core.Web;
 
 namespace Saber
 {
@@ -14,8 +15,8 @@ namespace Saber
         public bool usePlatform = false;
         public string title = "Datasilk";
         public string description = "";
-        public string favicon = "/images/favicon.png";
         public string theme = "default";
+        private string androidKey = "android-manifest";
 
         public EditorType EditorUsed
         {
@@ -26,7 +27,7 @@ namespace Saber
         {
             if (usePlatform == true)
             {
-                Scripts.Append("<script language=\"javascript\">S.svg.load('/themes/default/icons.svg');</script>");
+                Scripts.Append("<script language=\"javascript\">S.svg.load('/editor/icons.svg');</script>");
             }
             var view = new View("/Views/Shared/layout.html");
             view["title"] = title;
@@ -34,7 +35,64 @@ namespace Saber
             view["language"] = User.language;
             view["theme"] = theme;
             view["head-css"] = Css.ToString();
-            view["favicon"] = favicon;
+
+            //load website icon
+            if (File.Exists(Server.MapPath("/images/favicon.png")))
+            {
+                view["favicon"] = "/images/favicon.png";
+                view["favicon-type"] = "image/png";
+            }
+            else
+            {
+                view["favicon"] = "/images/favicon.ico";
+                view["favicon-type"] = "image/ico";
+            }
+
+            //load apple icons
+            var appleIcons = new bool[4];
+            var isCached = false;
+            var i = 0;
+            if (Server.Cache.ContainsKey("apple-icons"))
+            {
+                appleIcons = (bool[])Server.Cache["apple-icons"];
+                isCached = true;
+            }
+            foreach (var size in new int[] { 60, 76, 120, 152 })
+            {
+                if (isCached == false && File.Exists(Server.MapPath("/images/mobile/apple-" + size + "x" + size + ".png")))
+                {
+                    appleIcons[i] = true;
+                }
+                else
+                {
+                    appleIcons[i] = false;
+                }
+                view.Show("apple-app-" + size);
+                view.Show("apple-app");
+                i++;
+            }
+            if(isCached == false)
+            {
+                Server.Cache.Add("apple-icons", appleIcons);
+            }
+
+            //load android icons
+            if (Server.Cache.ContainsKey(androidKey))
+            {
+                if((bool)Server.Cache[androidKey] == true)
+                {
+                    view.Show(androidKey);
+                }
+            }else if (File.Exists(Server.MapPath("/wwwroot/" + androidKey + ".json")))
+            {
+                Server.Cache.Add(androidKey, true);
+            }
+            else
+            {
+                Server.Cache.Add(androidKey, false);
+            }
+
+            //load body
             view["body"] = body;
             if (usePlatform)
             {

@@ -36,7 +36,7 @@ Build web pages from within your web browser using a built-in IDE for editing HT
 Convert any URL within your website to a valid web page simply by navigating to the URL and writing some HTML & CSS within the built-in IDE. The editor initially opens 3 files (HTML, LESS, & JS) that are resources for the web page being viewed.
 
 #### Create & Modify Website Resources
-Use a folder browser within the built-in IDE to open website resources (HTML, CSS, LESS, & JS files) in new tabs. Use the *File* drop down menu to create new files & folders. The initial folder structure is described below: 
+Use the **file browser** within the built-in IDE to open website resources (HTML, CSS, LESS, & JS files) in new tabs. Use the *File* drop down menu to open the file browser or create new files & folders. The initial folder structure is described below: 
 
 * **wwwroot** is a public folder where you can upload files & images to utilize within your website
 * **partials** is a server-side folder used for partial HTML files that are included within web pages throughout your website (such as  *header.html* & *footer.html* files)
@@ -44,10 +44,8 @@ Use a folder browser within the built-in IDE to open website resources (HTML, CS
 * **Scripts** is a server-side folder that contains various Javascript libraries used within the Saber editor
 	* **Scripts/website.js** is loaded on every page within your website and can be modified within *Saber's Editor IDE*
 
-
-
 #### Upload Files & Photos
-You can upload image files & other resources for a specific web page, or within the **wwwroot** folder to be used within any web page. Manage your uploads within a photo-gallery-style file explorer.
+You can upload image files & other resources for a specific web page or within the **wwwroot** folder to be used globally. Manage your uploads within a photo-gallery-style file explorer.
 
 #### Multi-lingual Page Content
 * Generate text fields by adding *mustache* variables to your HTML page (e.g. `<div>{{article-title}}</div>`)
@@ -80,7 +78,7 @@ Before this can be achieved, though, you must install the [PageList](https://git
 More plugins can be found within the [Datasilk](https://github.com/Datasilk/) organization on Github.
 
 #### Subpage Templates
-You can create a template webpage (e.g. `https://.../support/template`) and design the template page to be used when creating new subpages (e.g. `https://.../support/getting-started`). The template page will then be used as a starting point for the design of the new subpage, utilizing the **html**, **less**, & **js** files as well as the template page settings. This is useful when managing complex websites such as a wiki, blog, or storefront.
+You can create a template webpage (e.g. `https://yoursite.com/support/template`) and design the template page to be used when creating new subpages (e.g. `https://yoursite.com/support/getting-started`). The template page will then be used as a starting point for the design of the new subpage, utilizing the **html**, **less**, & **js** files as well as the template page settings. This is useful when managing complex websites such as a wiki, blog, or storefront.
 
 #### Code Editor
 Saber uses [Monaco](https://microsoft.github.io/monaco-editor/) as its code editor

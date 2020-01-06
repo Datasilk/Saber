@@ -9,17 +9,39 @@
     <meta name="google" content="notranslate">
     <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,width=device-width,height=device-height,user-scalable=yes" />
     {{platform-1}}
-    <link type="text/css" rel="stylesheet" href="/css/platform.css" />
-    <link type="text/css" rel="stylesheet" href="/css/themes/{{theme}}.css" />
+    <link type="text/css" rel="stylesheet" href="/editor/css/platform.css" />
+    <link type="text/css" rel="stylesheet" href="/editor/css/themes/{{theme}}.css" />
     {{/platform-1}}
     <link type="text/css" rel="stylesheet" href="/css/website.css" id="website_css" />
     {{head-css}}
-    <link rel="icon" type="image/ico" href="{{favicon}}" />
+    <link rel="icon" type="{{favicon-type}}" href="{{favicon}}" />
+
+    {{apple-app-60}}
+    <link rel="apple-touch-icon" sizes="60x60" href="/images/mobile/apple-60x60.png">
+    {{/apple-app-60}}
+    {{apple-app-76}}
+    <link rel="apple-touch-icon" sizes="76x76" href="/images/mobile/apple-76x76.png">
+    {{/apple-app-76}}
+    {{apple-app-120}}
+    <link rel="apple-touch-icon" sizes="120x120" href="images/mobile/apple-120x120.png">
+    {{/apple-app-120}}
+    {{apple-app-152}}
+    <link rel="apple-touch-icon" sizes="152x152" href="images/mobile/apple-152x152.png">
+    {{/apple-app-152}}
+    {{apple-app}}
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    {{/apple-app}}
+    {{android-manifest}}
+    <link rel="manifest" href="/android-manifest.json">
+    {{/android-manifest}}
+    <meta name="mobile-web-app-capable" content="yes">
 </head>
 <body>
 
     {{platform-2}}
-    <div class="bg for-popup hide" onclick="S.popup.bg(event)"></div>{{/platform-2}}
+    <div class="bg for-popup hide" onclick="S.popup.bg(event)"></div>
+    {{/platform-2}}
     {{body}}
     {{platform-3}}
     <div class="svgicons">{{svg-icons}}</div>
@@ -36,7 +58,7 @@
         </div>
         #body#
     </script>
-    <script src="/js/platform.js"></script>
+    <script src="/editor/js/platform.js"></script>
     {{/platform-3}}
     <script src="/js/website.js" id="website_js"></script>
     {{scripts}}

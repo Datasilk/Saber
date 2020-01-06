@@ -1,1 +1,45 @@
-﻿{{vendor}}
+﻿<style>
+    .app-settings .icon-img{display:inline-block; padding:0 15px 0 0;}
+    .app-settings .icon-img img{max-width:32px;}
+    .app-settings ul.list h5{margin-top:-9px;}
+</style>
+<div class="accordion">
+    <div class="title">
+        <h6>Icons</h6>
+        <div class="expander">
+            <svg viewBox="0 0 32 32">
+                <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
+            </svg>
+        </div>
+    </div>
+    <div class="contents">
+        <ul class="list">
+            <li class="row icon-settings">
+                <div class="col ten tablet-twelve pad-bottom-sm">
+                    <h5>Website Icon</h5>
+                    <div>Select an icon to display for your website. 128x128 png file or 64x64 ico file supported.</div>
+                </div>
+                <div class="col two tablet-twelve right">
+                    {{favicon-exists}}<div class="icon-img"><img src="{{favicon-src}}" /></div>{{/favicon-exists}}
+                    <button class="right">Upload Icon</button>
+                    <input type="file" id="upload_icon" class="hide" />
+                </div>
+            </li>
+            {{icons}}
+        </ul>
+    </div>
+</div>
+
+<div class="accordion expanded">
+    <div class="title">
+        <h6>Plugins</h6>
+        <div class="expander">
+            <svg viewBox="0 0 32 32">
+                <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
+            </svg>
+        </div>
+    </div>
+    <div class="contents">
+        {{vendor}}
+    </div>
+</div>

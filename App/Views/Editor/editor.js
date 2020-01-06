@@ -33,7 +33,7 @@ S.editor = {
         var editor = null;
         switch (this.type) {
             case 0: //monaco
-                require.config({ paths: { 'vs': '/js/utility/monaco/min/vs' } });
+                require.config({ paths: { 'vs': '/editor/js/utility/monaco/min/vs' } });
                 require(['vs/editor/editor.main'], function () {
                     editor = monaco.editor.create(document.getElementById('editor'), {
                         value: '',
@@ -195,7 +195,7 @@ S.editor = {
         if (pos.top == 0) {
             pos = fields.offset();
         }
-        $('.editor > div > .sections > .tab:nth-child(n+2)').css({ height: win.h - pos.top });
+        $('.editor > div > .sections > .tab').css({ height: win.h - pos.top });
         $('.file-browser').css({ height: win.h - pos2.top });
     },
 
@@ -984,7 +984,7 @@ S.editor = {
         fields: {
             show: function (loadtab) {
                 S.editor.dropmenu.hide();
-                S.editor.tabs.create("Content Fields", "content-fields-section", { isPageResource:true },
+                S.editor.tabs.create("Page Content", "content-fields-section", { isPageResource:true },
                     () => { //onfocus
                         $('.tab.content-fields').removeClass('hide');
                     },
@@ -998,7 +998,7 @@ S.editor = {
 
 
                 //show content fields section & hide other sections
-                $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
+                $('.editor .sections > .tab').addClass('hide');
                 $('.editor .sections > .content-fields').removeClass('hide');
                 $('ul.file-tabs > li').removeClass('selected');
                 $('ul.file-tabs > li.tab-content-fields').addClass('selected');
@@ -1059,7 +1059,7 @@ S.editor = {
 
         code: {
             show: function () {
-                $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
+                $('.editor .sections > .tab').addClass('hide');
                 $('.editor .sections > .code-editor').removeClass('hide');
                 $('ul.file-tabs > li').removeClass('selected');
                 $('ul.file-tabs > li.tab-file-code').addClass('selected');
@@ -1083,7 +1083,7 @@ S.editor = {
                     }
                 );
                 S.editor.dropmenu.hide();
-                $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
+                $('.editor .sections > .tab').addClass('hide');
                 $('.editor .sections > .page-settings').removeClass('hide');
                 $('ul.file-tabs > li').removeClass('selected');
                 $('ul.file-tabs > li.tab-page-settings').addClass('selected');
@@ -1100,7 +1100,7 @@ S.editor = {
             show: function (noload) {
                 if (S.editor.selected == '') { return;}
                 S.editor.dropmenu.hide();
-                $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
+                $('.editor .sections > .tab').addClass('hide');
                 $('.editor .sections > .page-resources').removeClass('hide');
                 $('ul.file-tabs > li').removeClass('selected');
                 $('ul.file-tabs > li.tab-page-resources').addClass('selected');
@@ -1472,7 +1472,7 @@ S.editor = {
                 }
             );
             S.editor.dropmenu.hide();
-            $('.editor .sections > .tab:not(.file-browser)').addClass('hide');
+            $('.editor .sections > .tab').addClass('hide');
             $('.editor .sections > .app-settings').removeClass('hide');
 
             //disable save menu
@@ -1483,6 +1483,7 @@ S.editor = {
                 function (d) {
                     var data = JSON.parse(d);
                     S.ajax.inject(data);
+                    S.editor.resizeWindow();
                 }
             );
         }

@@ -73,7 +73,7 @@
 }
 
 /* file browser */
-.file-browser{float:left; width:250px; position:relative; top:-48px; margin-bottom:-48px;
+.file-browser{float:left; width:250px; position:relative; top:-48px; margin-bottom:-48px; z-index:10;
     .icon-folder-add{padding-top:4px;}
     .label{font-size:17px;}
     .item{cursor:default;}
@@ -81,7 +81,7 @@
 .browser-path{white-space:pre-wrap; word-wrap:break-word; width:~"calc(100% - 40px)" !important; min-height:23px;}
 
 /* file bar */
-.file-bar{padding:0 0 5px 0;}
+.file-bar{padding:0 0 5px 0; height:46px;}
 .file-tabs{
     li .col{padding:8px 10px 6px 10px;}
 }
@@ -93,7 +93,7 @@
 
 /* when file browser is visible */
 .editor.show-browser {
-    .code-editor, .content-fields, .page-settings, .page-resources{float:left; width:~"calc(100% - 250px)";}
+    .tab{float:left; width:~"calc(100% - 250px)";}
     .file-bar{padding-left:250px;}
 }
 
@@ -110,7 +110,7 @@
 }
 
 /* content fields */
-.content-fields{position:relative; padding-bottom:30px; overflow-y:auto; overflow-x:hidden;
+.content-fields{position:relative; padding:0 20px 30px 20px; overflow-y:auto; overflow-x:hidden;
     form{
         .field{padding:16px 7px 0px 4px !important;}
         textarea{width:100%; resize: none; z-index:10; overflow:hidden; font-size:18px; font-weight:200; }
@@ -128,7 +128,7 @@
 }
 
 /* page settings */
-.page-settings{width:100%; overflow-x:hidden; overflow-y:auto;
+.page-settings{width:100%; padding:0 20px; overflow-x:hidden; overflow-y:auto;
     textarea{width:100%; resize: none; z-index:10; overflow:hidden; font-size:18px; font-weight:200;}
     .textarea-clone{opacity:0; position:absolute; z-index:-1; width:100%; height:0px; top:0;
         & > div{position:absolute; width:100%; min-height:30px; font-size:18px; font-weight:200; padding:10px; line-height:1.15; box-sizing:border-box; border-width:1px; font-family:monospace;}
@@ -164,11 +164,31 @@
     & > ul > li:hover .close-btn{display:block;}
 }
 
-/* vendor settings */
-ul.vendors{list-style:none;
-    li{padding:10px;
+/* app settings */
+.app-settings{padding:0 20px; overflow-y:auto; overflow-x:hidden;}
+
+/* unordered list */
+ul.list{list-style:none; padding-bottom:0;
+    li{padding:20px; padding-bottom:20px !important;
        button, .button{cursor:pointer;}
     }
+}
+
+/* accordion */
+.accordion {margin-bottom:5px;
+    .title{padding:5px 20px; cursor:default;
+        h1, h2, h3, h4, h5, h6{padding-bottom:0;}
+        h6{font-weight:bold;}
+    }
+    .expander{float:right; transform: rotate(-90deg); border-radius:6px; cursor:pointer; width:25px; height:25px; margin-top:-2px;
+        svg{width:16px;position:relative; left:5px;}
+    }
+    .contents{display:none;}
+    &.expanded{
+        .expander{transform: rotate(90deg);}
+        .contents{display:block;}
+    }
+    
 }
 
 /* tooltip */

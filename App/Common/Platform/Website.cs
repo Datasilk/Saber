@@ -189,7 +189,7 @@ namespace Saber.Common.Platform
                                 if(paths[2].Right(5) == ".less")
                                 {
                                     //compile less file
-                                    var pubpath = "/wwwroot/css/" + string.Join('/', paths.Skip(1).ToArray()).Replace(paths[paths.Length - 1], "");
+                                    var pubpath = "/wwwroot/content/partials/" + string.Join('/', paths.Skip(1).ToArray()).Replace(paths[paths.Length - 1], "");
                                     if (!Directory.Exists(Server.MapPath(pubpath)))
                                     {
                                         Directory.CreateDirectory(Server.MapPath(pubpath));
