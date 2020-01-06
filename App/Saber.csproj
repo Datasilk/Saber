@@ -161,7 +161,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\content" />
     <Folder Include="wwwroot\css" />
-    <Folder Include="wwwroot\fonts" />
+    <Folder Include="wwwroot\editor\fonts\" />
     <Folder Include="wwwroot\images" />
     <Folder Include="wwwroot\js" />
   </ItemGroup>

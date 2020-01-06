@@ -244,6 +244,7 @@ namespace Saber
                 Directory.CreateDirectory(Server.MapPath("/wwwroot/js/"));
                 Directory.CreateDirectory(Server.MapPath("/Content/pages/"));
                 Directory.CreateDirectory(Server.MapPath("/Content/partials/"));
+                Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/fonts/"), Server.MapPath("/wwwroot/fonts/")); 
                 Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/images/"), Server.MapPath("/wwwroot/images/"));
                 Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/scripts/"), Server.MapPath("/wwwroot/js/"));
                 Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/scripts/"), Server.MapPath("/Scripts/"));
