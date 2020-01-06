@@ -8,8 +8,41 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Content\temp\fonts\opensans\opensans-bold.woff2" />
+    <None Remove="Content\temp\fonts\opensans\opensans-bolditalic.woff2" />
+    <None Remove="Content\temp\fonts\opensans\opensans-italic.woff2" />
+    <None Remove="Content\temp\fonts\opensans\opensans-light.woff2" />
+    <None Remove="Content\temp\fonts\opensans\opensans-lightitalic.woff2" />
+    <None Remove="Content\temp\fonts\opensans\opensans-regular.woff2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Content\temp\css\website.less">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\fonts\opensans\opensans-bold.woff2">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Content\temp\fonts\opensans\opensans-bolditalic.woff2">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Content\temp\fonts\opensans\opensans-italic.woff2">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Content\temp\fonts\opensans\opensans-light.woff2">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Content\temp\fonts\opensans\opensans-lightitalic.woff2">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Content\temp\fonts\opensans\opensans-regular.woff2">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="Content\temp\images\favicon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
