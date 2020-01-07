@@ -27,7 +27,10 @@ namespace Saber
         {
             if (usePlatform == true)
             {
-                Scripts.Append("<script language=\"javascript\">S.svg.load('/editor/icons.svg');</script>");
+                Scripts.Append("<script language=\"javascript\">" + 
+                    "S.svg.load('/editor/icons.svg');" + 
+                    "S.svg.load('/editor/loader.svg');" + 
+                    "</script>");
             }
             var view = new View("/Views/Shared/layout.html");
             view["title"] = title;

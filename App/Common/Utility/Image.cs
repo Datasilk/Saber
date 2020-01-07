@@ -15,28 +15,33 @@ namespace Saber.Common.Utility
         public Image<Rgba32> bitmap;
     }
         
-    public class Images
+    public static class Image
     {
-        public ImageInfo Load(string path, string filename)
+        public static ImageInfo Load(string path, string filename)
         {
-            ImageInfo newImg = new ImageInfo();
             using (var fs = File.OpenRead(Server.MapPath(path + filename)))
             {
-                var image = Image.Load(fs);
-                newImg.bitmap = image;
-                newImg.filename = filename;
-                newImg.path = path;
-                newImg.width = image.Width;
-                newImg.height = image.Height;
+                return Load(fs, path, filename);
             }
+        }
+
+        public static ImageInfo Load(Stream stream, string path = "", string filename = "")
+        {
+            ImageInfo newImg = new ImageInfo();
+            var image = SixLabors.ImageSharp.Image.Load(stream);
+            newImg.bitmap = image;
+            newImg.filename = filename;
+            newImg.path = path;
+            newImg.width = image.Width;
+            newImg.height = image.Height;
             return newImg;
         }
         
-        public void Shrink(string filename, string outfile, int width)
+        public static void Shrink(string filename, string outfile, int width)
         {
             using (var fs = File.OpenRead(Server.MapPath(filename)))
             {
-                var image = Image.Load(fs);
+                var image = SixLabors.ImageSharp.Image.Load(fs);
 
                 if (image.Width > width)
                 {

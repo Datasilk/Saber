@@ -4,8 +4,7 @@
         <div>Select an icon to display for your web application. {{px}}x{{px}} png file only.</div>
     </div>
     <div class="col two tablet-twelve right">
-        {{favicon-exists}}<div class="icon-img"><img src="{{src}}" /></div>{{/favicon-exists}}
-        <button class="right">Upload Icon</button>
-        <input type="file" id="upload_apple-app-{{px}}" class="hide" px="{{px}}" />
+        <div class="icon-img{{favicon-exists}} hide{{/favicon-exists}}"><img src="{{src}}" /></div>
+        <button class="right" px="{{px}}">Upload Icon</button>
     </div>
 </li>

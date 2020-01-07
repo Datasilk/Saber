@@ -20,13 +20,13 @@
                     <div>Select an icon to display for your website. 128x128 png file or 64x64 ico file supported.</div>
                 </div>
                 <div class="col two tablet-twelve right">
-                    {{favicon-exists}}<div class="icon-img"><img src="{{favicon-src}}" /></div>{{/favicon-exists}}
+                    <div class="icon-img{{favicon-missing}} hide{{/favicon-missing}}"><img src="{{favicon-src}}" /></div>
                     <button class="right">Upload Icon</button>
-                    <input type="file" id="upload_icon" class="hide" />
                 </div>
             </li>
             {{icons}}
         </ul>
+        <input type="file" id="upload_app_icon" class="hide" />
     </div>
 </div>
 

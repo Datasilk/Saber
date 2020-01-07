@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using Saber.Common.Platform;
+using Saber.Common.Utility;
 using Saber.Common.Extensions.Strings;
 
 namespace Saber.Controllers
@@ -34,10 +35,11 @@ namespace Saber.Controllers
                     var ext = filename.GetFileExtension().ToLower();
                     try
                     {
-                        var ms = new FileStream(Server.MapPath(pubdir + filename), FileMode.Create);
-                        file.CopyTo(ms);
-                        ms.Close();
-                        ms.Dispose();
+                        using (var ms = new FileStream(Server.MapPath(pubdir + filename), FileMode.Create))
+                        {
+                            file.CopyTo(ms);
+                            ms.Close();
+                        }
                     }catch(Exception){}
                     var i = 0;
                     while (!File.Exists(Server.MapPath(pubdir + filename)) && i < 5)
@@ -51,14 +53,13 @@ namespace Saber.Controllers
                     {
                         case "jpg": case "jpeg": case "png":
                             //create a thumbnail image to display in the page resources section of the editor
-                            var img = new Common.Utility.Images();
                             if (!Directory.Exists(Server.MapPath(pubdir + thumbdir)))
                             {
                                 Directory.CreateDirectory(Server.MapPath(pubdir + thumbdir));
                             }
                             if(File.Exists(Server.MapPath(pubdir + filename)))
                             {
-                                img.Shrink(pubdir + filename, pubdir + thumbdir + filename, 480);
+                                Image.Shrink(pubdir + filename, pubdir + thumbdir + filename, 480);
                             }
                             break;
                     }

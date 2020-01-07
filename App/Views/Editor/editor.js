@@ -286,13 +286,17 @@ S.editor = {
     },
 
     error: function (elem, msg) {
-        $('.editor > div > .messages').append('<div class="message error"><span>' +
-            (msg || S.message.error.generic) + "</span></div>");
+        S.editor.message(elem, msg || S.message.error.generic, 'error');
     },
 
-    message: function (msg, type) {
-        $('.editor > div > .messages').append('<div class="message' (type != null ? " " + type : '') + '"><span>' +
-            msg + "</span></div>");
+    message: function (elem, msg, type) {
+        $(elem ? elem : '.editor > div > .messages').append(template_message.innerHTML
+            .replace('##text##', msg)
+            .replace('##type##', type)
+        );
+        $('.message .close-btn').off('click').on('click', (e) => {
+            $(e.target).parents('.message').first().remove();
+        });
     },
 
     save: function (path, content) {
