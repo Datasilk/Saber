@@ -44,9 +44,6 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-    <Content Include="Content\temp\images\favicon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Content\temp\images\logo-xs.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

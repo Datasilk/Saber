@@ -16,33 +16,35 @@ namespace Saber.Services
             var view = new View("/Views/AppSettings/appsettings.html");
 
             //add website icon
-            if (!File.Exists(Server.MapPath("/wwwroot/images/favicon.ico")))
+            if (!File.Exists(Server.MapPath("/wwwroot/images/web-icon.png")))
             {
                 view.Show("favicon-missing");
             }
             else {
 
-                view["favicon-src"] = "/images/favicon.ico";
+                view["favicon-src"] = "/images/web-icon.png";
             }
 
             //add icons
             var viewIcon = new View("/Views/AppSettings/appleicon.html");
-            var icons = new StringBuilder();
-            icons.Append(RenderAppleIcon(viewIcon, 60));
-            icons.Append(RenderAppleIcon(viewIcon, 76));
-            icons.Append(RenderAppleIcon(viewIcon, 120));
-            icons.Append(RenderAppleIcon(viewIcon, 152));
+            var appleIcons = new StringBuilder();
+            var androidIcons = new StringBuilder();
+            appleIcons.Append(RenderAppleIcon(viewIcon, 60));
+            appleIcons.Append(RenderAppleIcon(viewIcon, 76));
+            appleIcons.Append(RenderAppleIcon(viewIcon, 120));
+            appleIcons.Append(RenderAppleIcon(viewIcon, 152));
+            view["apple-icons"] = appleIcons.ToString();
 
             //add android icons
             viewIcon = new View("/Views/AppSettings/androidicon.html");
-            icons.Append(RenderAndroidIcon(viewIcon, 36));
-            icons.Append(RenderAndroidIcon(viewIcon, 48));
-            icons.Append(RenderAndroidIcon(viewIcon, 72));
-            icons.Append(RenderAndroidIcon(viewIcon, 96));
-            icons.Append(RenderAndroidIcon(viewIcon, 144));
-            icons.Append(RenderAndroidIcon(viewIcon, 192));
-            icons.Append(RenderAndroidIcon(viewIcon, 512));
-            view["icons"] = icons.ToString();
+            androidIcons.Append(RenderAndroidIcon(viewIcon, 36));
+            androidIcons.Append(RenderAndroidIcon(viewIcon, 48));
+            androidIcons.Append(RenderAndroidIcon(viewIcon, 72));
+            androidIcons.Append(RenderAndroidIcon(viewIcon, 96));
+            androidIcons.Append(RenderAndroidIcon(viewIcon, 144));
+            androidIcons.Append(RenderAndroidIcon(viewIcon, 192));
+            androidIcons.Append(RenderAndroidIcon(viewIcon, 512));
+            view["android-icons"] = androidIcons.ToString();
 
 
             //add js file
@@ -127,8 +129,11 @@ namespace Saber.Services
                 return Error("Icon must be PNG image format.");
             }
             var iconType = "apple";
+            var imgpath = "mobile/";
+            var imgSuffix = $"-{px}x{px}";
             switch (type)
             {
+                case 0: iconType = "web"; imgpath = ""; imgSuffix = "-icon"; break;
                 case 2: iconType = "android"; break;
             }
 
@@ -138,19 +143,22 @@ namespace Saber.Services
                 using (var file = Context.Request.Form.Files[0].OpenReadStream())
                 {
                     var image = Image.Load(file);
-                    if (image.width != px || image.height != px)
+                    if (px != 0 && (image.width != px || image.height != px))
                     {
                         return Error($"Icon must be {px} pixels in width & height.");
+                    }else if(px == 0 && (image.width > 128))
+                    {
+                        return Error($"Icon must be less than 129 pixels in width & height.");
                     }
                 }
                 //save image to disk
-                if (!Directory.Exists(Server.MapPath("/wwwroot/images/mobile/")))
+                if (!Directory.Exists(Server.MapPath("/wwwroot/images/" + imgpath)))
                 {
-                    Directory.CreateDirectory(Server.MapPath("/wwwroot/images/mobile/"));
+                    Directory.CreateDirectory(Server.MapPath("/wwwroot/images/" + imgpath));
                 }
                 using (var file = Context.Request.Form.Files[0].OpenReadStream())
                 {
-                    var filepath = Server.MapPath($"/wwwroot/images/mobile/{iconType}-{px}x{px}.png");
+                    var filepath = Server.MapPath($"/wwwroot/images/{imgpath}{iconType}{imgSuffix}.png");
                     File.Delete(filepath);
                     using (var fs = new FileStream(filepath, FileMode.Create))
                     {

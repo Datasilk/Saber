@@ -40,15 +40,10 @@ namespace Saber
             view["head-css"] = Css.ToString();
 
             //load website icon
-            if (File.Exists(Server.MapPath("/images/favicon.png")))
+            if (File.Exists(Server.MapPath("wwwroot/images/web-icon.png")))
             {
-                view["favicon"] = "/images/favicon.png";
+                view["favicon"] = "/images/web-icon.png";
                 view["favicon-type"] = "image/png";
-            }
-            else
-            {
-                view["favicon"] = "/images/favicon.ico";
-                view["favicon-type"] = "image/ico";
             }
 
             //load apple icons

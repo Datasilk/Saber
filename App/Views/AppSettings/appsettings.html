@@ -1,7 +1,10 @@
 ﻿<style>
     .app-settings .icon-img{display:inline-block; padding:0 15px 0 0;}
-    .app-settings .icon-img img{max-width:32px;}
+    .app-settings .icon-img img{max-width:80px;}
     .app-settings ul.list h5{margin-top:-9px;}
+    .app-settings .icon-img{text-align:center; padding:10px 5px 0 5px;}
+    .apple-app-icon, .android-app-icon{max-width:150px; width:100% !important;}
+    .icon-settings .icon-img{padding:0 20px; margin-top:-5px;}
 </style>
 <div class="accordion">
     <div class="title">
@@ -14,17 +17,26 @@
     </div>
     <div class="contents">
         <ul class="list">
-            <li class="row icon-settings">
-                <div class="col ten tablet-twelve pad-bottom-sm">
+            <li class="row icon-settings web-app-icon">
+                <div class="col nine tablet-twelve pad-bottom-sm">
                     <h5>Website Icon</h5>
-                    <div>Select an icon to display for your website. 128x128 png file or 64x64 ico file supported.</div>
+                    <div>Select an icon to display for your website. 16x16 up to 128x128 PNG file supported.</div>
                 </div>
-                <div class="col two tablet-twelve right">
-                    <div class="icon-img{{favicon-missing}} hide{{/favicon-missing}}"><img src="{{favicon-src}}" /></div>
-                    <button class="right">Upload Icon</button>
+                <div class="col three tablet-twelve right">
+                    <button class="right" for="web">Upload Icon</button>
+                    <div class="right pad-right icon-img{{favicon-missing}} hide{{/favicon-missing}}"><img src="{{favicon-src}}" /></div>
                 </div>
             </li>
-            {{icons}}
+            <li class="row">
+                <h5>Android App Icons</h5>
+                <div>Upload icons for your web application to display within various environments. PNG files only and by specified sizes only.</div>
+                <div>{{android-icons}}</div>
+            </li>
+            <li class="row">
+                <h5>Apple App Icons</h5>
+                <div>Upload icons for your web application to display within various environments. PNG files only and by specified sizes only.</div>
+                <div>{{apple-icons}}</div>
+            </li>
         </ul>
         <input type="file" id="upload_app_icon" class="hide" />
     </div>
