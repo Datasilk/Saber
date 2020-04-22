@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Http.Extensions;
 using Datasilk.Core.Web;
 using Saber.Common.Platform;
+using Saber.Common.Extensions;
 
 namespace Saber.Controllers
 {
@@ -119,6 +121,9 @@ namespace Saber.Controllers
 
                 //render page content
                 view["content"] = html;
+
+                //log page request
+                Query.Logs.LogUrl(Context.Request.GetEncodedPathAndQuery(), Context.Connection.RemoteIpAddress.ToInt());
 
                 return base.Render(view.Render());
             }

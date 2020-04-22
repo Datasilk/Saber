@@ -92,6 +92,10 @@ namespace Saber.Services
                 viewIcon["src"] = $"/images/mobile/android-{px}x{px}.png";
             }
             viewIcon["px"] = px.ToString();
+            if(px > 240)
+            {
+                viewIcon["icon-img-attrs"] = " style=\"width:240px;\"";
+            }
             return viewIcon.Render();
         }
 

@@ -18,10 +18,10 @@ gulp.task('svg', function () {
     .pipe(svgstore())
     .pipe(replace('svg"><defs>', 'svg">\n\n\n' + 
     '<style type="text/css">\n' +
-    '    path:not(.svg-nocolor){fill:currentColor}\n' +
-    '    use:not(.svg-nocolor):visited{color:currentColor}\n' +
-    '    use:not(.svg-nocolor):hover{color:currentColor}\n' +
-    '    use:not(.svg-nocolor):active{color:currentColor}\n' +
+    '    .editor path:not(.svg-nocolor){fill:currentColor}\n' +
+    '    .editor use:not(.svg-nocolor):visited{color:currentColor}\n' +
+    '    .editor use:not(.svg-nocolor):hover{color:currentColor}\n' +
+    '    .editor use:not(.svg-nocolor):active{color:currentColor}\n' +
     '</style>\n\n\n' + 
     '<defs>'))
     //.pipe(gulp.dest('test/compiled'))

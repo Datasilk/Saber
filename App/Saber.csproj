@@ -14,6 +14,8 @@
     <None Remove="Content\temp\fonts\opensans\opensans-light.woff2" />
     <None Remove="Content\temp\fonts\opensans\opensans-lightitalic.woff2" />
     <None Remove="Content\temp\fonts\opensans\opensans-regular.woff2" />
+    <None Remove="Views\AppSettings\androidicon.html" />
+    <None Remove="Views\AppSettings\appleicon.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -90,6 +92,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\scripts\website.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\AppSettings\androidicon.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\AppSettings\appleicon.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\AppSettings\appsettings.html">

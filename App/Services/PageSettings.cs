@@ -52,7 +52,7 @@ namespace Saber.Services
             var files = Directory.GetFiles(Server.MapPath("/Content/partials/"), "*.html", SearchOption.AllDirectories);
             foreach (var file in files)
             {
-                var paths = file.Split('\\').ToList();
+                var paths = file.Replace(Server.RootPath, "").Split('\\').ToList();
                 var startIndex = paths.FindIndex(f => f == "partials");
                 paths = paths.Skip(startIndex + 1).ToList();
                 var filepath = string.Join('/', paths.ToArray());
@@ -70,10 +70,10 @@ namespace Saber.Services
                 }
                 if (filetype > 0)
                 {
-                    var fileScaffold = new View("/Content/partials/" + filepath);
+                    var fileScaffold = new View(filepath);
                     var details = new Models.Page.Template()
                     {
-                        file = filepath,
+                        file = filepath.Replace("/Content/partials/", ""),
                         fields = fileScaffold.Fields.Select(a =>
                         {
                             var configElem = new Models.Page.Template();

@@ -132,11 +132,8 @@ namespace Saber
 
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //set root Server path
-            var path = env.ContentRootPath + "\\";
             Server.IsDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
-            if (Server.IsDocker) { path = ""; }
-            Server.RootPath = path;
+
 
             //get environment based on application build
             switch (env.EnvironmentName.ToLower())
@@ -213,8 +210,8 @@ namespace Saber
             else
             {
                 //use HTTPS
-                //app.UseHsts();
-                //app.UseHttpsRedirection();
+                app.UseHsts();
+                app.UseHttpsRedirection();
 
                 //use health checks
                 app.UseHealthChecks("/health");

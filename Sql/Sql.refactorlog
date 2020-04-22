@@ -35,4 +35,46 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="userId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="168f9219-0dc6-45c8-853c-09b75b5ed0f6" ChangeDateTime="04/19/2020 23:56:14">
+    <Property Name="ElementName" Value="[dbo].[Log_Urls].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Log_Urls]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="logId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2b386cf0-1269-4b5e-b819-556bf397a2c9" ChangeDateTime="04/19/2020 23:57:48">
+    <Property Name="ElementName" Value="[dbo].[Log_Urls].[logId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Log_Urls]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="urlId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="82d71417-53fc-4f7d-947d-778b3cada74d" ChangeDateTime="04/19/2020 23:58:32">
+    <Property Name="ElementName" Value="[dbo].[Log_UrlRequests].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Log_UrlRequests]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="urlId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4c2e44ba-3289-4f4b-9175-b096395939d1" ChangeDateTime="04/22/2020 02:46:57">
+    <Property Name="ElementName" Value="[dbo].[Log_UrlRequests].[lng]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Log_UrlRequests]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="long" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5c875007-e868-40f3-8d3c-d83efb998e44" ChangeDateTime="04/22/2020 02:54:12">
+    <Property Name="ElementName" Value="[dbo].[Log_UrlRequests].[lat]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Log_UrlRequests]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="latitude" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4a8f7f84-73b7-48d0-92c1-156fc5b46832" ChangeDateTime="04/22/2020 02:54:17">
+    <Property Name="ElementName" Value="[dbo].[Log_UrlRequests].[long]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Log_UrlRequests]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="longitude" />
+  </Operation>
 </Operations>

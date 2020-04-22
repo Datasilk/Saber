@@ -5,6 +5,7 @@
     &.monaco .code-editor{overflow-y:hidden !important; padding-right:0 !important;}
     &.box ul.tabs > li{margin:0 5px 0 0; overflow:hidden; /*border-top-right-radius:9px;*/}
     .sections:after{content:""; display:block; clear:both;}
+    .link{text-decoration:underline;}
 }
 
 /* editor header */
@@ -206,9 +207,13 @@ ul.list{list-style:none; padding-bottom:0;
     }
     .tooltip.below{top:~"calc(100% + 12px)";
         &:after{
-            bottom: 100%; left: 30%; border: solid transparent; content: " "; height: 0; width: 0; position: absolute; 
-            pointer-events: none; border-bottom-color: #2a2a2a; border-width: 15px; margin-left: -15px;
+            bottom: 100%; left:~"calc(50% - 15px)"; border: solid transparent; content: " "; height: 0; width: 0; 
+            position: absolute; pointer-events: none; border-bottom-color: #2a2a2a; border-width: 15px; margin-left: -15px;
         }
+        &.tip-left:after{left:10%;}
+        &.tip-right:after{left:90%;}
+        &.tip-left-center:after{left:25%;}
+        &.tip-right-center:after{left:75%;}
     }
     &:hover{
         .tooltip{display:block; }

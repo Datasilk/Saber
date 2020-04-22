@@ -43,25 +43,30 @@ public static class Server
     public static Dictionary<string, List<Saber.Vendor.IVendorViewRenderer>> viewRenderers { get; set; } = new Dictionary<string, List<Saber.Vendor.IVendorViewRenderer>>();
     public static Dictionary<string, Type> vendorControllers { get; set; } = new Dictionary<string, Type>();
 
-    private static string[] _path = new string[] { };
-
     //Dictionary used for caching non-serialized objects, files from disk, or raw text
     public static Dictionary<string, object> Cache = new Dictionary<string, object>();
 
+
     public static string RootPath
     {
-        set
+
+        get
         {
-            //set the root path of the server
-            _path = value.Replace("\\", "/").Split('/');
+            return Path.GetFullPath(".");
         }
     }
 
+
+
     public static string MapPath(string strPath = "")
     {
-        var str = strPath.Replace("\\", "/");
-        if (str.Substring(0, 1) == "/") { str = str.Substring(1); }
-        return Path.Combine(_path.Concat(str.Split('/')).ToArray());
+        var path = strPath.Replace("\\", "/");
+        if (path.Substring(0, 1) == "/") { path = path.Substring(1); }
+        return Path.Combine(RootPath, path);
+
+        //var str = strPath.Replace("\\", "/");
+        //if (str.Substring(0, 1) == "/") { str = str.Substring(1); }
+        //return Path.Combine(_rootPath.Concat(str.Split('/')).ToArray());
     }
 
     #region "Cache"

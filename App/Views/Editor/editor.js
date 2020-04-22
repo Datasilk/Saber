@@ -88,6 +88,7 @@ S.editor = {
         $('.editor-drop-menu .item-save-as').on('click', S.editor.saveAs);
         $('.editor-drop-menu .item-content-fields').on('click', function () { S.editor.filebar.fields.show(true); });
         $('.editor-drop-menu .item-page-settings').on('click', S.editor.filebar.settings.show);
+        $('.editor-drop-menu .item-analytics').on('click', S.editor.analytics.show);
         $('.editor-drop-menu .item-app-settings').on('click', S.editor.appsettings.show);
         $('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);
         $('.editor-drop-menu .item-new-folder').on('click', S.editor.folder.create.show);
@@ -1075,17 +1076,6 @@ S.editor = {
 
         settings: {
             show: function () {
-                S.editor.tabs.create("Page Settings", "page-settings-section", { isPageResource: true },
-                    () => { //onfocus
-                        $('.tab.page-settings').removeClass('hide');
-                    },
-                    () => { //onblur
-
-                    },
-                    () => { //onsave
-
-                    }
-                );
                 S.editor.dropmenu.hide();
                 $('.editor .sections > .tab').addClass('hide');
                 $('.editor .sections > .page-settings').removeClass('hide');
@@ -1484,6 +1474,37 @@ S.editor = {
             $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
             S.ajax.post('AppSettings/Render', {},
+                function (d) {
+                    var data = JSON.parse(d);
+                    S.ajax.inject(data);
+                    S.editor.resizeWindow();
+                }
+            );
+        }
+    },
+
+    analytics: {
+        show: function () {
+            S.editor.tabs.create("Website Analytics", "analytics-section", {},
+                () => { //onfocus
+                    $('.tab.website-analytics').removeClass('hide');
+                },
+                () => { //onblur
+
+                },
+                () => { //onsave
+
+                }
+            );
+            S.editor.dropmenu.hide();
+            $('.editor .sections > .tab').addClass('hide');
+            $('.editor .sections > .website-analytics').removeClass('hide');
+
+            //disable save menu
+            $('.item-save').addClass('faded').attr('disabled', 'disabled');
+            $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
+
+            S.ajax.post('Analytics/Render', {},
                 function (d) {
                     var data = JSON.parse(d);
                     S.ajax.inject(data);
