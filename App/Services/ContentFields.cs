@@ -19,7 +19,7 @@ namespace Saber.Services
             var fieldText = new View("/Views/ContentFields/text.html");
             foreach (var elem in view.Elements)
             {
-                if (elem.Name != "")
+                if (elem.Name != "" && elem.Name.Substring(0,1) != "/")
                 {
                     var val = "";
                     if (fields.ContainsKey(elem.Name))

@@ -46,21 +46,27 @@ public static class Server
     //Dictionary used for caching non-serialized objects, files from disk, or raw text
     public static Dictionary<string, object> Cache = new Dictionary<string, object>();
 
+    //private properties
+    private static string _rootPath { get; set; }
 
     public static string RootPath
     {
 
         get
         {
-            return Path.GetFullPath(".");
+            if (string.IsNullOrEmpty(_rootPath)) 
+            {
+                _rootPath = Path.GetFullPath(".").Replace("\\", "/");
+            }
+            return _rootPath;
         }
     }
 
 
 
-    public static string MapPath(string strPath = "")
+    public static string MapPath(string path = "")
     {
-        var path = strPath.Replace("\\", "/");
+        path = path.Replace("\\", "/"); 
         if (path.Substring(0, 1) == "/") { path = path.Substring(1); }
         return Path.Combine(RootPath, path);
 

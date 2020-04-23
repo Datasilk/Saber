@@ -236,7 +236,7 @@ namespace Saber.Common.Platform
                 File.WriteAllText(Server.MapPath(outputFile), css);
                 Directory.SetCurrentDirectory(Server.MapPath("/"));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new ServiceErrorException("Error generating compiled resource");
             }

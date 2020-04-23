@@ -64,15 +64,22 @@ namespace Saber.Common.Platform
         {
             var filename = ConfigFilePath(path);
             var contents = Server.LoadFileFromCache(filename);
-            if(contents == "") { return new Models.Page.Settings(); }
-            var config = JsonSerializer.Deserialize<Models.Page.Settings>(contents);
-            if (config != null) { return config; }
+            var config = new Models.Page.Settings();
+            if (contents != "")
+            {
+                config = JsonSerializer.Deserialize<Models.Page.Settings>(contents);
+                if (config != null) { return config; }
+            }
 
             //try to get the template config
             var paths = GetRelativePath(path);
             var file = paths[paths.Length - 1];
-            config = JsonSerializer.Deserialize<Models.Page.Settings>(Server.LoadFileFromCache(string.Join('/', paths.Take(paths.Length - 1).ToArray()) + "/template.json"));
-            if (config != null) { return config; }
+            var template = Server.LoadFileFromCache(string.Join('/', paths.Take(paths.Length - 1).ToArray()) + "/template.json");
+            if(template != "")
+            {
+                config = JsonSerializer.Deserialize<Models.Page.Settings>(template);
+                if (config != null) { return config; }
+            }
 
             //all else fails, generate a new page settings object
             return new Models.Page.Settings()
