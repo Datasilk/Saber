@@ -123,7 +123,8 @@ namespace Saber.Controllers
                 view["content"] = html;
 
                 //log page request
-                Query.Logs.LogUrl(Context.Request.GetEncodedPathAndQuery(), Context.Connection.RemoteIpAddress.ToInt());
+                var url = string.Join("/", PathParts) + (Context.Request.QueryString.HasValue ? "?" + Context.Request.QueryString.Value : "");
+                Query.Logs.LogUrl(url, Context.Connection.RemoteIpAddress.ToInt());
 
                 return base.Render(view.Render());
             }

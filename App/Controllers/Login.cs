@@ -4,38 +4,16 @@
     {
         public override string Render(string body = "")
         {
-            if(User.userId > 0)
-            {
-                //redirect to dashboard
-                return base.Render(Redirect("/dashboard/"));
-            }
-
-            //check for database reset
-            var view = new View("/Views/Login/login.html");
-
-            if(Server.hasAdmin == false)
+            if (Server.hasAdmin == false)
             {
                 //load new administrator form
-                view = new View("/Views/Login/new-admin.html");
+                usePlatform = true;
+                var view = new View("/Views/Login/new-admin.html");
                 view["title"] = "Create an administrator account";
                 Scripts.Append("<script src=\"/editor/js/views/login/new-admin.js\"></script>");
+                return base.Render(view.Render());
             }
-            else if (User.resetPass == true)
-            {
-                //load new password form (for admin only)
-                view = new View("/Views/Login/new-pass.html");
-                view["title"] = "Create an administrator password";
-                Scripts.Append("<script src=\"/editor/js/views/login/new-pass.js\"></script>");
-            }
-            else
-            {
-                //load login form (default)
-                Scripts.Append("<script src=\"/editor/js/views/login/login.js\"></script>");
-            }
-
-            //load login page
-            usePlatform = true;
-            return base.Render(view.Render());
+            return "";
         }
     }
 }

@@ -37,7 +37,7 @@
         };
 
         //finally, send AJAX request
-        req.open('POST', 'api/User/Authenticate');
+        req.open('POST', '/api/User/Authenticate');
         req.setRequestHeader('Content-Type', 'text/html');
         req.send(JSON.stringify(data));
     }

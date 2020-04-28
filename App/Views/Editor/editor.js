@@ -22,8 +22,12 @@ S.editor = {
         //generate path
         var path = window.location.pathname.toLowerCase();
         if (path == '/') { path = '/home'; }
+        if (path.substr(path.length - 1, 1) == '/') {
+            //remove leading slash
+            path = path.substr(0, path.length - 1);
+        }
         this.path = 'content' + path;
-        var paths = this.path.split('/');
+        var paths = this.path.split('/').filter(a => a != '');
         var file = paths[paths.length - 1];
         var dir = paths.join('/').replace(file, '');
         var fileparts = paths[paths.length - 1].split('.', 2);

@@ -297,7 +297,6 @@ namespace Saber
             app.UseDatasilkMvc(new MvcOptions()
             {
                 IgnoreRequestBodySize = true,
-                WriteDebugInfoToConsole = true,
                 ServicePaths = new string[] { "api", "gmail" },
                 Routes = new Routes()
             });

@@ -10,7 +10,7 @@ namespace Saber.Common.Platform
 
         public static string[] GetRelativePath(string path)
         {
-            var paths = path.Split('/');
+            var paths = path.Split('/').Where(a => a != "").ToArray();
 
             //translate root path to relative path
             if (paths[0] == "root")
