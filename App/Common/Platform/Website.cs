@@ -151,12 +151,12 @@ namespace Saber.Common.Platform
             }
 
             //process saved files
-            var pubdir = "/wwwroot/content/pages/" + string.Join("/", paths.Skip(1)).Replace(file, "");
-            if (pubdir[pubdir.Length - 1] != '/') { pubdir += "/"; }
 
             if (paths[0].ToLower() == "/content/pages")
             {
                 //create public folder in wwwroot
+                var pubdir = "/wwwroot/content/pages/" + string.Join("/", paths.Skip(1)).Replace(file, "");
+                if (pubdir[pubdir.Length - 1] != '/') { pubdir += "/"; }
                 if (!Directory.Exists(Server.MapPath(pubdir)))
                 {
                     Directory.CreateDirectory(Server.MapPath(pubdir));
@@ -186,15 +186,19 @@ namespace Saber.Common.Platform
                                 SaveLessFile(File.ReadAllText(Server.MapPath("/CSS/website.less")), "/wwwroot/css/website.css", "/CSS");
                                 break;
                             default:
-                                if(paths[2].Right(5) == ".less")
+                                var pubpath = "/wwwroot/content/partials/" + string.Join('/', paths.Skip(2).ToArray()).Replace(paths[paths.Length - 1], "");
+                                if (paths[2].Right(5) == ".less")
                                 {
                                     //compile less file
-                                    var pubpath = "/wwwroot/content/partials/" + string.Join('/', paths.Skip(1).ToArray()).Replace(paths[paths.Length - 1], "");
+                                    
                                     if (!Directory.Exists(Server.MapPath(pubpath)))
                                     {
                                         Directory.CreateDirectory(Server.MapPath(pubpath));
                                     }
-                                    SaveLessFile(File.ReadAllText(Server.MapPath(filepath)), pubpath + paths[paths.Length - 1].Replace(".less", ".css"), dir);
+                                    SaveLessFile(content, pubpath + paths[paths.Length - 1].Replace(".less", ".css"), dir);
+                                }else if (paths[2].Right(3) == ".js")
+                                {
+                                    File.Copy(Server.MapPath(filepath), Server.MapPath(pubpath + paths[paths.Length - 1]), true);
                                 }
                                 break;
                         }
@@ -214,7 +218,7 @@ namespace Saber.Common.Platform
             {
                 if(ext == "js")
                 {
-                    pubdir = "/wwwroot/js/" + string.Join("/", paths.Skip(1)).Replace(file, "");
+                    var pubdir = "/wwwroot/js/" + string.Join("/", paths.Skip(1)).Replace(file, "");
                     if (pubdir[pubdir.Length - 1] != '/') { pubdir += "/"; }
                     //create public folder in wwwroot
                     if (!Directory.Exists(Server.MapPath(pubdir)))

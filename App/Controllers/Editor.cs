@@ -32,14 +32,13 @@ namespace Saber.Controllers
             if (uselayout)
             {
                 var rpath = "/Content/pages/";
-                string html;
-                string rfile;
+                var rfile = "";
                 if (PathParts.Length > 1)
                 {
                     rpath += string.Join("/", PathParts.Take(PathParts.Length - 1)) + "/";
                     rfile = PathParts[PathParts.Length - 1].ToLower();
                 }
-                else
+                else if(PathParts.Length > 0)
                 {
                     rfile = PathParts[0].ToLower();
                 }
@@ -95,11 +94,11 @@ namespace Saber.Controllers
                         "window.language = '" + User.language + "';" +
                     "</script>\n"
                 );
-                
+
                 if (File.Exists(Server.MapPath(rpath + rfile + ".html")))
                 {
                     //page exists
-                    html = Common.Platform.Render.Page("content/" + pathname + ".html", this, config);
+                    view["content"] = Common.Platform.Render.Page("content/" + pathname + ".html", this, config);
                     AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
                     AddScript(rpath.ToLower() + rfile + ".js", "page_js");
                 }
@@ -107,20 +106,17 @@ namespace Saber.Controllers
                 {
                     //page does not exist, try to load template page from parent
                     var templatePath = string.Join('/', PathParts.Take(PathParts.Length - 1).ToArray());
-                    html = Common.Platform.Render.Page("content/" + templatePath + "/template.html", this, config);
+                    view["content"] = Common.Platform.Render.Page("content/" + templatePath + "/template.html", this, config);
                     AddCSS(rpath.ToLower() + "template.css", "page_css");
                     AddScript(rpath.ToLower() + "template.js", "page_js");
                 }
                 else
                 {
                     //last resort, page & template doesn't exists
-                    html = Common.Platform.Render.Page("content/" + pathname + ".html", this, config);
+                    view["content"] = Common.Platform.Render.Page("content/" + pathname + ".html", this, config);
                     AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
                     AddScript(rpath.ToLower() + rfile + ".js", "page_js");
                 }
-
-                //render page content
-                view["content"] = html;
 
                 //log page request
                 var url = string.Join("/", PathParts) + (Context.Request.QueryString.HasValue ? "?" + Context.Request.QueryString.Value : "");

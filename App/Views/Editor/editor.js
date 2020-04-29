@@ -52,7 +52,6 @@ S.editor = {
                         parameterHints: true,
                         showFoldingControls: 'always'
                     });
-                    editor.onKeyUp((e) => { S.editor.keyUp(e); });
                     editor.onMouseUp((e) => { S.editor.codebar.update(); });
                     S.editor.instance = editor;
                 });
@@ -231,15 +230,6 @@ S.editor = {
         } else {
             var id = S.editor.fileId();
             window.open(window.location.href, 'Editor_' + id, 'width=1800,height=900,left=50,top=50,toolbar=No,location=No,scrollbars=auto,status=No,resizable=yes,fullscreen=No');
-        }
-    },
-
-    keyUp: function (e) {
-        var specialkeys = [16, 17, 18, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 45, 91, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 144];
-        var specialCodes = ['Escape'];
-        if (specialkeys.indexOf(e.keyCode) < 0 && e.ctrlKey == false && e.altKey == false && specialCodes.indexOf(e.code)) {
-            //content only changes if special keys are not pressed
-            S.editor.changed();
         }
     },
     
@@ -583,6 +573,7 @@ S.editor = {
                             S.editor.filebar.code.show();
                             S.editor.codebar.update();
                         }
+                        session.onDidChangeContent((e) => { S.editor.changed(); });
                     });
                     break;
                 case 1: //ace ///////////////////////////////////////////////////////
