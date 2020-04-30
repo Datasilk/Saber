@@ -42,11 +42,12 @@ S.editor = {
                     editor = monaco.editor.create(document.getElementById('editor'), {
                         value: '',
                         theme: "vs" + (this.theme != '' ? '-' + S.editor.theme : ''),
+                        autoIndent: false,
                         automaticLayout: true,
                         colorDecorators: true,
                         dragAndDrop: false,
                         folding: true,
-                        formatOnPaste: true,
+                        formatOnPaste: false,
                         glyphMargin: false,
                         mouseWheelZoom: true,
                         parameterHints: true,

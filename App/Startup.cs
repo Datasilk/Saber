@@ -303,7 +303,7 @@ namespace Saber
 
             //handle missing static files
             app.Use(async (context, next) => {
-                if (context.Response.StatusCode == 404 && context.Request.Path.Value.Contains("/content/pages/"))
+                if (context.Response.StatusCode == 404 && context.Request.Path.Value.Contains("/content/"))
                 {
                     //missing static files that belong to Saber webpages that haven't been saved yet, 
                     //or the user saved the html file using the Editor UI, but haven't saved the less or js files
