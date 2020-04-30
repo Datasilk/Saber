@@ -882,7 +882,7 @@ S.editor = {
                 //add button events for tab
                 if (!isPageResource) {
                     $('.tab-' + id + ' .btn-close').on('click', function (e) {
-                        S.editor.tabs.close(path);
+                        S.editor.tabs.close(id, path);
                         e.preventDefault();
                         e.cancelBubble = true;
                     });
