@@ -1534,26 +1534,27 @@ S.editor = {
             S.ajax.post('PageResources/Render', { path: path },
                 function (d) {
                     $('.sections > .page-resources').html(d);
-                    self._loaded = true;
+                    S.editor.resources._loaded = true;
                     var p = path.replace('content/', '');
                     $('.page-name').attr('href', '/' + p).html(p);
 
                     //initialize uploader
                     if (self.uploader == null) {
                         S.editor.resources.uploader = launchPad({
-                            url: 'Upload/Resources',
+                            url: '/Upload/Resources',
                             onUploadStart: function (files, xhr, data) {
                                 data.append('path', S.editor.resources.path);
                             },
 
                             onQueueComplete: function () {
+                                console.log('queue complete.');
                                 S.editor.resources._loaded = false;
                                 $('.sections .page-resources').children().remove();
                                 S.editor.resources.load(S.editor.resources.path);
                             }
                         });
                     }
-                    $('.button.uploader').on('click', self.uploader.click);
+                    $('.button.uploader').on('click', S.editor.resources.uploader.click);
                 }
             );
         },
