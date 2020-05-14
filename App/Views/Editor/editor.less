@@ -74,12 +74,15 @@
 }
 
 /* file browser */
-.file-browser{float:left; width:250px; position:relative; top:-48px; margin-bottom:-48px; z-index:10;
+@browserWidth: 175px;
+.file-browser{float:left; width:@browserWidth; position:relative; top:-46px; margin-bottom:-48px; z-index:10;
     .icon-folder-add{padding-top:4px;}
-    .label{font-size:17px;}
+    .label{font-size:13px;}
     .item{cursor:default;}
+    ul .icon svg{width:16px;height:16px; position:relative; top:5px;}
+    .bread .icon svg{position:relative; top:-2px;}
 }
-.browser-path{white-space:pre-wrap; word-wrap:break-word; width:~"calc(100% - 40px)" !important; min-height:23px;}
+.browser-path{font-size:12px; white-space:pre-wrap; word-wrap:break-word; width:~"calc(100% - 40px)" !important; min-height:23px;}
 
 /* file bar */
 .file-bar{padding:0 0 5px 0; height:46px;}
@@ -94,8 +97,8 @@
 
 /* when file browser is visible */
 .editor.show-browser {
-    .tab{float:left; width:~"calc(100% - 250px)";}
-    .file-bar{padding-left:250px;}
+    .tab{float:left; width:~"calc(100% - @{browserWidth})";}
+    .file-bar{padding-left:@browserWidth;}
 }
 
 /* sections */
