@@ -23,6 +23,7 @@
 !/App/Scripts/utility/ace/
 !/App/Scripts/utility/launchpad/
 !/App/Scripts/utility/monaco/
+!/App/Scripts/utility/vs/
 !/App/Scripts/utility/velocity.min.js
 /App/Vendor/**
 !/App/Vendor/README.md
