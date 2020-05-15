@@ -4,32 +4,40 @@ Install or build Saber-specific vendor plugins within this folder.
 * Copy a Saber plugin into this folder
 * Create a new folder for your own plugin
 
+> Installed vendor plugins can be found by navigating to **File** > **App Settings** within the Saber Editor. Some vendor plugins may not be visible from the App Settings tab and would be considered "pass-through", meaning that the plugin "just works". 
+
+> Vendor plugins cannot be disabled through the Saber Editor and so you must physically remove the vendor files from the project to disable their functionality.
+
 ## Currently supported plugins
 
 #### CORS
-Authorize Web API calls from cross-origin domains. 
 * [Github repository](https://github.com/Datasilk/Saber-CORS)
 
+Adds CORS-related headers to the controller or service response for trusted cross-origin domains. 
+
 #### Import Export
-A vendor plugin for Saber that allows webmasters to backup & restore web content for their Saber website using a simple zip file.
 * [Github repository](https://github.com/Datasilk/Saber-ImportExport)
 
+A vendor plugin for Saber that allows webmasters to backup & restore all web content for their Saber website using a simple zip file. This is useful for creating nightly backups and can also be used to publish pending changes from your local workstation to your live website.
 
 #### Page List
-Display a list of webpages associated with your website, such as blog posts or wiki pages. 
 * [Github repository](https://github.com/Datasilk/Saber-PageList)
 
+Display a list of webpages associated with your website, such as blog posts or wiki pages. 
+
 #### Reset Cache
+* [Github repository](https://github.com/Datasilk/Saber-ResetCache)
+
 A vendor plugin for Saber that allows webmasters to manually reset the stored cache of objects across all networked servers and executes gulp tasks to copy modified resources to **wwwroot**. This could be useful if your website isn't loading correctly.
 
 ## Vendor-Specific Functionality
 
 #### IVendorStartup
 Interface used to execute vendor-specific code when the Saber application starts up. All Vendor classes that inherit `IVendorStartup` will be evaluated via
-Saber's `ConfigureServices` method and `Configure` method located in the `/App/Saber.cs` class.
+Saber's `ConfigureServices` method and `Configure` method located in the `/App/Startup.cs` class.
 
 #### IVendorViewRenderer
-Interface used to execute vendor-specific code when Saber renders a View. Attribute `[ViewPath("/Views/Path/To/myfile.html")]` is required on the class that inherits `IVendorViewRenderer`, which will determine when the `Render` method is called based on which view is being rendered. Use this interface to add HTML to a View that contains the `{{vendor}}` element.
+Interface used to execute vendor-specific code when Saber renders a View. Attribute `[ViewPath("/Views/Path/To/myfile.html")]` is required on the class that inherits `IVendorViewRenderer`, which will determine when the `Render` method is being called to load the associated `html` file. Use this interface to add HTML to a View that contains the `{{vendor}}` element.
 
 ```
 namespace Saber.Vendor.MyPlugin

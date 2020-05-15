@@ -8,6 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\css\**" />
+    <Compile Remove="wwwroot\editor\fonts\**" />
+    <Content Remove="wwwroot\css\**" />
+    <Content Remove="wwwroot\editor\fonts\**" />
+    <EmbeddedResource Remove="wwwroot\css\**" />
+    <EmbeddedResource Remove="wwwroot\editor\fonts\**" />
+    <None Remove="wwwroot\css\**" />
+    <None Remove="wwwroot\editor\fonts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Content\temp\fonts\opensans\opensans-bold.woff2" />
     <None Remove="Content\temp\fonts\opensans\opensans-bolditalic.woff2" />
     <None Remove="Content\temp\fonts\opensans\opensans-italic.woff2" />
@@ -179,15 +190,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="wwwroot\content" />
-    <Folder Include="wwwroot\css" />
-    <Folder Include="wwwroot\editor\fonts\" />
     <Folder Include="wwwroot\images" />
     <Folder Include="wwwroot\js" />
   </ItemGroup>

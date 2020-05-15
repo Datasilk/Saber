@@ -39,7 +39,8 @@ var gulp = require('gulp'),
     rename = require('gulp-rename'),
     merge = require('merge-stream'),
     changed = require('gulp-changed'),
-    config = require('./App/config.json');
+    config = require('./App/config.json'),
+    exec = require('child_process').exec;
     
 //get config variables from config.json
 var environment = config.environment;
@@ -263,14 +264,27 @@ gulp.task('default:website:less', function () {
     return p.pipe(gulp.dest(paths.webroot + 'content/partials/', { overwrite: true }));
 });
 
+gulp.task('default:website:css', function () {
+    var p = gulp.src(paths.app + 'CSS/website.less')
+        .pipe(less());
+    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    return p.pipe(gulp.dest(paths.webroot + 'content/pages/', { overwrite: true }));
+});
+
 gulp.task('default:website:js', function () {
     return gulp.src(paths.app + 'Content/pages/*.js')
         .pipe(gulp.dest(paths.webroot + 'content/pages/'));
 });
-gulp.task('default:website', gulp.series('default:website:less', 'default:website:js', 'less:website', 'js:app'));
+gulp.task('default:website', gulp.series('default:website:less', 'default:website:js', 'less:website', 'js:app', 'default:website:css'));
 
-//default task /////////////////////////////////////////////////////////////////////
-gulp.task('default', gulp.series('js', 'less', 'css'));
+//generate icons //////////////////////////////////////////////////////////////////////////
+gulp.task('icons', function () {
+    exec('gulp svg --gulpfile Images/SVG/gulpfile.js', function (error, stdout, stderr) { });
+    return gulp.src(paths.app + 'Content/pages/*.js');
+});
+
+//default task ////////////////////////////////////////////////////////////////////////////
+gulp.task('default', gulp.series('js', 'less', 'css', 'icons'));
 
 //specific file task /////////////////////////////////////////////////////////////////////
 gulp.task('file', function () {

@@ -11,7 +11,7 @@ Saber was built with a focus on traditional web development by utilizing HTML, C
 
 * Visual Studio 2019
 * ASP.NET Core 3.0
-* SQL Server 2019
+* SQL Server 2017
 * Node.js
 * Gulp
 
@@ -21,10 +21,16 @@ Saber was built with a focus on traditional web development by utilizing HTML, C
 
     ```git clone --recurse-submodules http://github.com/datasilk/saber```
 
-2. Run command ```npm install```
-3. Run command ```gulp default```
-4. In Visual Studio, build & publish the SQL project to SQL Server 2019 (or greater), with your own database name
-5. Click Play in Visual Studio 2017
+2. In Visual Studio, build & publish the SQL project to SQL Server 2017 (or greater), with your own database name
+3. Click **Play** in Visual Studio after selecting the **App** launch command from the drop down. This will generate a `config.json` file. A runtime error may occur, but ignore it and click Stop.
+4. Open the new `config.json` file and update the Sql connection string
+5. Run command `npm install`
+6. Run command `gulp default` to generate all required `css` & `js` files into the public `wwwroot` folder
+7. Run command `gulp default:website` to copy all `html`, `less`, `js`, and media files for the default template website into the public `wwwroot` folder
+8. Click Play in Visual Studio & navigate to https://localhost:7070
+
+#### Docker Support
+Saber also supports Docker. In order for Saber to work with Docker in Windows, you must first install and run [Docker Desktop](https://docs.docker.com/docker-for-windows/). Then, click **Play** in Visual Studio after selecting the **Docker** launch command from the drop down.
 
 ![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-file.jpg)
 *Screenshot of Saber's Editor UI*
@@ -63,6 +69,11 @@ For example:
 ```
 `header` is a custom variable name and the file path is in quotes
 
+#### Template Web Pages
+You can create a template web page (e.g. `https://yoursite.com/support/template`) and design the template page to be used when creating new sub-pages. When navigating to a new URL (e.g. `https://yoursite.com/support/my-new-page`, if the template URL exists within the same path (e.g. `https://yoursite.com/support/template`), the new URL's web page will copy the design & content of the template URL's web page. This is useful when managing complex websites such as a wiki, blog, or storefront.
+
+> Q&A: Where can I create Template pages? They can be created within any URL path in your website
+
 #### Include Vendor Components
 Use *mustache* variables to load a custom vendor plugin within your web page
 	
@@ -75,10 +86,13 @@ The above example will display a list of blog pages that exists within your webs
 
 Before this can be achieved, though, you must install the [PageList](https://github.com/Datasilk/Saber-PageList/) plugin into the `/App/Vendor` folder.
 
-More plugins can be found within the [Datasilk](https://github.com/Datasilk/) organization on Github.
+##### Vendor Components Library
+You can find a list of Vendor Components and links to their repositories online at [/App/Vendor/README.md](App/Vendor/README.md).
 
-#### Subpage Templates
-You can create a template webpage (e.g. `https://yoursite.com/support/template`) and design the template page to be used when creating new subpages (e.g. `https://yoursite.com/support/getting-started`). The template page will then be used as a starting point for the design of the new subpage, utilizing the **html**, **less**, & **js** files as well as the template page settings. This is useful when managing complex websites such as a wiki, blog, or storefront.
+##### Installing a Vendor Component
+All vendor components **must** be installed within the `/App/Vendor` folder. For example:
+
+```git clone https://github.com/Datasilk/Saber-CORS App/Vendor/CORS```
 
 #### Code Editor
 Saber uses [Monaco](https://microsoft.github.io/monaco-editor/) as its code editor
