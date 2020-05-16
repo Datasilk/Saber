@@ -1,0 +1,24 @@
+.pagelist-item {
+  width: 100%;
+}
+.pagelist-item p {
+  font-size: 14px;
+  color: #666;
+}
+.page-item-thumb {
+  width: 150px;
+  min-height: 100px;
+}
+.page-item-info {
+  display: inline-block;
+  width: calc(100% - 170px);
+  text-align: left;
+  padding-left: 10px;
+  vertical-align: top;
+}
+.page-item-title {
+  padding-bottom: 10px;
+}
+.page-item-created {
+  color: #999;
+}
