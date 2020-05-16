@@ -36,6 +36,7 @@ compose.bat
 /.vs/
 *.pubxml*
 *.prod.json
+package-lock.json
 
 # Build results
 [Dd]ebug/
