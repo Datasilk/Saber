@@ -18,6 +18,8 @@ namespace Saber.Services
             paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
             var dir = string.Join("/", paths).ToLower() + "/";
             var pubdir = dir; //published directory
+            var noResources = true;
+
             if (paths[0].ToLower() == "/content/pages")
             {
                 //loading resources for specific page
@@ -31,6 +33,7 @@ namespace Saber.Services
                 view["for-type"] = "Website";
                 view["folder-path"] = dir.Replace("/wwwroot", "");
             }
+
             if (Directory.Exists(Server.MapPath(pubdir)))
             {
                 //get list of files in directory (excluding thumbnail images)
@@ -61,7 +64,7 @@ namespace Saber.Services
                 if (files.Count() > 0)
                 {
                     var html = new StringBuilder();
-                    var exclude = new string[] { "web.config" };
+                    var exclude = new string[] { "web.config"};
                     foreach (var f in files)
                     {
                         if (exclude.Contains(f.Name.ToLower())) { continue; }
@@ -70,8 +73,17 @@ namespace Saber.Services
                         var icon = "";
                         item["img-src-full"] = pubdir.Replace("/wwwroot", "") + f.Name;
                         item["img-src-rel"] = pubdir.Replace("/wwwroot", "") + f.Name;
+
+
                         switch (ext.ToLower())
                         {
+                            case "js":
+                            case "html":
+                            case "css":
+                            case "less":
+                            case "config":
+                                continue;
+
                             case "png": //images
                             case "jpg":
                             case "jpeg":
@@ -148,10 +160,6 @@ namespace Saber.Services
                                 icon = "video";
                                 break;
 
-                            case "css":
-                                icon = "css";
-                                break;
-
                             case "doc": //documents
                             case "docx":
                             case "rtf":
@@ -165,17 +173,20 @@ namespace Saber.Services
                                 icon = "exe";
                                 break;
 
-                            case "html":
-                                icon = "html";
-                                break;
-
-                            case "js":
-                                icon = "js";
-                                break;
-
-                            case "less":
-                                icon = "less";
-                                break;
+                            //case "css":
+                            //    icon = "css";
+                            //    break;
+                            //case "html":
+                            //    icon = "html";
+                            //    break;
+                            //
+                            //case "js":
+                            //    icon = "js";
+                            //    break;
+                            //
+                            //case "less":
+                            //    icon = "less";
+                            //    break;
 
                             case "pdf":
                                 icon = "pdf";
@@ -213,6 +224,7 @@ namespace Saber.Services
                             item.Show("menu-copy");
                         }
                         html.Append(item.Render());
+                        noResources = false;
                     }
 
                     view["resources"] = "<ul>" + html.ToString() + "</ul>";
@@ -220,7 +232,7 @@ namespace Saber.Services
             }
 
             //no resources
-            if (!view.ContainsKey("resources"))
+            if (noResources == true)
             {
                 view["resources"] = Server.LoadFileFromCache("/Views/PageResources/no-resources.html");
             }

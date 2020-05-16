@@ -1551,6 +1551,7 @@ S.editor = {
                                 S.editor.resources._loaded = false;
                                 $('.sections .page-resources').children().remove();
                                 S.editor.resources.load(S.editor.resources.path);
+                                S.editor.explorer.dir(S.editor.explorer.path);
                             }
                         });
                     }
@@ -1564,6 +1565,7 @@ S.editor = {
             S.ajax.post('PageResources/Delete', { path: S.editor.resources.path, file: file },
                 function (d) {
                     $(elem).parents('li').first().remove();
+                    S.editor.explorer.dir(S.editor.explorer.path);
                 },
 
                 function () { S.editor.error('Could not delete resource on the server.'); }

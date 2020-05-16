@@ -82,15 +82,17 @@
     ul .icon svg{width:16px;height:16px; position:relative; top:5px;}
     .bread .icon svg{position:relative; top:-2px;}
 }
-.browser-path{font-size:12px; white-space:pre-wrap; word-wrap:break-word; width:~"calc(100% - 40px)" !important; min-height:23px;}
+.browser-path{font-family:monospace; font-size:0.7rem; color:#90d3ff !important;  overflow:hidden;
+              white-space:nowrap; text-overflow:ellipsis; direction:rtl; text-align:left;
+              width:~"calc(100% - 40px)" !important; min-height:23px;}
 
 /* file bar */
 .file-bar{padding:0 0 5px 0; height:46px;}
 .file-tabs{
     li .col{padding:8px 10px 6px 10px;}
 }
-.file-path{width:~"calc(100% - 330px)" !important; padding-top:4px;
-    input{font-size:17px !important; font-weight:400; 
+.file-path{width:~"calc(100% - 330px)" !important; padding-top:6px;
+    input{font-family:monospace; font-size:0.9rem !important; color:#90d3ff !important; font-weight:400; 
           &:not(:focus){background-color:transparent !important; border-color:transparent !important; outline:transparent !important; }
     }
 }

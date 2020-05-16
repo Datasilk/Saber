@@ -37,8 +37,8 @@ namespace Saber.Services
                 //display root folders for website
                 items = new List<KeyValuePair<string, string>>()
                 {
-                    new KeyValuePair<string, string>("CSS", "CSS"),
-                    new KeyValuePair<string, string>("backups", "backups")
+                    //new KeyValuePair<string, string>("backups", "backups"),
+                    new KeyValuePair<string, string>("website.less", "CSS/website.less"),
                 };
             }
             else
@@ -78,6 +78,10 @@ namespace Saber.Services
                     if (paths[0] == "/CSS" && paths.Length == 1)
                     {
                         exclude = new string[] { "platform.less" };
+                    }
+                    if (paths[0] == "/wwwroot" && paths.Length > 1 && paths[1] == "css")
+                    {
+                        exclude = new string[] { "website.css" };
                     }
                     foreach (var file in info.GetFiles())
                     {
