@@ -68,7 +68,15 @@ public static class Server
     {
         path = path.Replace("\\", "/"); 
         if (path.Substring(0, 1) == "/") { path = path.Substring(1); }
-        return Path.Combine(RootPath, path);
+        if (IsDocker)
+        {
+            return Path.Combine(RootPath, path);
+        }
+        else 
+        { 
+            return Path.Combine(RootPath.Replace("/", "\\"), path.Replace("/", "\\"));
+        }
+        
 
         //var str = strPath.Replace("\\", "/");
         //if (str.Substring(0, 1) == "/") { str = str.Substring(1); }

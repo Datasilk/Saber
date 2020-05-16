@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 using Saber.Common.Extensions.Strings;
 using dotless.Core;
 
@@ -243,6 +244,27 @@ namespace Saber.Common.Platform
             catch (Exception ex)
             {
                 throw new ServiceErrorException("Error generating compiled resource");
+            }
+        }
+
+        public static List<string> AllFiles()
+        {
+            var list = new List<string>();
+            RecurseDirectories(list, "/Content/partials");
+            list.Add(Server.MapPath("/CSS/website.less"));
+            list.Add(Server.MapPath("/Scripts/website.js"));
+            RecurseDirectories(list, "/wwwroot", new string[] {"\\content\\", "\\editor\\", "web.config" });
+            return list;
+        }
+
+        private static void RecurseDirectories(List<string> list, string path, string[] ignore = null)
+        {
+            var parent = new DirectoryInfo(Server.MapPath(path));
+            var dirs = parent.GetDirectories();
+            list.AddRange(parent.GetFiles().Select(a => a.FullName).Where(a => ignore != null ? ignore.Where(b => a.IndexOf(b) >= 0).Count() == 0  : true));
+            foreach(var dir in dirs)
+            {
+                RecurseDirectories(list, dir.FullName, ignore);
             }
         }
     }
