@@ -9,40 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Content\temp\css\**" />
-    <Compile Remove="Content\temp\fonts\**" />
-    <Compile Remove="Content\temp\images\**" />
-    <Compile Remove="Content\temp\js\**" />
-    <Compile Remove="Content\temp\pages\**" />
-    <Compile Remove="Content\temp\partials\**" />
-    <Compile Remove="Content\temp\scripts\**" />
     <Compile Remove="wwwroot\css\**" />
     <Compile Remove="wwwroot\editor\fonts\**" />
-    <Content Remove="Content\temp\css\**" />
-    <Content Remove="Content\temp\fonts\**" />
-    <Content Remove="Content\temp\images\**" />
-    <Content Remove="Content\temp\js\**" />
-    <Content Remove="Content\temp\pages\**" />
-    <Content Remove="Content\temp\partials\**" />
-    <Content Remove="Content\temp\scripts\**" />
     <Content Remove="wwwroot\css\**" />
     <Content Remove="wwwroot\editor\fonts\**" />
-    <EmbeddedResource Remove="Content\temp\css\**" />
-    <EmbeddedResource Remove="Content\temp\fonts\**" />
-    <EmbeddedResource Remove="Content\temp\images\**" />
-    <EmbeddedResource Remove="Content\temp\js\**" />
-    <EmbeddedResource Remove="Content\temp\pages\**" />
-    <EmbeddedResource Remove="Content\temp\partials\**" />
-    <EmbeddedResource Remove="Content\temp\scripts\**" />
     <EmbeddedResource Remove="wwwroot\css\**" />
     <EmbeddedResource Remove="wwwroot\editor\fonts\**" />
-    <None Remove="Content\temp\css\**" />
-    <None Remove="Content\temp\fonts\**" />
-    <None Remove="Content\temp\images\**" />
-    <None Remove="Content\temp\js\**" />
-    <None Remove="Content\temp\pages\**" />
-    <None Remove="Content\temp\partials\**" />
-    <None Remove="Content\temp\scripts\**" />
     <None Remove="wwwroot\css\**" />
     <None Remove="wwwroot\editor\fonts\**" />
   </ItemGroup>
@@ -138,6 +110,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Content\temp\scripts\" />
     <Folder Include="wwwroot\content" />
     <Folder Include="wwwroot\images" />
     <Folder Include="wwwroot\js" />

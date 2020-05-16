@@ -21,7 +21,7 @@ Saber was built with a focus on traditional web development by utilizing HTML, C
     ```git clone --recurse-submodules http://github.com/datasilk/saber```
 
 2. In Visual Studio, build & publish the SQL project to SQL Server with your own database name
-3. Click **Play** in Visual Studio after selecting the **App** launch command from the drop down. This will generate a `config.json` file and will also generate the default template website. A runtime error may occur if Saber cannot connect to your database, but ignore it and click Stop.
+3. Select the "Saber" project from within the Solution Explorer, then click the drop down arrow to the right-hand side of the **Play** button and select the **App** launch command, then click the **Play** button. This will generate a `config.json` file and will also generate the published website using a template. When the output shows the message `Running Saber Server in development environment`, click the Stop button.
 4. Open the new `config.json` file and update the Sql connection string
 5. Run command `npm install`
 6. Run command `gulp default` to generate all required `css` & `js` files into the public `wwwroot` folder
