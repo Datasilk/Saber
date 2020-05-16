@@ -215,21 +215,6 @@ namespace Saber.Common.Platform
                         break;
                 }
             }
-            else if(paths[0].ToLower() == "/scripts")
-            {
-                if(ext == "js")
-                {
-                    var pubdir = "/wwwroot/js/" + string.Join("/", paths.Skip(1)).Replace(file, "");
-                    if (pubdir[pubdir.Length - 1] != '/') { pubdir += "/"; }
-                    //create public folder in wwwroot
-                    if (!Directory.Exists(Server.MapPath(pubdir)))
-                    {
-                        Directory.CreateDirectory(Server.MapPath(pubdir));
-                    }
-                    //copy javascript files from /Scripts to /wwwroot/js
-                    File.Copy(Server.MapPath(filepath), Server.MapPath(pubdir + file), true);
-                }
-            }
         }
 
         private static void SaveLessFile(string content, string outputFile, string pathLESS)
@@ -250,9 +235,9 @@ namespace Saber.Common.Platform
         public static List<string> AllFiles()
         {
             var list = new List<string>();
+            RecurseDirectories(list, "/Content/pages");
             RecurseDirectories(list, "/Content/partials");
             list.Add(Server.MapPath("/CSS/website.less"));
-            list.Add(Server.MapPath("/Scripts/website.js"));
             RecurseDirectories(list, "/wwwroot", new string[] {"\\content\\", "\\editor\\", "web.config" });
             return list;
         }

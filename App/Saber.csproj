@@ -5,106 +5,54 @@
     <StartupObject></StartupObject>
     <UserSecretsId>9a847bc6-13f3-4478-8479-dc34f3467551</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Content\temp\css\**" />
+    <Compile Remove="Content\temp\fonts\**" />
+    <Compile Remove="Content\temp\images\**" />
+    <Compile Remove="Content\temp\js\**" />
+    <Compile Remove="Content\temp\pages\**" />
+    <Compile Remove="Content\temp\partials\**" />
+    <Compile Remove="Content\temp\scripts\**" />
     <Compile Remove="wwwroot\css\**" />
     <Compile Remove="wwwroot\editor\fonts\**" />
+    <Content Remove="Content\temp\css\**" />
+    <Content Remove="Content\temp\fonts\**" />
+    <Content Remove="Content\temp\images\**" />
+    <Content Remove="Content\temp\js\**" />
+    <Content Remove="Content\temp\pages\**" />
+    <Content Remove="Content\temp\partials\**" />
+    <Content Remove="Content\temp\scripts\**" />
     <Content Remove="wwwroot\css\**" />
     <Content Remove="wwwroot\editor\fonts\**" />
+    <EmbeddedResource Remove="Content\temp\css\**" />
+    <EmbeddedResource Remove="Content\temp\fonts\**" />
+    <EmbeddedResource Remove="Content\temp\images\**" />
+    <EmbeddedResource Remove="Content\temp\js\**" />
+    <EmbeddedResource Remove="Content\temp\pages\**" />
+    <EmbeddedResource Remove="Content\temp\partials\**" />
+    <EmbeddedResource Remove="Content\temp\scripts\**" />
     <EmbeddedResource Remove="wwwroot\css\**" />
     <EmbeddedResource Remove="wwwroot\editor\fonts\**" />
+    <None Remove="Content\temp\css\**" />
+    <None Remove="Content\temp\fonts\**" />
+    <None Remove="Content\temp\images\**" />
+    <None Remove="Content\temp\js\**" />
+    <None Remove="Content\temp\pages\**" />
+    <None Remove="Content\temp\partials\**" />
+    <None Remove="Content\temp\scripts\**" />
     <None Remove="wwwroot\css\**" />
     <None Remove="wwwroot\editor\fonts\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Content\temp\fonts\opensans\opensans-bold.woff2" />
-    <None Remove="Content\temp\fonts\opensans\opensans-bolditalic.woff2" />
-    <None Remove="Content\temp\fonts\opensans\opensans-italic.woff2" />
-    <None Remove="Content\temp\fonts\opensans\opensans-light.woff2" />
-    <None Remove="Content\temp\fonts\opensans\opensans-lightitalic.woff2" />
-    <None Remove="Content\temp\fonts\opensans\opensans-regular.woff2" />
     <None Remove="Views\AppSettings\androidicon.html" />
     <None Remove="Views\AppSettings\appleicon.html" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Content\temp\css\website.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\fonts\opensans\opensans-bold.woff2">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Content\temp\fonts\opensans\opensans-bolditalic.woff2">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Content\temp\fonts\opensans\opensans-italic.woff2">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Content\temp\fonts\opensans\opensans-light.woff2">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Content\temp\fonts\opensans\opensans-lightitalic.woff2">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Content\temp\fonts\opensans\opensans-regular.woff2">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Content\temp\images\logo-xs.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\images\logo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\images\_thumbs\logo-xs.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\images\_thumbs\logo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\pages\access-denied.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\pages\home.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\pages\home.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\pages\home.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\pages\login.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\pages\login.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\pages\login.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\partials\footer.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\partials\footer.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\partials\header.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\partials\header.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\temp\scripts\website.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Views\AppSettings\androidicon.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -194,5 +142,9 @@
     <Folder Include="wwwroot\images" />
     <Folder Include="wwwroot\js" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="XCOPY &quot;$(SolutionDir)App\Content&quot; &quot;$(TargetDir)Content&quot; /E /Y /I&#xD;&#xA;XCOPY &quot;$(SolutionDir)App\Vendor&quot; &quot;$(TargetDir)Vendor&quot; /E /Y /I" />
+  </Target>
 
 </Project>

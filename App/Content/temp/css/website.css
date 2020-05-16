@@ -1,10 +1,56 @@
 /*reset*/
-html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, pre, img, strong, ol, ul, li, fieldset, form, label, 
-table, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, footer, header, menu, nav, section, summary, audio, video {
-    margin:0; padding:0; border:none; outline:0;
-}
-input[type=submit], input[type=button], button{border:0;}
 
+html,
+body,
+div,
+span,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+pre,
+img,
+strong,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+table,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+footer,
+header,
+menu,
+nav,
+section,
+summary,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: 0;
+}
+input[type=submit],
+input[type=button],
+button {
+  border: 0;
+}
 /* font families */
 
 @font-face {
@@ -14,7 +60,6 @@ input[type=submit], input[type=button], button{border:0;}
   src: local('Open Sans Light Italic'), local('OpenSans-LightItalic'), url(/fonts/opensans/opensans-lightitalic.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
-
 @font-face {
   font-family: 'Open Sans';
   font-style: italic;
@@ -22,7 +67,6 @@ input[type=submit], input[type=button], button{border:0;}
   src: local('Open Sans Italic'), local('OpenSans-Italic'), url(/fonts/opensans/opensans-italic.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
-
 @font-face {
   font-family: 'Open Sans';
   font-style: italic;
@@ -30,7 +74,6 @@ input[type=submit], input[type=button], button{border:0;}
   src: local('Open Sans Bold Italic'), local('OpenSans-BoldItalic'), url(/fonts/opensans/opensans-bolditalic.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
-
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
@@ -38,7 +81,6 @@ input[type=submit], input[type=button], button{border:0;}
   src: local('Open Sans Light'), local('OpenSans-Light'), url(/fonts/opensans/opensans-light.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
-
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
@@ -46,7 +88,6 @@ input[type=submit], input[type=button], button{border:0;}
   src: local('Open Sans Regular'), local('OpenSans-Regular'), url(/fonts/opensans/opensans-regular.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
-
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
@@ -54,38 +95,138 @@ input[type=submit], input[type=button], button{border:0;}
   src: local('Open Sans Bold'), local('OpenSans-Bold'), url(/fonts/opensans/opensans-bold.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
-
-html{display:flex; min-height:100%;}
-body{width:100%; position:relative; overflow-x:hidden;}
-
-/* grid */
-.row{width:100%; box-sizing:border-box; position:relative;
-     &:after{clear:both; content:""; display:block;}
+html {
+  display: flex;
+  min-height: 100%;
 }
+body {
+  width: 100%;
+  position: relative;
+  overflow-x: hidden;
+}
+/* grid */
 
-.col{float:left; display:inline-block; position:relative;}
-
+.row {
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+.row:after {
+  clear: both;
+  content: "";
+  display: block;
+}
+.col {
+  float: left;
+  display: inline-block;
+  position: relative;
+}
 /* links */
-a:link, a:visited{color:#0099FF; text-decoration:none;}
-a:hover, a:active{color:#006bff; text-decoration:underline;}
 
+a:link,
+a:visited {
+  color: #0099FF;
+  text-decoration: none;
+}
+a:hover,
+a:active {
+  color: #006bff;
+  text-decoration: underline;
+}
 /* font styles */
-h1, h2, h3, h4, h5, h6{font-weight:400; font-family:'Open Sans', arial;}
-h1{font-size:5em;}
-h2{font-size:3em;}
-h3{font-size:2.5em;}
-h4{font-size:2em;}
-h5{font-size:1.25em;}
-h6{font-size:1em;}
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 400;
+  font-family: 'Open Sans', arial;
+}
+h1 {
+  font-size: 5em;
+}
+h2 {
+  font-size: 3em;
+}
+h3 {
+  font-size: 2.5em;
+}
+h4 {
+  font-size: 2em;
+}
+h5 {
+  font-size: 1.25em;
+}
+h6 {
+  font-size: 1em;
+}
 /* body */
-html{display:flex; min-height:100%;}
-body{background:#fff; color:#333; width:100%; position:relative; overflow-x:hidden; font-family: 'Open Sans', Arial, Helvetica, sans-serif;
-    display:flex; min-height:100vh; flex-direction:column;}
-.content{flex:1; display:flex; align-self:stretch; flex-direction:column; font-family:'Open Sans', arial;
-    p{padding:0 0 20px 0;}
-  }
 
+html {
+  display: flex;
+  min-height: 100%;
+}
+body {
+  background: #292929;
+  color: #ccc;
+  width: 100%;
+  position: relative;
+  overflow-x: hidden;
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+.content {
+  flex: 1;
+  display: flex;
+  align-self: stretch;
+  flex-direction: column;
+  font-family: 'Open Sans', arial;
+}
+.content p {
+  padding: 0 0 20px 0;
+}
 /* imports */
-@import "../Content/partials/header.less"; 
-@import "../Content/partials/footer.less"; 
+
+header {
+  padding: 15px;
+  width: 100%;
+  background-color: #222222;
+  color: #ffffff;
+}
+header .logo {
+  width: 100%;
+  text-align: center;
+}
+header .login-link {
+  font-size: 17px;
+}
+header .no-user,
+header .user {
+  position: absolute;
+  right: 20px;
+}
+header .user {
+  color: #aaa;
+}
+footer {
+  background-color: #222;
+  color: #eee;
+}
+footer a:link,
+footer a:visited {
+  color: #0099FF;
+}
+footer a:hover,
+footer a:active {
+  color: #007AFF;
+}
+footer .logo {
+  padding: 10px 0 20px 10px;
+}
+footer .logo img {
+  width: 100px;
+}

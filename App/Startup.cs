@@ -257,13 +257,27 @@ namespace Saber
                 Directory.CreateDirectory(Server.MapPath("/wwwroot/js/"));
                 Directory.CreateDirectory(Server.MapPath("/Content/pages/"));
                 Directory.CreateDirectory(Server.MapPath("/Content/partials/"));
-                Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/fonts/"), Server.MapPath("/wwwroot/fonts/")); 
-                Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/images/"), Server.MapPath("/wwwroot/images/"));
-                Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/scripts/"), Server.MapPath("/wwwroot/js/"));
-                Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/scripts/"), Server.MapPath("/Scripts/"));
+                
+                //copy all temp folders into wwwroot
+                var dir = new DirectoryInfo(Server.MapPath("/Content/temp"));
+                var exclude = new string[]
+                {
+                    "\\pages",
+                    "\\partials",
+                    "\\app-css"
+                };
+                foreach(var d in dir.GetDirectories())
+                {
+                    if (!exclude.Any(a => d.FullName.IndexOf(a) >= 0)) 
+                    { 
+                        Common.Utility.FileSystem.CopyDirectoryContents(d.FullName, Server.MapPath("/wwwroot/" + d.Name));
+                    }
+                }
+
+                Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/pages/"), Server.MapPath("/Content/pages/")); 
                 Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/partials/"), Server.MapPath("/Content/partials/"));
-                Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/pages/"), Server.MapPath("/Content/pages/"));
-                File.Copy(Server.MapPath("/Content/temp/css/website.less"), Server.MapPath("/CSS/website.less"), true);
+                
+                File.Copy(Server.MapPath("/Content/temp/app-css/website.less"), Server.MapPath("/CSS/website.less"), true);
 
                 Thread.Sleep(1000);
 

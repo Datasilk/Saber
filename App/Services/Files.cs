@@ -38,33 +38,8 @@ namespace Saber.Services
                 items = new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>("CSS", "CSS"),
-                    new KeyValuePair<string, string>("Scripts", "Scripts"),
                     new KeyValuePair<string, string>("backups", "backups")
                 };
-            }
-            else if (paths[0] == "/wwwroot")
-            {
-                //get folder structure for resources (wwwroot) from hard drive
-                if (Directory.Exists(Server.MapPath(rpath)))
-                {
-                    var info = new DirectoryInfo(Server.MapPath(rpath));
-                    if (paths.Length == 1)
-                    {
-                        //exclude internal folders
-                        exclude = new string[] { "content", "css", "editor", "js", "themes", Settings.ThumbDir.Replace("/", "") };
-                    }
-                    else
-                    {
-                        exclude = new string[] { Settings.ThumbDir.Replace("/", "") };
-                    }
-                    foreach (var dir in info.GetDirectories())
-                    {
-                        if (!exclude.Contains(dir.Name.ToLower()))
-                        {
-                            items.Add(new KeyValuePair<string, string>(dir.Name, dir.Name));
-                        }
-                    }
-                }
             }
             else
             {
@@ -77,9 +52,17 @@ namespace Saber.Services
                     {
                         exclude = exclude.Concat(new string[] { "tapestry", "themes" }).ToArray();
                     }
-                    else if (paths[0] == "/Scripts")
+                    if (paths[0] == "/wwwroot")
                     {
-                        exclude = exclude.Concat(new string[] { "min-maps", "platform", "selector", "utility" }).ToArray();
+                        if (paths.Length == 1)
+                        {
+                            //exclude internal folders
+                            exclude = new string[] { "content", "editor", Settings.ThumbDir.Replace("/", "") };
+                        }
+                        else
+                        {
+                            exclude = new string[] { Settings.ThumbDir.Replace("/", "") };
+                        }
                     }
 
                     foreach (var dir in info.GetDirectories())
