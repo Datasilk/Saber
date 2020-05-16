@@ -101,7 +101,7 @@ namespace Saber.Common.Platform
                     //check if user is logged in
                     if(request.User.userId > 0)
                     {
-                        results.Add(new KeyValuePair<string, string>(prefix + "user", "1"));
+                        results.Add(new KeyValuePair<string, string>(prefix + "user", "True"));
                         results.Add(new KeyValuePair<string, string>(prefix + "username", request.User.name));
                         results.Add(new KeyValuePair<string, string>(prefix + "userid", request.User.userId.ToString()));
                     }
@@ -121,7 +121,7 @@ namespace Saber.Common.Platform
                     //check if user is logged in
                     if (request.User.userId == 0)
                     {
-                        results.Add(new KeyValuePair<string, string>(prefix + "no-user", "1"));
+                        results.Add(new KeyValuePair<string, string>(prefix + "no-user", "True"));
                     }
                     return results;
                 })

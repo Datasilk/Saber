@@ -11,7 +11,7 @@ Saber was built with a focus on traditional web development by utilizing HTML, C
 
 * Visual Studio 2019
 * ASP.NET Core 3.0
-* SQL Server 2017
+* SQL Server 2008 (or greater)
 * Node.js
 * Gulp
 
@@ -138,15 +138,17 @@ Upload images & other resources
 
 Generate form fields by writing HTML variables (e.g. `<h2>{{hero-title}}</h2>`) and use them to fill out content for your web pages
 
+### Even More Features!
+* Upload & manage photos & files related to a specific web page
+* Manage a list of acceptable meta title & description prefixes and suffixes.
+    * Select which prefix or suffix to add to individual web page titles & descriptions via the page settings
+* Create multiple headers & footers for your website and select which ones to use within each individual page's settings
+
 ## Under The Hood
 Saber uses many technologies developed by [Mark Entingh](http://www.github.com/markentingh), including [Datasilk Core MVC](http://www.github.com/datasilk/core) as the MVC middleware for ASP.NET Core, [Tapestry](http://www.github.com/websilk/tapestry) for frontend CSS UI design, [Datasilk Core JS](http://www.github.com/datasilk/corejs) as a frontend JavaScript framework, and [Selector](http://www.github.com/websilk/selector) as a replacement for jQuery at only 5kb in size.
 
 ## Future Development
-* Upload & manage photos & files related to a specific web page
 * Publish content using other formats besides HTML & CSS, such as uploading a PDF, DOC, DOCX, MP3 (for auto-transcribing), or Excel spreadsheet.
-* Manage list of acceptable meta title & description prefixes and suffixes.
-    * Select which prefix or suffix to add to individual web page titles & descriptions via the page settings
-* Create multiple headers & footers for your website and select which ones to use within each individual page's settings
 * Upload a cover photo to use when sharing with Facebook, Twitter, and other social platforms
 * Other optional meta data fields used within the page settings
   * Fields from schema.org (JSON-LD)

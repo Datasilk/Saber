@@ -268,7 +268,7 @@ gulp.task('default:website:css', function () {
     var p = gulp.src(paths.app + 'CSS/website.less')
         .pipe(less());
     if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
-    return p.pipe(gulp.dest(paths.webroot + 'content/pages/', { overwrite: true }));
+    return p.pipe(gulp.dest(paths.webroot + 'css/', { overwrite: true }));
 });
 
 gulp.task('default:website:js', function () {
