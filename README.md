@@ -4,7 +4,6 @@
 
 A simple, straight forward CMS and IDE. 
 
-### Principals
 Saber was built with a focus on traditional web development by utilizing HTML, CSS (LESS), and Javascript in their respective file formats. On top of that, Saber gives the developer the ability to make live updates to their website while using an integrated development environment (IDE) inside their favorite web browser.
 
 ## Requirements
@@ -21,12 +20,12 @@ Saber was built with a focus on traditional web development by utilizing HTML, C
 
     ```git clone --recurse-submodules http://github.com/datasilk/saber```
 
-2. In Visual Studio, build & publish the SQL project to SQL Server 2017 (or greater), with your own database name
-3. Click **Play** in Visual Studio after selecting the **App** launch command from the drop down. This will generate a `config.json` file. A runtime error may occur, but ignore it and click Stop.
+2. In Visual Studio, build & publish the SQL project to SQL Server with your own database name
+3. Click **Play** in Visual Studio after selecting the **App** launch command from the drop down. This will generate a `config.json` file and will also generate the default template website. A runtime error may occur if Saber cannot connect to your database, but ignore it and click Stop.
 4. Open the new `config.json` file and update the Sql connection string
 5. Run command `npm install`
 6. Run command `gulp default` to generate all required `css` & `js` files into the public `wwwroot` folder
-7. Run command `gulp default:website` to copy all `html`, `less`, `js`, and media files for the default template website into the public `wwwroot` folder
+7. Run command `gulp website` to copy all `html`, `less`, `js`, and media files for the newly generated website into the public `wwwroot` folder
 8. Click Play in Visual Studio & navigate to https://localhost:7070
 
 #### Docker Support
