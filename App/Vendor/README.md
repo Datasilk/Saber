@@ -30,6 +30,11 @@ Display a list of webpages associated with your website, such as blog posts or w
 
 A vendor plugin for Saber that allows webmasters to manually reset the stored cache of objects across all networked servers and executes gulp tasks to copy modified resources to **wwwroot**. This could be useful if your website isn't loading correctly.
 
+#### Replace Template
+* [Github repository](https://github.com/Datasilk/Saber-ReplaceTemplate)
+
+A vendor plugin for Saber that allows webmasters to replace the template website that is included with Saber with the currently published website. This was meant to be an internal tool used by Saber developers to update the official template website that is loaded when the user first runs a new copy of Saber in Visual Studio.
+
 ## Vendor-Specific Functionality
 
 #### IVendorStartup
