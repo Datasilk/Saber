@@ -232,13 +232,20 @@ namespace Saber.Common.Platform
             }
         }
 
-        public static List<string> AllFiles()
+        public static List<string> AllFiles(string[] include = null)
         {
             var list = new List<string>();
             RecurseDirectories(list, "/Content/pages");
             RecurseDirectories(list, "/Content/partials");
             list.Add(Server.MapPath("/CSS/website.less"));
             RecurseDirectories(list, "/wwwroot", new string[] {"\\content\\", "\\editor\\", "web.config" });
+            if(include != null && include.Length > 0)
+            {
+                foreach(var i in include)
+                {
+                    RecurseDirectories(list, i);
+                }
+            }
             return list;
         }
 
