@@ -23,7 +23,7 @@ namespace Saber.Services
             if (!CheckSecurity()) { return AccessDenied(); }
             var config = PageInfo.GetPageConfig(path);
             var view = new View("/Views/PageSettings/pagesettings.html");
-            var fieldScaffold = new View("/Views/PageSettings/partial-field.html");
+            var fieldView = new View("/Views/PageSettings/partial-field.html");
             var prefixes = new StringBuilder();
             var suffixes = new StringBuilder();
 
@@ -129,14 +129,15 @@ namespace Saber.Services
                 {
                     foreach (var field in header.fields)
                     {
-                        fieldScaffold["label"] = field.Key.Replace("-", " ").Capitalize();
-                        fieldScaffold["name"] = field.Key;
-                        fieldScaffold["value"] = field.Value;
-                        headerFields.Append(fieldScaffold.Render() + "\n");
+                        fieldView["label"] = field.Key.Replace("-", " ").Capitalize();
+                        fieldView["name"] = field.Key;
+                        fieldView["value"] = field.Value;
+                        headerFields.Append(fieldView.Render() + "\n");
                     }
                 }
 
             }
+
             foreach (var footer in footers)
             {
                 footerList.Append("<option value=\"" + footer.file + "\"" +
@@ -146,16 +147,18 @@ namespace Saber.Services
                 {
                     foreach (var field in footer.fields)
                     {
-                        fieldScaffold["label"] = field.Key.Replace("-", " ").Capitalize();
-                        fieldScaffold["name"] = field.Key;
-                        fieldScaffold["value"] = field.Value;
-                        headerFields.Append(fieldScaffold.Render() + "\n");
+                        fieldView["label"] = field.Key.Replace("-", " ").Capitalize();
+                        fieldView["name"] = field.Key;
+                        fieldView["value"] = field.Value;
+                        headerFields.Append(fieldView.Render() + "\n");
                     }
                 }
             }
 
+            //generate list of scripts
+            var scriptItem = new View("/Views/PageSettings/script-item.html");
 
-            //render template elements
+            //render various elements
             view["page-title"] = config.title.body;
             view["page-title-prefixes"] = prefixes.ToString();
             view["page-title-suffixes"] = suffixes.ToString();
@@ -166,7 +169,7 @@ namespace Saber.Services
             view["no-header-fields"] = headerFields.Length == 0 ? "1" : "";
             view["no-footer-fields"] = footerFields.Length == 0 ? "1" : "";
             view["header-fields"] = headerFields.ToString();
-            view["footer-fields"] = footerFields.ToString();
+            view["scripts-list"] = RenderScriptsList(path);
 
             //build JSON Response object
             return JsonSerializer.Serialize(
@@ -177,9 +180,25 @@ namespace Saber.Services
                     html = RenderView(view),
                     css = Css.ToString(),
                     javascript = Scripts.ToString(),
-                    json = JsonSerializer.Serialize(new { headers, footers, field_template = fieldScaffold.HTML })
+                    json = JsonSerializer.Serialize(new { headers, footers, field_template = fieldView.HTML })
                 }
             );
+        }
+
+        public string RenderScriptsList(string path)
+        {
+            var config = PageInfo.GetPageConfig(path);
+            var scriptItem = new View("/Views/PageSettings/script-item.html");
+            var scripts = new StringBuilder();
+            if (config.scripts.Count > 0)
+            {
+                foreach (var script in config.scripts)
+                {
+                    scriptItem["script"] = script;
+                    scripts.Append(scriptItem.Render());
+                }
+            }
+            return scripts.ToString();
         }
 
         public string UpdatePageTitle(string path, int prefixId, int suffixId, string title)
@@ -270,6 +289,84 @@ namespace Saber.Services
                 config.footer = footer;
                 PageInfo.SavePageConfig(path, config);
                 return Success();
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        public string GetAvailableScripts()
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            try
+            {
+                return JsonSerializer.Serialize(RenderAvailableScriptsList(), typeof(List<string>));
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        private List<string> RenderAvailableScriptsList()
+        {
+            var list = new List<string>();
+            RecurseDirectoriesForScripts(list, Server.MapPath("/wwwroot/js"));
+            RecurseDirectoriesForScripts(list, Server.MapPath("/wwwroot/content"));
+            var root = Server.MapPath("/") + "\\";
+            var rel = new List<string>();
+            foreach (var i in list)
+            {
+                rel.Add("/" + i.Replace(root, "").Replace("\\", "/").Replace("wwwroot/",""));
+            }
+            return rel;
+        }
+
+        private void RecurseDirectoriesForScripts(List<string> list, string path)
+        {
+            var dir = new DirectoryInfo(path);
+            var filetypes = new string[] { "js" };
+            list.AddRange(dir.GetFiles().Select(a => a.FullName)
+                .Where(a => filetypes.Any(b => a.Replace("\\", "/").Split("/")[^1].Split(".")[^1].ToLower() == b)));
+
+            foreach(var d in dir.GetDirectories())
+            {
+                RecurseDirectoriesForScripts(list, d.FullName);
+            }
+        }
+
+        public string AddScriptToPage(string file, string path)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            try
+            {
+                var config = PageInfo.GetPageConfig(path);
+                if (!config.scripts.Contains(file))
+                {
+                    config.scripts.Add(file);
+                }
+                PageInfo.SavePageConfig(path, config);
+                return RenderScriptsList(path);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        public string RemoveScriptFromPage(string file, string path)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            try
+            {
+                var config = PageInfo.GetPageConfig(path);
+                if (config.scripts.Contains(file))
+                {
+                    config.scripts.Remove(file);
+                }
+                PageInfo.SavePageConfig(path, config);
+                return RenderScriptsList(path);
             }
             catch (Exception)
             {

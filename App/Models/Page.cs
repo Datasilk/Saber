@@ -12,6 +12,7 @@ namespace Saber.Models.Page
         public Security security { get; set; } = new Security();
         public Template header { get; set; } = new Template();
         public Template footer { get; set; } = new Template();
+        public List<string> scripts { get; set; } = new List<string>();
 
         public Settings()
         {

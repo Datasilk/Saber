@@ -95,6 +95,14 @@ namespace Saber.Controllers
                     "</script>\n"
                 );
 
+                //add all custom scripts before loading page script
+                var scriptIndex = 1;
+                foreach (var script in config.scripts)
+                {
+                    AddScript(script, "custom_js_" + scriptIndex);
+                    scriptIndex++;
+                }
+
                 if (File.Exists(Server.MapPath(rpath + rfile + ".html")))
                 {
                     //page exists
