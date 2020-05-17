@@ -74,14 +74,16 @@
 
 <div class="row line margin-top"></div>
 
-<div class="row pad-top">
+<div class="row pad-top page-scripts">
     <div class="col"><h5>Page Scripts</h5></div>
     <div class="col right">
-        <button class="button">+ Add Script</button>
+        <button class="button btn-add-script">+ Add Script</button>
     </div>    
 </div>
 <div class="scripts-list">
-    
+    <ul class="list">
+        {{scripts-list}} 
+    </ul>
 </div>
 
 <div class="row line pad-bottom margin-top"></div>
@@ -118,6 +120,23 @@
         <div class="row text-center pad-top-sm">
             <div class="col">
                 <input type="submit" class="button apply" value="Create Suffix" />
+            </div>
+        </div>
+    </form>
+</script>
+
+<script language="text/html" id="template_scripts_add">
+    <form>
+        <div class="row field">Available Scripts</div>
+        <div class="row input">
+            <select id="available_scripts"></select>
+        </div>
+        <div class="row pad-top pad-bottom faded">
+            <span>You can add more scripts by uploading them into the <b>wwwroot/js</b> folder.</span>
+        </div>
+        <div class="row text-center pad-top-sm">
+            <div class="col">
+                <input type="submit" class="button apply" value="Add Script To Page" />
             </div>
         </div>
     </form>
