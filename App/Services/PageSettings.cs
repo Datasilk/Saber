@@ -55,7 +55,7 @@ namespace Saber.Services
                 var paths = file.Replace(Server.RootPath, "").Split('\\').ToList();
                 var startIndex = paths.FindIndex(f => f == "partials");
                 paths = paths.Skip(startIndex + 1).ToList();
-                var filepath = string.Join('/', paths.ToArray());
+                var filepath = "/Content/partials/" + string.Join('/', paths.ToArray());
                 var filename = paths[paths.Count - 1];
 
                 //get list of fields within html template
@@ -70,11 +70,11 @@ namespace Saber.Services
                 }
                 if (filetype > 0)
                 {
-                    var fileScaffold = new View(filepath);
+                    var fileView = new View(filepath);
                     var details = new Models.Page.Template()
                     {
                         file = filepath.Replace("/Content/partials/", ""),
-                        fields = fileScaffold.Fields.Select(a =>
+                        fields = fileView.Fields.Select(a =>
                         {
                             var configElem = new Models.Page.Template();
                             switch (filetype)
@@ -89,7 +89,7 @@ namespace Saber.Services
                             return new KeyValuePair<string, string>(a.Key,
                                 configElem.fields.ContainsKey(a.Key) ? configElem.fields[a.Key] : "");
                         }).Where(a => {
-                            var partial = fileScaffold.Partials.Where(b => a.Key.IndexOf(b.Prefix) == 0)
+                            var partial = fileView.Partials.Where(b => a.Key.IndexOf(b.Prefix) == 0)
                                 .OrderByDescending(o => o.Prefix.Length).FirstOrDefault();
                             var prefix = "";
                             var naturalKey = a.Key;
@@ -166,8 +166,8 @@ namespace Saber.Services
             view["page-header-list"] = headerList.ToString();
             view["page-footer-list"] = footerList.ToString();
             view["page-template"] = path.Replace("content/", "/") + "/template";
-            view["no-header-fields"] = headerFields.Length == 0 ? "1" : "";
-            view["no-footer-fields"] = footerFields.Length == 0 ? "1" : "";
+            view["no-header-fields"] = headerFields.Length == 0 ? "True" : "";
+            view["no-footer-fields"] = footerFields.Length == 0 ? "True" : "";
             view["header-fields"] = headerFields.ToString();
             view["scripts-list"] = RenderScriptsList(path);
 
