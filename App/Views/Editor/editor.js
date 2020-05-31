@@ -147,8 +147,6 @@ S.editor = {
             );
         }
 
-        
-
         //initialize JavaScript binding into Rhinoceros (if available)
         if (typeof CefSharp != 'undefined') {
             (async function () {
@@ -866,12 +864,24 @@ S.editor = {
             var file = paths[paths.length - 1];
             var fileparts = paths[paths.length - 1].split('.', 2);
             var isPageResource = S.editor.isResource(path);
+            console.log(path);
+            if (path.indexOf('content/pages/') >= 0 && path.indexOf('.html') > 0 && isready == true) {
+                //redirect to page instead of opening tab
+                if (S.editor.files.html.changed == true) {
+                    //TODO:confirm if user wants to save changes to html page
+                }
+                console.log(path.replace('content/pages', '').replace('.html', ''));
+                location.href = path.replace('content/pages', '').replace('.html', '');
+                return;
+            }
 
             if (tab.length == 0) {
                 //tab doesn't exist yet
                 var temp = $('#template_tab').html().trim();
                 var title = file;
+                //truncate title with ... prefix
                 if (fileparts[0].length > 18) { title = '...' + fileparts[0].substr(fileparts[0].length - 15) + '.' + fileparts[1];}
+                //generate tab html
                 $('.edit-tabs ul.row').append(temp
                     .replace(/\#\#id\#\#/g, id)
                     .replace('##path##', path)
@@ -921,6 +931,7 @@ S.editor = {
             //change file path
             var cleanPath = path;
             if (path.indexOf('content/partials/') == 0) {
+            } else if (path.indexOf('content/pages')) {
             } else if (path.indexOf('content/') == 0) {
                 cleanPath = path.replace('content/', 'content/pages/');
             }

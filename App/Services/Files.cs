@@ -65,6 +65,7 @@ namespace Saber.Services
                         }
                     }
 
+                    //get list of sub-directories
                     foreach (var dir in info.GetDirectories())
                     {
                         if (dir.Name.IndexOfAny(new char[] { '.', '_' }) != 0 && !exclude.Contains(dir.Name.ToLower()))
@@ -123,6 +124,7 @@ namespace Saber.Services
             {
                 //add special directories
                 html.Append(RenderBrowserItem(item, "wwwroot", "wwwroot", "folder", "wwwroot"));
+                html.Append(RenderBrowserItem(item, "pages", "pages", "folder", "content/pages"));
                 html.Append(RenderBrowserItem(item, "partials", "partials", "folder", "content/partials"));
             }
             else if (paths[0] == "/wwwroot")
@@ -152,7 +154,7 @@ namespace Saber.Services
             if (title.IndexOf(".") > 0)
             {
                 item["icon"] = "file-" + title.Split('.', 2)[1].ToLower();
-                item["onclick"] = "S.editor.explorer.open('" + path + "')";
+                item["onclick"] = "S.editor.explorer.open('" + path + "', null, true)";
             }
             else
             {

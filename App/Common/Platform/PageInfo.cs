@@ -40,6 +40,9 @@ namespace Saber.Common.Platform
             {
                 switch (paths[1].ToLower())
                 {
+                    case "pages":
+                        paths[0] = "/Content";
+                        break;
                     case "partials":
                         paths[0] = "/Content";
                         break;
