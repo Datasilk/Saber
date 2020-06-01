@@ -1581,9 +1581,12 @@ S.editor = {
 
         load: function (path) {
             var self = S.editor.resources;
-            S.editor.tabs.create("Page Resources", "page-resources-section", { isPageResource: true },
+            var isRoot = false;
+            if (path.indexOf('wwwroot') >= 0) { isRoot = true; }
+            var id = isRoot ? 'resources' : 'page-resources';
+            S.editor.tabs.create(isRoot ? "Resources" : "Page Resources", id + "-section", { isPageResource: !isRoot },
                 () => { //onfocus
-                    $('.tab.page-resources').removeClass('hide');
+                    $('.tab.' + id).removeClass('hide');
                 },
                 () => { //onblur
 
@@ -1594,10 +1597,10 @@ S.editor = {
             );
             if (self._loaded == true && self.path == path) { return; }
             S.editor.resources.path = path;
-            $('.sections > .page-resources').html('');
+            $('.sections > .' + id).html('');
             S.ajax.post('PageResources/Render', { path: path },
                 function (d) {
-                    $('.sections > .page-resources').html(d);
+                    $('.sections > .' + id).html(d);
                     S.editor.resources._loaded = true;
                     var p = path.replace('content/', '');
                     $('.page-name').attr('href', '/' + p).html(p);
@@ -1613,7 +1616,7 @@ S.editor = {
                             onQueueComplete: function () {
                                 console.log('queue complete.');
                                 S.editor.resources._loaded = false;
-                                $('.sections .page-resources').children().remove();
+                                $('.sections .' + id).children().remove();
                                 S.editor.resources.load(S.editor.resources.path);
                                 S.editor.explorer.dir(S.editor.explorer.path);
                             }
