@@ -12,7 +12,6 @@ namespace Saber.Services
 {
     public class Files : Service
     {
-
         public string Dir(string path)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
@@ -210,7 +209,7 @@ namespace Saber.Services
 
         public string GetOpenedTabs()
         {
-            return JsonSerializer.Serialize(User.GetOpenTabs());
+            return JsonResponse(User.GetOpenTabs());
         }
 
         public string SaveFile(string path, string content)

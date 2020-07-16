@@ -172,7 +172,7 @@ namespace Saber.Services
             view["scripts-list"] = RenderScriptsList(path);
 
             //build JSON Response object
-            return JsonSerializer.Serialize(
+            return JsonResponse(
 
                 new Datasilk.Core.Web.Response()
                 {
@@ -301,7 +301,7 @@ namespace Saber.Services
             if (!CheckSecurity()) { return AccessDenied(); }
             try
             {
-                return JsonSerializer.Serialize(RenderAvailableScriptsList(), typeof(List<string>));
+                return JsonResponse(RenderAvailableScriptsList());
             }
             catch (Exception)
             {

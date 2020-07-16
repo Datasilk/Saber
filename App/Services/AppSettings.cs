@@ -51,7 +51,7 @@ namespace Saber.Services
             AddScript("/editor/js/views/appsettings/appsettings.js");
 
             //render view
-            return JsonSerializer.Serialize(
+            return JsonResponse(
                 new Datasilk.Core.Web.Response()
                 {
                     selector = ".sections > .app-settings .settings-contents",

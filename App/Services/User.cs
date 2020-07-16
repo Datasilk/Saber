@@ -18,7 +18,7 @@ namespace Saber.Services
                 {
                     User.LogIn(user.userId, user.email, user.name, user.datecreated, "", 1, user.photo);
                     User.Save(true);
-                    return JsonSerializer.Serialize(new { redirect = homePath });
+                    return JsonResponse(new { redirect = homePath });
                 }
             }
             return Error();
@@ -74,7 +74,6 @@ namespace Saber.Services
 
         public string EncryptPassword(string email, string password)
         {
-            var bCrypt = new BCrypt.Net.BCrypt();
             return BCrypt.Net.BCrypt.HashPassword(email + Server.salt + password, Server.bcrypt_workfactor);
 
         }

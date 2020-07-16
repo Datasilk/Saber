@@ -124,7 +124,7 @@ namespace Saber
 
         public string AccessDenied<T>() where T : IController
         {
-            return IController.AccessDenied<T>();
+            return IController.AccessDenied<T>(this);
         }
 
         public string Redirect(string url)

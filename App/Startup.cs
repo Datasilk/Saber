@@ -199,7 +199,7 @@ namespace Saber
 
             //use session
             var sessionOpts = new SessionOptions();
-            sessionOpts.Cookie.Name = "Gmaster";
+            sessionOpts.Cookie.Name = "Saber";
             sessionOpts.IdleTimeout = TimeSpan.FromMinutes(expires);
 
             app.UseSession(sessionOpts);
@@ -321,9 +321,7 @@ namespace Saber
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-
-            //run Datasilk application
+            //run Datasilk Core MVC Middleware
             app.UseDatasilkMvc(new MvcOptions()
             {
                 IgnoreRequestBodySize = true,

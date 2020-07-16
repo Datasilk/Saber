@@ -46,7 +46,7 @@ namespace Saber.Services
 
 
             //render view
-            return JsonSerializer.Serialize(
+            return JsonResponse(
                 new Datasilk.Core.Web.Response()
                 {
                     selector = ".sections > .website-analytics .analytics-contents",

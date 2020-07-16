@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Datasilk.Core.Web;
 
 namespace Saber
@@ -7,6 +8,22 @@ namespace Saber
         public EditorType EditorUsed
         {
             get { return EditorType.Monaco; }
+        }
+
+        public string JsonResponse(dynamic obj)
+        {
+            Context.Response.ContentType = "text/json";
+            return JsonSerializer.Serialize(obj);
+        }
+
+        public override bool CheckSecurity()
+        {
+            return User.userId > 0;
+        }
+
+        public override void Unload()
+        {
+            User.Save();
         }
 
         public string Success()
