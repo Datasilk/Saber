@@ -116,8 +116,4 @@
     <Folder Include="wwwroot\js" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="XCOPY &quot;$(SolutionDir)App\Content&quot; &quot;$(TargetDir)Content&quot; /E /Y /I&#xD;&#xA;XCOPY &quot;$(SolutionDir)App\Vendor&quot; &quot;$(TargetDir)Vendor&quot; /E /Y /I" />
-  </Target>
-
 </Project>

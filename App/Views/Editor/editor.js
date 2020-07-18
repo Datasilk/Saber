@@ -864,13 +864,11 @@ S.editor = {
             var file = paths[paths.length - 1];
             var fileparts = paths[paths.length - 1].split('.', 2);
             var isPageResource = S.editor.isResource(path);
-            console.log(path);
             if (path.indexOf('content/pages/') >= 0 && path.indexOf('.html') > 0 && isready == true) {
                 //redirect to page instead of opening tab
                 if (S.editor.files.html.changed == true) {
                     //TODO:confirm if user wants to save changes to html page
                 }
-                console.log(path.replace('content/pages', '').replace('.html', ''));
                 location.href = path.replace('content/pages', '').replace('.html', '');
                 return;
             }
@@ -1500,8 +1498,6 @@ S.editor = {
                 if (!target.hasClass('close-btn')) {
                     target = target.parents('.close-btn').first();
                 }
-                console.log(target);
-                console.log('remove');
                 var data = { file: target.attr('data-path'), path: S.editor.path };
                 S.ajax.post('PageSettings/RemoveScriptFromPage', data, (list) => {
                     //add script to page
@@ -1614,7 +1610,6 @@ S.editor = {
                             },
 
                             onQueueComplete: function () {
-                                console.log('queue complete.');
                                 S.editor.resources._loaded = false;
                                 $('.sections .' + id).children().remove();
                                 S.editor.resources.load(S.editor.resources.path);

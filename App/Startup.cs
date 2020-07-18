@@ -348,7 +348,6 @@ namespace Saber
                             break;
                     }
                 }
-                //await next.Invoke();
             });
 
             Console.WriteLine("Running Saber Server in " + Server.environment.ToString() + " environment");
