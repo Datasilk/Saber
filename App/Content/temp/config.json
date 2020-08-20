@@ -1,0 +1,10 @@
+{
+  "sql": {
+    "active": "SqlServerTrusted",
+    "SqlServerTrusted": "server=.\\SQL2017; database=Saber; Trusted_Connection=true"
+  },
+  "encryption": {
+    "salt": "?",
+    "bcrypt_work_factor": "10"
+  }
+}

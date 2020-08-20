@@ -10,7 +10,7 @@ Saber was built with a focus on traditional web development by utilizing HTML, C
 
 * Visual Studio 2019
 * ASP.NET Core 3.0
-* SQL Server 2008 (or greater)
+* SQL Server 2017 (or greater)
 * Node.js
 * Gulp
 
@@ -18,18 +18,21 @@ Saber was built with a focus on traditional web development by utilizing HTML, C
 
 1. Clone the repository:
 
-    ```git clone --recurse-submodules http://github.com/datasilk/saber```
+    ```git clone --recurse-submodules http://github.com/Datasilk/Saber```
 
-2. In Visual Studio, build & publish the SQL project to SQL Server with your own database name
-3. Select the "Saber" project from within the Solution Explorer, then click the drop down arrow to the right-hand side of the **Play** button and select the **App** launch command, then click the **Play** button. This will generate a `config.json` file and will also generate the published website using a template. When the output shows the message `Running Saber Server in development environment`, click the Stop button.
-4. Open the new `config.json` file and update the Sql connection string
-5. Run command `npm install`
-6. Run command `gulp default` to generate all required `css` & `js` files into the public `wwwroot` folder
-7. Run command `gulp website` to copy all `html`, `less`, `js`, and media files for the newly generated website into the public `wwwroot` folder
-8. Click Play in Visual Studio & navigate to https://localhost:7070
+2. Run command `npm install`
+3. Run command `gulp default` to generate all required `css` & `js` files into the public `wwwroot` folder
+4. Run command `gulp new-website` to copy all `html`, `less`, `js`, and media files for the newly generated website into the public `wwwroot` folder
+5. In Visual Studio, build then publish the **Sql** project to SQL Server
+6. Open `config.json` file and update the Sql connection string
+7. Click Play in Visual Studio & navigate to https://localhost:7070
 
 #### Docker Support
-Saber also supports Docker. In order for Saber to work with Docker in Windows, you must first install and run [Docker Desktop](https://docs.docker.com/docker-for-windows/). Then, click **Play** in Visual Studio after selecting the **Docker** launch command from the drop down.
+Saber also supports Docker. In order for Saber to work with Docker in Windows, you must first install and run [Docker Desktop](https://docs.docker.com/docker-for-windows/). 
+1. Open `config.docker.json` file and update the Sql connection string Initial Catalog along with the User ID & Password you've created in Sql Server that has access to your Saber database
+2. Click **Play** in Visual Studio after selecting the **Docker** launch command from the drop down
+
+----
 
 ![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-file.jpg)
 *Screenshot of Saber's Editor UI*
@@ -66,7 +69,7 @@ For example:
 ```
 {{header "Partials/UI/header.html"}}
 ```
-`header` is a custom variable name and the file path is in quotes
+`header` is a variable name and the relative file path is in quotes
 
 #### Template Web Pages
 You can create a template web page (e.g. `https://yoursite.com/support/template`) and design the template page to be used when creating new sub-pages. When navigating to a new URL (e.g. `https://yoursite.com/support/my-new-page`, if the template URL exists within the same path (e.g. `https://yoursite.com/support/template`), the new URL's web page will copy the design & content of the template URL's web page. This is useful when managing complex websites such as a wiki, blog, or storefront.

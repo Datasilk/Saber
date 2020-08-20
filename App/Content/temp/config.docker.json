@@ -1,0 +1,10 @@
+{
+  "sql": {
+    "active": "SqlServerTrusted",
+    "SqlServerTrusted": "Data Source=host.docker.internal,1433;Initial Catalog=Saber;Persist Security Info=False;User ID=docker;Password=test123;MultipleActiveResultSets=True;"
+  },
+  "encryption": {
+    "salt": "?",
+    "bcrypt_work_factor": "10"
+  }
+}

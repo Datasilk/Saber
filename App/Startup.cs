@@ -155,18 +155,9 @@ namespace Saber
                 (Server.environment == Server.Environment.production ? ".prod" : "") + ".json";
             if (!File.Exists(Server.MapPath(configFile)))
             {
-                //create default config.json file
-                File.WriteAllText(Server.MapPath(configFile),
-                    "{\n" +
-                     "\"sql\": {\n" +
-                        "\"active\": \"SqlServerTrusted\",\n" +
-                        "\"SqlServerTrusted\": \"server=.\\\\SQL2017; database=Saber; Trusted_Connection=true\"\n" +
-                      "},\n" +
-                      "\"encryption\": {\n" +
-                        "\"salt\": \"?\",\n" +
-                        "\"bcrypt_work_factor\": \"10\"\n" +
-                      "}\n" +
-                    "}\n");
+                //create default config.json files
+                File.Copy(Server.MapPath("/Content/temp/config.json"), Server.MapPath("/config.json"));
+                File.Copy(Server.MapPath("/Content/temp/config.docker.json"), Server.MapPath("/config.docker.json"));
             }
 
             config = new ConfigurationBuilder()

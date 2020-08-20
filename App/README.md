@@ -11,7 +11,7 @@ The above statement is true for the end-user, but for us developers who wish to 
 * **Common**
   * Many static classes exist in the common folder and some are shared between *Controllers* & *Services*. These classes contain common functionality that can be used across many parts of the project. Otherwise known as the *Business Logic Layer*.
 * **Content**
-  * All content related to the custom website will be stored in this folder. 
+  * All content related to the custom website will be stored in this folder. Only the **temp** folder is tracked by git so that the custom website will not be checked in to the Saber repository by accident.
   * **pages**
     *  all files related to a web page will be stored here (*.html, *.js, *.less, *.json), including language files & page settings files.
   * **partials**
@@ -19,34 +19,32 @@ The above statement is true for the end-user, but for us developers who wish to 
   * **temp**
     * When Saber's web server loads, it checks to see if a *home.html* file exists in the *Content/pages* folder. If not, Saber will proceed to copy all the files from the *temp* folder into various folders throughout the project in order to initialize the default website that comes with the Saber platform.
 * **Controllers**
-  * Classes that are bound to URLs within the website. 
+  * Classes that are bound to static URLs within the website. 
     * The **Editor** class is responsible for rendering all web pages for the user's website. It is also responsible for rendering the IDE on top of all web pages when the user is logged into their account.
 	* The **login** class is only used if no user accounts exist, and is loaded so that the administrator can create their account.
 	* The **Logout** class is used to log a user out of their account, which then redirects the user to the login page.
 	* The **Upload** class is used to receive raw file data from the user while uploading resources for their website via the IDE.
 * **Core**
-  * This folder is a git submodule for the *Datasilk Core* MVC middleware. All page & web service requests are handled & routed via this framework.
+  * This folder is a git submodule for the *[Datasilk Core](https://github.com/Datasilk/Core)* MVC middleware. All page & web service requests are handled & routed via this framework.
 * **CSS**
   * All site-wide CSS & LESS files are stored here, and gulp compiles the LESS and copies them into the *wwwroot/css* folder. 
   * **tapestry**
-    * This folder is a git submodule for the CSS UI framework Tapestry, which is used for Saber's IDE.
+    * This folder is a git submodule for the LESS UI framework *[Tapestry](https://github.com/Websilk/Tapestry)*, which is used for Saber's IDE.
   * **themes**
     * Tapestry color schemes for Saber's IDE reside in this folder
   * **platform.less**
-    * This CSS file is the main style sheet used by Saber's IDE
+    * This LESS file is the main style sheet used by Saber's IDE
   * **website.less**
-    * This CSS file can be modified via Saber's IDE and is loaded on every page of the user's website.
+    * This LESS file can be modified via Saber's IDE and is compiled & published to */wwwroot/css/website.css*, which is loaded on every page of the user's website.
 * **Models**
   * Class files that represent data structures belong in this folder
 * **Scripts**
-  * All JavaScript libraries exist in this folder, and `gulp` is responsible for compiling them and copying them into the *wwwroot/js* folder. Users can create new folders & upload their own JavaScript files from within the Saber IDE, but they are not allowed to modify the folders described below.
+  * All JavaScript libraries exist in this folder, and `gulp` is responsible for compiling them and copying them into the *wwwroot/editor/js* folder.
   * **platform**
-    * This folder is a git submodule for the *Datasilk Core Js* framework. It contains features such as a modal popup, drag & drop events, svg sprite loader, and a simple scaffolding framework like *Mustache*.
+    * This folder is a git submodule for the *[Datasilk Core JS](https://github.com/Datasilk/CoreJs)* framework. It contains features such as a modal popup, drag & drop events, svg sprite loader, and a simple scaffolding framework like *Mustache*.
   *  **selector**
-     *  This folder is a git submodule for a jQuery replacement developed by Mark Entingh. It is used instead of jQuery because it weighs in under 5kb in size after being minified & gzip compressed.
+     *  This folder is a git submodule for *[Selector](https://github.com/Websilk/Selector)*, a jQuery replacement developed by Mark Entingh. It is used instead of jQuery because it weighs in under 5kb in size after being minified & gzip compressed.
   * **utility**
     * This folder contains various 3rd-party JavaScript libraries such as the Monaco source code editor.
-  * **website.js** 
-    * This JavaScript file is loaded on every page within the user's website. It can be edited via the IDE and is compiled by *gulp* and copied to `/wwwroot/js/` when changes are made. 
 * **Services**
   * This folder contains all the *Service* classes that are responsible for handling web API requests via AJAX.

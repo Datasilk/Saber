@@ -9,12 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Content\temp\scripts\**" />
     <Compile Remove="wwwroot\css\**" />
     <Compile Remove="wwwroot\editor\fonts\**" />
+    <Content Remove="Content\temp\scripts\**" />
     <Content Remove="wwwroot\css\**" />
     <Content Remove="wwwroot\editor\fonts\**" />
+    <EmbeddedResource Remove="Content\temp\scripts\**" />
     <EmbeddedResource Remove="wwwroot\css\**" />
     <EmbeddedResource Remove="wwwroot\editor\fonts\**" />
+    <None Remove="Content\temp\scripts\**" />
     <None Remove="wwwroot\css\**" />
     <None Remove="wwwroot\editor\fonts\**" />
   </ItemGroup>
@@ -110,7 +114,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Content\temp\scripts\" />
     <Folder Include="wwwroot\content" />
     <Folder Include="wwwroot\images" />
     <Folder Include="wwwroot\js" />
