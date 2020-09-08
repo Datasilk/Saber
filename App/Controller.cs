@@ -105,9 +105,12 @@ namespace Saber
             return view.Render();
         }
 
-        public override void Unload()
+        public override void Dispose()
         {
-            User.Save();
+            if(user != null)
+            {
+                User.Save();
+            }
         }
 
         public override bool CheckSecurity()

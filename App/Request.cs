@@ -3,7 +3,7 @@ namespace Saber
 {
     public class Request : Datasilk.Core.Web.Request
     {
-        private User user;
+        protected User user;
         public User User
         {
             get
