@@ -244,6 +244,7 @@ namespace Saber
                 //copy default website since none exists yet
                 Directory.CreateDirectory(Server.MapPath("/wwwroot/content/"));
                 Directory.CreateDirectory(Server.MapPath("/wwwroot/content/pages/"));
+                Directory.CreateDirectory(Server.MapPath("/wwwroot/fonts/"));
                 Directory.CreateDirectory(Server.MapPath("/wwwroot/images/"));
                 Directory.CreateDirectory(Server.MapPath("/wwwroot/js/"));
                 Directory.CreateDirectory(Server.MapPath("/Content/pages/"));

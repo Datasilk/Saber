@@ -70,7 +70,7 @@ public static class Server
         if (path.Substring(0, 1) == "/") { path = path.Substring(1); }
         if (IsDocker)
         {
-            return Path.Combine(RootPath, path);
+            return Path.Combine("", path);
         }
         else 
         { 

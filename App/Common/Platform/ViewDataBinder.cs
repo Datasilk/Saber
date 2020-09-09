@@ -50,7 +50,7 @@ namespace Saber.Common.Platform
         {
             var list = new List<string>()
             {
-                "user", "username", "userid", "no-user"
+                "user", "username", "userid", "no-user", "year"
             };
             list.AddRange(HtmlVars.Select(a => a.Key));
             return list.ToArray();
@@ -145,7 +145,7 @@ namespace Saber.Common.Platform
                         req.Path.ToUriComponent(),
                         req.QueryString.ToUriComponent()
                     );
-                    results.Add(new KeyValuePair<string, string>("page-url", url));
+                    results.Add(new KeyValuePair<string, string>(prefix + "page-url", url));
                     return results;
                 })
             });
@@ -160,7 +160,21 @@ namespace Saber.Common.Platform
                 {
                     var results = new List<KeyValuePair<string, string>>();
                     var paths = request.Path.Split('/');
-                    results.Add(new KeyValuePair<string, string>("page-id", string.Join('_', paths)));
+                    results.Add(new KeyValuePair<string, string>(prefix + "page-id", string.Join('_', paths)));
+                    return results;
+                })
+            });
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            HtmlVars.Add("year", new ViewDataBinderModel()
+            {
+                Name = "Current Year",
+                Description = "Display the current year",
+                Parameters = new Dictionary<string, ScaffoldDataBinderParameter>() { },
+                Callback = new Func<Request, string, string, List<KeyValuePair<string, string>>>((request, data, prefix) =>
+                {
+                    var results = new List<KeyValuePair<string, string>>();
+                    results.Add(new KeyValuePair<string, string>(prefix + "year", DateTime.Now.Year.ToString()));
                     return results;
                 })
             });

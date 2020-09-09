@@ -22,10 +22,9 @@ Saber was built with a focus on traditional web development by utilizing HTML, C
 
 2. Run command `npm install`
 3. Run command `gulp default` to generate all required `css` & `js` files into the public `wwwroot` folder
-4. Run command `gulp new-website` to copy all `html`, `less`, `js`, and media files for the newly generated website into the public `wwwroot` folder
-5. In Visual Studio, build then publish the **Sql** project to SQL Server
-6. Open `config.json` file and update the Sql connection string
-7. Click Play in Visual Studio & navigate to https://localhost:7070
+4. In Visual Studio, build then publish the **Sql** project to SQL Server
+5. Open `config.json` file and update the Sql connection string
+6. Click Play in Visual Studio & navigate to https://localhost:7070
 
 #### Docker Support
 Saber also supports Docker. In order for Saber to work with Docker in Windows, you must first install and run [Docker Desktop](https://docs.docker.com/docker-for-windows/). 

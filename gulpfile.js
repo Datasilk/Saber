@@ -243,7 +243,7 @@ gulp.task('less', gulp.series('less:platform', 'less:app', 'less:themes', 'less:
 gulp.task('css', gulp.series('css:themes', 'css:app', 'css:utility'));
 
 //tasks for compiling default website content ////////////////////////////////////////////
-gulp.task('new-website:less', function () {
+gulp.task('website:less', function () {
     var p = gulp.src(paths.app + 'Content/pages/*.less')
         .pipe(less());
     if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
@@ -255,21 +255,21 @@ gulp.task('new-website:less', function () {
     return p.pipe(gulp.dest(paths.webroot + 'content/partials/', { overwrite: true }));
 });
 
-gulp.task('new-website:css', function () {
+gulp.task('website:css', function () {
     var p = gulp.src(paths.app + 'CSS/website.less')
         .pipe(less());
     if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
     return p.pipe(gulp.dest(paths.webroot + 'css/', { overwrite: true }));
 });
 
-gulp.task('new-website:js', function () {
+gulp.task('website:js', function () {
     var p = gulp.src(paths.app + 'Content/pages/*.js')
         .pipe(gulp.dest(paths.webroot + 'content/pages/', { overwrite: true }));
     p = gulp.src(paths.app + 'Content/partials/*.js')
         .pipe(gulp.dest(paths.webroot + 'content/partials/', { overwrite: true }));
     return p;
 });
-gulp.task('new-website', gulp.series('new-website:less', 'new-website:js', 'new-website:css'));
+gulp.task('website', gulp.series('website:less', 'website:js', 'website:css'));
 
 //generate icons //////////////////////////////////////////////////////////////////////////
 gulp.task('icons', function () {

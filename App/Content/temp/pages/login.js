@@ -8,7 +8,6 @@
         e.preventDefault();
         return false;
     });
-    submit.addEventListener('click', function(e) { submitForm(); });
 
     function submitForm(){
         var data = {

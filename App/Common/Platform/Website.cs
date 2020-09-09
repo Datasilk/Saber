@@ -147,7 +147,7 @@ namespace Saber.Common.Platform
             {
                 case "html":
                     //remove cached view object
-                    ViewCache.cache.Remove(path);
+                    ViewCache.Remove(path);
                     break;
             }
 
@@ -239,7 +239,8 @@ namespace Saber.Common.Platform
             RecurseDirectories(list, "/Content/partials");
             list.Add(Server.MapPath("/CSS/website.less"));
             RecurseDirectories(list, "/wwwroot", new string[] {"\\content\\", "\\editor\\", "web.config" });
-            if(include != null && include.Length > 0)
+            RecurseDirectories(list, "/wwwroot/content", new string[] { ".js", ".css" });
+            if (include != null && include.Length > 0)
             {
                 foreach(var i in include)
                 {
