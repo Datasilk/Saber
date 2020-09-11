@@ -8,6 +8,7 @@
 
 # make sure user can't accidentally save their custom website to git
 /App/config.json
+/App/config.docker.json
 /App/wwwroot/
 !/App/wwwroot/editor/
 /App/Content/pages/

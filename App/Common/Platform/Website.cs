@@ -238,7 +238,7 @@ namespace Saber.Common.Platform
             RecurseDirectories(list, "/Content/pages");
             RecurseDirectories(list, "/Content/partials");
             list.Add(Server.MapPath("/CSS/website.less"));
-            RecurseDirectories(list, "/wwwroot", new string[] {"\\content\\", "\\editor\\", "web.config" });
+            RecurseDirectories(list, "/wwwroot", new string[] {Server.IsDocker ? "/content/" : "\\content\\", Server.IsDocker ? "/editor/" : "\\editor\\", "web.config", "website.css" });
             RecurseDirectories(list, "/wwwroot/content", new string[] { ".js", ".css" });
             if (include != null && include.Length > 0)
             {
@@ -253,11 +253,20 @@ namespace Saber.Common.Platform
         private static void RecurseDirectories(List<string> list, string path, string[] ignore = null)
         {
             var parent = new DirectoryInfo(Server.MapPath(path));
-            var dirs = parent.GetDirectories();
+            var dirs = parent.GetDirectories().Where(a => ignore != null ? ignore.Where(b => a.FullName.IndexOf(b) >= 0).Count() == 0 : true);
             list.AddRange(parent.GetFiles().Select(a => a.FullName).Where(a => ignore != null ? ignore.Where(b => a.IndexOf(b) >= 0).Count() == 0  : true));
             foreach(var dir in dirs)
             {
-                RecurseDirectories(list, dir.FullName, ignore);
+                var subpath = dir.FullName;
+                if (Server.IsDocker)
+                {
+                    subpath = "/" + subpath.Split("/app/")[1];
+                }
+                else
+                {
+                    subpath = "\\" + subpath.Split("\\App\\")[1];
+                }
+                RecurseDirectories(list, subpath, ignore);
             }
         }
     }
