@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.IO;
+using System.IO.Compression;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Threading;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Datasilk.Core.Extensions;
@@ -42,6 +44,19 @@ namespace Saber
             //add health checks
             services.AddHealthChecks();
 
+            //add gzip compression
+            services.AddResponseCompression(options =>
+            {
+                options.Providers.Add<GzipCompressionProvider>();
+                options.MimeTypes =  new[] { "application/javascript", "text/css", "image/svg" };
+                options.EnableForHttps = true;
+            });
+            services.Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Optimal;
+            });
+
+            //get list of assemblies for Vendor related functionality
             var assemblies = new List<Assembly> { Assembly.GetCallingAssembly() };
             if (!assemblies.Contains(Assembly.GetExecutingAssembly()))
             {
@@ -204,6 +219,7 @@ namespace Saber
             {
                 ContentTypeProvider = provider
             };
+            app.UseResponseCompression();
             app.UseStaticFiles(options);
 
             //exception handling

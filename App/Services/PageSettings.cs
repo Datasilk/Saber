@@ -155,9 +155,6 @@ namespace Saber.Services
                 }
             }
 
-            //generate list of scripts
-            var scriptItem = new View("/Views/PageSettings/script-item.html");
-
             //render various elements
             view["page-title"] = config.title.body;
             view["page-title-prefixes"] = prefixes.ToString();
