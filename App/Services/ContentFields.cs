@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using Saber.Common.Platform;
 using Saber.Common.Extensions.Strings;
+using System.Linq;
 
 namespace Saber.Services
 {
@@ -13,10 +14,11 @@ namespace Saber.Services
         public string Render(string path, string language)
         {
             var paths = PageInfo.GetRelativePath(path);
-            var fields = Common.Platform.ContentFields.GetPageContent(path, User.language);
+            var fields = Common.Platform.ContentFields.GetPageContent(path, language);
             var html = new StringBuilder();
             var view = new View(string.Join("/", paths) + ".html");
             var fieldText = new View("/Views/ContentFields/text.html");
+            var fieldBlock = new View("/Views/ContentFields/block.html");
             foreach (var elem in view.Elements)
             {
                 if (elem.Name != "" && elem.Name.Substring(0,1) != "/")
@@ -26,13 +28,26 @@ namespace Saber.Services
                     {
                         //get existing content for field
                         val = fields[elem.Name];
-                    }
 
-                    //load text field
-                    fieldText["title"] = elem.Name.Capitalize().Replace("-", " ").Replace("_", " ");
-                    fieldText["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
-                    fieldText["default"] = val;
-                    html.Append(fieldText.Render());
+                    }
+                    if(view.Elements.Any(a => a.Name == "/" + elem.Name))
+                    {
+                        //load block field
+                        fieldBlock.Clear();
+                        fieldBlock["title"] = elem.Name.Capitalize().Replace("-", " ").Replace("_", " ");
+                        fieldBlock["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
+                        if(val == "1") { fieldBlock.Show("checked"); }
+                        html.Append(fieldBlock.Render());
+                    }
+                    else
+                    {
+                        //load text field
+                        fieldText.Clear();
+                        fieldText["title"] = elem.Name.Capitalize().Replace("-", " ").Replace("_", " ");
+                        fieldText["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
+                        fieldText["default"] = val;
+                        html.Append(fieldText.Render());
+                    }
                 }
             }
             if (html.Length == 0)
@@ -51,7 +66,7 @@ namespace Saber.Services
             var data = new Dictionary<string, string>();
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
-            var view = new View(string.Join("/", paths));
+            var view = new View(string.Join("/", paths) + ".html");
             foreach (var elem in view.Elements)
             {
                 if (elem.Name != "")

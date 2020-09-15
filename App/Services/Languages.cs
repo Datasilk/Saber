@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace Saber.Services
 {
@@ -12,6 +13,24 @@ namespace Saber.Services
                 html.Append(lang.Key + ',' + lang.Value + '|');
             }
             return html.ToString().TrimEnd('|');
+        }
+
+        public string Create(string name, string abbr)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            try
+            {
+                Query.Languages.Create(new Query.Models.Language()
+                {
+                    langId = abbr.ToLower(),
+                    language = name
+                });
+                return Success();
+            }
+            catch (Exception)
+            {
+                return Error("Could not create language");
+            }
         }
     }
 }

@@ -9,11 +9,11 @@ namespace Saber.Services
         /// </summary>
         /// <param name="path">relative path to content (e.g. "content/home")</param>
         /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
-        public string Render(string path)
+        public string Render(string path, string language = "en")
         {
             try
             {
-                return Common.Platform.Render.Page(path, this, PageInfo.GetPageConfig(path));
+                return Common.Platform.Render.Page(path, this, PageInfo.GetPageConfig(path), language);
             }
             catch (ServiceErrorException ex)
             {

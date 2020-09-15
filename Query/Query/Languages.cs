@@ -4,9 +4,9 @@ namespace Query
 {
     public static class Languages
     {
-        public static int Create(Models.Language lang)
+        public static void Create(Models.Language lang)
         {
-            return Sql.ExecuteScalar<int>(
+            Sql.ExecuteNonQuery(
                 "Language_Create",
                 new { lang.langId, lang.language }
             );

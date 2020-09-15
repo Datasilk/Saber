@@ -242,11 +242,18 @@
                     <div class="row">
                         <div class="col">
                             <div class="row hover lang">
-                                <div class="col field pad-right">Content Language: </div>
+                                <div class="col field pad-right">Selected Language: </div>
                                 <div class="col input right">
                                     <select id="lang"></select>
                                 </div>
                             </div>
+                        </div>            
+                        <div class="col pad-left icon small add-lang faded">
+                            <a href="javascript:">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-add-sm" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </a>
                         </div>
                         <div class="col pad-left">
                             <div class="row message hide"><span></span></div>
@@ -359,6 +366,26 @@
         <div class="row text-center pad-top-sm">
             <div class="col">
                 <input type="submit" class="button apply" value="Create Folder" />
+            </div>
+        </div>
+    </form>
+</script>
+
+
+<script language="text/html" id="template_lang_add">
+    <form>
+        <div class="row message hide"><span></span></div>
+        <div class="row field">Language</div>
+        <div class="row input pad-top-sm">
+            <input type="text" id="lang_name" placeholder="Spanish" />
+        </div>
+        <div class="row field">Abbreviation</div>
+        <div class="row input pad-top-sm">
+            <input type="text" id="lang_abbr" placeholder="es" />
+        </div>
+        <div class="row text-center pad-top-sm">
+            <div class="col">
+                <input type="submit" class="button apply" value="Add Language" />
             </div>
         </div>
     </form>

@@ -12,7 +12,7 @@ namespace Saber.Common.Platform
         /// </summary>
         /// <param name="path">relative path to content (e.g. "content/home")</param>
         /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
-        public static string Page(string path, Request request, Models.Page.Settings config)
+        public static string Page(string path, Request request, Models.Page.Settings config, string language = "en")
         {
             //translate root path to relative path
             var content = new View("/Views/Editor/content.html");
@@ -61,14 +61,15 @@ namespace Saber.Common.Platform
             }
 
             //load user content from json file, depending on selected language
-            var lang = request.User.language;
-            var contentfile = ContentFields.ContentFile(path, lang);
+            var contentfile = ContentFields.ContentFile(path, language);
             var contents = Server.LoadFileFromCache(contentfile);
             if(contents != "")
             {
                 var data = JsonSerializer.Deserialize<Dictionary<string, string>>(Server.LoadFileFromCache(contentfile));
                 if (data != null)
                 {
+                    //get view blocks
+                    var blocks = view.Elements.Where(a => a.Name.StartsWith("/")).Select(a => a.Name.Substring(1));
                     foreach (var item in data)
                     {
                         if (item.Value.IndexOf("\n") >= 0)
@@ -77,7 +78,17 @@ namespace Saber.Common.Platform
                         }
                         else
                         {
-                            view[item.Key] = item.Value;
+                            if(blocks.Contains(item.Key))
+                            {
+                                if(item.Value == "1")
+                                {
+                                    view.Show(item.Key);
+                                }
+                            }
+                            else
+                            {
+                                view[item.Key] = item.Value;
+                            }
                         }
                     }
                 }

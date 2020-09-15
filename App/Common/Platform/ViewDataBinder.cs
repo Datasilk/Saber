@@ -178,6 +178,25 @@ namespace Saber.Common.Platform
                     return results;
                 })
             });
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            HtmlVars.Add("language-options", new ViewDataBinderModel()
+            {
+                Name = "Language Options",
+                Description = "Render HTML <option> elements for all supported languages",
+                Parameters = new Dictionary<string, ScaffoldDataBinderParameter>() { },
+                Callback = new Func<Request, string, string, List<KeyValuePair<string, string>>>((request, data, prefix) =>
+                {
+                    var selected = request.Parameters.ContainsKey("lang") ? request.Parameters["lang"] : request.User.language;
+                    var results = new List<KeyValuePair<string, string>>();
+                    results.Add(new KeyValuePair<string, string>(prefix + "language-options", 
+                        "<option value=\"en\">English</option>" + 
+                        string.Join("\n", Query.Languages.GetList().Select(a => "<option value=\"" + a.langId + "\"" + 
+                            (selected == a.langId ? " selected" : "") + ">" + a.language + "</option>").ToArray())
+                        ));
+                    return results;
+                })
+            });
         }
     }
 }

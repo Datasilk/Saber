@@ -109,6 +109,9 @@ S.editor = {
             }
         });
 
+        //add drop down events
+        $('.editor #lang').on('change', S.editor.fields.load);
+
         //add window resize event
         $(window).on('resize', S.editor.resizeWindow);
 
@@ -316,10 +319,25 @@ S.editor = {
                     var texts = $('.content-fields form').find('textarea, input, select');
                     texts.each(function (txt) {
                         var t = $(txt);
-                        fields[txt.id.replace('field_', '')] = t.val();
+                        var id = txt.id.replace('field_', '');
+                        switch (txt.tagName.toLowerCase()) {
+                            case 'textarea':
+                                fields[id] = t.val();
+                                break;
+                            case 'input':
+                                var type = t.attr('type');
+                                switch (type) {
+                                    case 'checkbox':
+                                        fields[id] = txt.checked == true ? '1' : '0';
+                                        break;
+                                }
+                                break;
+                        }
+                        
                     });
+                    console.log(fields);
 
-                    S.ajax.post('ContentFields/Save', { path: path, fields: fields, language: $('#lang').val() },
+                    S.ajax.post('ContentFields/Save', { path: S.editor.path, fields: fields, language: $('#lang').val() },
                         function (d) {
                             if (d == 'success') {
                                 S.editor.fields.changed = false;
@@ -355,7 +373,6 @@ S.editor = {
                         );
                     }
                     
-
                     //save description
                     if (settings.description.changed == true) {
                         var data = {
@@ -1013,7 +1030,9 @@ S.editor = {
                 $('ul.file-tabs > li').removeClass('selected');
                 $('ul.file-tabs > li.tab-content-fields').addClass('selected');
 
-                var lang = 'en';
+                //disable save menu
+                $('.item-save').addClass('faded').attr('disabled', 'disabled');
+                $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
                 if ($('#lang').children().length == 0) {
                     //load list of languages
@@ -1021,44 +1040,20 @@ S.editor = {
                         function (d) {
                             var html = '';
                             var langs = d.split('|');
+                            var userlang = window.language || 'en';
                             for (x = 0; x < langs.length; x++) {
                                 var lang = langs[x].split(',');
-                                html += '<option value="' + lang[0] + '">' + lang[1] + '</option>';
+                                html += '<option value="' + lang[0] + '"' + (lang[0] == userlang ? ' selected' : '') + '>' + lang[1] + '</option>';
                             }
                             $('#lang').html(html);
+                            S.editor.fields.load();
                         },
                         function () {
                             S.editor.error();
                         }
                     );
                 } else {
-                    lang = $('#lang').val();
-                }
-
-                //disable save menu
-                $('.item-save').addClass('faded').attr('disabled', 'disabled');
-                $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
-
-                //load content for page
-                if (S.editor.fields.selected != S.editor.selected || S.editor.files.content.changed == true) {
-                    S.editor.files.content.changed = false;
-                    S.editor.fields.changed = false;
-                    $('.content-fields form').html('');
-                    S.ajax.post('ContentFields/Render', { path: S.editor.path, language:lang },
-                        function (d) {
-                            S.editor.fields.selected = S.editor.selected;
-                            $('.content-fields form').html(d);
-
-                            //set up events for fields
-                            $('.content-fields form textarea').on('keyup, keydown', S.editor.fields.change).each(
-                                function (field) {
-                                    S.editor.fields.change({ target: field });
-                                }
-                            );
-                        },
-                        function () { S.editor.error(); }
-                    );
-                } else {
+                    //tab already loaded
                     if (S.editor.fields.changed == true) {
                         //enable save menu since file was previously changed
                         $('.item-save').removeClass('faded').removeAttr('disabled');
@@ -1147,7 +1142,7 @@ S.editor = {
                 //next, reload rendered HTML
                 if (S.editor.files.html.changed == true || S.editor.files.content.changed == true) {
                     S.editor.files.html.changed = false;
-                    S.ajax.post('Page/Render', { path: S.editor.path + '.html', language: window.language },
+                    S.ajax.post('Page/Render', { path: S.editor.path + '.html', language: window.language || 'en' },
                         function (d) {
                             $('.editor-preview').html(d);
                             changeJs(true);
@@ -1249,6 +1244,28 @@ S.editor = {
         clone: $('.content-fields .textarea-clone > div'),
         selected: '',
         changed: false,
+        load: function () {
+            var lang = $('#lang').val();
+            S.editor.fields.changed = false;
+            $('.content-fields form').html('');
+            S.ajax.post('ContentFields/Render', { path: S.editor.path, language: lang },
+                function (d) {
+                    S.editor.fields.selected = S.editor.selected;
+                    $('.content-fields form').html(d);
+
+                    //add language button
+                    $('.content-fields .add-lang a').on('click', S.editor.lang.add.show);
+
+                    //set up events for fields
+                    $('.content-fields form textarea').on('keyup, keydown, change', S.editor.fields.change).each(
+                        function (field) {
+                            S.editor.fields.change({ target: field });
+                        }
+                    );
+                },
+                function () { S.editor.error(); }
+            );
+        },
         change: function (e) {
             var field = $(e.target);
             //resize field
@@ -1259,6 +1276,31 @@ S.editor = {
                 //enable save menu
                 $('.item-save').removeClass('faded').removeAttr('disabled');
                 S.editor.fields.changed = true;
+            }
+        }
+    },
+
+    lang: {
+        add: {
+            show: function () {
+                S.popup.show('New Language',
+                    $('#template_lang_add').html()
+                );
+                $('.popup form').on('submit', S.editor.lang.add.submit);
+            },
+
+            submit: function (e) {
+                e.preventDefault();
+                e.cancelBubble = true;
+                var data = { name: $('#lang_name').val(), abbr: $('#lang_abbr').val() };
+                S.ajax.post('Languages/Create', data,
+                    function (d) {
+                        var abbr = data.abbr.toLowerCase();
+                        $('.content-fields #lang').append('<option value="' + abbr + '">' + data.name + '</option>').val(abbr);
+                    }
+                );
+                S.popup.hide();
+                return false;
             }
         }
     },
