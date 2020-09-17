@@ -59,7 +59,7 @@ You can upload image files & other resources for a specific web page or within t
 * Fill out the text fields with your content, which will replace the variables in the HTML page. (e.g. `Article Title`)
 * Select which language the content will be written in and allow visitors to change their desired language 
 * Use Markdown syntax in text fields that will later be rendered as HTML
-* Display a language selection drop down list by adding the following HTML code to your website
+* Display a language selection drop down list on your website by adding the following HTML code
 ```
 <form id="changelang" method="post">
 	<select name="lang" onchange="changelang.submit()">{{language-options}}</select>

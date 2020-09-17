@@ -53,7 +53,7 @@ namespace Saber.Common.Platform
                     content = "(function(){\n\n})();";
                     break;
                 case "less":
-                    content = "body {\n\n}";
+                    content = ".website {\n\n}";
                     break;
                 case "html":
                     content = "<p></p>";

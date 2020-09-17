@@ -14,10 +14,10 @@ namespace Saber.Controllers
         public override string Render(string body = "")
         {
             if (!CheckSecurity()) { return AccessDenied<Login>(); }
-            if (Context.Request.Form.Files.Count > 0 && Context.Request.Form.ContainsKey("path"))
+            if (Parameters.Files.Count > 0 && Parameters.ContainsKey("path"))
             {
                 //save resources for page
-                var paths = PageInfo.GetRelativePath(Context.Request.Form["path"].ToString());
+                var paths = PageInfo.GetRelativePath(Parameters["path"].ToString());
                 var dir = string.Join("/", paths) + "/";
                 var pubdir = dir; //published directory
                 if (paths[0].ToLower() == "/content/pages")
@@ -29,9 +29,10 @@ namespace Saber.Controllers
                 {
                     Directory.CreateDirectory(Server.MapPath(pubdir));
                 }
-                foreach(var file in Context.Request.Form.Files)
+                foreach(var f in Parameters.Files)
                 {
-                    var filename = file.FileName;
+                    var file = Parameters.Files[f.Key];
+                    var filename = file.Filename;
                     var ext = filename.GetFileExtension().ToLower();
                     try
                     {
@@ -59,7 +60,14 @@ namespace Saber.Controllers
                             }
                             if(File.Exists(Server.MapPath(pubdir + filename)))
                             {
-                                Image.Shrink(pubdir + filename, pubdir + thumbdir + filename, 480);
+                                try
+                                {
+                                    Image.Shrink(pubdir + filename, pubdir + thumbdir + filename, 480);
+                                }
+                                catch(Exception ex)
+                                {
+                                    return Error("An error occured when trying to create a thumbnail preview of your image upload");
+                                }
                             }
                             break;
                     }

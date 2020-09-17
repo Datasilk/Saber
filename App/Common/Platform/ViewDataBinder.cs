@@ -99,7 +99,7 @@ namespace Saber.Common.Platform
                 {
                     var results = new List<KeyValuePair<string, string>>();
                     //check if user is logged in
-                    if(request.User.userId > 0)
+                    if(request.User.userId > 0 && !request.Parameters.ContainsKey("live"))
                     {
                         results.Add(new KeyValuePair<string, string>(prefix + "user", "True"));
                         results.Add(new KeyValuePair<string, string>(prefix + "username", request.User.name));

@@ -97,6 +97,7 @@ S.editor = {
         $('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);
         $('.editor-drop-menu .item-new-folder').on('click', S.editor.folder.create.show);
         $('.editor-drop-menu .item-new-window').on('click', S.editor.newWindow);
+        $('.editor-drop-menu .item-live-preview').attr('href', path + '?live');
         $('.tab-content-fields').on('click', S.editor.filebar.fields.show);
         $('.tab-file-code').on('click', S.editor.filebar.code.show);
         $('.tab-page-settings').on('click', S.editor.filebar.settings.show);

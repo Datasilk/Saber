@@ -59,7 +59,7 @@ namespace Saber.Controllers
                 title = config.title.prefix + config.title.body + config.title.suffix;
                 description = config.description;
 
-                if (User.userId > 0)
+                if (User.userId > 0 && !Parameters.ContainsKey("live"))
                 {
                     //use editor.html
                     view = new View("/Views/Editor/editor.html");

@@ -193,8 +193,8 @@ namespace Saber.Services
             switch (ext)
             {
                 case "html": return WebUtility.HtmlEncode("<p>Write content using HTML & CSS</p>");
-                case "css": return WebUtility.HtmlEncode("body { }");
-                case "less": return WebUtility.HtmlEncode("body {\n    p { }\n}");
+                case "css": return WebUtility.HtmlEncode(".website { }");
+                case "less": return WebUtility.HtmlEncode(".website {\n    p { }\n}");
                 case "js": return WebUtility.HtmlEncode("(function(){\n    //do stuff\n})();");
             }
             return "";
