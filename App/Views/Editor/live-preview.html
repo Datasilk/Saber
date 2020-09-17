@@ -1,0 +1,22 @@
+﻿<script>
+    (function () {
+        [...document.getElementsByTagName('a')].forEach(a => {
+            var href = a.getAttribute('href');
+            if (href && href.substr(0, 1) == '/') {
+                var parts = href.split(/\?,|\#/);
+                var len = parts.length;
+                var hashed = href.indexOf('#') >= 0;
+                if (len == 3) {
+                    href = parts[0] + '?' + parts[1] + '&live' + '#' + parts[2];
+                } else if (len == 2 && hashed) {
+                    href = parts[0] + '?live#' + parts[1];
+                } else if (len == 2 && !hashed) {
+                    href = parts[0] + '?' + parts[1] + '&live';
+                } else {
+                    href = parts[0] + '?live';
+                }
+                a.setAttribute('href', href);
+            }
+        });
+    })();
+</script>

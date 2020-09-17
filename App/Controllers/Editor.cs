@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using System.Linq;
 using Datasilk.Core.Web;
 using Saber.Common.Platform;
@@ -102,6 +103,11 @@ namespace Saber.Controllers
                         "window.language = '" + User.language + "';" +
                     "</script>\n"
                 );
+                if (Parameters.ContainsKey("live"))
+                {
+                    footer = new StringBuilder();
+                    footer.Append(Server.LoadFileFromCache("/Views/Editor/live-preview-min.html"));
+                }
 
                 //add all custom scripts before loading page script
                 var scriptIndex = 1;
@@ -117,6 +123,22 @@ namespace Saber.Controllers
                     view["content"] = Common.Platform.Render.Page("content/" + pathname + ".html", this, config, lang);
                     AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
                     AddScript(rpath.ToLower() + rfile + ".js", "page_js");
+                }
+                else if(User.userId == 0 || Parameters.ContainsKey("live"))
+                {
+                    //show 404 error
+                    Context.Response.StatusCode = 404;
+                    if (File.Exists(Server.MapPath("content/pages/404.html")))
+                    {
+                        config = PageInfo.GetPageConfig("content/404");
+                        view["content"] = Common.Platform.Render.Page("content/pages/404.html", this, config, lang);
+                        AddCSS("/content/pages/404.css", "page_css");
+                        AddScript("/content/pages/404.js", "page_js");
+                    }
+                    else
+                    {
+                        view["content"] = Common.Platform.Render.Page("Views/404.html", this, config, lang);
+                    }
                 }
                 else if (File.Exists(Server.MapPath(rpath + "/template.html")))
                 {

@@ -39,10 +39,18 @@ namespace Saber.Common.Platform
             var view = new View(relpath);
             if (view.Elements.Count == 0)
             {
-                if (request.User.userId == 0)
+                if (request.User.userId == 0 || request.Parameters.ContainsKey("live"))
                 {
-                    //TODO: Show user-generated 404 error
-                    view.HTML = "<p>This page does not exist. Please log into your account to write content for this page.</p>";
+                    if(path != "/Content/pages/404.html")
+                    {
+                        //Show user-generated 404 error
+                        return Page("/Content/pages/404.html", request, config, language);
+                    }
+                    else
+                    {
+                        //Show internal 404 error
+                        view = new View("/Views/404.html");
+                    }
                 }
                 else
                 {

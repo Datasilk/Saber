@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using Datasilk.Core.Web;
 
 namespace Saber
@@ -16,6 +17,7 @@ namespace Saber
         public string title = "Datasilk";
         public string description = "";
         public string theme = "default";
+        public StringBuilder footer;
         private string androidKey = "android-manifest";
 
         public EditorType EditorUsed
@@ -38,6 +40,7 @@ namespace Saber
             view["language"] = User.language;
             view["theme"] = theme;
             view["head-css"] = Css.ToString();
+            view["footer"] = footer != null ? footer.ToString() : "";
 
             //load website icon
             if (File.Exists(Server.MapPath("wwwroot/images/web-icon.png")))
