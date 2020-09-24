@@ -10,6 +10,11 @@ namespace Query
             Sql.ExecuteNonQuery("Log_Url", new { url, ipaddress, countrycode, latitude, longitude });
         }
 
+        public static void LogError(int userId, string url, string area, string message, string stacktrace)
+        {
+            Sql.ExecuteNonQuery("Log_Error", new { userId, url, area, message, stacktrace });
+        }
+
         public enum TimeScale
         {
             Hour = 0,
@@ -23,5 +28,6 @@ namespace Query
         {
             return Sql.Populate<Models.Logs.UrlAnalytic>("Log_GetUrlAnalytics", new { timeScale, startDate });
         }
+
     }
 }
