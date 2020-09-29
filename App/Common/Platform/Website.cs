@@ -143,13 +143,7 @@ namespace Saber.Common.Platform
             }
 
             //clean cache related to file
-            switch (ext)
-            {
-                case "html":
-                    //remove cached view object
-                    ViewCache.Remove(path);
-                    break;
-            }
+            ViewCache.Remove(filepath);
 
             //process saved files
 
