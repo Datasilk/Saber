@@ -47,11 +47,16 @@ namespace Saber
             //add gzip compression
             services.AddResponseCompression(options =>
             {
-                options.Providers.Add<GzipCompressionProvider>();
+                //options.Providers.Add<GzipCompressionProvider>();
+                options.Providers.Add<BrotliCompressionProvider>();
                 options.MimeTypes =  new[] { "application/javascript", "text/css", "image/svg" };
                 options.EnableForHttps = true;
             });
-            services.Configure<GzipCompressionProviderOptions>(options =>
+            //services.Configure<GzipCompressionProviderOptions>(options =>
+            //{
+            //    options.Level = CompressionLevel.Optimal;
+            //});
+            services.Configure<BrotliCompressionProviderOptions>(options =>
             {
                 options.Level = CompressionLevel.Optimal;
             });

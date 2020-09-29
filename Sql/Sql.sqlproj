@@ -101,6 +101,8 @@
     <Build Include="dbo\Tables\Log_UrlRequests.sql" />
     <Build Include="dbo\Stored Procedures\Logs\Log_Url.sql" />
     <Build Include="dbo\Stored Procedures\Logs\Log_GetUrlAnalytics.sql" />
+    <Build Include="dbo\Tables\Log_Errors.sql" />
+    <Build Include="dbo\Stored Procedures\Logs\Log_Error.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

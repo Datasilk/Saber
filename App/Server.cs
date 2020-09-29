@@ -76,8 +76,6 @@ public static class Server
         { 
             return Path.Combine(RootPath.Replace("/", "\\"), path.Replace("/", "\\"));
         }
-        
-
         //var str = strPath.Replace("\\", "/");
         //if (str.Substring(0, 1) == "/") { str = str.Substring(1); }
         //return Path.Combine(_rootPath.Concat(str.Split('/')).ToArray());
