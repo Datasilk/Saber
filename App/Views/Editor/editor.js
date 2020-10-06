@@ -685,6 +685,7 @@ S.editor = {
     },
 
     tabs: {
+        changed: false,
         create: function (title, path, options, onfocus, onblur, onsave) {
             //build options
             var opts = {
@@ -733,6 +734,7 @@ S.editor = {
                             $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
                         }
                         elem.addClass('selected');
+                        S.editor.tabs.changed = true;
                         if (typeof onfocus == 'function') { onfocus(); }
                     },
                     onblur: onblur,
@@ -851,6 +853,7 @@ S.editor = {
             if (S.editor.selected != '') {
                 prevId = S.editor.fileId(S.editor.selected);
             }
+            S.editor.tabs.changed = false;
 
             if (isready !== false) {
                 //update selected session
@@ -963,7 +966,7 @@ S.editor = {
                 //load new session from ajax POST, loading code from server
                 S.ajax.post("Files/Open", { path: path, pageResource: isPageResource === true },
                     function (d) {
-                        S.editor.sessions.add(id, mode, S.editor.decodeHtml(d), isready !== false);
+                        S.editor.sessions.add(id, mode, S.editor.decodeHtml(d), isready !== false && S.editor.tabs.changed == false);
                         if (typeof callback == 'function') { callback();}
                     },
                     function () {
@@ -972,7 +975,7 @@ S.editor = {
                 );
             } else if (nocode == false) {
                 //load new session from provided code argument
-                S.editor.sessions.add(id, mode, S.editor.decodeHtml(code), isready !== false);
+                S.editor.sessions.add(id, mode, S.editor.decodeHtml(code), isready !== false && S.editor.tabs.changed == false);
                 if (typeof callback == 'function') { callback(); }
                 
             } else {
