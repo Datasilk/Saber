@@ -328,7 +328,10 @@ namespace Saber
                     vendor.Configure(app, env, config);
                     Console.WriteLine("Configured Startup for " + kv.Key);
                 }
-                catch (Exception) { }
+                catch (Exception ex) {
+                    Console.WriteLine("Vendor startup error: " + ex.Message);
+                    Console.WriteLine(ex.StackTrace);
+                }
             }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
