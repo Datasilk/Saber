@@ -173,11 +173,11 @@ namespace Saber
             var configFile = "config" +
                 (Server.IsDocker ? ".docker" : "") +
                 (Server.environment == Server.Environment.production ? ".prod" : "") + ".json";
+
             if (!File.Exists(Server.MapPath(configFile)))
             {
                 //create default config.json files
-                File.Copy(Server.MapPath("/Content/temp/config.json"), Server.MapPath("/config.json"));
-                File.Copy(Server.MapPath("/Content/temp/config.docker.json"), Server.MapPath("/config.docker.json"));
+                File.Copy(Server.MapPath("/Content/temp/" + configFile), Server.MapPath(configFile));
             }
 
             config = new ConfigurationBuilder()

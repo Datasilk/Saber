@@ -211,7 +211,7 @@ namespace Saber.Common.Platform
             }
         }
 
-        private static void SaveLessFile(string content, string outputFile, string pathLESS)
+        public static void SaveLessFile(string content, string outputFile, string pathLESS)
         {
             try
             {
@@ -220,9 +220,9 @@ namespace Saber.Common.Platform
                 File.WriteAllText(Server.MapPath(outputFile), css);
                 Directory.SetCurrentDirectory(Server.MapPath("/"));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new ServiceErrorException("Error generating compiled resource");
+                throw new ServiceErrorException("Error generating compiled LESS resource");
             }
         }
 

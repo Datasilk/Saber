@@ -24,6 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="config.docker.json" />
+    <Content Remove="config.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Views\AppSettings\androidicon.html" />
     <None Remove="Views\AppSettings\appleicon.html" />
     <None Remove="Views\ContentFields\block.html" />
@@ -121,6 +126,11 @@
     <Folder Include="wwwroot\content" />
     <Folder Include="wwwroot\images" />
     <Folder Include="wwwroot\js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="config.docker.json" />
+    <None Include="config.json" />
   </ItemGroup>
 
 </Project>
