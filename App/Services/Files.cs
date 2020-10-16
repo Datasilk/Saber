@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
-using System.Text.Json;
 using System.Net;
 using Saber.Common.Platform;
 using Saber.Common.Extensions.Strings;
@@ -131,7 +130,7 @@ namespace Saber.Services
                 html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root"));
             }
 
-            foreach (var i in items)
+            foreach (var i in items.OrderBy(a => a.Key))
             {
                 //add directories and files
                 var icon = "folder";
