@@ -1,14 +1,37 @@
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Datasilk.Core.Web;
+using Saber.Core;
 
 namespace Saber
 {
-    public class Service : Request, IService
+    public class Service : Request, Core.IRequest, Core.IService
     {
+        protected StringBuilder Scripts = new StringBuilder();
+        protected StringBuilder Css = new StringBuilder();
+        protected List<string> Resources = new List<string>();
+
         public EditorType EditorUsed
         {
             get { return EditorType.Monaco; }
         }
+
+        protected IUser user;
+        public IUser User
+        {
+            get
+            {
+                if (user == null)
+                {
+                    user = Saber.User.Get(Context);
+                }
+                return user;
+            }
+            set { user = value; }
+        }
+
+        public void Init() { }
 
         public string JsonResponse(dynamic obj)
         {
@@ -16,14 +39,14 @@ namespace Saber
             return JsonSerializer.Serialize(obj);
         }
 
-        public override bool CheckSecurity()
+        public bool CheckSecurity()
         {
-            return User.userId > 0;
+            return User.UserId > 0;
         }
 
         public override void Dispose()
         {
-            if(user != null) 
+            if (user != null)
             {
                 User.Save();
             }
@@ -36,23 +59,38 @@ namespace Saber
 
         public string Empty() { return "{}"; }
 
-        public override void AddScript(string url, string id = "", string callback = "")
+        public void AddScript(string url, string id = "", string callback = "")
         {
             if (ContainsResource(url)) { return; }
             Scripts.Append("S.util.js.load('" + url + "', '" + id + "', " + (callback != "" ? callback : "null") + ");");
         }
 
-        public override void AddCSS(string url, string id = "")
+        public void AddCSS(string url, string id = "")
         {
             if (ContainsResource(url)) { return; }
-            Scripts.Append("S.util.css.load('" + url + "', '" + id + "');");
+            Css.Append("S.util.css.load('" + url + "', '" + id + "');");
         }
 
-        public bool ContainsResource(string url)
+        protected bool ContainsResource(string url)
         {
             if (Resources.Contains(url)) { return true; }
             Resources.Add(url);
             return false;
+        }
+
+        public string AccessDenied(string message = "Error 403")
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string Error(string message = "Error 500")
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string BadRequest(string message = "Bad Request 400")
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

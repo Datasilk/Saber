@@ -174,7 +174,7 @@ namespace Saber.Services
                 new Datasilk.Core.Web.Response()
                 {
                     selector = ".sections > .page-settings .settings-contents",
-                    html = RenderView(view),
+                    html = Common.Platform.Render.View(this, view),
                     css = Css.ToString(),
                     javascript = Scripts.ToString(),
                     json = JsonSerializer.Serialize(new { headers, footers, field_template = fieldView.HTML })

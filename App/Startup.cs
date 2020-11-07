@@ -22,7 +22,6 @@ namespace Saber
     public class Startup
     {
         private static IConfigurationRoot config;
-        private Dictionary<string, Type> vendors = new Dictionary<string, Type>();
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
@@ -72,8 +71,10 @@ namespace Saber
                 assemblies.Add(Assembly.GetEntryAssembly());
             }
 
-            //get list of vendor classes that inherit IVendorViewRenderer interface
-            var vendorCount = 0;
+            //get a list of DLLs in the Vendors folder (if any)
+            var vendorDLLs = Vendors.LoadDLLs();
+
+            //get list of vendor classes that inherit IVendorController interface
             foreach (var assembly in assemblies)
             {
                 //get a list of interfaces from the assembly
@@ -81,16 +82,11 @@ namespace Saber
                     .Where(type => typeof(Vendor.IVendorController).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
                 foreach (var type in types)
                 {
-                    if (!type.Equals(typeof(Vendor.IVendorController)))
-                    {
-                        Server.vendorControllers.Add(type.Name.ToLower(), type);
-                        vendorCount++;
-                    }
+                    Vendors.GetControllerFromType(type);
                 }
             }
 
-            Console.WriteLine("Found " + vendorCount + " Vendor Controller" + (vendorCount != 1 ? "s" : "") + " that inherit IVendorController");
-            vendorCount = 0;
+            Console.WriteLine("Found " + Vendors.Controllers.Count + " Vendor Controller" + (Vendors.Controllers.Count != 1 ? "s" : "") + " that inherit IVendorController");
 
             //get list of vendor classes that inherit IVendorViewRenderer interface
             foreach (var assembly in assemblies)
@@ -100,24 +96,14 @@ namespace Saber
                     .Where(type => typeof(Vendor.IVendorViewRenderer).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
                 foreach (var type in types)
                 {
-                    if (!type.Equals(typeof(Vendor.IVendorViewRenderer)))
-                    {
-                        var attributes = type.GetCustomAttributes<Vendor.ViewPathAttribute>();
-                        foreach (var attr in attributes)
-                        {
-                            if (!Server.viewRenderers.ContainsKey(attr.Path))
-                            {
-                                Server.viewRenderers.Add(attr.Path, new List<Vendor.IVendorViewRenderer>());
-                            }
-                            Server.viewRenderers[attr.Path].Add((Vendor.IVendorViewRenderer)Activator.CreateInstance(type));
-                            vendorCount += 1;
-                        }
-                    }
+                    Vendors.GetViewRendererFromType(type);
                 }
             }
 
-            Console.WriteLine("Found " + vendorCount + " Vendor View Renderer" + (vendorCount != 1 ? "s" : "") + " that inherit IVendorViewRenderer");
-            vendorCount = 0;
+            //get list of DLLs that contain the IVendorViewRenderer interface
+            Vendors.GetViewRenderersFromFileSystem(vendorDLLs);
+
+            Console.WriteLine("Found " + Vendors.ViewRenderers.Count + " Vendor View Renderer" + (Vendors.ViewRenderers.Count != 1 ? "s" : "") + " that inherit IVendorViewRenderer");
 
             //get list of vendor classes that inherit IVendorStartup interface
             foreach (var assembly in assemblies)
@@ -127,18 +113,17 @@ namespace Saber
                     .Where(type => typeof(Vendor.IVendorStartup).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
                 foreach (var type in types)
                 {
-                    if (!type.Equals(typeof(Vendor.IVendorStartup)))
-                    {
-                        vendors.Add(type.FullName, type);
-                        vendorCount++;
-                    }
+                    Vendors.GetStartupFromType(type);
                 }
             }
 
-            Console.WriteLine("Found " + vendorCount + " Vendor" + (vendorCount != 1 ? "s" : "") + " that inherit IVendorStartup");
+            //get list of DLLs that contain the IVendorStartup interface
+            Vendors.GetStartupsFromFileSystem(vendorDLLs);
+
+            Console.WriteLine("Found " + Vendors.Startups.Count + " Vendor" + (Vendors.Startups.Count != 1 ? "s" : "") + " that inherit IVendorStartup");
 
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
-            foreach(var kv in vendors)
+            foreach(var kv in Vendors.Startups)
             {
                 var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
                 try
@@ -320,7 +305,7 @@ namespace Saber
             ViewDataBinder.Initialize();
 
             //execute Configure method for all vendors that use IVendorStartup interface
-            foreach (var kv in vendors)
+            foreach (var kv in Vendors.Startups)
             {
                 var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
                 try

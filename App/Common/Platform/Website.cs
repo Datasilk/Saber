@@ -244,6 +244,14 @@ namespace Saber.Common.Platform
             return list;
         }
 
+        public static void ResetCache(string path, string language = "en")
+        {
+            var paths = PageInfo.GetRelativePath(path);
+            var filepath = string.Join("/", paths);
+            Server.Cache.Remove(ContentFields.ContentFile(path, language));
+            ViewCache.Remove(filepath + ".html");
+        }
+
         private static void RecurseDirectories(List<string> list, string path, string[] ignore = null)
         {
             var parent = new DirectoryInfo(Server.MapPath(path));

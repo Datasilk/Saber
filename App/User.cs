@@ -1,27 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using Saber.Core;
 
 namespace Saber
 {
-    public class User
+    public class User : IUser
     {
-        public int userId { get; set; } = 0;
-        public short userType { get; set; } = 0;
-        public string visitorId { get; set; } = "";
-        public string email { get; set; } = "";
-        public string name { get; set; } = "";
-        public string displayName { get; set; } = "";
-        public bool photo { get; set; } = false;
-        public bool resetPass { get; set; } = false;
-        public DateTime datecreated { get; set; }
-        public string language { get; set; } = "en";
-        protected bool changed = false;
-        protected HttpContext Context;
+        private bool changed = false;
+        private HttpContext Context;
 
-        //get User object from session
+        public int UserId { get; set; } = 0;
+        public short UserType { get; set; } = 0;
+        public string VisitorId { get; set; }
+        public string Email { get; set; }
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public bool Photo { get; set; }
+        public bool ResetPass { get; set; }
+        public DateTime DateCreated { get; set; }
+        public string Language { get; set; }
+
         public static User Get(HttpContext context)
         {
             User user;
@@ -31,30 +31,30 @@ namespace Saber
             }
             else
             {
-                user = new User().SetContext(context);
+                user = (User)new User().SetContext(context);
             }
             user.Init(context);
             return user;
         }
 
-        public User SetContext(HttpContext context)
+        public IUser SetContext(HttpContext context)
         {
             Context = context;
             return this;
         }
 
-        public virtual void Init(HttpContext context)
+        public void Init(HttpContext context)
         {
             //generate visitor id
             Context = context;
-            if (visitorId == "" || visitorId == null)
+            if (VisitorId == "" || VisitorId == null)
             {
-                visitorId = NewId();
+                VisitorId = NewId();
                 changed = true;
             }
 
             //check for persistant cookie
-            if (userId <= 0 && context.Request.Cookies.ContainsKey("authId"))
+            if (UserId <= 0 && context.Request.Cookies.ContainsKey("authId"))
             {
                 var user = Query.Users.AuthenticateUser(context.Request.Cookies["authId"]);
                 if (user != null)
@@ -78,18 +78,18 @@ namespace Saber
             }
         }
 
-        public void LogIn(int userId, string email, string name, DateTime datecreated, string displayName = "", short userType = 1, bool photo = false)
+        public void LogIn(int UserId, string email, string name, DateTime datecreated, string displayName = "", short userType = 1, bool photo = false)
         {
-            this.userId = userId;
-            this.userType = userType;
-            this.email = email;
-            this.photo = photo;
-            this.name = name;
-            this.displayName = displayName;
-            this.datecreated = datecreated;
+            this.UserId = UserId;
+            this.UserType = userType;
+            this.Email = email;
+            this.Photo = photo;
+            this.Name = name;
+            this.DisplayName = displayName;
+            this.DateCreated = datecreated;
 
             //create persistant cookie
-            var auth = Query.Users.CreateAuthToken(userId);
+            var auth = Query.Users.CreateAuthToken(UserId);
             var options = new CookieOptions()
             {
                 Expires = DateTime.Now.AddMonths(1)
@@ -102,17 +102,17 @@ namespace Saber
 
         public void LogOut()
         {
-            userId = 0;
-            email = "";
-            name = "";
-            photo = false;
+            UserId = 0;
+            Email = "";
+            Name = "";
+            Photo = false;
             changed = true;
             Context.Response.Cookies.Delete("authId");
         }
 
         public void SetLanguage(string language)
         {
-            this.language = language;
+            Language = language;
             changed = true;
         }
 
@@ -158,14 +158,14 @@ namespace Saber
 
         #region "Helpers"
 
-        private static string GetString(byte[] bytes)
+        protected static string GetString(byte[] bytes)
         {
             char[] chars = new char[bytes.Length / sizeof(char)];
             Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
             return string.Join("", chars);
         }
 
-        private static byte[] GetBytes(string str)
+        protected static byte[] GetBytes(string str)
         {
             byte[] bytes = new byte[str.Length * sizeof(char)];
             Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);

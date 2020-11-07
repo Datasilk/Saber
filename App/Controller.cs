@@ -1,33 +1,29 @@
 ﻿using System.IO;
-using System.Text;
-using Datasilk.Core.Web;
+using Saber.Core;
 
 namespace Saber
 {
-    public enum EditorType
+
+    public class Controller : Core.Controller
     {
-        Monaco = 0,
-        Ace = 1
-    }
+        private string AndroidKey = "android-manifest";
 
-    public class Controller : Request, IController
-    {
-
-        public bool usePlatform = false;
-        public string title = "Datasilk";
-        public string description = "";
-        public string theme = "default";
-        public StringBuilder footer;
-        private string androidKey = "android-manifest";
-
-        public EditorType EditorUsed
+        public override IUser User
         {
-            get { return EditorType.Monaco; }
+            get
+            {
+                if (user == null)
+                {
+                    user = Saber.User.Get(Context);
+                }
+                return user;
+            }
+            set { user = value; }
         }
 
-        public virtual string Render(string body = "")
+        public override string Render(string body = "")
         {
-            if (usePlatform == true)
+            if (UsePlatform == true)
             {
                 Scripts.Append("<script language=\"javascript\">" + 
                     "S.svg.load('/editor/icons.svg');" + 
@@ -35,12 +31,12 @@ namespace Saber
                     "</script>");
             }
             var view = new View("/Views/Shared/layout.html");
-            view["title"] = title;
-            view["description"] = description;
-            view["language"] = User.language;
-            view["theme"] = theme;
+            view["title"] = Title;
+            view["description"] = Description;
+            view["language"] = User.Language;
+            view["theme"] = Theme;
             view["head-css"] = Css.ToString();
-            view["footer"] = footer != null ? footer.ToString() : "";
+            view["footer"] = Footer != null ? Footer.ToString() : "";
 
             //load website icon
             if (File.Exists(Server.MapPath("wwwroot/images/web-icon.png")))
@@ -78,24 +74,24 @@ namespace Saber
             }
 
             //load android icons
-            if (Server.Cache.ContainsKey(androidKey))
+            if (Server.Cache.ContainsKey(AndroidKey))
             {
-                if((bool)Server.Cache[androidKey] == true)
+                if((bool)Server.Cache[AndroidKey] == true)
                 {
-                    view.Show(androidKey);
+                    view.Show(AndroidKey);
                 }
-            }else if (File.Exists(Server.MapPath("/wwwroot/" + androidKey + ".json")))
+            }else if (File.Exists(Server.MapPath("/wwwroot/" + AndroidKey + ".json")))
             {
-                Server.Cache.Add(androidKey, true);
+                Server.Cache.Add(AndroidKey, true);
             }
             else
             {
-                Server.Cache.Add(androidKey, false);
+                Server.Cache.Add(AndroidKey, false);
             }
 
             //load body
             view["body"] = body;
-            if (usePlatform)
+            if (UsePlatform)
             {
                 view.Show("platform-1");
                 view.Show("platform-2");
@@ -106,56 +102,6 @@ namespace Saber
             view["scripts"] = Scripts.ToString();
 
             return view.Render();
-        }
-
-        public override void Dispose()
-        {
-            if(user != null)
-            {
-                User.Save();
-            }
-        }
-
-        public override bool CheckSecurity()
-        {
-            if (!base.CheckSecurity()) { 
-                return false; 
-            }
-            if (User.userId > 0)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public string AccessDenied<T>() where T : IController
-        {
-            return IController.AccessDenied<T>(this);
-        }
-
-        public string Redirect(string url)
-        {
-            return "<script language=\"javascript\">window.location.href = '" + url + "';</script>";
-        }
-
-        public override void AddScript(string url, string id = "", string callback = "")
-        {
-            if (ContainsResource(url)) { return; }
-            Scripts.Append("<script language=\"javascript\"" + (id != "" ? " id=\"" + id + "\"" : "") + " src=\"" + url + "\"" +
-                (callback != "" ? " onload=\"" + callback + "\"" : "") + "></script>");
-        }
-
-        public override void AddCSS(string url, string id = "")
-        {
-            if (ContainsResource(url)) { return; }
-            Css.Append("<link rel=\"stylesheet\" type=\"text/css\"" + (id != "" ? " id=\"" + id + "\"" : "") + " href=\"" + url + "\"></link>");
-        }
-
-        public bool ContainsResource(string url)
-        {
-            if (Resources.Contains(url)) { return true; }
-            Resources.Add(url);
-            return false;
         }
     }
 }

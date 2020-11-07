@@ -87,6 +87,8 @@ namespace Saber.Services
                 //save fields as json
                 var json = JsonSerializer.Serialize(data);
                 File.WriteAllText(Server.MapPath(Common.Platform.ContentFields.ContentFile(path, language)), json);
+                //reset view cache for page
+                Website.ResetCache(path, language);
             }
             catch (Exception)
             {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 
 namespace Saber.Services
 {
@@ -50,7 +49,7 @@ namespace Saber.Services
                 new Datasilk.Core.Web.Response()
                 {
                     selector = ".sections > .website-analytics .analytics-contents",
-                    html = RenderView(view),
+                    html = Common.Platform.Render.View(this, view),
                     css = Css.ToString(),
                     javascript = Scripts.ToString()
                 }

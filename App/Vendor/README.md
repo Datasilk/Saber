@@ -44,13 +44,13 @@ Saber's `ConfigureServices` method and `Configure` method located in the `/App/S
 #### IVendorViewRenderer
 Interface used to execute vendor-specific code when Saber renders a View. Attribute `[ViewPath("/Views/Path/To/myfile.html")]` is required on the class that inherits `IVendorViewRenderer`, which will determine when the `Render` method is being called to load the associated `html` file. Use this interface to add HTML to a View that contains the `{{vendor}}` element.
 
-```
+``` csharp
 namespace Saber.Vendor.MyPlugin
 {
     [ViewPath("/Views/AppSettings/appsettings.html")]
     public class MyPlugin : IVendorViewRenderer
     {
-        public void Render(Request request, View view)
+        public void Render(Core.IRequest request, View view)
         {
             var myview = new View("/Vendor/MyPlugin/settings.html");
             view["vendor"] += myview.Render();
@@ -62,10 +62,12 @@ namespace Saber.Vendor.MyPlugin
 In the example above, we append the rendered HTML of our `settings.html` view to the `vendor` element whenever Saber renders the `/Views/AppSettings/appsettings.html` View.
 > **NOTE:** It is important that you append the rendered HTML to the contents of the `vendor` element instead of replacing the contents because other vendors might have appended content to the same element beforehand.
 
-Saber supports the `IVendorViewRenderer` for specific views so that vendors can extend the Editor UI.
+Saber supports the `IVendorViewRenderer` for all views within the application, and the following views include a `{{vendor}}` HTML variable so that vendors can extend the Editor UI.
 
 * `/Views/AppSettings/appsettings.html`, used to add vendor-speicific Application Settings to Saber
+* `/Views/PageSettings/pagesettings.html`, used to add vendor-speicific Page Settings to Saber
 
 #### IVendorController
-Interface used to route page requests to vendor-specific controllers. The class must inherit `Controller` as well as `IVendorController` in order to work. 
-> **NOTE:** Make sure your controller names do not conflict with potential web pages that users will want to create for their website, such as `About`, `Blog`, `Wiki`, `Projects`, `Team`, `PrivacyPolicy`, `Members`, `Landing`, `Store`, `History`, etc.
+Interface used to route page requests to vendor-specific controllers. Your class must inherit `Controller` as well as `IVendorController` in order to work properly.
+> **NOTE:** Make sure your controller names do not conflict with potential web pages that users will want to create for their website, such as:
+>  `About`, `Contact`, `Blog`, `Wiki`, `Projects`, `Team`, `Terms`, `PrivacyPolicy`, `Members`, `Landing`, `Store`, `History`, etc.

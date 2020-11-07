@@ -11,7 +11,7 @@ namespace Saber.Controllers
     {
         public override string Render(string body = "")
         {
-            theme = "dark";
+            Theme = "dark";
             View view;
 
             //get selected language
@@ -19,7 +19,7 @@ namespace Saber.Controllers
             if (Parameters.ContainsKey("lang"))
             {
                 lang = Parameters["lang"];
-                User.language = lang;
+                User.Language = lang;
                 User.Save(true);
             }
 
@@ -57,10 +57,10 @@ namespace Saber.Controllers
                 }
 
                 //load page layout
-                title = config.title.prefix + config.title.body + config.title.suffix;
-                description = config.description;
+                Title = config.title.prefix + config.title.body + config.title.suffix;
+                Description = config.description;
 
-                if (User.userId > 0 && !Parameters.ContainsKey("live"))
+                if (User.UserId > 0 && !Parameters.ContainsKey("live"))
                 {
                     //use editor.html
                     view = new View("/Views/Editor/editor.html");
@@ -89,7 +89,7 @@ namespace Saber.Controllers
                             "S.editor.type = " + (int)EditorUsed + ";" +
                         "</script>");
                     }
-                    usePlatform = true;
+                    UsePlatform = true;
                 }
                 else
                 {
@@ -100,13 +100,13 @@ namespace Saber.Controllers
                 //add page-specific references
                 Scripts.Append(
                     "<script language=\"javascript\">" +
-                        "window.language = '" + User.language + "';" +
+                        "window.language = '" + User.Language + "';" +
                     "</script>\n"
                 );
                 if (Parameters.ContainsKey("live"))
                 {
-                    footer = new StringBuilder();
-                    footer.Append(Server.LoadFileFromCache("/Views/Editor/live-preview-min.html"));
+                    Footer = new StringBuilder();
+                    Footer.Append(Server.LoadFileFromCache("/Views/Editor/live-preview-min.html"));
                 }
 
                 //add all custom scripts before loading page script
@@ -124,7 +124,7 @@ namespace Saber.Controllers
                     AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
                     AddScript(rpath.ToLower() + rfile + ".js", "page_js");
                 }
-                else if(User.userId == 0 || Parameters.ContainsKey("live"))
+                else if(User.UserId == 0 || Parameters.ContainsKey("live"))
                 {
                     //show 404 error
                     Context.Response.StatusCode = 404;

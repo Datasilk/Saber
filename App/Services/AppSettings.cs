@@ -55,7 +55,7 @@ namespace Saber.Services
                 new Datasilk.Core.Web.Response()
                 {
                     selector = ".sections > .app-settings .settings-contents",
-                    html = RenderView(view),
+                    html = Common.Platform.Render.View(this, view, "<ul class=\"vendors list\">", "</ul>", "<li>", "</li>"),
                     css = Css.ToString(),
                     javascript = Scripts.ToString()
                 }
@@ -98,27 +98,6 @@ namespace Saber.Services
             }
             return viewIcon.Render();
         }
-
-        protected override string RenderView(View view)
-        {
-            //check for vendor-related View rendering
-            var vendors = new StringBuilder("<ul class=\"vendors list\">");
-            if (Server.viewRenderers.ContainsKey(view.Filename))
-            {
-                var renderers = Server.viewRenderers[view.Filename];
-                foreach (var renderer in renderers)
-                {
-                    vendors.Append("<li>" + renderer.Render(this, view) + "</li>");
-                }
-            }
-            if (vendors.Length > 0)
-            {
-                view["vendor"] = vendors.ToString();
-            }
-
-            return view.Render();
-        }
-
         #endregion
 
         public string UploadPngIcon(int type, int px)

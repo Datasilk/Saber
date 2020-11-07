@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.IO;
 using Microsoft.Extensions.Configuration;
@@ -38,10 +37,6 @@ public static class Server
     public static string ServerId = "";
     public static Dictionary<string, string> languages;
     public static bool IsDocker { get; set; }
-
-    //vendor properties
-    public static Dictionary<string, List<Saber.Vendor.IVendorViewRenderer>> viewRenderers { get; set; } = new Dictionary<string, List<Saber.Vendor.IVendorViewRenderer>>();
-    public static Dictionary<string, Type> vendorControllers { get; set; } = new Dictionary<string, Type>();
 
     //Dictionary used for caching non-serialized objects, files from disk, or raw text
     public static Dictionary<string, object> Cache = new Dictionary<string, object>();

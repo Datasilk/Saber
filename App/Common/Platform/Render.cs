@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using CommonMark;
 
@@ -7,12 +8,13 @@ namespace Saber.Common.Platform
 {
     public class Render
     {
+        #region "Page"
         /// <summary>
         /// Renders a page, including language-specific content, and uses page-specific config to check for security & other features
         /// </summary>
         /// <param name="path">relative path to content (e.g. "content/home")</param>
         /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
-        public static string Page(string path, Request request, Models.Page.Settings config, string language = "en")
+        public static string Page(string path, Core.IRequest request, Models.Page.Settings config, string language = "en")
         {
             //translate root path to relative path
             var content = new View("/Views/Editor/content.html");
@@ -39,7 +41,7 @@ namespace Saber.Common.Platform
             var view = new View(relpath);
             if (view.Elements.Count == 0)
             {
-                if (request.User.userId == 0 || request.Parameters.ContainsKey("live"))
+                if (request.User.UserId == 0 || request.Parameters.ContainsKey("live"))
                 {
                     if(path != "/Content/pages/404.html")
                     {
@@ -62,7 +64,7 @@ namespace Saber.Common.Platform
             //check security
             if (config.security.secure == true)
             {
-                if (!request.CheckSecurity() || !config.security.read.Contains(request.User.userId))
+                if (!request.CheckSecurity() || !config.security.read.Contains(request.User.UserId))
                 {
                     throw new ServiceDeniedException("You do not have read access for this page");
                 }
@@ -73,7 +75,7 @@ namespace Saber.Common.Platform
             var contents = Server.LoadFileFromCache(contentfile);
             if(contents != "")
             {
-                var data = JsonSerializer.Deserialize<Dictionary<string, string>>(Server.LoadFileFromCache(contentfile));
+                var data = JsonSerializer.Deserialize<Dictionary<string, string>>(contents);
                 if (data != null)
                 {
                     //get view blocks
@@ -144,7 +146,7 @@ namespace Saber.Common.Platform
             }
         }
 
-        private static List<KeyValuePair<string, string>> GetPlatformData(View view, Request request)
+        private static List<KeyValuePair<string, string>> GetPlatformData(View view, Core.IRequest request)
         {
             var results = new List<KeyValuePair<string, string>>();
             var prefix = "";
@@ -187,5 +189,28 @@ namespace Saber.Common.Platform
 
             return results;
         }
+        #endregion
+
+        #region "View"
+        public static string View(Core.IRequest request, View view, string head = "", string foot = "", string itemHead = "", string itemFoot = "")
+        {
+            //check for vendor-related View rendering
+            var vendors = new StringBuilder();
+            if (Vendors.ViewRenderers.ContainsKey(view.Filename))
+            {
+                var renderers = Vendors.ViewRenderers[view.Filename];
+                foreach (var renderer in renderers)
+                {
+                    vendors.Append(itemHead + renderer.Render(request, view) + itemFoot);
+                }
+            }
+            if (vendors.Length > 0)
+            {
+                view["vendor"] = head + vendors.ToString() + foot;
+            }
+
+            return view.Render();
+        }
+        #endregion
     }
 }
