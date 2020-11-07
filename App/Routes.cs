@@ -25,7 +25,7 @@ namespace Saber
             if (Vendors.Controllers.ContainsKey(name))
             {
                 //load Vendor controller
-                return (Controller)Activator.CreateInstance(Vendors.Controllers[name]);
+                return (IController)Activator.CreateInstance(Vendors.Controllers[name]);
             }
             //if all else fails, render Saber Editor
             return new Controllers.Editor();

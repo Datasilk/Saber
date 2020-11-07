@@ -86,6 +86,9 @@ namespace Saber
                 }
             }
 
+            //get list of DLLs that contain the IVendorViewRenderer
+            Vendors.GetControllersFromFileSystem(vendorDLLs);
+
             Console.WriteLine("Found " + Vendors.Controllers.Count + " Vendor Controller" + (Vendors.Controllers.Count != 1 ? "s" : "") + " that inherit IVendorController");
 
             //get list of vendor classes that inherit IVendorViewRenderer interface
