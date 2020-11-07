@@ -28,7 +28,7 @@ namespace Saber.Common.Platform
             }
 
             //check file path on drive for (estimated) OS folder structure limitations 
-            if (Server.MapPath(relpath).Length > 180)
+            if (App.MapPath(relpath).Length > 180)
             {
                 throw new ServiceErrorException("The URL path you are accessing is too long to handle for the web server");
             }
@@ -72,7 +72,7 @@ namespace Saber.Common.Platform
 
             //load user content from json file, depending on selected language
             var contentfile = ContentFields.ContentFile(path, language);
-            var contents = Server.LoadFileFromCache(contentfile);
+            var contents = Cache.LoadFile(contentfile);
             if(contents != "")
             {
                 var data = JsonSerializer.Deserialize<Dictionary<string, string>>(contents);

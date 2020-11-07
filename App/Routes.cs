@@ -11,7 +11,7 @@ namespace Saber
             switch (name)
             {
                 case "login":
-                    if (Server.hasAdmin == false || Server.resetPass == true)
+                    if (Server.HasAdmin == false || Server.ResetPass == true)
                     {
                         return new Controllers.Login();
                     }

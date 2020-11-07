@@ -27,9 +27,9 @@ namespace Saber.Controllers
                         //loading resources for specific page
                         pubdir = "/wwwroot" + dir.ToLower();
                     }
-                    if (!Directory.Exists(Server.MapPath(pubdir)))
+                    if (!Directory.Exists(App.MapPath(pubdir)))
                     {
-                        Directory.CreateDirectory(Server.MapPath(pubdir));
+                        Directory.CreateDirectory(App.MapPath(pubdir));
                     }
                     foreach (var f in Parameters.Files)
                     {
@@ -38,8 +38,8 @@ namespace Saber.Controllers
                         var ext = filename.GetFileExtension().ToLower();
                         try
                         {
-                            Console.WriteLine("saving file to " + Server.MapPath(pubdir + filename));
-                            using (var ms = new FileStream(Server.MapPath(pubdir + filename), FileMode.Create))
+                            Console.WriteLine("saving file to " + App.MapPath(pubdir + filename));
+                            using (var ms = new FileStream(App.MapPath(pubdir + filename), FileMode.Create))
                             {
                                 file.CopyTo(ms);
                                 ms.Close();
@@ -47,15 +47,15 @@ namespace Saber.Controllers
                         }
                         catch (Exception ex)
                         {
-                            Query.Logs.LogError(User.UserId, Path, "Save file to disk (" + Server.MapPath(pubdir + filename) + ")", ex.Message, ex.StackTrace);
+                            Query.Logs.LogError(User.UserId, Path, "Save file to disk (" + App.MapPath(pubdir + filename) + ")", ex.Message, ex.StackTrace);
                         }
                         var i = 0;
-                        while (!File.Exists(Server.MapPath(pubdir + filename)) && i < 5)
+                        while (!File.Exists(App.MapPath(pubdir + filename)) && i < 5)
                         {
                             i++;
                             Thread.Sleep(1000);
                         }
-                        if (!File.Exists(Server.MapPath(pubdir + filename))) { return Error(); }
+                        if (!File.Exists(App.MapPath(pubdir + filename))) { return Error(); }
 
                         switch (ext)
                         {
@@ -63,11 +63,11 @@ namespace Saber.Controllers
                             case "jpeg":
                             case "png":
                                 //create a thumbnail image to display in the page resources section of the editor
-                                if (!Directory.Exists(Server.MapPath(pubdir + thumbdir)))
+                                if (!Directory.Exists(App.MapPath(pubdir + thumbdir)))
                                 {
-                                    Directory.CreateDirectory(Server.MapPath(pubdir + thumbdir));
+                                    Directory.CreateDirectory(App.MapPath(pubdir + thumbdir));
                                 }
-                                if (File.Exists(Server.MapPath(pubdir + filename)))
+                                if (File.Exists(App.MapPath(pubdir + filename)))
                                 {
                                     try
                                     {
@@ -75,7 +75,7 @@ namespace Saber.Controllers
                                     }
                                     catch (Exception ex)
                                     {
-                                        Query.Logs.LogError(User.UserId, Path, "Shrink file (" + Server.MapPath(pubdir + thumbdir + filename) + ")", ex.Message, ex.StackTrace);
+                                        Query.Logs.LogError(User.UserId, Path, "Shrink file (" + App.MapPath(pubdir + thumbdir + filename) + ")", ex.Message, ex.StackTrace);
                                         return Error("An error occured when trying to create a thumbnail preview of your image upload");
                                     }
                                 }

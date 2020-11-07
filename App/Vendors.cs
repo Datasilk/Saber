@@ -11,16 +11,29 @@ namespace Saber
     {
         public static Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<Vendor.IVendorViewRenderer>>();
         public static Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
-        public static Dictionary<string, Type> Startups = new Dictionary<string, Type>();
+        public static Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
+        private static List<string> DLLs { get; set; } = new List<string>();
 
         public static string[] LoadDLLs()
         {
-            if (Directory.Exists(Server.MapPath("/Vendors")))
+            if (Directory.Exists(App.MapPath("/Vendor")))
             {
-                var dir = new DirectoryInfo(Server.MapPath("/Vendors"));
-                return dir.GetFiles("*.dll").Select(a => a.FullName).ToArray();
+                RecurseDirectories(App.MapPath("/Vendor"));
             }
-            return null;
+            return DLLs.ToArray();
+        }
+
+        private static void RecurseDirectories(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                var dir = new DirectoryInfo(path);
+                DLLs.AddRange(dir.GetFiles("*.dll").Select(a => a.FullName).ToArray());
+                foreach(var sub in dir.GetDirectories())
+                {
+                    RecurseDirectories(sub.FullName);
+                }
+            }
         }
 
         #region "View Renderers"
@@ -33,13 +46,24 @@ namespace Saber
                 var context = new Common.Assemblies.AssemblyLoader(file);
                 AssemblyName assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(file));
                 Assembly readerAssembly = context.LoadFromAssemblyName(assemblyName);
-                Type type = readerAssembly.ExportedTypes.FirstOrDefault(t => t.FullName == "IVendorViewRenderer");
-                GetViewRendererFromType(type);
+                var test = new List<string>();
+                foreach(var type in readerAssembly.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorViewRenderer")
+                        {
+                            GetViewRendererFromType(type);
+                            break;
+                        }
+                    }
+                }
             }
         }
 
         public static void GetViewRendererFromType(Type type)
         {
+            if(type == null) { return; }
             if (type.Equals(typeof(IVendorViewRenderer))) { return; }
             var attributes = type.GetCustomAttributes<Vendor.ViewPathAttribute>();
             foreach (var attr in attributes)
@@ -70,6 +94,7 @@ namespace Saber
 
         public static void GetControllerFromType(Type type)
         {
+            if (type == null) { return; }
             if (type.Equals(typeof(IVendorController))) { return; }
             Controllers.Add(type.Name.ToLower(), type);
         }
@@ -92,6 +117,7 @@ namespace Saber
 
         public static void GetStartupFromType(Type type)
         {
+            if (type == null) { return; }
             if (type.Equals(typeof(IVendorStartup))) { return; }
             Controllers.Add(type.Name.ToLower(), type);
         }

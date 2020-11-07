@@ -4,7 +4,7 @@
     {
         public override string Render(string body = "")
         {
-            if (Server.hasAdmin == false)
+            if (Server.HasAdmin == false)
             {
                 //load new administrator form
                 UsePlatform = true;

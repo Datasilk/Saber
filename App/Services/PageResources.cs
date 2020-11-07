@@ -34,10 +34,10 @@ namespace Saber.Services
                 view["folder-path"] = dir.Replace("/wwwroot", "");
             }
 
-            if (Directory.Exists(Server.MapPath(pubdir)))
+            if (Directory.Exists(App.MapPath(pubdir)))
             {
                 //get list of files in directory (excluding thumbnail images)
-                var info = new DirectoryInfo(Server.MapPath(pubdir));
+                var info = new DirectoryInfo(App.MapPath(pubdir));
                 var files = info.GetFiles();
 
                 //sort files
@@ -234,7 +234,7 @@ namespace Saber.Services
             //no resources
             if (noResources == true)
             {
-                view["resources"] = Server.LoadFileFromCache("/Views/PageResources/no-resources.html");
+                view["resources"] = Cache.LoadFile("/Views/PageResources/no-resources.html");
             }
 
             return view.Render();
@@ -259,12 +259,12 @@ namespace Saber.Services
                 var exclude = new string[] { "web.config" };
                 if (exclude.Contains(file)) { return Error(); }
 
-                if (Directory.Exists(Server.MapPath(pubdir)))
+                if (Directory.Exists(App.MapPath(pubdir)))
                 {
-                    if (File.Exists(Server.MapPath(pubdir + file)))
+                    if (File.Exists(App.MapPath(pubdir + file)))
                     {
                         //delete file from disk
-                        File.Delete(Server.MapPath(pubdir + file));
+                        File.Delete(App.MapPath(pubdir + file));
                     }
                     var ext = file.GetFileExtension();
                     switch (ext.ToLower())
@@ -273,9 +273,9 @@ namespace Saber.Services
                         case "jpeg":
                         case "png":
                             //delete thumbnail, too
-                            if (File.Exists(Server.MapPath(pubdir + Settings.ThumbDir + file)))
+                            if (File.Exists(App.MapPath(pubdir + Settings.ThumbDir + file)))
                             {
-                                File.Delete(Server.MapPath(pubdir + Settings.ThumbDir + file));
+                                File.Delete(App.MapPath(pubdir + Settings.ThumbDir + file));
                             }
                             break;
                     }

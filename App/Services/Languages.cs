@@ -8,7 +8,7 @@ namespace Saber.Services
         public string Get()
         {
             var html = new StringBuilder();
-            foreach (var lang in Server.languages)
+            foreach (var lang in Server.Languages)
             {
                 html.Append(lang.Key + ',' + lang.Value + '|');
             }

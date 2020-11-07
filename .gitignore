@@ -30,6 +30,8 @@
 !/App/Vendor/README.md
 /AWS/
 compose.bat
+PublishProfiles
+**/.config
 
 *.bak
 *.jfm

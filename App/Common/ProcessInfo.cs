@@ -32,7 +32,7 @@ namespace Saber.Common.ProcessInfo
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardError = true,
-                    WorkingDirectory = Server.MapPath("/").Replace("App\\", ""),
+                    WorkingDirectory = App.MapPath("/").Replace("App\\", ""),
                     Verb = "runas"
                 }
             };

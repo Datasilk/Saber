@@ -26,12 +26,12 @@ namespace Saber.Services
 
         public string SaveAdminPassword(string password)
         {
-            if (Server.resetPass == true)
+            if (Server.ResetPass == true)
             {
                 var update = false; //security check
                 var emailAddr = "";
                 var adminId = 1;
-                if (Server.resetPass == true)
+                if (Server.ResetPass == true)
                 {
                     //securely change admin password
                     //get admin email address from database
@@ -41,7 +41,7 @@ namespace Saber.Services
                 if (update == true)
                 {
                     Query.Users.UpdatePassword(adminId, EncryptPassword(emailAddr, password));
-                    Server.resetPass = false;
+                    Server.ResetPass = false;
                 }
                 return Success();
             }
@@ -51,7 +51,7 @@ namespace Saber.Services
 
         public string CreateAdminAccount(string name, string email, string password)
         {
-            if (Server.hasAdmin == false)
+            if (Server.HasAdmin == false)
             {
                 Query.Users.CreateUser(new Query.Models.User()
                 {
@@ -59,8 +59,8 @@ namespace Saber.Services
                     email = email,
                     password = EncryptPassword(email, password)
                 });
-                Server.hasAdmin = true;
-                Server.resetPass = false;
+                Server.HasAdmin = true;
+                Server.ResetPass = false;
                 return "success";
             }
             Context.Response.StatusCode = 500;
@@ -74,13 +74,13 @@ namespace Saber.Services
 
         public string EncryptPassword(string email, string password)
         {
-            return BCrypt.Net.BCrypt.HashPassword(email + Server.salt + password, Server.bcrypt_workfactor);
+            return BCrypt.Net.BCrypt.HashPassword(email + Server.Salt + password, Server.BcryptWorkfactor);
 
         }
 
         public bool DecryptPassword(string email, string password, string encrypted)
         {
-            return BCrypt.Net.BCrypt.Verify(email + Server.salt + password, encrypted);
+            return BCrypt.Net.BCrypt.Verify(email + Server.Salt + password, encrypted);
         }
     }
 }

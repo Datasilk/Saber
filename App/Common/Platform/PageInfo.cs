@@ -66,7 +66,7 @@ namespace Saber.Common.Platform
         public static Models.Page.Settings GetPageConfig(string path)
         {
             var filename = ConfigFilePath(path);
-            var contents = Server.LoadFileFromCache(filename);
+            var contents = Cache.LoadFile(filename);
             var config = new Models.Page.Settings();
             if (contents != "")
             {
@@ -77,7 +77,7 @@ namespace Saber.Common.Platform
             //try to get the template config
             var paths = GetRelativePath(path);
             var file = paths[paths.Length - 1];
-            var template = Server.LoadFileFromCache(string.Join('/', paths.Take(paths.Length - 1).ToArray()) + "/template.json");
+            var template = Cache.LoadFile(string.Join('/', paths.Take(paths.Length - 1).ToArray()) + "/template.json");
             if(template != "")
             {
                 config = JsonSerializer.Deserialize<Models.Page.Settings>(template);
@@ -109,7 +109,7 @@ namespace Saber.Common.Platform
         public static void SavePageConfig(string path, Models.Page.Settings config)
         {
             var filename = ConfigFilePath(path);
-            Server.SaveFileFromCache(filename, JsonSerializer.Serialize(config, new JsonSerializerOptions() { WriteIndented = true }));
+            Cache.SaveFile(filename, JsonSerializer.Serialize(config, new JsonSerializerOptions() { WriteIndented = true }));
         }
     }
 }

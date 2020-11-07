@@ -49,10 +49,10 @@ namespace Saber.Services
             //generate list of page headers & footers
             var headers = new List<Models.Page.Template>();
             var footers = new List<Models.Page.Template>();
-            var files = Directory.GetFiles(Server.MapPath("/Content/partials/"), "*.html", SearchOption.AllDirectories);
+            var files = Directory.GetFiles(App.MapPath("/Content/partials/"), "*.html", SearchOption.AllDirectories);
             foreach (var file in files)
             {
-                var paths = file.Replace(Server.RootPath, "").Split('\\').ToList();
+                var paths = file.Replace(App.RootPath, "").Split('\\').ToList();
                 var startIndex = paths.FindIndex(f => f == "partials");
                 paths = paths.Skip(startIndex + 1).ToList();
                 var filepath = "/Content/partials/" + string.Join('/', paths.ToArray());
@@ -309,9 +309,9 @@ namespace Saber.Services
         private List<string> RenderAvailableScriptsList()
         {
             var list = new List<string>();
-            RecurseDirectoriesForScripts(list, Server.MapPath("/wwwroot/js"));
-            RecurseDirectoriesForScripts(list, Server.MapPath("/wwwroot/content"));
-            var root = Server.MapPath("/") + "\\";
+            RecurseDirectoriesForScripts(list, App.MapPath("/wwwroot/js"));
+            RecurseDirectoriesForScripts(list, App.MapPath("/wwwroot/content"));
+            var root = App.MapPath("/") + "\\";
             var rel = new List<string>();
             foreach (var i in list)
             {

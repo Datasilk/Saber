@@ -19,7 +19,7 @@ namespace Saber.Common.Utility
     {
         public static ImageInfo Load(string path, string filename)
         {
-            using (var fs = File.OpenRead(Server.MapPath(path + filename)))
+            using (var fs = File.OpenRead(App.MapPath(path + filename)))
             {
                 return Load(fs, path, filename);
             }
@@ -39,7 +39,7 @@ namespace Saber.Common.Utility
         
         public static void Shrink(string filename, string outfile, int width)
         {
-            using (var fs = File.OpenRead(Server.MapPath(filename)))
+            using (var fs = File.OpenRead(App.MapPath(filename)))
             {
                 var image = SixLabors.ImageSharp.Image.Load(fs);
 
@@ -50,7 +50,7 @@ namespace Saber.Common.Utility
                         Size = new Size(width, 0)
                     }));
                 }
-                image.Save(Server.MapPath(outfile));
+                image.Save(App.MapPath(outfile));
                 fs.Dispose();
             }
         }

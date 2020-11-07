@@ -106,7 +106,7 @@ namespace Saber.Controllers
                 if (Parameters.ContainsKey("live"))
                 {
                     Footer = new StringBuilder();
-                    Footer.Append(Server.LoadFileFromCache("/Views/Editor/live-preview-min.html"));
+                    Footer.Append(Cache.LoadFile("/Views/Editor/live-preview-min.html"));
                 }
 
                 //add all custom scripts before loading page script
@@ -117,7 +117,7 @@ namespace Saber.Controllers
                     scriptIndex++;
                 }
 
-                if (File.Exists(Server.MapPath(rpath + rfile + ".html")))
+                if (File.Exists(App.MapPath(rpath + rfile + ".html")))
                 {
                     //page exists
                     view["content"] = Common.Platform.Render.Page("content/" + pathname + ".html", this, config, lang);
@@ -128,7 +128,7 @@ namespace Saber.Controllers
                 {
                     //show 404 error
                     Context.Response.StatusCode = 404;
-                    if (File.Exists(Server.MapPath("content/pages/404.html")))
+                    if (File.Exists(App.MapPath("content/pages/404.html")))
                     {
                         config = PageInfo.GetPageConfig("content/404");
                         view["content"] = Common.Platform.Render.Page("content/pages/404.html", this, config, lang);
@@ -140,7 +140,7 @@ namespace Saber.Controllers
                         view["content"] = Common.Platform.Render.Page("Views/404.html", this, config, lang);
                     }
                 }
-                else if (File.Exists(Server.MapPath(rpath + "/template.html")))
+                else if (File.Exists(App.MapPath(rpath + "/template.html")))
                 {
                     //page does not exist, try to load template page from parent
                     var templatePath = string.Join('/', PathParts.Take(PathParts.Length - 1).ToArray());

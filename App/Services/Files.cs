@@ -42,10 +42,10 @@ namespace Saber.Services
             else
             {
                 //get folder structure from hard drive
-                if (Directory.Exists(Server.MapPath(rpath)))
+                if (Directory.Exists(App.MapPath(rpath)))
                 {
                     //get list of directories
-                    var info = new DirectoryInfo(Server.MapPath(rpath));
+                    var info = new DirectoryInfo(App.MapPath(rpath));
                     if (paths[0] == "/CSS" && paths.Length == 1)
                     {
                         exclude = exclude.Concat(new string[] { "tapestry", "themes" }).ToArray();
@@ -170,22 +170,22 @@ namespace Saber.Services
             //translate root path to relative path
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
-            if (File.Exists(Server.MapPath(string.Join("/", paths))))
+            if (File.Exists(App.MapPath(string.Join("/", paths))))
             {
                 if (pageResource == false)
                 {
                     //save open tab to user's session
                     User.AddOpenTab(path);
                 }
-                return WebUtility.HtmlEncode(File.ReadAllText(Server.MapPath(string.Join("/", paths))));
+                return WebUtility.HtmlEncode(File.ReadAllText(App.MapPath(string.Join("/", paths))));
             }
             else if (pageResource == true)
             {
                 //try to load template page content
                 var templatePath = string.Join('/', paths.Take(paths.Length - 1).ToArray()) + "/template." + paths[paths.Length - 1].GetFileExtension();
-                if (File.Exists(Server.MapPath(templatePath)))
+                if (File.Exists(App.MapPath(templatePath)))
                 {
-                    return WebUtility.HtmlEncode(File.ReadAllText(Server.MapPath(templatePath)));
+                    return WebUtility.HtmlEncode(File.ReadAllText(App.MapPath(templatePath)));
                 }
             }
             var ext = paths[paths.Length - 1].Split(".")[1].ToLower();

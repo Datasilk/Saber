@@ -39,7 +39,7 @@ namespace Saber
             view["footer"] = Footer != null ? Footer.ToString() : "";
 
             //load website icon
-            if (File.Exists(Server.MapPath("wwwroot/images/web-icon.png")))
+            if (File.Exists(App.MapPath("wwwroot/images/web-icon.png")))
             {
                 view["favicon"] = "/images/web-icon.png";
                 view["favicon-type"] = "image/png";
@@ -49,14 +49,14 @@ namespace Saber
             var appleIcons = new bool[4];
             var isCached = false;
             var i = 0;
-            if (Server.Cache.ContainsKey("apple-icons"))
+            if (Cache.Store.ContainsKey("apple-icons"))
             {
-                appleIcons = (bool[])Server.Cache["apple-icons"];
+                appleIcons = (bool[])Cache.Store["apple-icons"];
                 isCached = true;
             }
             foreach (var size in new int[] { 60, 76, 120, 152 })
             {
-                if (isCached == false && File.Exists(Server.MapPath("/images/mobile/apple-" + size + "x" + size + ".png")))
+                if (isCached == false && File.Exists(App.MapPath("/images/mobile/apple-" + size + "x" + size + ".png")))
                 {
                     appleIcons[i] = true;
                 }
@@ -70,23 +70,23 @@ namespace Saber
             }
             if(isCached == false)
             {
-                Server.Cache.Add("apple-icons", appleIcons);
+                Cache.Add("apple-icons", appleIcons);
             }
 
             //load android icons
-            if (Server.Cache.ContainsKey(AndroidKey))
+            if (Cache.Store.ContainsKey(AndroidKey))
             {
-                if((bool)Server.Cache[AndroidKey] == true)
+                if((bool)Cache.Store[AndroidKey] == true)
                 {
                     view.Show(AndroidKey);
                 }
-            }else if (File.Exists(Server.MapPath("/wwwroot/" + AndroidKey + ".json")))
+            }else if (File.Exists(App.MapPath("/wwwroot/" + AndroidKey + ".json")))
             {
-                Server.Cache.Add(AndroidKey, true);
+                Cache.Add(AndroidKey, true);
             }
             else
             {
-                Server.Cache.Add(AndroidKey, false);
+                Cache.Add(AndroidKey, false);
             }
 
             //load body

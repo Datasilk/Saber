@@ -36,11 +36,11 @@ namespace Saber.Common.Platform
             var fileparts = filename.Split('.', 2);
             var dir = string.Join("/", paths) + "/";
 
-            if (!Directory.Exists(Server.MapPath(dir)))
+            if (!Directory.Exists(App.MapPath(dir)))
             {
-                Directory.CreateDirectory(Server.MapPath(dir));
+                Directory.CreateDirectory(App.MapPath(dir));
             }
-            if (File.Exists(Server.MapPath(dir + filename.Replace(" ", ""))))
+            if (File.Exists(App.MapPath(dir + filename.Replace(" ", ""))))
             {
                 throw new ServiceErrorException("The file alrerady exists");
             }
@@ -61,7 +61,7 @@ namespace Saber.Common.Platform
             }
             try
             {
-                File.WriteAllText(Server.MapPath(dir + filename.Replace(" ", "")), content);
+                File.WriteAllText(App.MapPath(dir + filename.Replace(" ", "")), content);
             }
             catch (Exception)
             {
@@ -95,11 +95,11 @@ namespace Saber.Common.Platform
             }
             var dir = string.Join("/", paths) + "/" + folder.Replace(" ", "");
 
-            if (!Directory.Exists(Server.MapPath(dir)))
+            if (!Directory.Exists(App.MapPath(dir)))
             {
                 try
                 {
-                    Directory.CreateDirectory(Server.MapPath(dir));
+                    Directory.CreateDirectory(App.MapPath(dir));
                 }
                 catch (Exception)
                 {
@@ -122,11 +122,11 @@ namespace Saber.Common.Platform
             var ext = file.Split('.', 2)[1].ToLower(); //file extension only
 
             //create folder for file
-            if (!Directory.Exists(Server.MapPath(dir)))
+            if (!Directory.Exists(App.MapPath(dir)))
             {
                 try
                 {
-                    Directory.CreateDirectory(Server.MapPath(dir));
+                    Directory.CreateDirectory(App.MapPath(dir));
                 }
                 catch (Exception)
                 {
@@ -135,7 +135,7 @@ namespace Saber.Common.Platform
             }
             try
             {
-                File.WriteAllText(Server.MapPath(filepath), content);
+                File.WriteAllText(App.MapPath(filepath), content);
             }
             catch (Exception)
             {
@@ -152,15 +152,15 @@ namespace Saber.Common.Platform
                 //create public folder in wwwroot
                 var pubdir = "/wwwroot/content/pages/" + string.Join("/", paths.Skip(1)).Replace(file, "");
                 if (pubdir[pubdir.Length - 1] != '/') { pubdir += "/"; }
-                if (!Directory.Exists(Server.MapPath(pubdir)))
+                if (!Directory.Exists(App.MapPath(pubdir)))
                 {
-                    Directory.CreateDirectory(Server.MapPath(pubdir));
+                    Directory.CreateDirectory(App.MapPath(pubdir));
                 }
                 switch (ext)
                 {
                     case "js": case "css":
                         //copy resource file to public wwwroot folder
-                        File.Copy(Server.MapPath(filepath), Server.MapPath(pubdir + file), true);
+                        File.Copy(App.MapPath(filepath), App.MapPath(pubdir + file), true);
                         break;
 
                     case "less":
@@ -178,7 +178,7 @@ namespace Saber.Common.Platform
                         {
                             case "header.less": case "footer.less":
                                 //compile website.less
-                                SaveLessFile(File.ReadAllText(Server.MapPath("/CSS/website.less")), "/wwwroot/css/website.css", "/CSS");
+                                SaveLessFile(File.ReadAllText(App.MapPath("/CSS/website.less")), "/wwwroot/css/website.css", "/CSS");
                                 break;
                             default:
                                 var pubpath = "/wwwroot/content/partials/" + string.Join('/', paths.Skip(2).ToArray()).Replace(paths[paths.Length - 1], "");
@@ -186,14 +186,14 @@ namespace Saber.Common.Platform
                                 {
                                     //compile less file
                                     
-                                    if (!Directory.Exists(Server.MapPath(pubpath)))
+                                    if (!Directory.Exists(App.MapPath(pubpath)))
                                     {
-                                        Directory.CreateDirectory(Server.MapPath(pubpath));
+                                        Directory.CreateDirectory(App.MapPath(pubpath));
                                     }
                                     SaveLessFile(content, pubpath + paths[paths.Length - 1].Replace(".less", ".css"), dir);
                                 }else if (paths[2].Right(3) == ".js")
                                 {
-                                    File.Copy(Server.MapPath(filepath), Server.MapPath(pubpath + paths[paths.Length - 1]), true);
+                                    File.Copy(App.MapPath(filepath), App.MapPath(pubpath + paths[paths.Length - 1]), true);
                                 }
                                 break;
                         }
@@ -215,10 +215,10 @@ namespace Saber.Common.Platform
         {
             try
             {
-                Directory.SetCurrentDirectory(Server.MapPath(pathLESS));
+                Directory.SetCurrentDirectory(App.MapPath(pathLESS));
                 var css = Less.Parse(content);
-                File.WriteAllText(Server.MapPath(outputFile), css);
-                Directory.SetCurrentDirectory(Server.MapPath("/"));
+                File.WriteAllText(App.MapPath(outputFile), css);
+                Directory.SetCurrentDirectory(App.MapPath("/"));
             }
             catch (Exception)
             {
@@ -228,39 +228,26 @@ namespace Saber.Common.Platform
 
         public static List<string> AllFiles(string[] include = null)
         {
-            var list = new List<string>();
-            RecurseDirectories(list, "/Content/pages");
-            RecurseDirectories(list, "/Content/partials");
-            list.Add(Server.MapPath("/CSS/website.less"));
-            RecurseDirectories(list, "/wwwroot", new string[] {Server.IsDocker ? "/content/" : "\\content\\", Server.IsDocker ? "/editor/" : "\\editor\\", "web.config", "website.css" });
-            RecurseDirectories(list, "/wwwroot/content", new string[] { ".js", ".css" });
-            if (include != null && include.Length > 0)
-            {
-                foreach(var i in include)
-                {
-                    RecurseDirectories(list, i);
-                }
-            }
-            return list;
+            return Core.Website.AllFiles(include);
         }
 
         public static void ResetCache(string path, string language = "en")
         {
             var paths = PageInfo.GetRelativePath(path);
             var filepath = string.Join("/", paths);
-            Server.Cache.Remove(ContentFields.ContentFile(path, language));
+            Cache.Remove(ContentFields.ContentFile(path, language));
             ViewCache.Remove(filepath + ".html");
         }
 
         private static void RecurseDirectories(List<string> list, string path, string[] ignore = null)
         {
-            var parent = new DirectoryInfo(Server.MapPath(path));
+            var parent = new DirectoryInfo(App.MapPath(path));
             var dirs = parent.GetDirectories().Where(a => ignore != null ? ignore.Where(b => a.FullName.IndexOf(b) >= 0).Count() == 0 : true);
             list.AddRange(parent.GetFiles().Select(a => a.FullName).Where(a => ignore != null ? ignore.Where(b => a.IndexOf(b) >= 0).Count() == 0  : true));
             foreach(var dir in dirs)
             {
                 var subpath = dir.FullName;
-                if (Server.IsDocker)
+                if (App.IsDocker)
                 {
                     subpath = "/" + subpath.Split("/app/")[1];
                 }

@@ -137,46 +137,46 @@ namespace Saber
 
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Server.IsDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+            App.IsDocker = System.Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 
 
             //get environment based on application build
             switch (env.EnvironmentName.ToLower())
             {
                 case "production":
-                    Server.environment = Server.Environment.production;
+                    App.Environment = Environment.production;
                     break;
                 case "staging":
-                    Server.environment = Server.Environment.staging;
+                    App.Environment = Environment.staging;
                     break;
                 default:
-                    Server.environment = Server.Environment.development;
+                    App.Environment = Environment.development;
                     break;
             }
 
             //load application-wide cache
             var configFile = "config" +
-                (Server.IsDocker ? ".docker" : "") +
-                (Server.environment == Server.Environment.production ? ".prod" : "") + ".json";
+                (App.IsDocker ? ".docker" : "") +
+                (App.Environment == Environment.production ? ".prod" : "") + ".json";
 
-            if (!File.Exists(Server.MapPath(configFile)))
+            if (!File.Exists(App.MapPath(configFile)))
             {
                 //create default config.json files
-                File.Copy(Server.MapPath("/Content/temp/" + configFile), Server.MapPath(configFile));
+                File.Copy(App.MapPath("/Content/temp/" + configFile), App.MapPath(configFile));
             }
 
             config = new ConfigurationBuilder()
-                .AddJsonFile(Server.MapPath(configFile))
+                .AddJsonFile(App.MapPath(configFile))
                 .AddEnvironmentVariables().Build();
 
-            Server.config = config;
+            Server.Config = config;
 
             //configure Server defaults
             Server.hostUri = config.GetSection("hostUri").Value;
             var servicepaths = config.GetSection("servicePaths").Value;
             if (servicepaths != null && servicepaths != "")
             {
-                Server.servicePaths = servicepaths.Replace(" ", "").Split(',');
+                Server.ServicePaths = servicepaths.Replace(" ", "").Split(',');
             }
             if (config.GetSection("version").Value != null)
             {
@@ -187,8 +187,8 @@ namespace Saber
             Query.Sql.ConnectionString = config.GetSection("sql:" + config.GetSection("sql:Active").Value).Value;
 
             //configure Server security
-            Server.bcrypt_workfactor = int.Parse(config.GetSection("Encryption:bcrypt_work_factor").Value);
-            Server.salt = config.GetSection("Encryption:salt").Value;
+            Server.BcryptWorkfactor = int.Parse(config.GetSection("Encryption:bcrypt_work_factor").Value);
+            Server.Salt = config.GetSection("Encryption:salt").Value;
 
             //configure cookie-based authentication
             var expires = !string.IsNullOrWhiteSpace(config.GetSection("Session:Expires").Value) ? int.Parse(config.GetSection("Session:Expires").Value) : 60;
@@ -213,7 +213,7 @@ namespace Saber
             app.UseStaticFiles(options);
 
             //exception handling
-            if (Server.environment == Server.Environment.development)
+            if (App.Environment == Environment.development)
             {
                 app.UseDeveloperExceptionPage(new DeveloperExceptionPageOptions
                 {
@@ -233,31 +233,31 @@ namespace Saber
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             //set up database
-            Server.hasAdmin = Query.Users.HasAdmin();
+            Server.HasAdmin = Query.Users.HasAdmin();
             var resetPass = Query.Users.HasPasswords();
-            Server.hasAdmin = Query.Users.HasAdmin();
+            Server.HasAdmin = Query.Users.HasAdmin();
 
             //set up Saber language support
-            Server.languages = new Dictionary<string, string>();
-            Server.languages.Add("en", "English"); //english should be the default language
+            Server.Languages = new Dictionary<string, string>();
+            Server.Languages.Add("en", "English"); //english should be the default language
             Query.Languages.GetList().ForEach((lang) => {
-                Server.languages.Add(lang.langId, lang.language);
+                Server.Languages.Add(lang.langId, lang.language);
             });
 
             //check if default website exists
-            if (!File.Exists(Server.MapPath("/Content/pages/home.html")))
+            if (!File.Exists(App.MapPath("/Content/pages/home.html")))
             {
                 //copy default website since none exists yet
-                Directory.CreateDirectory(Server.MapPath("/wwwroot/content/"));
-                Directory.CreateDirectory(Server.MapPath("/wwwroot/content/pages/"));
-                Directory.CreateDirectory(Server.MapPath("/wwwroot/fonts/"));
-                Directory.CreateDirectory(Server.MapPath("/wwwroot/images/"));
-                Directory.CreateDirectory(Server.MapPath("/wwwroot/js/"));
-                Directory.CreateDirectory(Server.MapPath("/Content/pages/"));
-                Directory.CreateDirectory(Server.MapPath("/Content/partials/"));
+                Directory.CreateDirectory(App.MapPath("/wwwroot/content/"));
+                Directory.CreateDirectory(App.MapPath("/wwwroot/content/pages/"));
+                Directory.CreateDirectory(App.MapPath("/wwwroot/fonts/"));
+                Directory.CreateDirectory(App.MapPath("/wwwroot/images/"));
+                Directory.CreateDirectory(App.MapPath("/wwwroot/js/"));
+                Directory.CreateDirectory(App.MapPath("/Content/pages/"));
+                Directory.CreateDirectory(App.MapPath("/Content/partials/"));
                 
                 //copy all temp folders into wwwroot
-                var dir = new DirectoryInfo(Server.MapPath("/Content/temp"));
+                var dir = new DirectoryInfo(App.MapPath("/Content/temp"));
                 var exclude = new string[]
                 {
                     "\\pages",
@@ -268,14 +268,14 @@ namespace Saber
                 {
                     if (!exclude.Any(a => d.FullName.IndexOf(a) >= 0)) 
                     { 
-                        Common.Utility.FileSystem.CopyDirectoryContents(d.FullName, Server.MapPath("/wwwroot/" + d.Name));
+                        Common.Utility.FileSystem.CopyDirectoryContents(d.FullName, App.MapPath("/wwwroot/" + d.Name));
                     }
                 }
 
-                Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/pages/"), Server.MapPath("/Content/pages/")); 
-                Common.Utility.FileSystem.CopyDirectoryContents(Server.MapPath("/Content/temp/partials/"), Server.MapPath("/Content/partials/"));
+                Common.Utility.FileSystem.CopyDirectoryContents(App.MapPath("/Content/temp/pages/"), App.MapPath("/Content/pages/")); 
+                Common.Utility.FileSystem.CopyDirectoryContents(App.MapPath("/Content/temp/partials/"), App.MapPath("/Content/partials/"));
                 
-                File.Copy(Server.MapPath("/Content/temp/app-css/website.less"), Server.MapPath("/CSS/website.less"), true);
+                File.Copy(App.MapPath("/Content/temp/app-css/website.less"), App.MapPath("/CSS/website.less"), true);
 
                 Thread.Sleep(1000);
 
@@ -290,7 +290,7 @@ namespace Saber
                         UseShellExecute = false,
                         CreateNoWindow = true,
                         RedirectStandardError = true,
-                        WorkingDirectory = Server.MapPath("/").Replace("App\\", ""),
+                        WorkingDirectory = App.MapPath("/").Replace("App\\", ""),
                         Verb = "runas"
                     }
                 };
@@ -351,7 +351,7 @@ namespace Saber
                 }
             });
 
-            Console.WriteLine("Running Saber Server in " + Server.environment.ToString() + " environment");
+            Console.WriteLine("Running Saber Server in " + App.Environment.ToString() + " environment");
         }
 
         private string GetFileExtension(string filename)

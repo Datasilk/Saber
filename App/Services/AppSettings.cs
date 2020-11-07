@@ -16,7 +16,7 @@ namespace Saber.Services
             var view = new View("/Views/AppSettings/appsettings.html");
 
             //add website icon
-            if (!File.Exists(Server.MapPath("/wwwroot/images/web-icon.png")))
+            if (!File.Exists(App.MapPath("/wwwroot/images/web-icon.png")))
             {
                 view.Show("favicon-missing");
             }
@@ -67,7 +67,7 @@ namespace Saber.Services
             viewIcon["favicon-missing"] = "";
             viewIcon["src"] = "";
             viewIcon["px"] = px.ToString();
-            if (!File.Exists(Server.MapPath($"/wwwroot/images/mobile/apple-{px}x{px}.png")))
+            if (!File.Exists(App.MapPath($"/wwwroot/images/mobile/apple-{px}x{px}.png")))
             {
                 viewIcon.Show("favicon-missing");
             }
@@ -83,7 +83,7 @@ namespace Saber.Services
             viewIcon["favicon-missing"] = "";
             viewIcon["src"] = "";
             viewIcon["px"] = px.ToString();
-            if (!File.Exists(Server.MapPath($"/wwwroot/images/mobile/android-{px}x{px}.png")))
+            if (!File.Exists(App.MapPath($"/wwwroot/images/mobile/android-{px}x{px}.png")))
             {
                 viewIcon.Show("favicon-missing");
             }
@@ -135,13 +135,13 @@ namespace Saber.Services
                     }
                 }
                 //save image to disk
-                if (!Directory.Exists(Server.MapPath("/wwwroot/images/" + imgpath)))
+                if (!Directory.Exists(App.MapPath("/wwwroot/images/" + imgpath)))
                 {
-                    Directory.CreateDirectory(Server.MapPath("/wwwroot/images/" + imgpath));
+                    Directory.CreateDirectory(App.MapPath("/wwwroot/images/" + imgpath));
                 }
                 using (var file = Context.Request.Form.Files[0].OpenReadStream())
                 {
-                    var filepath = Server.MapPath($"/wwwroot/images/{imgpath}{iconType}{imgSuffix}.png");
+                    var filepath = App.MapPath($"/wwwroot/images/{imgpath}{iconType}{imgSuffix}.png");
                     File.Delete(filepath);
                     using (var fs = new FileStream(filepath, FileMode.Create))
                     {
