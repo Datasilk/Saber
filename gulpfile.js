@@ -38,6 +38,8 @@ var gulp = require('gulp'),
     less = require('gulp-less'),
     rename = require('gulp-rename'),
     changed = require('gulp-changed'),
+    del = require('del'),
+    replace = require('gulp-replace'),
     config = require('./App/config.json'),
     exec = require('child_process').exec;
     
@@ -57,6 +59,12 @@ var paths = {
     css: 'App/CSS/',
     app: 'App/',
     webroot: 'App/wwwroot/',
+    release: 'App/bin/Release/netcoreapp3.1/',
+    publish: 'App/bin/Release/Saber/',
+    publishapp: 'App/bin/Release/Saber/App/',
+    sql: {
+        release: 'Sql/bin/Release/'
+    }
 };
 
 //working paths
@@ -280,7 +288,7 @@ gulp.task('icons', function () {
 //default task ////////////////////////////////////////////////////////////////////////////
 gulp.task('default', gulp.series('js', 'less', 'css', 'icons'));
 
-//specific file task /////////////////////////////////////////////////////////////////////
+//specific file task //////////////////////////////////////////////////////////////////////
 gulp.task('file', function () {
     var path = (arg.path || arg.p).toLowerCase();
     var pathlist = path.split('/');
@@ -333,3 +341,63 @@ gulp.task('watch', function () {
     gulp.watch(pathcss, gulp.series('css:app'));
 
 });
+
+//publish task ////////////////////////////////////////////////////////////////////
+gulp.task('publish:step-1', function () {
+    //copy data to publish folder
+    gulp.src(['Publish/README.md'])
+        .pipe(gulp.dest(paths.publish));
+
+    gulp.src([
+        'App/wwwroot/**/*',
+        'App/wwwroot/*',
+        'App/Content/temp/*',
+        'App/Content/temp/**',
+        'App/Views/**/*.html',
+        'App/Vendors/README.md'
+    ], { base: 'App' })
+        .pipe(gulp.dest(paths.publishapp));
+
+    gulp.src([paths.release + 'Content/temp/config.prod.json'])
+        .pipe(gulp.dest(paths.publishapp));
+
+    return gulp.src([
+        paths.release + '*',
+        paths.release + '**'
+    ], { base: paths.release })
+        .pipe(gulp.dest(paths.publishapp));
+});
+gulp.task('publish:step-2', function () {
+    //copy sql .pipe(replace("{{version}}", version_new))
+
+    return gulp.src(paths.sql.release + 'Saber_Create.sql')
+        .pipe(replace(':setvar DatabaseName "Sql"', ':setvar DatabaseName "Saber"'))
+        .pipe(replace(':setvar DefaultFilePrefix "Sql"', ':setvar DefaultFilePrefix "Saber"'))
+        .pipe(gulp.dest(paths.publish + 'Sql'));
+
+    return gulp.src([paths.sql.release + 'Saber.dacpac'])
+        .pipe(gulp.dest(paths.publish + 'Sql'));
+});
+
+gulp.task('publish:step-3', function () {
+    //delete unwanted files from release folder
+    return del([
+        paths.publishapp + 'Vendors/*',
+        paths.publishapp + 'Vendors/**',
+        '!' + paths.publishapp + 'Vendors/README.md',
+        paths.publishapp + 'wwwroot/**',
+        '!' + paths.publishapp + 'wwwroot/editor',
+        '!' + paths.publishapp + 'wwwroot/editor/**/*',
+        paths.publishapp + 'wwwroot/editor/js/vendors',
+        paths.publishapp + 'wwwroot/editor/css/vendors',
+        paths.publishapp + 'Content/**',
+        '!' + paths.publishapp + 'Content/temp',
+        paths.publishapp + 'Content/temp/README.md',
+        paths.publishapp + 'CSS',
+        paths.publishapp + 'Scripts',
+        paths.publishapp + 'config.json',
+        paths.publishapp + 'web.*.config',
+    ]);
+});
+
+gulp.task('publish', gulp.series('publish:step-1', 'publish:step-2', 'publish:step-3'));

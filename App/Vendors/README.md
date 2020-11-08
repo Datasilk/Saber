@@ -1,7 +1,7 @@
 ﻿# Vendors
 Install or build Saber-specific vendor plugins within this folder. 
 
-* Copy a Saber plugin into this folder
+* Copy Saber plugins into this folder
 * Create a new folder for your own plugin
 
 > Installed vendor plugins can be found by navigating to **File** > **App Settings** within the Saber Editor. Some vendor plugins may not be visible from the App Settings tab and would be considered "pass-through", meaning that the plugin "just works". 

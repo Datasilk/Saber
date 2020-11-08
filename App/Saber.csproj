@@ -6,6 +6,14 @@
     <UserSecretsId>9a847bc6-13f3-4478-8479-dc34f3467551</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <Authors>Mark Entingh</Authors>
+    <Company>Datasilk</Company>
+    <Description>A simple, straight-forward CMS website builder.</Description>
+    <Copyright>Datasilk 2020</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/Datasilk/Saber</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>CMS, website builder, content management</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +29,18 @@
     <None Remove="Content\temp\scripts\**" />
     <None Remove="wwwroot\css\**" />
     <None Remove="wwwroot\editor\fonts\**" />
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="CSS\tapestry\LICENSE" />
     <None Remove="Views\AppSettings\androidicon.html" />
     <None Remove="Views\AppSettings\appleicon.html" />
     <None Remove="Views\ContentFields\block.html" />
