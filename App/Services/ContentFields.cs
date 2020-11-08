@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
-using Saber.Common.Platform;
-using Saber.Common.Extensions.Strings;
+using Saber.Core;
+using Saber.Core.Extensions.Strings;
 using System.Linq;
 
 namespace Saber.Services
@@ -14,7 +14,7 @@ namespace Saber.Services
         public string Render(string path, string language)
         {
             var paths = PageInfo.GetRelativePath(path);
-            var fields = Common.Platform.ContentFields.GetPageContent(path, language);
+            var fields = Core.ContentFields.GetPageContent(path, language);
             var html = new StringBuilder();
             var view = new View(string.Join("/", paths) + ".html");
             var fieldText = new View("/Views/ContentFields/text.html");
@@ -86,7 +86,7 @@ namespace Saber.Services
             {
                 //save fields as json
                 var json = JsonSerializer.Serialize(data);
-                File.WriteAllText(App.MapPath(Common.Platform.ContentFields.ContentFile(path, language)), json);
+                File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                 //reset view cache for page
                 Website.ResetCache(path, language);
             }

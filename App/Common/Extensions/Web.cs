@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace Saber.Common.Extensions
+namespace Saber.Core.Extensions
 {
     public static class Web
     {

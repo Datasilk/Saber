@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using System.Net;
 using Saber.Common.Platform;
-using Saber.Common.Extensions.Strings;
+using Saber.Core.Extensions.Strings;
 
 namespace Saber.Services
 {
@@ -22,7 +22,7 @@ namespace Saber.Services
             if (pid == "/") { pid = ""; }
 
             //translate root path to relative path
-            var paths = PageInfo.GetRelativePath(path);
+            var paths = Core.PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
             var rpath = string.Join("/", paths) + "/";
 
@@ -168,7 +168,7 @@ namespace Saber.Services
             if (!CheckSecurity()) { return AccessDenied(); }
 
             //translate root path to relative path
-            var paths = PageInfo.GetRelativePath(path);
+            var paths = Core.PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
             if (File.Exists(App.MapPath(string.Join("/", paths))))
             {

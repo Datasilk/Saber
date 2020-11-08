@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using Saber.Core;
 using CommonMark;
 
 namespace Saber.Common.Platform
@@ -14,7 +15,7 @@ namespace Saber.Common.Platform
         /// </summary>
         /// <param name="path">relative path to content (e.g. "content/home")</param>
         /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
-        public static string Page(string path, Core.IRequest request, Models.Page.Settings config, string language = "en")
+        public static string Page(string path, IRequest request, Models.Page.Settings config, string language = "en")
         {
             //translate root path to relative path
             var content = new View("/Views/Editor/content.html");
@@ -146,7 +147,7 @@ namespace Saber.Common.Platform
             }
         }
 
-        private static List<KeyValuePair<string, string>> GetPlatformData(View view, Core.IRequest request)
+        private static List<KeyValuePair<string, string>> GetPlatformData(View view, IRequest request)
         {
             var results = new List<KeyValuePair<string, string>>();
             var prefix = "";
@@ -192,7 +193,7 @@ namespace Saber.Common.Platform
         #endregion
 
         #region "View"
-        public static string View(Core.IRequest request, View view, string head = "", string foot = "", string itemHead = "", string itemFoot = "")
+        public static string View(IRequest request, View view, string head = "", string foot = "", string itemHead = "", string itemFoot = "")
         {
             //check for vendor-related View rendering
             var vendors = new StringBuilder();

@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using Saber.Common.Platform;
-using Saber.Common.Extensions.Strings;
+using Saber.Core.Extensions.Strings;
 
 namespace Saber.Services
 {
@@ -21,7 +21,7 @@ namespace Saber.Services
         public string Render(string path)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
-            var config = PageInfo.GetPageConfig(path);
+            var config = Core.PageInfo.GetPageConfig(path);
             var view = new View("/Views/PageSettings/pagesettings.html");
             var fieldView = new View("/Views/PageSettings/partial-field.html");
             var prefixes = new StringBuilder();
@@ -184,7 +184,7 @@ namespace Saber.Services
 
         public string RenderScriptsList(string path)
         {
-            var config = PageInfo.GetPageConfig(path);
+            var config = Core.PageInfo.GetPageConfig(path);
             var scriptItem = new View("/Views/PageSettings/script-item.html");
             var scripts = new StringBuilder();
             if (config.scripts.Count > 0)
@@ -203,7 +203,7 @@ namespace Saber.Services
             if (!CheckSecurity()) { return AccessDenied(); }
             try
             {
-                var config = PageInfo.GetPageConfig(path);
+                var config = Core.PageInfo.GetPageConfig(path);
                 config.title.body = title;
                 config.title.prefixId = prefixId;
                 config.title.suffixId = suffixId;
@@ -223,7 +223,7 @@ namespace Saber.Services
                 {
                     config.title.suffix = Query.PageTitles.Get(suffixId);
                 }
-                PageInfo.SavePageConfig(path, config);
+                Core.PageInfo.SavePageConfig(path, config);
                 return Success();
             }
             catch (Exception)
@@ -265,9 +265,9 @@ namespace Saber.Services
             if (!CheckSecurity()) { return AccessDenied(); }
             try
             {
-                var config = PageInfo.GetPageConfig(path);
+                var config = Core.PageInfo.GetPageConfig(path);
                 config.description = description;
-                PageInfo.SavePageConfig(path, config);
+                Core.PageInfo.SavePageConfig(path, config);
                 return Success();
             }
             catch (Exception)
@@ -281,10 +281,10 @@ namespace Saber.Services
             if (!CheckSecurity()) { return AccessDenied(); }
             try
             {
-                var config = PageInfo.GetPageConfig(path);
+                var config = Core.PageInfo.GetPageConfig(path);
                 config.header = header;
                 config.footer = footer;
-                PageInfo.SavePageConfig(path, config);
+                Core.PageInfo.SavePageConfig(path, config);
                 return Success();
             }
             catch (Exception)
@@ -338,12 +338,12 @@ namespace Saber.Services
             if (!CheckSecurity()) { return AccessDenied(); }
             try
             {
-                var config = PageInfo.GetPageConfig(path);
+                var config = Core.PageInfo.GetPageConfig(path);
                 if (!config.scripts.Contains(file))
                 {
                     config.scripts.Add(file);
                 }
-                PageInfo.SavePageConfig(path, config);
+                Core.PageInfo.SavePageConfig(path, config);
                 return RenderScriptsList(path);
             }
             catch (Exception)
@@ -357,12 +357,12 @@ namespace Saber.Services
             if (!CheckSecurity()) { return AccessDenied(); }
             try
             {
-                var config = PageInfo.GetPageConfig(path);
+                var config = Core.PageInfo.GetPageConfig(path);
                 if (config.scripts.Contains(file))
                 {
                     config.scripts.Remove(file);
                 }
-                PageInfo.SavePageConfig(path, config);
+                Core.PageInfo.SavePageConfig(path, config);
                 return RenderScriptsList(path);
             }
             catch (Exception)

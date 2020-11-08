@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using Saber.Common.Extensions.Strings;
+using Saber.Core;
+using Saber.Core.Extensions.Strings;
 using dotless.Core;
 
 
@@ -223,39 +223,6 @@ namespace Saber.Common.Platform
             catch (Exception)
             {
                 throw new ServiceErrorException("Error generating compiled LESS resource");
-            }
-        }
-
-        public static List<string> AllFiles(string[] include = null)
-        {
-            return Core.Website.AllFiles(include);
-        }
-
-        public static void ResetCache(string path, string language = "en")
-        {
-            var paths = PageInfo.GetRelativePath(path);
-            var filepath = string.Join("/", paths);
-            Cache.Remove(ContentFields.ContentFile(path, language));
-            ViewCache.Remove(filepath + ".html");
-        }
-
-        private static void RecurseDirectories(List<string> list, string path, string[] ignore = null)
-        {
-            var parent = new DirectoryInfo(App.MapPath(path));
-            var dirs = parent.GetDirectories().Where(a => ignore != null ? ignore.Where(b => a.FullName.IndexOf(b) >= 0).Count() == 0 : true);
-            list.AddRange(parent.GetFiles().Select(a => a.FullName).Where(a => ignore != null ? ignore.Where(b => a.IndexOf(b) >= 0).Count() == 0  : true));
-            foreach(var dir in dirs)
-            {
-                var subpath = dir.FullName;
-                if (App.IsDocker)
-                {
-                    subpath = "/" + subpath.Split("/app/")[1];
-                }
-                else
-                {
-                    subpath = "\\" + subpath.Split("\\App\\")[1];
-                }
-                RecurseDirectories(list, subpath, ignore);
             }
         }
     }

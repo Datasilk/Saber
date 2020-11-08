@@ -2,8 +2,8 @@
 using System.Linq;
 using System.IO;
 using System.Text;
-using Saber.Common.Platform;
-using Saber.Common.Extensions.Strings;
+using Saber.Core;
+using Saber.Core.Extensions.Strings;
 
 namespace Saber.Services
 {

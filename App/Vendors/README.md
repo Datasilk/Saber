@@ -37,24 +37,37 @@ A vendor plugin for Saber that allows webmasters to replace the template website
 
 ## Vendor-Specific Functionality
 
+
 #### IVendorStartup
 Interface used to execute vendor-specific code when the Saber application starts up. All Vendor classes that inherit `IVendorStartup` will be evaluated via
 Saber's `ConfigureServices` method and `Configure` method located in the `/App/Startup.cs` class.
+
+``` csharp
+public class Startup : IVendorStartup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        //do stuff
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConfigurationRoot config)
+    {
+        //do stuff
+    }
+}
+```
 
 #### IVendorViewRenderer
 Interface used to execute vendor-specific code when Saber renders a View. Attribute `[ViewPath("/Views/Path/To/myfile.html")]` is required on the class that inherits `IVendorViewRenderer`, which will determine when the `Render` method is being called to load the associated `html` file. Use this interface to add HTML to a View that contains the `{{vendor}}` element.
 
 ``` csharp
-namespace Saber.Vendor.MyPlugin
+[ViewPath("/Views/AppSettings/appsettings.html")]
+public class MyPlugin : IVendorViewRenderer
 {
-    [ViewPath("/Views/AppSettings/appsettings.html")]
-    public class MyPlugin : IVendorViewRenderer
+    public void Render(Core.IRequest request, View view)
     {
-        public void Render(Core.IRequest request, View view)
-        {
-            var myview = new View("/Vendor/MyPlugin/settings.html");
-            view["vendor"] += myview.Render();
-        }
+        var myview = new View("/Vendor/MyPlugin/settings.html");
+        view["vendor"] += myview.Render();
     }
 }
 
@@ -71,3 +84,34 @@ Saber supports the `IVendorViewRenderer` for all views within the application, a
 Interface used to route page requests to vendor-specific controllers. Your class must inherit `Controller` as well as `IVendorController` in order to work properly.
 > **NOTE:** Make sure your controller names do not conflict with potential web pages that users will want to create for their website, such as:
 >  `About`, `Contact`, `Blog`, `Wiki`, `Projects`, `Team`, `Terms`, `PrivacyPolicy`, `Members`, `Landing`, `Store`, `History`, etc.
+
+``` csharp
+public class RSSReader : Controller, IVendorController
+{
+    public override string Render(string body = "")
+    {
+        if (!CheckSecurity("view-rss")) { return base.Render("Access Denied"); }
+        var view = new View("/Vendors/RSS/reader.html");
+        view["feeds"] = RSS.RenderFeeds();
+        return view.Render();
+    }
+}
+```
+
+#### IVendorKeys
+Interface used to define a list of security keys that can be assigned to users in order to gain access to restricted features.
+
+``` csharp
+public class SecurityKeys : IVendorKeys
+{
+    public string Vendor { get; set; } = "RSS Feed Reader";
+    public SecurityKey[] Keys { get; set; } = new SecurityKey[]
+    {
+        new SecurityKey(){Value = "manage-rss", Label = "Manage RSS Feeds", Description = "Add & Remove RSS feeds to read"},
+        new SecurityKey(){Value = "view-rss", Label = "View RSS Feeds", Description = "Read articles from your feed reader"}
+    };
+}
+```
+
+> NOTE: The website administrator (UserId:1) will automatically have access to all security keys, and all other users will have to be given permission to have access to specific security keys.
+
