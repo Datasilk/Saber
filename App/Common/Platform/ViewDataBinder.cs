@@ -19,9 +19,18 @@ namespace Saber.Common.Platform
             var binders = (from domainAssembly in AppDomain.CurrentDomain.GetAssemblies()
                            from assemblyType in domainAssembly.GetTypes()
                            where typeof(Vendor.IViewDataBinder).IsAssignableFrom(assemblyType)
-                           select assemblyType).ToArray();
+                           select assemblyType);
 
-            foreach (var type in binders)
+            if(binders.Count() > 0)
+            {
+                Vendors.ViewDataBinders.AddRange(binders);
+            }
+
+            //get list of DLLs that contain the IViewDataBinder interface
+            Vendors.GetViewDataBindersFromFileSystem();
+
+
+            foreach (var type in Vendors.ViewDataBinders)
             {
                 if (type.Name.Contains("IViewDataBinder")) { continue; }
                 var binder = (Vendor.IViewDataBinder)Activator.CreateInstance(type);

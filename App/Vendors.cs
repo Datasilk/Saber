@@ -11,12 +11,14 @@ namespace Saber
 {
     public static class Vendors
     {
+        private static List<string> DLLs { get; set; } = new List<string>();
+        private static List<Assembly> Assemblies { get; set; } = new List<Assembly>();
         public static Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<Vendor.IVendorViewRenderer>>();
         public static Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
         public static Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
-        private static List<string> DLLs { get; set; } = new List<string>();
-        private static List<Assembly> Assemblies { get; set; } = new List<Assembly>();
         private static List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
+        public static List<Type> ViewDataBinders { get; set; } = new List<Type>();
+
         private class AssemblyInfo
         {
             public string Assembly { get; set; }
@@ -128,9 +130,8 @@ namespace Saber
         }
 
         #region "View Renderers"
-        public static void GetViewRenderersFromFileSystem(string[] files)
+        public static void GetViewRenderersFromFileSystem()
         {
-            if (files == null) { return; }
             foreach(var assembly in Assemblies)
             {
                 foreach (var type in assembly.ExportedTypes)
@@ -164,9 +165,8 @@ namespace Saber
         #endregion
 
         #region "Controllers"
-        public static void GetControllersFromFileSystem(string[] files)
+        public static void GetControllersFromFileSystem()
         {
-            if (files == null) { return; }
             foreach (var assembly in Assemblies)
             {
                 foreach (var type in assembly.ExportedTypes)
@@ -192,9 +192,8 @@ namespace Saber
         #endregion
 
         #region "Startup"
-        public static void GetStartupsFromFileSystem(string[] files)
+        public static void GetStartupsFromFileSystem()
         {
-            if (files == null) { return; }
             foreach (var assembly in Assemblies)
             {
                 foreach (var type in assembly.ExportedTypes)
@@ -215,7 +214,7 @@ namespace Saber
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorStartup))) { return; }
-            Controllers.Add(type.Name.ToLower(), type);
+            Startups.Add(type.Assembly.GetName().Name, type);
         }
         #endregion
 
@@ -244,6 +243,33 @@ namespace Saber
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorKeys))) { return; }
             Keys.Add((IVendorKeys)Activator.CreateInstance(type));
+        }
+        #endregion
+
+        #region "View Data Binders"
+        public static void GetViewDataBindersFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IViewDataBinder")
+                        {
+                            GetViewDataBindersFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetViewDataBindersFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IViewDataBinder))) { return; }
+            ViewDataBinders.Add(type);
         }
         #endregion
     }

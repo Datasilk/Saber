@@ -87,9 +87,9 @@ namespace Saber
             }
 
             //get list of DLLs that contain the IVendorViewRenderer
-            Vendors.GetControllersFromFileSystem(vendorDLLs);
+            Vendors.GetControllersFromFileSystem();
 
-            Console.WriteLine("Found " + Vendors.Controllers.Count + " Vendor Controller" + (Vendors.Controllers.Count != 1 ? "s" : "") + " that inherit IVendorController");
+            Console.WriteLine("Found " + Vendors.Controllers.Count + " Vendor Controller" + (Vendors.Controllers.Count != 1 ? "s" : "")); // + " that inherit IVendorController");
 
             //get list of vendor classes that inherit IVendorViewRenderer interface
             foreach (var assembly in assemblies)
@@ -104,9 +104,9 @@ namespace Saber
             }
 
             //get list of DLLs that contain the IVendorViewRenderer interface
-            Vendors.GetViewRenderersFromFileSystem(vendorDLLs);
+            Vendors.GetViewRenderersFromFileSystem();
 
-            Console.WriteLine("Found " + Vendors.ViewRenderers.Count + " Vendor View Renderer" + (Vendors.ViewRenderers.Count != 1 ? "s" : "") + " that inherit IVendorViewRenderer");
+            Console.WriteLine("Found " + Vendors.ViewRenderers.Count + " Vendor View Renderer" + (Vendors.ViewRenderers.Count != 1 ? "s" : "")); // + " that inherit IVendorViewRenderer");
 
             //get list of vendor classes that inherit IVendorStartup interface
             foreach (var assembly in assemblies)
@@ -121,9 +121,9 @@ namespace Saber
             }
 
             //get list of DLLs that contain the IVendorStartup interface
-            Vendors.GetStartupsFromFileSystem(vendorDLLs);
+            Vendors.GetStartupsFromFileSystem();
 
-            Console.WriteLine("Found " + Vendors.Startups.Count + " Vendor" + (Vendors.Startups.Count != 1 ? "s" : "") + " that inherit IVendorStartup");
+            Console.WriteLine("Found " + Vendors.Startups.Count + " Vendor Startup Class" + (Vendors.Startups.Count != 1 ? "es" : "")); // + " that inherit IVendorStartup");
 
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
             foreach(var kv in Vendors.Startups)
@@ -132,7 +132,7 @@ namespace Saber
                 try
                 {
                     vendor.ConfigureServices(services);
-                    Console.WriteLine("Configured Service " + kv.Key);
+                    Console.WriteLine("Configured Services for " + kv.Key);
                 }
                 catch (Exception) { }
             }
