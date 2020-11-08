@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Linq;
+using System.IO;
 using Saber.Core;
 
 namespace Saber
@@ -19,6 +20,19 @@ namespace Saber
                 return user;
             }
             set { user = value; }
+        }
+
+        public override bool CheckSecurity(string key = "")
+        {
+            if(User.UserId == 1) { return true; }
+            if(key != "" && User.UserId > 0 && !User.Keys.Any(a => a.Key == key && a.Value == true))
+            {
+                return false;
+            }else if(key == "" && User.UserId <= 0)
+            {
+                return false;
+            }
+            return true;
         }
 
         public override string Render(string body = "")

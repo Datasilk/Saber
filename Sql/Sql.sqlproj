@@ -12,8 +12,8 @@
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
-    <RootNamespace>Sql</RootNamespace>
-    <AssemblyName>Sql</AssemblyName>
+    <RootNamespace>Saber</RootNamespace>
+    <AssemblyName>Saber</AssemblyName>
     <ModelCollation>1033, CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
@@ -23,6 +23,8 @@
     <SqlServerVerification>False</SqlServerVerification>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
+    <GenerateCreateScript>True</GenerateCreateScript>
+    <DacApplicationName>Saber</DacApplicationName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -34,6 +36,7 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <SqlTargetName>Saber</SqlTargetName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -69,6 +72,7 @@
     <Folder Include="dbo\Stored Procedures\PageTitles" />
     <Folder Include="dbo\Stored Procedures\Utility" />
     <Folder Include="dbo\Stored Procedures\Logs" />
+    <Folder Include="dbo\Stored Procedures\SecurityRoles" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Users.sql" />
@@ -103,6 +107,9 @@
     <Build Include="dbo\Stored Procedures\Logs\Log_GetUrlAnalytics.sql" />
     <Build Include="dbo\Tables\Log_Errors.sql" />
     <Build Include="dbo\Stored Procedures\Logs\Log_Error.sql" />
+    <Build Include="dbo\Tables\Security_Roles.sql" />
+    <Build Include="dbo\Stored Procedures\SecurityRoles\SecurityRoles_GetByUserId.sql" />
+    <Build Include="dbo\Stored Procedures\SecurityRoles\SecurityRole_Create.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

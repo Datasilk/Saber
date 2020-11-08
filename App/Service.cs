@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using Datasilk.Core.Web;
@@ -39,9 +40,18 @@ namespace Saber
             return JsonSerializer.Serialize(obj);
         }
 
-        public bool CheckSecurity()
+        public bool CheckSecurity(string key = "")
         {
-            return User.UserId > 0;
+            if (User.UserId == 1) { return true; }
+            if (key != "" && User.UserId > 0 && !User.Keys.Any(a => a.Key == key && a.Value == true))
+            {
+                return false;
+            }
+            else if (key == "" && User.UserId <= 0)
+            {
+                return false;
+            }
+            return true;
         }
 
         public override void Dispose()

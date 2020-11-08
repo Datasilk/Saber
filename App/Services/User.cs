@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace Saber.Services
+﻿namespace Saber.Services
 {
     public class User : Service
     {

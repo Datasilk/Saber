@@ -26,8 +26,8 @@
 !/App/Scripts/utility/monaco/
 !/App/Scripts/utility/vs/
 !/App/Scripts/utility/velocity.min.js
-/App/Vendor/**
-!/App/Vendor/README.md
+/App/Vendors/**
+!/App/Vendors/README.md
 /AWS/
 compose.bat
 PublishProfiles

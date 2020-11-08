@@ -21,11 +21,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NuGet.config = NuGet.config
 		package.json = package.json
 		README.md = README.md
+		Release.md = Release.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vendor", "Vendor\Vendor.csproj", "{3E3B2866-F80F-4D0D-B19C-D578D5F3116C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{5F1BFE59-6C7F-4358-A061-B21E89B8E529}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{5F1BFE59-6C7F-4358-A061-B21E89B8E529}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

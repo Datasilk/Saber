@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
@@ -18,9 +19,10 @@ namespace Saber
         public string Name { get; set; }
         public string DisplayName { get; set; }
         public bool Photo { get; set; }
-        public bool ResetPass { get; set; }
         public DateTime DateCreated { get; set; }
         public string Language { get; set; }
+        public List<KeyValuePair<string, bool>> Keys { get; set; } = new List<KeyValuePair<string, bool>>();
+        public bool ResetPass { get; set; }
 
         public static User Get(HttpContext context)
         {
@@ -69,7 +71,7 @@ namespace Saber
         {
             if (this.changed == true && changed == false)
             {
-                Context.Session.Set("user", GetBytes(JsonSerializer.Serialize<User>(this)));
+                Context.Session.Set("user", GetBytes(JsonSerializer.Serialize(this)));
                 this.changed = false;
             }
             if (changed == true)
@@ -78,15 +80,21 @@ namespace Saber
             }
         }
 
-        public void LogIn(int UserId, string email, string name, DateTime datecreated, string displayName = "", short userType = 1, bool photo = false)
+        public void LogIn(int userId, string email, string name, DateTime datecreated, string displayName = "", short userType = 1, bool photo = false)
         {
-            this.UserId = UserId;
-            this.UserType = userType;
-            this.Email = email;
-            this.Photo = photo;
-            this.Name = name;
-            this.DisplayName = displayName;
-            this.DateCreated = datecreated;
+            UserId = userId;
+            UserType = userType;
+            Email = email;
+            Photo = photo;
+            Name = name;
+            DisplayName = displayName;
+            DateCreated = datecreated;
+
+            var keys = Query.SecurityRoles.GetByUserId(userId);
+            foreach(var key in keys)
+            {
+                Keys.Add(new KeyValuePair<string, bool>(key.key, key.value));
+            }
 
             //create persistant cookie
             var auth = Query.Users.CreateAuthToken(UserId);

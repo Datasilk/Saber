@@ -26,6 +26,7 @@
   <ItemGroup>
     <Content Remove="config.docker.json" />
     <Content Remove="config.json" />
+    <Content Remove="web.Release.config" />
   </ItemGroup>
 
   <ItemGroup>
@@ -125,6 +126,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\Security\" />
     <Folder Include="wwwroot\content" />
     <Folder Include="wwwroot\images" />
     <Folder Include="wwwroot\js" />
@@ -133,6 +135,7 @@
   <ItemGroup>
     <None Include="config.docker.json" />
     <None Include="config.json" />
+    <None Include="web.Release.config" />
   </ItemGroup>
 
 </Project>

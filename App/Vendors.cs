@@ -16,6 +16,7 @@ namespace Saber
         public static Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
         private static List<string> DLLs { get; set; } = new List<string>();
         private static List<Assembly> Assemblies { get; set; } = new List<Assembly>();
+        private static List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
         private class AssemblyInfo
         {
             public string Assembly { get; set; }
@@ -25,16 +26,16 @@ namespace Saber
         public static string[] LoadDLLs()
         {
             //search Vendor folder for DLL files
-            if (Directory.Exists(App.MapPath("/Vendor")))
+            if (Directory.Exists(App.MapPath("/Vendors")))
             {
-                RecurseDirectories(App.MapPath("/Vendor"));
+                RecurseDirectories(App.MapPath("/Vendors"));
             }
             //update JSON file with current versions of DLL files
             var versions = new List<AssemblyInfo>();
             var versionsChanged = false;
-            if (File.Exists(App.MapPath("/Vendor/versions.json")))
+            if (File.Exists(App.MapPath("/Vendors/versions.json")))
             {
-                versions = JsonSerializer.Deserialize<List<AssemblyInfo>>(File.ReadAllText(App.MapPath("/Vendor/versions.json")));
+                versions = JsonSerializer.Deserialize<List<AssemblyInfo>>(File.ReadAllText(App.MapPath("/Vendors/versions.json")));
             }
 
             //load assemblies from DLL files
@@ -72,11 +73,11 @@ namespace Saber
                     //copy any required JS & CSS files to the wwwroot folder
                     var filename = Path.GetFileName(file);
                     var path = file.Replace(filename, "");
-                    var relpath = path.Replace("\\", "/").Split("/Vendor/")[1];
+                    var relpath = path.Replace("\\", "/").Split("/Vendors/")[1];
                     var dir = new DirectoryInfo(path);
                     var files = dir.GetFiles().Where(Current => Regex.IsMatch(Current.Extension, "\\.(js|css)", RegexOptions.IgnoreCase));
-                    var jsPath = "/wwwroot/editor/js/vendor/" + relpath.ToLower();
-                    var cssPath = "/wwwroot/editor/css/vendor/" + relpath.ToLower();
+                    var jsPath = "/wwwroot/editor/js/vendors/" + relpath.ToLower();
+                    var cssPath = "/wwwroot/editor/css/vendors/" + relpath.ToLower();
                     if (files.Count() > 0)
                     {
                         //create wwwroot paths
@@ -107,7 +108,7 @@ namespace Saber
             if (versionsChanged)
             {
                 //save versions to JSON
-                File.WriteAllText(App.MapPath("/Vendor/versions.json"), JsonSerializer.Serialize(versions, new JsonSerializerOptions() { WriteIndented = true }));
+                File.WriteAllText(App.MapPath("/Vendors/versions.json"), JsonSerializer.Serialize(versions, new JsonSerializerOptions() { WriteIndented = true }));
             }
 
             return DLLs.ToArray();
@@ -150,7 +151,7 @@ namespace Saber
         {
             if(type == null) { return; }
             if (type.Equals(typeof(IVendorViewRenderer))) { return; }
-            var attributes = type.GetCustomAttributes<Vendor.ViewPathAttribute>();
+            var attributes = type.GetCustomAttributes<ViewPathAttribute>();
             foreach (var attr in attributes)
             {
                 if (!ViewRenderers.ContainsKey(attr.Path))
@@ -215,6 +216,34 @@ namespace Saber
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorStartup))) { return; }
             Controllers.Add(type.Name.ToLower(), type);
+        }
+        #endregion
+
+        #region "Security Keys"
+        public static void GetSecurityKeysFromFileSystem(string[] files)
+        {
+            if (files == null) { return; }
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorKeys")
+                        {
+                            GetSecurityKeysFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetSecurityKeysFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorKeys))) { return; }
+            Keys.Add((IVendorKeys)Activator.CreateInstance(type));
         }
         #endregion
     }
