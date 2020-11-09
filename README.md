@@ -4,7 +4,7 @@
 
 A simple, straight forward CMS and IDE. 
 
-Saber gives web software engineers the ability to focus on traditional web development by writing HTML, CSS (LESS), and Javascript in their respective file formats. On top of that, Saber gives the developer the ability to make live updates to their website while using an integrated development environment (IDE) inside their favorite web browser.
+Saber gives software engineers the ability to focus on traditional web development by writing HTML, CSS (LESS), and Javascript in their respective file formats. On top of that, Saber gives the developer the ability to make live updates to their website while using an integrated development environment (IDE) inside their favorite web browser.
 
 ## Requirements
 
