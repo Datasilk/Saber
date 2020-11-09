@@ -4,12 +4,12 @@
 
 A simple, straight forward CMS and IDE. 
 
-Saber was built with a focus on traditional web development by utilizing HTML, CSS (LESS), and Javascript in their respective file formats. On top of that, Saber gives the developer the ability to make live updates to their website while using an integrated development environment (IDE) inside their favorite web browser.
+Saber gives web software engineers the ability to focus on traditional web development by writing HTML, CSS (LESS), and Javascript in their respective file formats. On top of that, Saber gives the developer the ability to make live updates to their website while using an integrated development environment (IDE) inside their favorite web browser.
 
 ## Requirements
 
 * Visual Studio 2019
-* ASP.NET Core 3.0
+* ASP.NET Core 3.1
 * SQL Server 2017 (or greater)
 * Node.js
 * Gulp
@@ -21,7 +21,7 @@ Saber was built with a focus on traditional web development by utilizing HTML, C
     ```git clone --recurse-submodules http://github.com/Datasilk/Saber```
 
 2. Run command `npm install`
-3. Run command `gulp default` to generate all required `css` & `js` files into the public `wwwroot` folder
+3. Run command `gulp default`
 4. In Visual Studio, build then publish the **Sql** project to SQL Server
 5. Open `config.json` file and update the Sql connection string
 6. Click Play in Visual Studio & navigate to https://localhost:7070
@@ -58,7 +58,7 @@ You will need to make a simple code change in `Program.cs` to support IIS integr
 Build web pages from within your web browser using a built-in IDE for editing HTML, CSS, LESS, & Javascript files.
 
 #### Navigate to any URL 
-Convert any URL within your website to a valid web page simply by navigating to the URL and writing some HTML & CSS within the built-in IDE. The editor initially opens 3 files (HTML, LESS, & JS) that are resources for the web page being viewed.
+Convert any URL within your website to a valid web page simply by navigating to the URL and writing some HTML, CSS, & JavaScrpit within the built-in IDE. The editor initially opens 3 files (HTML, LESS, & JS) that are resources for the web page being viewed.
 
 #### Create & Modify Website Resources
 Use the **file browser** within the built-in IDE to open website resources (HTML, CSS, LESS, & JS files) in new tabs. Use the *File* drop down menu to open the file browser or create new files & folders. The initial folder structure is described below: 
@@ -95,15 +95,15 @@ For example:
 > Note: The relative path to all files are case-sensitive 
 
 #### Template Web Pages
-You can create a template web page (e.g. `https://yoursite.com/support/template`) and design the template page to be used as a starting point when creating new sub-pages. When navigating to a new URL (e.g. `https://yoursite.com/support/my-new-page`, if the template URL exists within the same path (e.g. `https://yoursite.com/support/template`), the new URL's web page will copy the design & content of the template URL's web page. This is useful when managing complex websites such as a wiki, blog, or storefront.
+You can create a template web page (e.g. `https://yoursite.com/support/template`) and design the template page to be used as a starting point when creating new sub-pages. When navigating to a new URL within your website (e.g. `https://yoursite.com/support/my-new-page`), Saber will copy & load the design & content from the associated template web page when the URL is accessed for the first time. This is useful when managing complex websites such as a wiki, blog, or storefront.
 
 #### Include Vendor Plugins
-Use *mustache* variables to load a custom vendor plugin within your web page
+Use *mustache* variables to load a custom vendor plugin within your web page.
 	
 For example:
 
 ```
-{{page-list path:"blog", length:"4"}}
+{{page-list (path:"blog", length:"4")}}
 ```
 The above example will display a list of blog pages that exists within your website. 
 
