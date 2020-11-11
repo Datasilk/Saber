@@ -69,6 +69,24 @@ namespace Saber
 
         public string Empty() { return "{}"; }
 
+        public string AccessDenied(string message = "Error 403")
+        {
+            Context.Response.StatusCode = 403;
+            return message;
+        }
+
+        public string Error(string message = "Error 500")
+        {
+            Context.Response.StatusCode = 500;
+            return message;
+        }
+
+        public string BadRequest(string message = "Bad Request 400")
+        {
+            Context.Response.StatusCode = 400;
+            return message;
+        }
+
         public void AddScript(string url, string id = "", string callback = "")
         {
             if (ContainsResource(url)) { return; }
@@ -86,21 +104,6 @@ namespace Saber
             if (Resources.Contains(url)) { return true; }
             Resources.Add(url);
             return false;
-        }
-
-        public string AccessDenied(string message = "Error 403")
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public string Error(string message = "Error 500")
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public string BadRequest(string message = "Bad Request 400")
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

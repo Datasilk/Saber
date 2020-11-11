@@ -78,8 +78,10 @@
 .file-browser{float:left; width:@browserWidth; position:relative; top:-46px; margin-bottom:-48px; z-index:10;
     .icon-folder-add{padding-top:4px;}
     .label{font-size:13px;}
-    .item{cursor:default;}
-    ul .icon svg{width:16px;height:16px; position:relative; top:5px;}
+    .item{cursor:default;
+        & > div{padding:0 0 0 5px;}
+    }
+    ul .icon svg{width:16px; height:16px; position:relative; top:5px;}
     .bread .icon svg{position:relative; top:-2px;}
 }
 .browser-path{font-family:monospace; font-size:0.7rem; color:#90d3ff !important;  overflow:hidden;

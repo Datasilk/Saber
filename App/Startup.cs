@@ -142,7 +142,6 @@ namespace Saber
         {
             App.IsDocker = System.Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 
-
             //get environment based on application build
             switch (env.EnvironmentName.ToLower())
             {
@@ -280,31 +279,21 @@ namespace Saber
                 
                 File.Copy(App.MapPath("/Content/temp/app-css/website.less"), App.MapPath("/CSS/website.less"), true);
 
-                Thread.Sleep(1000);
+                //TODO: compile website.less
 
-                //run default gulp command to copy new website resources to wwwroot folder
-                var p = new Process
-                {
-                    StartInfo = new ProcessStartInfo()
-                    {
-                        FileName = "cmd.exe",
-                        Arguments = "/c gulp default:website",
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        RedirectStandardError = true,
-                        WorkingDirectory = App.MapPath("/").Replace("App\\", ""),
-                        Verb = "runas"
-                    }
-                };
-                p.OutputDataReceived += Common.ProcessInfo.Gulp.OutputReceived;
-                p.ErrorDataReceived += Common.ProcessInfo.Gulp.ErrorReceived;
-                p.Start();
-                p.WaitForExit();
-                Thread.Sleep(1000);
+                //TODO: compile all LESS files for all pages & partials
+
+                //TODO: copy all JavaScript files for pages & partials into wwwroot
             }
 
-            //initialize platform-specific html variables for scaffolding
+            //set up path pointers for View partials (e.g. {{side-bar "partials/side-bar.html"}} instead of {{side-bar "/Content/partials/side-bar.html"}})
+            ViewPartialPointers.Paths.AddRange(new List<KeyValuePair<string, string>>()
+            {
+                new KeyValuePair<string, string>("partials", "Content/partials"),
+                new KeyValuePair<string, string>("pages", "Content/pages")
+            });
+            
+            //initialize platform-specific html variables for views
             ViewDataBinder.Initialize();
 
             //execute Configure method for all vendors that use IVendorStartup interface
