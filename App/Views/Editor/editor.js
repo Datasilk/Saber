@@ -38,6 +38,8 @@ S.editor = {
         switch (this.type) {
             case 0: //monaco
                 require.config({ paths: { 'vs': '/editor/js/utility/monaco/min/vs' } });
+                //show loading animation
+                $('.editor-loading').html(S.loader());
                 require(['vs/editor/editor.main'], function () {
                     editor = monaco.editor.create(document.getElementById('editor'), {
                         value: '',
@@ -55,6 +57,8 @@ S.editor = {
                     });
                     editor.onMouseUp((e) => { S.editor.codebar.update(); });
                     S.editor.instance = editor;
+                    //hide loading animation
+                    $('.editor-loading').remove();
                 });
                 break;
 
@@ -353,7 +357,8 @@ S.editor = {
                     );
                     return;
 
-                } else if ($('.tab-page-settings').hasClass('selected')) {
+                }
+                else if ($('.tab-page-settings').hasClass('selected')) {
                     //save page settings ///////////////////////////////////////////////////////////////////////////////
                     var settings = S.editor.settings;
 
@@ -1018,6 +1023,10 @@ S.editor = {
                 S.editor.tabs.create("Page Content", "content-fields-section", { isPageResource:true },
                     () => { //onfocus
                         $('.tab.content-fields').removeClass('hide');
+                        if (S.editor.files.content.changed == true) {
+                            //reload content fields
+                            S.editor.fields.load();
+                        }
                     },
                     () => { //onblur
 
@@ -1063,6 +1072,10 @@ S.editor = {
                         $('.item-save').removeClass('faded').removeAttr('disabled');
                     }
                 }
+            },
+
+            load: function () {
+
             }
         },
 
@@ -1271,6 +1284,7 @@ S.editor = {
             );
         },
         change: function (e) {
+            if (S.editor.visible == false) { return;}
             var field = $(e.target);
             //resize field
             var clone = S.editor.fields.clone;

@@ -48,7 +48,7 @@ namespace Saber
             {
                 //options.Providers.Add<GzipCompressionProvider>();
                 options.Providers.Add<BrotliCompressionProvider>();
-                options.MimeTypes =  new[] { "application/javascript", "text/css", "image/svg" };
+                options.MimeTypes =  new[] { "text/css", "image/svg" };
                 options.EnableForHttps = true;
             });
             //services.Configure<GzipCompressionProviderOptions>(options =>
