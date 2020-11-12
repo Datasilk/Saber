@@ -8,13 +8,13 @@ A simple, straight-forward CMS & website builder
 ## Windows (IIS)
 1. Create/Update your MSSQL Database
     * To **Create a new database**, execute the file `Sql/Saber_Create.sql` using **Microsoft SQL Server Management Studio**. You may want to open the file first and change the following lines to your own database name:
-    ``` sql
-    :setvar DatabaseName "Saber"
-    :setvar DefaultFilePrefix "Saber"
-    ```
-    * Under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
+        ``` sql
+        :setvar DatabaseName "Saber"
+        :setvar DefaultFilePrefix "Saber"
+        ```
+        * Under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
 
-* To **Update an existing database**, use the file `Sql/Saber.dacpac`. In **Microsoft SQL Server Management Studio**, right-click your existing Saber database and select **Tasks > Upgrade Data-tier Application** and follow the upgrade wizard.
+    * To **Update an existing database**, use the file `Sql/Saber.dacpac`. In **Microsoft SQL Server Management Studio**, right-click your existing Saber database and select **Tasks > Upgrade Data-tier Application** and follow the upgrade wizard.
 2. Install the [.NET Core Hosting Bundle](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/?view=aspnetcore-3.1#install-the-net-core-hosting-bundle)
 3. Create a new website in Internet Information Services (IIS)
     * Under **Sites**, right-click and select **Add Website..**

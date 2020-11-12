@@ -121,7 +121,7 @@ namespace Saber
             if (Directory.Exists(path))
             {
                 var dir = new DirectoryInfo(path);
-                DLLs.AddRange(dir.GetFiles("*.dll").Select(a => a.FullName).ToArray());
+                DLLs.AddRange(dir.GetFiles(App.IsDocker ? "*.so" : "*.dll").Select(a => a.FullName).ToArray());
                 foreach(var sub in dir.GetDirectories())
                 {
                     RecurseDirectories(sub.FullName);

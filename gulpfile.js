@@ -370,7 +370,7 @@ gulp.task('publish:step-1', function () {
 gulp.task('publish:step-2', function () {
     //copy sql .pipe(replace("{{version}}", version_new))
 
-    return gulp.src(paths.sql.release + 'Saber_Create.sql')
+    gulp.src(paths.sql.release + 'Saber_Create.sql')
         .pipe(replace(':setvar DatabaseName "Sql"', ':setvar DatabaseName "Saber"'))
         .pipe(replace(':setvar DefaultFilePrefix "Sql"', ':setvar DefaultFilePrefix "Saber"'))
         .pipe(gulp.dest(paths.publish + 'Sql'));
