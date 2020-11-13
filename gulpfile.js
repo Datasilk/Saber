@@ -59,7 +59,7 @@ var paths = {
     css: 'App/CSS/',
     app: 'App/',
     webroot: 'App/wwwroot/',
-    release: 'App/bin/Release/netcoreapp3.1/',
+    release: 'App/bin/Release/net5.0/',
     publish: 'App/bin/Release/Saber/',
     publishapp: 'App/bin/Release/Saber/App/',
     sql: {
@@ -343,7 +343,8 @@ gulp.task('watch', function () {
 });
 
 //publish task ////////////////////////////////////////////////////////////////////
-gulp.task('publish:step-1', function () {
+function publishStep1(platform) {
+    if (platform != null) { platform = '-' + platform + '/';}
     //copy data to publish folder
     gulp.src(['Publish/README.md'])
         .pipe(gulp.dest(paths.publish));
@@ -358,14 +359,18 @@ gulp.task('publish:step-1', function () {
     ], { base: 'App' })
         .pipe(gulp.dest(paths.publishapp));
 
-    gulp.src([paths.release + 'Content/temp/config.prod.json'])
+    gulp.src([paths.release + platform + 'Content/temp/config.prod.json'])
         .pipe(gulp.dest(paths.publishapp));
 
     return gulp.src([
-        paths.release + '*',
-        paths.release + '**'
-    ], { base: paths.release })
+        paths.release + platform + '*',
+        paths.release + platform + '**'
+    ], { base: paths.release + platform })
         .pipe(gulp.dest(paths.publishapp));
+}
+
+gulp.task('publish:step-1', function () {
+    return publishStep1();
 });
 gulp.task('publish:step-2', function () {
     //copy sql .pipe(replace("{{version}}", version_new))

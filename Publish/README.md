@@ -26,4 +26,4 @@ A simple, straight-forward CMS & website builder
     > NOTE: If you receive an In-Process Start Failure, you may need to open `config.prod.json` and change your database connection string to point to the correct database. Make sure to restart your website in IIS after making changes to your config file.
 
 ## Linux (Nginx)
-Instructions coming soon. You Linux users could probably figure it out without instructions anyway lol.
+Please follow the instruction to [Host & deploy](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-5.0) an ASP.NET Core 5.0 application on Linux.
