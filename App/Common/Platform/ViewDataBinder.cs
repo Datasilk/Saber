@@ -10,7 +10,8 @@ namespace Saber.Common.Platform
     /// </summary>
     public class ViewDataBinder
     {
-        public static Dictionary<string, ViewDataBinderModel> HtmlVars = new Dictionary<string, ViewDataBinderModel>();
+        public static List<ViewDataBinderModel> HtmlVars = new List<ViewDataBinderModel>();
+        private static string[] _htmlVarKeys { get; set; }
 
         public static void Initialize()
         {
@@ -34,7 +35,7 @@ namespace Saber.Common.Platform
             {
                 if (type.Name.Contains("IViewDataBinder")) { continue; }
                 var binder = (Vendor.IViewDataBinder)Activator.CreateInstance(type);
-                binder.Bind();
+                HtmlVars.AddRange(binder.Bind());
             }
         }
 
@@ -44,12 +45,14 @@ namespace Saber.Common.Platform
         /// <returns></returns>
         public static string[] GetHtmlVariables()
         {
-            var list = new List<string>()
-            {
-                "user", "username", "userid", "no-user", "year"
-            };
+            if(_htmlVarKeys != null) { return _htmlVarKeys; }
+            var list = new List<string>();
+            //{
+            //    "user", "username", "userid", "no-user", "year"
+            //};
             list.AddRange(HtmlVars.Select(a => a.Key));
-            return list.ToArray();
+            _htmlVarKeys = list.ToArray();
+            return _htmlVarKeys;
         }
     }
 
@@ -68,7 +71,7 @@ namespace Saber.Common.Platform
                     Name = "User Information",
                     Description = "Display information about a user if logged into their account",
                     Parameters = new Dictionary<string, ViewDataBinderParameter>(){},
-                    Callback = new Func<IRequest, string, string, List<KeyValuePair<string, string>>>((request, data, prefix) =>
+                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, List<KeyValuePair<string, string>>>((view, request, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if user is logged in
@@ -88,7 +91,7 @@ namespace Saber.Common.Platform
                     Name = "No User",
                     Description = "Display information when a user is not logged into their account",
                     Parameters = new Dictionary<string, ViewDataBinderParameter>() { },
-                    Callback = new Func<IRequest, string, string, List<KeyValuePair<string, string>>>((request, data, prefix) =>
+                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, List<KeyValuePair<string, string>>>((view, request, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if user is logged in
@@ -106,7 +109,7 @@ namespace Saber.Common.Platform
                     Name = "Page URL",
                     Description = "Return the canonical URL based on the page request",
                     Parameters = new Dictionary<string, ViewDataBinderParameter>() { },
-                    Callback = new Func<IRequest, string, string, List<KeyValuePair<string, string>>>((request, data, prefix) =>
+                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, List<KeyValuePair<string, string>>>((view, request, data, prefix, key) =>
                         {
                             var results = new List<KeyValuePair<string, string>>();
                             var req = request.Context.Request;
@@ -130,7 +133,7 @@ namespace Saber.Common.Platform
                     Name = "Page ID",
                     Description = "Return an ID based on the page URL",
                     Parameters = new Dictionary<string, ViewDataBinderParameter>() { },
-                    Callback = new Func<IRequest, string, string, List<KeyValuePair<string, string>>>((request, data, prefix) =>
+                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, List<KeyValuePair<string, string>>>((view, request, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         var paths = request.Path.Split('/');
@@ -146,7 +149,7 @@ namespace Saber.Common.Platform
                     Name = "Current Year",
                     Description = "Display the current year",
                     Parameters = new Dictionary<string, ViewDataBinderParameter>() { },
-                    Callback = new Func<IRequest, string, string, List<KeyValuePair<string, string>>>((request, data, prefix) =>
+                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, List<KeyValuePair<string, string>>>((view, request, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         results.Add(new KeyValuePair<string, string>(prefix + "year", DateTime.Now.Year.ToString()));
@@ -161,7 +164,7 @@ namespace Saber.Common.Platform
                     Name = "Language Options",
                     Description = "Render HTML <option> elements for all supported languages",
                     Parameters = new Dictionary<string, ViewDataBinderParameter>() { },
-                    Callback = new Func<IRequest, string, string, List<KeyValuePair<string, string>>>((request, data, prefix) =>
+                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, List<KeyValuePair<string, string>>>((view, request, data, prefix, key) =>
                     {
                         var selected = request.Parameters.ContainsKey("lang") ? request.Parameters["lang"] : request.User.Language;
                         var results = new List<KeyValuePair<string, string>>();

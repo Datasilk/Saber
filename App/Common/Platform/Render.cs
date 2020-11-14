@@ -163,25 +163,19 @@ namespace Saber.Common.Platform
                 var vars = ViewDataBinder.HtmlVars;
                 foreach (var item in vars)
                 {
-                    if (view.Fields.ContainsKey(prefix + item.Key))
-                    {
-                        var index = results.FindAll(f => f.Key == item.Key).Count();
-                        var elemIndex = view.Fields[prefix + item.Key][index];
-                        var args = view.Elements[elemIndex].Vars ?? new Dictionary<string, string>();
-                        //prepare html template variable arguments for the Data Binder
-                        var argList = args.Select(a => a.Key + ":\"" + a.Value + "\"").ToArray();
-                        var argsStr = "";
-                        if (argList.Length > 0)
+                    var fields = view.Fields.Where(a => a.Key.IndexOf(prefix + item.Key + " ") == 0 || a.Key == prefix + item.Key);
+                    if(fields.Count() > 0) {
+                        foreach(var field in fields)
                         {
-                            argsStr = string.Join(',', argList);
-                        }
-
-                        //run the Data Binder callback method
-                        var range = item.Value.Callback(request, argsStr, prefix);
-                        if(range.Count > 0)
-                        {
-                            //add Data Binder callback method results to list
-                            results.AddRange(range);
+                            var elem = view.Elements[field.Value[0]];
+                            var args = elem.Vars ?? new Dictionary<string, string>();
+                            //run the Data Binder callback method
+                            var range = item.Callback(view, request, args, prefix, elem.Name);
+                            if (range.Count > 0)
+                            {
+                                //add Data Binder callback method results to list
+                                results.AddRange(range);
+                            }
                         }
                     }
                 }
