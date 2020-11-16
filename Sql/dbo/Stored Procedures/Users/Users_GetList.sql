@@ -3,7 +3,7 @@
 	@start int = 1,
 	@length int = 10,
 	@search nvarchar(MAX) = '',
-	@orderby int = 1
+	@orderby int = 0
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -11,9 +11,9 @@ BEGIN
 	FROM (
 		SELECT ROW_NUMBER() 
 		OVER (ORDER BY
-		CASE WHEN @orderby = 0 THEN [name] END DESC,
-		CASE WHEN @orderby = 1 THEN email END DESC,
-		CASE WHEN @orderby = 2 THEN datecreated END ASC
+		CASE WHEN @orderby = 0 THEN userId END ASC,
+		CASE WHEN @orderby = 1 THEN email END ASC,
+		CASE WHEN @orderby = 2 THEN datecreated END DESC
 		) as rownum, *
 		FROM Users
 		WHERE 

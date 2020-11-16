@@ -75,5 +75,10 @@ namespace Query
         {
             return Sql.ExecuteScalar<int>("Users_HasAdmin") == 1;
         }
+
+        public static List<Models.User> GetList(int start = 1, int length = 25, string search = "")
+        {
+            return Sql.Populate<Models.User>("Users_GetList", new { start, length, search });
+        }
     }
 }
