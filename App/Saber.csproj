@@ -51,6 +51,7 @@
 
   <ItemGroup>
     <None Remove="CSS\tapestry\LICENSE" />
+    <None Remove="Scripts\editor\editor.js" />
     <None Remove="Views\AppSettings\androidicon.html" />
     <None Remove="Views\AppSettings\appleicon.html" />
     <None Remove="Views\ContentFields\block.html" />
@@ -79,9 +80,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Editor\editor.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\Editor\editor.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Editor\editor.less">

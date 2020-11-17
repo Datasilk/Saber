@@ -95,6 +95,33 @@ paths.working = {
         utility: [
             paths.scripts + 'utility/*.*',
             paths.scripts + 'utility/**/*.*'
+        ],
+        editor: [
+            paths.scripts + 'editor/_super.js',
+            paths.scripts + 'editor/resize.js',
+            paths.scripts + 'editor/dropmenu.js',
+            paths.scripts + 'editor/newwindow.js',
+            paths.scripts + 'editor/changed.js',
+            paths.scripts + 'editor/error.js',
+            paths.scripts + 'editor/message.js',
+            paths.scripts + 'editor/save.js',
+            paths.scripts + 'editor/file.js',
+            paths.scripts + 'editor/folder.js',
+            paths.scripts + 'editor/sessions.js',
+            paths.scripts + 'editor/tabs.js',
+            paths.scripts + 'editor/explorer.js',
+            paths.scripts + 'editor/filebar.js',
+            paths.scripts + 'editor/codebar.js',
+            paths.scripts + 'editor/fields.js',
+            paths.scripts + 'editor/language.js',
+            paths.scripts + 'editor/users.js',
+            paths.scripts + 'editor/pagesettings.js',
+            paths.scripts + 'editor/appsettings.js',
+            paths.scripts + 'editor/analytics.js',
+            paths.scripts + 'editor/resources.js',
+            paths.scripts + 'editor/hotkeys.js',
+            paths.scripts + 'editor/utility.js',
+            paths.scripts + 'editor/_init.js'
         ]
     },
 
@@ -139,6 +166,7 @@ paths.working = {
 //compiled paths
 paths.compiled = {
     platform: paths.webroot + 'editor/js/platform.js',
+    editor: paths.webroot + 'editor/js/editor.js',
     js: paths.webroot + 'editor/js/',
     css: paths.webroot + 'editor/css/',
     app: paths.webroot + 'editor/css/',
@@ -167,6 +195,13 @@ gulp.task('js:platform', function () {
     return p.pipe(gulp.dest('.', { overwrite: true }));
 });
 
+gulp.task('js:editor', function () {
+    var p = gulp.src(paths.working.js.editor, { base: '.' })
+        .pipe(concat(paths.compiled.editor));
+    if (prod == true) { p = p.pipe(uglify()); }
+    return p.pipe(gulp.dest('.', { overwrite: true }));
+});
+
 gulp.task('js:utility', function () {
     //check file changes & replace changed files in destination
     return gulp.src(paths.working.js.utility)
@@ -174,7 +209,7 @@ gulp.task('js:utility', function () {
         .pipe(gulp.dest(paths.compiled.js + 'utility'));
 });
 
-gulp.task('js', gulp.series('js:app', 'js:platform', 'js:utility'));
+gulp.task('js', gulp.series('js:app', 'js:platform', 'js:editor', 'js:utility'));
 
 //tasks for compiling LESS & CSS /////////////////////////////////////////////////////////////////////
 gulp.task('less:app', function () {
@@ -313,6 +348,9 @@ gulp.task('file', function () {
 gulp.task('watch', function () {
     //watch platform JS
     gulp.watch(paths.working.js.platform, gulp.series('js:platform'));
+
+    //watch editor JS
+    gulp.watch(paths.working.js.editor, gulp.series('js:editor'));
 
     //watch app JS
     var pathjs = [paths.working.js.app, ...paths.working.exclude.app.map(a => a + '*.js')];

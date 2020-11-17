@@ -80,7 +80,7 @@ namespace Saber.Controllers
                             break;
                     }
 
-                    AddScript("/editor/js/views/editor/editor.js");
+                    AddScript("/editor/js/editor.js");
                     AddCSS("/editor/css/views/editor/editor.css");
                     if (EditorUsed != EditorType.Monaco)
                     {

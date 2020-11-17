@@ -13,8 +13,15 @@ namespace Saber.Services
             var view = new View("/Views/Users/list.html");
             var listitem = new View("/Views/Users/list-item.html");
             var users = Query.Users.GetList(start, length, search);
+            var html = new StringBuilder();
+            foreach(var user in users)
+            {
+                listitem.Clear();
+                listitem.Bind(new { user });
+                html.Append(listitem.Render());
 
-
+            }
+            view["content"] = html.ToString();
             return view.Render();
         }
 

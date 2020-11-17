@@ -32,7 +32,12 @@ namespace Saber
             set { user = value; }
         }
 
-        public void Init() { }
+        public void Init() { 
+        if(App.Environment == Environment.development)
+            {
+                ViewCache.Clear();
+            }
+        }
 
         public string JsonResponse(dynamic obj)
         {
