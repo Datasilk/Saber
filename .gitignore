@@ -18,6 +18,7 @@
 !/App/CSS/themes
 !/App/CSS/platform.less
 /App/Scripts/
+!/App/Scripts/editor
 !/App/Scripts/platform
 !/App/Scripts/selector
 !/App/Scripts/min-maps
