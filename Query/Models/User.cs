@@ -12,4 +12,9 @@ namespace Query.Models
         public bool active { get; set; }
         public DateTime datecreated { get; set; }
     }
+
+    public class UserWithSecurityCount: User
+    {
+        public int security { get; set; }
+    }
 }

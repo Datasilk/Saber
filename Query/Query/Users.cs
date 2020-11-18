@@ -76,9 +76,9 @@ namespace Query
             return Sql.ExecuteScalar<int>("Users_HasAdmin") == 1;
         }
 
-        public static List<Models.User> GetList(int start = 1, int length = 25, string search = "")
+        public static List<Models.UserWithSecurityCount> GetList(int page = 1, int length = 25, string search = "", int orderby = 1)
         {
-            return Sql.Populate<Models.User>("Users_GetList", new { start, length, search });
+            return Sql.Populate<Models.UserWithSecurityCount>("Users_GetList", new { page, length, search, orderby });
         }
     }
 }
