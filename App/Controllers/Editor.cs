@@ -62,22 +62,28 @@ namespace Saber.Controllers
 
                 if (User.UserId > 0 && !Parameters.ContainsKey("live"))
                 {
+                    UsePlatform = true;
+
                     //use editor.html
                     view = new View("/Views/Editor/editor.html");
 
                     //load editor resources
-                    switch (EditorUsed)
+                    if (CheckSecurity("code-editor"))
                     {
-                        case EditorType.Monaco:
-                            AddCSS("/editor/js/utility/monaco/min/vs/editor/editor.main.css");
-                            AddScript("/editor/js/utility/monaco/min/vs/loader.js");
-                            view["editor-type"] = "monaco";
-                            break;
+                        view.Show("code-editor");
+                        switch (EditorUsed)
+                        {
+                            case EditorType.Monaco:
+                                AddCSS("/editor/js/utility/monaco/min/vs/editor/editor.main.css");
+                                AddScript("/editor/js/utility/monaco/min/vs/loader.js");
+                                view["editor-type"] = "monaco";
+                                break;
 
-                        case EditorType.Ace:
-                            AddScript("/editor/js/utility/ace/ace.js");
-                            view["editor-type"] = "ace";
-                            break;
+                            case EditorType.Ace:
+                                AddScript("/editor/js/utility/ace/ace.js");
+                                view["editor-type"] = "ace";
+                                break;
+                        }
                     }
 
                     AddScript("/editor/js/editor.js");
@@ -89,7 +95,44 @@ namespace Saber.Controllers
                             "S.editor.type = " + (int)EditorUsed + ";" +
                         "</script>");
                     }
-                    UsePlatform = true;
+                    Scripts.Append(
+                    "<script language=\"javascript\">" +
+                        "S.editor.useCodeEditor = " + (CheckSecurity("code-editor") ? "true" : "false") + ";" +
+                    "</script>");
+
+                    //check security permissions in order to show certain features
+                    var websiteSecurity = false;
+                    if (CheckSecurity("upload"))
+                    {
+                        view.Show("page-resources");
+                    }
+                    if (CheckSecurity("edit-content"))
+                    {
+                        view.Show("page-content");
+                    }
+                    if (CheckSecurity("page-settings"))
+                    {
+                        view.Show("page-settings");
+                    }
+                    if (CheckSecurity("website-analytics"))
+                    {
+                        view.Show("website-analytics");
+                        websiteSecurity = true;
+                    }
+                    if (CheckSecurity("website-settings"))
+                    {
+                        view.Show("website-settings");
+                        websiteSecurity = true;
+                    }
+                    if (CheckSecurity("manage-users"))
+                    {
+                        view.Show("manage-users");
+                        websiteSecurity = true;
+                    }
+                    if (websiteSecurity)
+                    {
+                        view.Show("website-management");
+                    }
                 }
                 else
                 {

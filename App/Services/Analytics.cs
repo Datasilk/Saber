@@ -9,7 +9,7 @@ namespace Saber.Services
         public string Render(int timeScale = 2, DateTime? startDate = null)
         {
             //show website analytics
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("website-analytics")) { return AccessDenied(); }
             var view = new View("/Views/Analytics/analytics.html");
 
             if (!startDate.HasValue)
@@ -33,7 +33,7 @@ namespace Saber.Services
                 foreach(var item in analytics.GroupBy(a => new { a.url, a.urlId })
                     .Select(g => new { g.Key.url, g.Key.urlId, total = g.Sum(a => a.total) }))
                 {
-                    urlItem["url"] = item.url;
+                    urlItem["url"] = "/" + item.url;
                     urlItem["id"] = item.urlId.ToString();
                     urlItem["total"] = item.total.ToString();
                     html.Append(urlItem.Render());

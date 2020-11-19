@@ -1,4 +1,40 @@
-﻿<h2>User Management</h2>
+﻿<style>
+    .users-management .lists{padding:20px 20px;}
+    .users-management .spreadsheet{margin-bottom:30px;}
+    .users-management .spreadsheet td:nth-child(1){width:80px;}
+    .users-management .spreadsheet td:nth-child(2){width:300px;}
+    .users-management .spreadsheet td:nth-child(3){max-width:100px;}
+    .users-management .spreadsheet td:nth-child(4){width:175px;}
+</style>
 <div class="lists">
     {{lists}}
 </div>
+<script id="users_manage_toolbar" type="text/html">
+    <button class="new-user button">+ New User</button>
+</script>
+<script id="template_newuser" type="text/html">
+    <form autocomplete="chrome-off">
+        <div class="row msg hide"><span></span></div>
+        <div class="row field">Email</div>
+        <div class="row input">
+            <input type="text" name="newfield1" autocomplete="new-email" id="newemail" placeholder="john.doe@gmail.com" />
+        </div>
+        <div class="row field">Password</div>
+        <div class="row input">
+            <input type="password" name="newfield2" autocomplete="new-password" id="newpass" />
+        </div>
+        <div class="row field">Confirm Password</div>
+        <div class="row input">
+            <input type="password" name="newfield3" autocomplete="new-password" id="newpass2" />
+        </div>
+        <div class="row field">Name</div>
+        <div class="row input">
+            <input type="text" autocomplete="off" id="newname" placeholder="John Doe" />
+        </div>
+        <div class="row text-center pad-top">
+            <div class="col">
+                <input type="submit" class="button apply" value="Create User" />
+            </div>
+        </div>
+    </form>
+</script>

@@ -1,5 +1,8 @@
 @import "tapestry/tapestry.less";
 
+.box{font-size:13px;
+    input, select, textarea{font-size:13px;}
+}
 .box *{box-sizing:border-box;}
 .box, .bg{width:100%;}
 
@@ -8,7 +11,9 @@
         position:relative; min-width:200px; z-index:5000; max-height:100%; overflow-y:auto; overflow-x:hidden; padding:20px;
         &.center{margin:0 auto;}
         &.right{right:0;}
-        .btn-close{position:absolute; right:0px; z-index:5010;}
+        .btn-close{position:absolute; right:0px; z-index:5010; opacity:0.5;
+            &:hover{opacity:1;}
+        }
     }
 }
 .box{

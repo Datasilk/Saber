@@ -1,16 +1,19 @@
 S.editor.resources = {
     _loaded: false,
-        uploader: null,
+    uploader: null,
             path: '',
 
                 load: function (path) {
                     var self = S.editor.resources;
                     var isRoot = false;
+                    var pagename = '';
                     if (path.indexOf('wwwroot') >= 0) { isRoot = true; }
                     var id = isRoot ? 'resources' : 'page-resources';
-                    S.editor.tabs.create(isRoot ? "Resources" : "Page Resources", id + "-section", { isPageResource: !isRoot },
+                    S.editor.tabs.create(isRoot ? 'Resources' : 'Page Resources', id + '-section', { isPageResource: !isRoot },
                         () => { //onfocus
                             $('.tab.' + id).removeClass('hide');
+                            console.log('on focus');
+                            updateFilebar();
                         },
                         () => { //onblur
 
@@ -19,15 +22,25 @@ S.editor.resources = {
 
                         }
                     );
-                    if (self._loaded == true && self.path == path) { return; }
+
+                    function updateFilebar() {
+                        S.editor.filebar.update((isRoot ? 'Resources for ' + pagename : 'Page Resources for <a href="/' + pagename + '">/' + pagename + '</a>'), 'icon-photos', $('#page_resources_toolbar').html());
+                        console.log($('.tab-toolbar .uploader'));
+                        if (S.editor.resources.uploader != null) {
+                            $('.tab-toolbar .uploader').on('click', S.editor.resources.uploader.click);
+                        }
+                    }
+                    if (self._loaded == true && self.path == path) {
+                        S.editor.tabs.select(id + '-section');
+                        return;
+                    }
                     S.editor.resources.path = path;
                     $('.sections > .' + id).html('');
                     S.ajax.post('PageResources/Render', { path: path },
                         function (d) {
                             $('.sections > .' + id).html(d);
                             S.editor.resources._loaded = true;
-                            var p = path.replace('content/', '');
-                            $('.page-name').attr('href', '/' + p).html(p);
+                            pagename = path.replace('content/', '');
 
                             //initialize uploader
                             if (self.uploader == null) {
@@ -45,7 +58,8 @@ S.editor.resources = {
                                     }
                                 });
                             }
-                            $('.button.uploader').on('click', S.editor.resources.uploader.click);
+                            console.log(S.editor.resources.uploader);
+                            updateFilebar();
                         }
                     );
                 },

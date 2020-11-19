@@ -29,8 +29,10 @@ namespace Saber.Services
             var item = new View("/Views/FileBrowser/file.html");
             var items = new List<KeyValuePair<string, string>>();
             var exclude = new string[] { };
+            var editable = new string[] { ".js", ".less", ".css" };
+            var canEdit = CheckSecurity("code-editor");
 
-            if (paths[0] == "" && paths.Length == 1)
+            if (paths[0] == "" && paths.Length == 1 && canEdit)
             {
                 //display root folders for website
                 items = new List<KeyValuePair<string, string>>()
@@ -94,6 +96,7 @@ namespace Saber.Services
                                 case "less":
                                 case "js":
                                 case "zip":
+                                    if(canEdit == false && editable.Any(a => f.ToLower() == a)) { break; }
                                     items.Add(new KeyValuePair<string, string>(file.Name, file.Name)); break;
                             }
                         }
@@ -165,7 +168,7 @@ namespace Saber.Services
 
         public string Open(string path, bool pageResource = false)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("code-editor")) { return AccessDenied(); }
 
             //translate root path to relative path
             var paths = Core.PageInfo.GetRelativePath(path);
@@ -213,7 +216,7 @@ namespace Saber.Services
 
         public string SaveFile(string path, string content)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("code-editor")) { return AccessDenied(); }
 
             try
             {
@@ -232,7 +235,7 @@ namespace Saber.Services
 
         public string NewFile(string path, string filename)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("code-editor")) { return AccessDenied(); }
 
             try
             {

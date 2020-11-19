@@ -13,6 +13,7 @@ namespace Saber.Services
     {
         public string Render(string path, string language)
         {
+            if (!CheckSecurity("edit-content")) { return AccessDenied(); }
             var paths = PageInfo.GetRelativePath(path);
             var fields = Core.ContentFields.GetPageContent(path, language);
             var html = new StringBuilder();
@@ -61,7 +62,7 @@ namespace Saber.Services
 
         public string Save(string path, string language, Dictionary<string, string> fields)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("edit-content")) { return AccessDenied(); }
 
             var data = new Dictionary<string, string>();
             var paths = PageInfo.GetRelativePath(path);

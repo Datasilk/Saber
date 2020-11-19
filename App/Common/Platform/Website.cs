@@ -13,7 +13,7 @@ namespace Saber.Common.Platform
         public static void NewFile(string path, string filename)
         {
             //check for root & content folders
-            if (path == "root")
+            if (path == "root" || path == "")
             {
                 throw new ServiceErrorException("You cannot create a file in the root folder");
             }

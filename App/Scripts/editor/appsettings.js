@@ -1,8 +1,9 @@
 S.editor.appsettings = {
     show: function () {
-        S.editor.tabs.create("App Settings", "app-settings-section", {},
+        S.editor.tabs.create("Website Settings", "app-settings-section", {},
             () => { //onfocus
                 $('.tab.app-settings').removeClass('hide');
+                S.editor.filebar.update('Website Settings', 'icon-settings');
             },
             () => { //onblur
 

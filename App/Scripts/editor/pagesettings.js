@@ -7,9 +7,11 @@ S.editor.settings = {
 
     load: function () {
         var self = S.editor.settings;
-        S.editor.tabs.create("Page Settings", "page-settings-section", { isPageResource: true },
+        S.editor.tabs.create('Page Settings', 'page-settings-section', { isPageResource: true },
             () => { //onfocus
                 $('.tab.page-settings').removeClass('hide');
+                var path = S.editor.path.substr(8);
+                S.editor.filebar.update('Page Settings for <a href="/' + path + '">' + path + '</a>', 'icon-settings');
             },
             () => { //onblur
 
@@ -18,7 +20,10 @@ S.editor.settings = {
 
             }
         );
-        if (self._loaded == true) { return; }
+        if (self._loaded == true) {
+            S.editor.tabs.select('page-settings-section');
+            return;
+        }
         var path = S.editor.path;
         S.ajax.post('PageSettings/Render', { path: path },
             function (d) {

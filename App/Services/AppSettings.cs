@@ -12,7 +12,7 @@ namespace Saber.Services
         public string Render()
         {
             //display all application settings
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
             var view = new View("/Views/AppSettings/appsettings.html");
 
             //add website icon
@@ -102,7 +102,7 @@ namespace Saber.Services
 
         public string UploadPngIcon(int type, int px)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
             if (Context.Request.Form.Files.Count == 0)
             {
                 return Error("File upload was not found");

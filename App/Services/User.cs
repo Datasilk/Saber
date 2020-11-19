@@ -49,6 +49,7 @@
 
         public string CreateAdminAccount(string name, string email, string password)
         {
+            if (!CheckEmailAddress(email)) { return Error("Email address is invalid"); }
             if (Server.HasAdmin == false)
             {
                 Query.Users.CreateUser(new Query.Models.User()
@@ -65,18 +66,47 @@
             return "";
         }
 
+        public string Create(string name, string emailaddr, string password)
+        {
+            if (!CheckSecurity("manage-users")) { return AccessDenied(); }
+            if (!CheckEmailAddress(emailaddr)) { return Error("Email address is invalid"); }
+            if (Query.Users.Exists(emailaddr)) { return Error("Another account is already using the email address \"" + emailaddr + "\""); }
+            Query.Users.CreateUser(new Query.Models.User()
+            {
+                name = name,
+                email = emailaddr,
+                password = EncryptPassword(emailaddr, password)
+            });
+            Server.HasAdmin = true;
+            Server.ResetPass = false;
+            return "success";
+        }
+
         public void LogOut()
         {
             User.LogOut();
         }
 
-        public string EncryptPassword(string email, string password)
+        private bool CheckEmailAddress(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private string EncryptPassword(string email, string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(email + Server.Salt + password, Server.BcryptWorkfactor);
 
         }
 
-        public bool DecryptPassword(string email, string password, string encrypted)
+        private bool DecryptPassword(string email, string password, string encrypted)
         {
             return BCrypt.Net.BCrypt.Verify(email + Server.Salt + password, encrypted);
         }

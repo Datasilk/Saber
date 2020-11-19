@@ -59,7 +59,7 @@ namespace Saber.Common.Platform
     /// <summary>
     /// Define Saber-specific html variables
     /// </summary>
-    public class ScaffoldDataBinderDefaults : Vendor.IViewDataBinder
+    public class ViewDataBinderDefaults : Vendor.IViewDataBinder
     {
         public List<ViewDataBinderModel> Bind()
         {
@@ -78,7 +78,41 @@ namespace Saber.Common.Platform
                         if(request.User.UserId > 0 && !request.Parameters.ContainsKey("live"))
                         {
                             results.Add(new KeyValuePair<string, string>(prefix + "user", "True"));
+                        }
+                        return results;
+                    })
+                }
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                , new ViewDataBinderModel()
+                {
+                    Key = "username",
+                    Name = "User Name",
+                    Description = "Display the user's name",
+                    Parameters = new Dictionary<string, ViewDataBinderParameter>(){},
+                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, List<KeyValuePair<string, string>>>((view, request, data, prefix, key) =>
+                    {
+                        var results = new List<KeyValuePair<string, string>>();
+                        //check if user is logged in
+                        if(request.User.UserId > 0 && !request.Parameters.ContainsKey("live"))
+                        {
                             results.Add(new KeyValuePair<string, string>(prefix + "username", request.User.Name));
+                        }
+                        return results;
+                    })
+                }
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                , new ViewDataBinderModel()
+                {
+                    Key = "userid",
+                    Name = "User ID",
+                    Description = "Display the user's ID",
+                    Parameters = new Dictionary<string, ViewDataBinderParameter>(){},
+                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, List<KeyValuePair<string, string>>>((view, request, data, prefix, key) =>
+                    {
+                        var results = new List<KeyValuePair<string, string>>();
+                        //check if user is logged in
+                        if(request.User.UserId > 0 && !request.Parameters.ContainsKey("live"))
+                        {
                             results.Add(new KeyValuePair<string, string>(prefix + "userid", request.User.UserId.ToString()));
                         }
                         return results;

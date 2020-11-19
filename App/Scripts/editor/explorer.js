@@ -1,18 +1,18 @@
 S.editor.explorer = {
     path: 'root',
-        routes: [],
-            queue: [],
+    routes: [],
+    queue: [],
 
-                show: function () {
-                    S.editor.dropmenu.hide();
-                    if (!$('.editor .file-browser').hasClass('hide')) { S.editor.explorer.hide(); return; }
-                    if ($('.file-browser ul.menu').children().length == 0) {
-                        S.editor.explorer.dir('root');
-                    }
-                    $('.editor .file-browser').removeClass('hide');
-                    $('.editor').addClass('show-browser');
-                    S.editor.resizeWindow();
-                },
+    show: function () {
+        S.editor.dropmenu.hide();
+        if (!$('.editor .file-browser').hasClass('hide')) { S.editor.explorer.hide(); return; }
+        if ($('.file-browser ul.menu').children().length == 0) {
+            S.editor.explorer.dir('root');
+        }
+        $('.editor .file-browser').removeClass('hide');
+        $('.editor').addClass('show-browser');
+        S.editor.resizeWindow();
+    },
 
     hide: function () {
         $('.editor .file-browser').addClass('hide');
@@ -38,8 +38,7 @@ S.editor.explorer = {
                     $('ul.file-tabs > li:not(.tab-page-resources)').hide();
 
                     //change filebar path
-                    $('#filepath').val(path);
-                    $('.file-bar .file-icon use').attr('xlink:href', '#icon-folder');
+                    S.editor.filebar.update(path, 'icon-folder');
 
                     //deselect file tab
                     $('.edit-bar ul.row .selected').removeClass('selected');
@@ -190,8 +189,7 @@ S.editor.explorer = {
 
         if (isready !== false) {
             //set file bar path text & icon
-            $('#filepath').val(cleanPath);
-            $('.file-bar .file-icon use')[0].setAttribute('xlink:href', '#icon-file-' + ext);
+            S.editor.filebar.update(cleanPath, 'icon-file-' + ext);
         }
 
         if (session == null && nocode == true) {

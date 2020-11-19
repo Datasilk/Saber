@@ -17,7 +17,7 @@ namespace Saber.Services
 
         public string Create(string name, string abbr)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("edit-content")) { return AccessDenied(); }
             try
             {
                 Query.Languages.Create(new Query.Models.Language()

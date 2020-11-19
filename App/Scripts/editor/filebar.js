@@ -1,10 +1,25 @@
 S.editor.filebar = {
+    update: (text, icon, toolbar) => {
+        $('.file-path').html(text);
+        $('.file-bar .file-icon use').attr('xlink:href', '#' + icon);
+        if (toolbar == null) { toolbar = ''; }
+        S.editor.filebar.toolbar.update(toolbar);
+    },
+
+    toolbar: {
+        update: (html) => {
+            $('.tab-toolbar').html(html);
+        }
+    },
+
     fields: {
-        show: function (loadtab) {
+        show: function () {
             S.editor.dropmenu.hide();
             S.editor.tabs.create("Page Content", "content-fields-section", { isPageResource: true },
                 () => { //onfocus
                     $('.tab.content-fields').removeClass('hide');
+                    var path = S.editor.path.substr(8);
+                    S.editor.filebar.update('Page Content for <a href="/' + path + '">' + path + '</a>', 'icon-form-fields');
                     if (S.editor.files.content.changed == true) {
                         //reload content fields
                         S.editor.fields.load();
@@ -49,15 +64,12 @@ S.editor.filebar = {
                 );
             } else {
                 //tab already loaded
+                S.editor.tabs.select('content-fields-section');
                 if (S.editor.fields.changed == true) {
                     //enable save menu since file was previously changed
                     $('.item-save').removeClass('faded').removeAttr('disabled');
                 }
             }
-        },
-
-        load: function () {
-
         }
     },
 

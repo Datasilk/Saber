@@ -110,6 +110,7 @@
     <Build Include="dbo\Tables\Security_Roles.sql" />
     <Build Include="dbo\Stored Procedures\SecurityRoles\SecurityRoles_GetByUserId.sql" />
     <Build Include="dbo\Stored Procedures\SecurityRoles\SecurityRole_Create.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_Exists.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

@@ -51,17 +51,17 @@
 /* imports */
 @import "../tapestry/theme.less";
 
-.box{
-    font-family: Jaldi, Arial, Helvetica, sans-serif;
+.box{font: 300 13px Jaldi, Arial, Helvetica, sans-serif;
+    textarea, input, select{font: 300 13px Jaldi, Arial, Helvetica, sans-serif;}
     .box(transparent, transparent, #ddd);
     .links(#0099FF, #006bff, #006bff, #0099FF);
     .icons(#ccc, #0099FF, #0099FF, #ccc);
-    .row(transparent, #202e3c, #0e375e, #ddd, #b1d3ea, #cde4f3, #0099ff, #007aff, #007aff, #0099ff, #6ac3ff, #ddd, #77bbe9, #77bbe9, #77bbe9);
-    .fonts(#ddd, fade(#ddd, 30%), #009B87, #4DA400, #FF2222, #376EB2);
+    .row(transparent, #202e3c, #0e375e, #ddd, #b1d3ea, #cde4f3, #0099ff, #007aff, #007aff, #0099ff, #6ac3ff, #ddd, #fff, #77bbe9, #77bbe9);
+    .fonts(#ddd, #ddd, #009B87, #4DA400, #FF2222, #376EB2);
     .input(#2a2a2a, #ddd, #444, #aaa, #2a2a2a, #ddd, #274052, #2a2a2a, #ddd, #185682, #7eccff, #40b4ff);
-    .line(#2a2a2a); 
-    .button(default,  #0099FF, #0082ff, #0082ff, #0099FF, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
-    .button(apply,    #0099FF, #0082ff, #0082ff, #0099FF, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
+    .line(#2f2f2f); 
+    .button(default,  #0082ff, #004eff, #004eff, #0082ff, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
+    .button(apply,    #0082ff, #004eff, #004eff, #0082ff, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
     .button(special,  #009557, #03ba6e, #03ba6e, #03ba6e, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
     .button(cancel,   #7dd0ae, #31be85, #31be85, #31be85, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
     .button(disabled, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
@@ -74,11 +74,11 @@
     @perc:3%;
     @perc2:1%;
     .table(
-        #35516b, #fff, #fff, #fff, #fff, #fff,
-        #2b2b2b, #113454, #003b73, #fff, #fff, #fff, #0099FF, #006bff, #006bff, #0099FF, #0099FF, #006bff, #006bff, #0099FF,
-        darken(#2b2b2b, @perc), darken(#113454, @perc2), darken(#003b73, @perc2), darken(#fff, @perc), darken(#fff, @perc), 
-        darken(#fff, @perc), darken(#0099FF, @perc), darken(#006bff, @perc), darken(#006bff, @perc), darken(#0099FF, @perc), 
-        darken(#0099FF, @perc), darken(#006bff, @perc), darken(#006bff, @perc), darken(#0099FF, @perc)
+        #2f2f2f, #949494, #949494, #949494, #949494, #949494, //table header
+        #272727, #113454, #003b73, #fff, #fff, #fff, #0099FF, #006bff, #006bff, #0099FF, #0099FF, #006bff, #006bff, #0099FF, //row
+        darken(#2b2b2b, @perc), darken(#113454, @perc2), darken(#003b73, @perc2), darken(#fff, @perc), darken(#fff, @perc), //alt row
+        darken(#fff, @perc), darken(#0099FF, @perc), darken(#006bff, @perc), darken(#006bff, @perc), darken(#0099FF, @perc), //alt row
+        darken(#0099FF, @perc), darken(#006bff, @perc), darken(#006bff, @perc), darken(#0099FF, @perc)//alt row
     );
 }
 
@@ -88,7 +88,7 @@
 
 .editor-drop-menu .box.bg, .file-browser, .code-bar, .box .tooltip{
     background:#2a2a2a;
-    .line(#333); 
+    .line(#444); 
 }
 .box .tooltip{
     background:#15345a;
@@ -128,7 +128,7 @@
     &.bg{background-color:#00295e;}
 }
 
-.box .file-bar > .bg.row, .box .accordion > .title{background:#2a2a2a}
+.box .edit-bar, .box .accordion > .title{background:#2a2a2a}
 
 .editor .img .menu{background:#2a2a2a; padding-bottom:0;
     li{
@@ -141,17 +141,29 @@
 
 .editor-drop-menu{
     li{
-        a:link, a:hover, a:visited, a:active{color:#ddd; text-decoration:none;}
+        .row.hover:hover{background:#0082ff; color:#fff; fill:#fff;}
+        a:link, a:hover, a:visited, a:active{color:#fff; text-decoration:none;}
+        use{color:#fff; fill:#fff;}
     }
 }
 
 .box{
-    
+    .edit-bar li {
+        & > div{ background:#363636;
+            &:not(.selected):hover{background:#0082ff; color:#fff; fill:#fff;}
+            &.selected{background:#1d1d1d;
+                &:hover{background:#1d1d1d;}
+            }
+        }
+
+    }
+    .file-bar{
+        .row.hover:hover{background:#0082ff;}
+    }
     ul.list{
         li:hover{background:#1a2834;}
     }
 
     .accordion .expander:hover{background:#125997;}
     .accordion > .title:hover{background:#1c2f40 !important;}
-
 }

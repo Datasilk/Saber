@@ -18,54 +18,56 @@ S.editor.init = function () {
 
     //initialize code editor
     var editor = null;
-    switch (this.type) {
-        case 0: //monaco
-            require.config({ paths: { 'vs': '/editor/js/utility/monaco/min/vs' } });
-            //show loading animation
-            $('.editor-loading').html(S.loader());
-            require(['vs/editor/editor.main'], function () {
-                editor = monaco.editor.create(document.getElementById('editor'), {
-                    value: '',
-                    theme: "vs" + (this.theme != '' ? '-' + S.editor.theme : ''),
-                    autoIndent: false,
-                    automaticLayout: true,
-                    colorDecorators: true,
-                    dragAndDrop: false,
-                    folding: true,
-                    formatOnPaste: false,
-                    glyphMargin: false,
-                    mouseWheelZoom: true,
-                    parameterHints: true,
-                    showFoldingControls: 'always'
+    if (this.useCodeEditor == true) {
+        switch (this.type) {
+            case 0: //monaco
+                require.config({ paths: { 'vs': '/editor/js/utility/monaco/min/vs' } });
+                //show loading animation
+                $('.editor-loading').html(S.loader());
+                require(['vs/editor/editor.main'], function () {
+                    editor = monaco.editor.create(document.getElementById('editor'), {
+                        value: '',
+                        theme: "vs" + (this.theme != '' ? '-' + S.editor.theme : ''),
+                        autoIndent: false,
+                        automaticLayout: true,
+                        colorDecorators: true,
+                        dragAndDrop: false,
+                        folding: true,
+                        formatOnPaste: false,
+                        glyphMargin: false,
+                        mouseWheelZoom: true,
+                        parameterHints: true,
+                        showFoldingControls: 'always'
+                    });
+                    editor.onMouseUp((e) => { S.editor.codebar.update(); });
+                    S.editor.instance = editor;
+                    //hide loading animation
+                    $('.editor-loading').remove();
                 });
-                editor.onMouseUp((e) => { S.editor.codebar.update(); });
-                S.editor.instance = editor;
-                //hide loading animation
-                $('.editor-loading').remove();
-            });
-            break;
+                break;
 
-        case 1: //ace
-            editor = ace.edit("editor");
-            editor.setTheme("ace/theme/xcode");
-            editor.setOptions({
-                //enableEmmet: true
-            });
-            S.editor.EditSession = require("ace/edit_session").EditSession;
+            case 1: //ace
+                editor = ace.edit("editor");
+                editor.setTheme("ace/theme/xcode");
+                editor.setOptions({
+                    //enableEmmet: true
+                });
+                S.editor.EditSession = require("ace/edit_session").EditSession;
 
-            //add editor key bindings
-            editor.commands.addCommand({
-                name: "showKeyboardShortcuts",
-                bindKey: { win: "Ctrl-h", mac: "Command-h" },
-                exec: function (editor) {
-                    ace.config.loadModule("ace/ext/keybinding_menu", function (module) {
-                        module.init(editor);
-                        S.editor.instance.showKeyboardShortcuts()
-                    })
-                }
-            });
-            this.instance = editor;
-            break;
+                //add editor key bindings
+                editor.commands.addCommand({
+                    name: "showKeyboardShortcuts",
+                    bindKey: { win: "Ctrl-h", mac: "Command-h" },
+                    exec: function (editor) {
+                        ace.config.loadModule("ace/ext/keybinding_menu", function (module) {
+                            module.init(editor);
+                            S.editor.instance.showKeyboardShortcuts()
+                        })
+                    }
+                });
+                this.instance = editor;
+                break;
+        }
     }
 
     //resize code editor
@@ -114,30 +116,36 @@ S.editor.init = function () {
     ];
 
     //finally, load content resources that belong to the page
-    var tabs = [dir + fileparts[0] + '.html', dir + fileparts[0] + '.less', dir + fileparts[0] + '.js'];
-    if (this.savedTabs.length > 0) {
-        tabs = tabs.concat(this.savedTabs);
-    }
-    //get saved tabs from server
-    S.ajax.post('Files/GetOpenedTabs', {},
-        function (d) {
-            tabs = tabs.concat(JSON.parse(d));
-            openTabs();
-        },
-        function (err) {
-            openTabs();
+    if (this.useCodeEditor == true) {
+        var tabs = [dir + fileparts[0] + '.html', dir + fileparts[0] + '.less', dir + fileparts[0] + '.js'];
+        if (this.savedTabs.length > 0) {
+            tabs = tabs.concat(this.savedTabs);
         }
-    );
-
-    function openTabs() {
-        S.editor.explorer.openResources(tabs,
-            function () {
-                setTimeout(function () {
-                    S.editor.codebar.status('Ready');
-                    S.editor.codebar.update();
-                }, 500);
+        //get saved tabs from server
+        S.ajax.post('Files/GetOpenedTabs', {},
+            function (d) {
+                tabs = tabs.concat(JSON.parse(d));
+                openTabs();
+            },
+            function (err) {
+                openTabs();
             }
         );
+
+        function openTabs() {
+            S.editor.explorer.openResources(tabs,
+                function () {
+                    setTimeout(function () {
+                        S.editor.codebar.status('Ready');
+                        S.editor.codebar.update();
+                    }, 500);
+                }
+            );
+        }
+    } else {
+        //load file browser & wwwroot instead
+        S.editor.explorer.show();
+        S.editor.explorer.dir('wwwroot');
     }
 
     //initialize JavaScript binding into Rhinoceros (if available)

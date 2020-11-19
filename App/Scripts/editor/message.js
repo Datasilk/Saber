@@ -6,4 +6,5 @@ S.editor.message = function (elem, msg, type) {
     $('.message .close-btn').off('click').on('click', (e) => {
         $(e.target).parents('.message').first().remove();
     });
+    if (elem) { $(elem).removeClass('hide'); }
 };

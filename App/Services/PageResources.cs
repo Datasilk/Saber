@@ -12,6 +12,8 @@ namespace Saber.Services
         public string Render(string path, int sort = 0)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
+            var canEdit = CheckSecurity("code-editor");
+            var canUpload = CheckSecurity("upload");
             var view = new View("/Views/PageResources/resources.html");
             var item = new View("/Views/PageResources/resource-item.html");
             var paths = PageInfo.GetRelativePath(path);
@@ -235,6 +237,11 @@ namespace Saber.Services
             if (noResources == true)
             {
                 view["resources"] = Cache.LoadFile("/Views/PageResources/no-resources.html");
+            }
+
+            if (canUpload)
+            {
+                view.Show("can-upload");
             }
 
             return view.Render();

@@ -2,9 +2,11 @@ S.editor.file = {
     create: {
         show: function () {
             S.editor.dropmenu.hide();
+            var path = S.editor.explorer.path;
+            if (path == 'root') { path == '';}
             S.popup.show('New File',
                 $('#template_newfile').html()
-                    .replace('##folder-path##', S.editor.explorer.path)
+                    .replace('##folder-path##', path)
             );
             //set up button events within popup
             $('.popup form').on('submit', S.editor.file.create.submit)

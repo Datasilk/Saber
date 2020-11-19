@@ -9,7 +9,7 @@ namespace Saber.Services
     {
         public string List(int start = 1, int length = 25, string search = "", int orderby = 2)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("manage-users")) { return AccessDenied(); }
             var view = new View("/Views/Users/users.html");
             var list = new View("/Views/Users/list.html");
             var listitem = new View("/Views/Users/list-item.html");
@@ -19,7 +19,7 @@ namespace Saber.Services
             var showAdmins = false;
             foreach(var user in users)
             {
-                if(showAdmins == false && user.security == 0)
+                if(showAdmins == false && user.userId != 1 && user.security == 0)
                 {
                     if (html.Length > 0)
                     {
@@ -27,6 +27,7 @@ namespace Saber.Services
                         list["users-type"] = "Administrators";
                         list["users"] = html.ToString();
                         lists.Append(list.Render());
+                        html.Clear();
                         list.Clear();
                     }
                     showAdmins = true;
@@ -35,7 +36,13 @@ namespace Saber.Services
                 listitem.Bind(new { user });
                 html.Append(listitem.Render());
             }
-            if(html.Length > 0)
+            if(html.Length > 0 && showAdmins == false)
+            {
+                list["users-type"] = "Administrators";
+                list["users"] = html.ToString();
+                lists.Append(list.Render());
+            }
+            else if(html.Length > 0)
             {
                 list["users-type"] = "Members";
                 list["users"] = html.ToString();
@@ -47,7 +54,7 @@ namespace Saber.Services
 
         public string Details(string userId)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("manage-users")) { return AccessDenied(); }
             var view = new View("/Views/Users/details.html");
             var viewScope = new View("/Views/Security/scope.html");
             var viewKey = new View("/Views/Security/key.html");

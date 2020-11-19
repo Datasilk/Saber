@@ -120,6 +120,7 @@ namespace Saber.Services
             var footerList = new StringBuilder();
             var headerFields = new StringBuilder();
             var footerFields = new StringBuilder();
+
             foreach (var header in headers)
             {
                 headerList.Append("<option value=\"" + header.file + "\"" +
@@ -129,6 +130,7 @@ namespace Saber.Services
                 {
                     foreach (var field in header.fields)
                     {
+                        if(htmlVars.Any(a => a == field.Key)) { continue; }
                         fieldView["label"] = field.Key.Replace("-", " ").Capitalize();
                         fieldView["name"] = field.Key;
                         fieldView["value"] = field.Value;
@@ -147,10 +149,11 @@ namespace Saber.Services
                 {
                     foreach (var field in footer.fields)
                     {
+                        if (htmlVars.Any(a => a == field.Key)) { continue; }
                         fieldView["label"] = field.Key.Replace("-", " ").Capitalize();
                         fieldView["name"] = field.Key;
                         fieldView["value"] = field.Value;
-                        headerFields.Append(fieldView.Render() + "\n");
+                        footerFields.Append(fieldView.Render() + "\n");
                     }
                 }
             }

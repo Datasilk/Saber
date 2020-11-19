@@ -1,11 +1,14 @@
 ﻿<div class="row toolbar pad-height">
-    <div class="col">
-        <h2>{{for-type}} Resources</h2>
-        {{for-page}}for <a href="#" class="page-name">/home</a>{{/for-page}}
-        {{for-folder}}for public path <a href="javascript:">{{folder-path}}</a>{{/for-folder}}
-    </div>
-    <div class="col right">
-        <button class="uploader button special">Upload Resources</button>
-    </div>
 </div>
 <div class="row resources-list">{{resources}}</div>
+
+<script id="page_resources_toolbar" type="text/html">
+    {{can-upload}}
+    <button class="uploader button">
+        <svg viewBox="0 0 32 32">
+            <use xlink:href="#icon-upload-arrow" x="0" y="0" width="32" height="32"></use>
+        </svg>
+        Upload
+    </button>
+    {{/can-upload}}
+</script>

@@ -15,7 +15,7 @@ namespace Saber.Controllers
         {
             try
             {
-                if (!CheckSecurity()) { return AccessDenied<Login>(); }
+                if (!CheckSecurity("upload")) { return AccessDenied<Login>(); }
                 if (Parameters.Files.Count > 0 && Parameters.ContainsKey("path"))
                 {
                     //save resources for page

@@ -4,6 +4,10 @@ namespace Query
 {
     public static class Users
     {
+        public static bool Exists(string email)
+        {
+            return Sql.ExecuteScalar<int>("User_Exists", new { email }) == 1;
+        }
 
         public static int CreateUser(Models.User user)
         {
