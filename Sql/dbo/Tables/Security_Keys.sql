@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Security_Keys]
 (
-	[groupId] INT IDENTITY(1, 1), 
+	[groupId] INT NOT NULL, 
     [key] VARCHAR(32) NOT NULL, 
     [value] BIT NOT NULL DEFAULT 0, 
     [isplatform] BIT NOT NULL DEFAULT 0, 

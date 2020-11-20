@@ -90,7 +90,7 @@ namespace Saber
             DisplayName = displayName;
             DateCreated = datecreated;
 
-            var keys = Query.SecurityRoles.GetByUserId(userId);
+            var keys = Query.Security.Keys.GetByUserId(userId);
             foreach(var key in keys)
             {
                 Keys.Add(new KeyValuePair<string, bool>(key.key, key.value));
