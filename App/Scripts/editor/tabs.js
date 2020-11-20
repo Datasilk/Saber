@@ -1,6 +1,7 @@
 S.editor.tabs = {
     changed: false,
     create: function (title, path, options, onfocus, onblur, onsave) {
+        console.log('create tab for ' + path);
         //build options
         var opts = {
             selected: options ? (options.selected != null ? options.selected : true) : true,
@@ -21,7 +22,7 @@ S.editor.tabs = {
             var temp = $('#template_tab').html().trim();
             $('.edit-tabs ul.row').append(temp
                 .replace(/\#\#id\#\#/g, id)
-                .replace('##path##', path)
+                .replace(/\#\#path\#\#/g, path)
                 .replace('##title##', title)
                 .replace('##tab-type##', '')
                 .replace(/\#\#selected\#\#/g, opts.selected == true ? 'selected' : '')
@@ -70,7 +71,7 @@ S.editor.tabs = {
         $('.tab-' + id + ' > div').addClass('selected');
         $('.tab-' + id)[0].focus();
     },
-    close: function (id, path) {
+    close: function (id, path, callback) {
         var tab = $('.tab-' + id);
         var sibling = tab.prev().find('.row.hover');
         tab.remove();
@@ -82,6 +83,17 @@ S.editor.tabs = {
         }
 
         //update user session
-        S.ajax.post('Files/Close', { path: path });
+        S.ajax.post('Files/Close', { path: path }, callback);
+    },
+
+    closeFromPath: function (path) {
+        //find any tabs that exist in the path
+        var tabs = $('.edit-tabs li > div').filter((i, a) => $(a).attr('data-path') && $(a).attr('data-path').indexOf(path) >= 0);
+        if (tabs.length > 0) {
+            var tab = $(tabs[0]);
+            var id = tab.parent()[0].className.replace('tab-', '');
+            var tpath = $(tab).attr('data-path');
+            S.editor.tabs.close(id, tpath, () => { S.editor.tabs.closeFromPath(path) });
+        }
     }
 };

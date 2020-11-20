@@ -1,5 +1,5 @@
 ﻿<li>
-    <div class="row hover item file-{{id}}" onclick="{{onclick}}">
+    <div class="row hover item file-{{id}}" onclick="{{onclick}}" data-path="{{path}}">
         <div class="row">
             <div class="col icon pad-right pad-left-sm">
                 <svg viewBox="0 0 32 32">
@@ -7,6 +7,13 @@
                 </svg>
             </div>
             <div class="col label" style="max-width: calc(100% - 45px);">{{title}}</div>
+            {{delete}}
+            <div class="col right delete-btn delete-{{type}}">
+                <svg viewBox="0 0 32 32">
+                    <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
+                </svg>
+            </div>
+            {{/delete}}
         </div>
         <div class="line"></div>
     </div>

@@ -11,6 +11,14 @@ namespace Saber.Services
 {
     public class Files : Service
     {
+        private class DirItem
+        {
+            public bool isDir { get; set; }
+            public string Label { get; set; }
+            public string Path { get; set; }
+            public string Filename { get; set; }
+            public string Extension { get; set; }
+        }
         public string Dir(string path)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
@@ -27,18 +35,20 @@ namespace Saber.Services
             var rpath = string.Join("/", paths) + "/";
 
             var item = new View("/Views/FileBrowser/file.html");
-            var items = new List<KeyValuePair<string, string>>();
+            var items = new List<DirItem>();
             var exclude = new string[] { };
             var editable = new string[] { ".js", ".less", ".css" };
             var canEdit = CheckSecurity("code-editor");
+            var canDeleteFiles = CheckSecurity("delete-files");
+            var canDeletePages = CheckSecurity("delete-pages");
 
             if (paths[0] == "" && paths.Length == 1 && canEdit)
             {
                 //display root folders for website
-                items = new List<KeyValuePair<string, string>>()
+                items = new List<DirItem>()
                 {
                     //new KeyValuePair<string, string>("backups", "backups"),
-                    new KeyValuePair<string, string>("website.less", "CSS/website.less"),
+                    new DirItem(){ Label = "website.less", Filename = "website.less", Path = "CSS/website.less" }
                 };
             }
             else
@@ -70,7 +80,7 @@ namespace Saber.Services
                     {
                         if (dir.Name.IndexOfAny(new char[] { '.', '_' }) != 0 && !exclude.Contains(dir.Name.ToLower()))
                         {
-                            items.Add(new KeyValuePair<string, string>(dir.Name, dir.Name));
+                            items.Add(new DirItem() { Label = dir.Name, Path = dir.Name, isDir = true });
                         }
                     }
 
@@ -88,16 +98,17 @@ namespace Saber.Services
                     {
                         if (!exclude.Contains(file.Name.ToLower()))
                         {
-                            var f = file.Name.GetFileExtension();
-                            switch (f.ToLower())
+                            var f = file.Name.GetFileExtension().ToLower();
+                            if(paths.Length > 1 && paths[1] == "pages" && f != "html") { continue; }
+                            switch (f)
                             {
                                 case "html":
                                 case "css":
                                 case "less":
                                 case "js":
                                 case "zip":
-                                    if(canEdit == false && editable.Any(a => f.ToLower() == a)) { break; }
-                                    items.Add(new KeyValuePair<string, string>(file.Name, file.Name)); break;
+                                    if(canEdit == false && editable.Any(a => f == a)) { break; }
+                                    items.Add(new DirItem() { Label = file.Name, Path = file.Name, Filename = file.Name, Extension = f }); break;
                             }
                         }
                     }
@@ -108,54 +119,80 @@ namespace Saber.Services
             {
                 if (paths.Length == 2)
                 {
-                    html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root"));
+                    html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root", true));
+                }
+                else
+                {
+                    html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", string.Join("/", paths.SkipLast(1).ToArray()), true));
                 }
             }
             else if (rawpaths.Length > 1)
             {
                 //add parent directory;
-                html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", string.Join("/", rawpaths.SkipLast(1))));
+                html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", string.Join("/", rawpaths.SkipLast(1)), true));
             }
             else if (rawpaths[0] == "content" && rawpaths.Length == 1)
             {
                 //add parent directory when navigating to special directory
-                html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root"));
+                html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root", true));
             }
             else if (rawpaths.Length == 1 && paths[0] == "")
             {
                 //add special directories
-                html.Append(RenderBrowserItem(item, "wwwroot", "wwwroot", "folder", "wwwroot"));
-                html.Append(RenderBrowserItem(item, "pages", "pages", "folder", "content/pages"));
-                html.Append(RenderBrowserItem(item, "partials", "partials", "folder", "content/partials"));
+                html.Append(RenderBrowserItem(item, "wwwroot", "wwwroot", "folder", "wwwroot", true));
+                html.Append(RenderBrowserItem(item, "pages", "pages", "folder", "content/pages", true));
+                html.Append(RenderBrowserItem(item, "partials", "partials", "folder", "content/partials", true));
             }
             else if (paths[0] == "/wwwroot")
             {
                 html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root"));
             }
 
-            foreach (var i in items.OrderBy(a => a.Key))
+            foreach (var i in items.OrderBy(a => !a.isDir).ThenBy(a => a.Path))
             {
                 //add directories and files
                 var icon = "folder";
-                if (i.Key.IndexOf(".") > 0)
+                if (!i.isDir)
                 {
-                    icon = "file-" + i.Key.Split('.', 2)[1].ToLower();
+                    icon = "file-" + i.Extension;
                 }
-                html.Append(RenderBrowserItem(item, rid + "_" + i.Key.Replace(".", "_").ToLower(), i.Key, icon, (pid != "" ? pid + "/" : "") + i.Value));
+                var canDelete = false;
+                if(paths.Length > 1 && (paths[1] == "pages" || paths[1] == "partials"))
+                {
+                    canDelete = canDeletePages;
+                }
+                else
+                {
+                    canDelete = canDeleteFiles;
+                }
+
+                html.Append(RenderBrowserItem(item, rid + "_" + i.Path.Replace(".", "_").ToLower(), i.Label, icon, (pid != "" ? pid + "/" : "") + i.Path, i.isDir, canDelete));
             }
             return html.ToString();
         }
 
-        private string RenderBrowserItem(View item, string id, string title, string icon, string path)
+        private string RenderBrowserItem(View item, string id, string title, string icon, string path, bool isDir = false, bool canDelete = false)
         {
             item["id"] = id;
             item["title"] = title;
             item["icon"] = "folder";
+            item["path"] = path;
 
+            if (canDelete) { 
+                item.Show("delete");
+                item["type"] = isDir ? "folder" : "file";
+            }
             if (title.IndexOf(".") > 0)
             {
                 item["icon"] = "file-" + title.Split('.', 2)[1].ToLower();
-                item["onclick"] = "S.editor.explorer.open('" + path + "', null, true)";
+                if(path.IndexOf("/Content/pages/") == 0)
+                {
+                    item["onclick"] = "location.href='" + path.Replace("/Content/pages", "").Replace(".html", "");
+                }
+                else
+                {
+                    item["onclick"] = "S.editor.explorer.open('" + path + "', null, true)";
+                }
             }
             else
             {
@@ -267,6 +304,62 @@ namespace Saber.Services
             catch (ServiceDeniedException)
             {
                 return AccessDenied();
+            }
+            return Success();
+        }
+
+        public string DeleteFile(string path)
+        {
+            
+            if (!CheckSecurity()) { return AccessDenied(); }
+            var paths = Core.PageInfo.GetRelativePath(path);
+            if(paths[0] == "/pages" || paths[0] == "/partials")
+            {
+                if (!CheckSecurity("delete-pages"))
+                {
+                    return AccessDenied();
+                }
+            }
+            else if(!CheckSecurity("delete-files"))
+            {
+                return AccessDenied();
+            }
+            try
+            {
+                File.Delete(App.MapPath(string.Join("/", paths)));
+            }
+            catch (Exception)
+            {
+                return Error("Could not delete the selected file");
+            }
+            return Success();
+        }
+
+        public string DeleteFolder(string path)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            var paths = Core.PageInfo.GetRelativePath(path);
+            if (paths[0] == "/pages" || paths[0] == "/partials")
+            {
+                if (paths.Length > 1 && !CheckSecurity("delete-pages"))
+                {
+                    return AccessDenied();
+                }else if(paths.Length == 1)
+                {
+                    return Error("You are not allowed to delete the folder " + paths[0]);
+                }
+            }
+            else if (!CheckSecurity("delete-files"))
+            {
+                return AccessDenied();
+            }
+            try
+            {
+                Directory.Delete(App.MapPath(string.Join("/", paths)), true);
+            }
+            catch (Exception)
+            {
+                return Error("Could not delete the selected folder");
             }
             return Success();
         }

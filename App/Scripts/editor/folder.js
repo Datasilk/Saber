@@ -2,10 +2,13 @@ S.editor.folder = {
     create: {
         show: function () {
             S.editor.dropmenu.hide();
+            var path = S.editor.explorer.path;
+            if (path == 'root') { path == 'wwwroot'; }
             S.popup.show('New Folder',
                 $('#template_newfolder').html()
-                    .replace('##folder-path##', S.editor.explorer.path)
+                    .replace('##folder-path##', path)
             );
+            newfolder.focus();
             //set up button events within popup
             $('.popup form').on('submit', S.editor.folder.create.submit)
         },
@@ -34,6 +37,22 @@ S.editor.folder = {
                 }
             );
             return false;
+        }
+    },
+
+    delete: (path) => {
+        if (confirm('Do you really want to delete the folder "' + path + '"? This cannot be undone.')) {
+            S.ajax.post('Files/DeleteFolder', { path: path },
+                function (d) {
+                    //reload file browser
+                    S.editor.explorer.dir();
+                    //check if any tabs are open from deleted folder
+                    S.editor.tabs.closeFromPath(path);
+                },
+                function (d) {
+                    S.message.show(null, 'error', d.response);
+                }
+            );
         }
     }
 };

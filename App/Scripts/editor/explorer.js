@@ -20,10 +20,20 @@ S.editor.explorer = {
     },
 
     dir: function (path) {
+        if (path == null) { path = S.editor.explorer.path;}
         S.ajax.post('Files/Dir', { path: path },
             function (d) {
                 S.editor.explorer.path = path;
                 $('.file-browser ul.menu').html(d);
+                //add event listeners to delete buttons
+                $('.file-browser .delete-file').on('click', (e) => {
+                    e.cancelBubble = true;
+                    S.editor.file.delete($(e.target).parents('.item').first().attr('data-path'));
+                });
+                $('.file-browser .delete-folder').on('click', (e) => {
+                    e.cancelBubble = true;
+                    S.editor.folder.delete($(e.target).parents('.item').first().attr('data-path'));
+                });
                 var url = path;
                 if (path.indexOf('root') == 0) {
                     url = url.replace('root', '');
@@ -106,7 +116,7 @@ S.editor.explorer = {
             routes.forEach(a => {
                 if (typeof a.onblur == 'function') { a.onblur(); }
             });
-            tab.addClass('selected').find('.row.hover').addClass('selected');
+            tab.find('.row.hover').addClass('selected');
             $('.editor > div > .sections > div').addClass('hide');
             route.onfocus();
             return;
@@ -134,7 +144,7 @@ S.editor.explorer = {
             //generate tab html
             $('.edit-tabs ul.row').append(temp
                 .replace(/\#\#id\#\#/g, id)
-                .replace('##path##', path)
+                .replace(/\#\#path\#\#/g, path)
                 .replace('##title##', title)
                 .replace(/\#\#selected\#\#/g, isready !== false ? 'selected' : '')
                 .replace('##tab-type##', isPageResource ? 'page-level' : '')
@@ -154,7 +164,7 @@ S.editor.explorer = {
 
         } else {
             //tab exists
-            tab.addClass('selected').find('.row.hover').addClass('selected');
+            tab.find('.row.hover').addClass('selected');
         }
 
         if (isready !== false) {
