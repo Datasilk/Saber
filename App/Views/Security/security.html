@@ -1,0 +1,28 @@
+﻿<style>
+    .security-groups .lists{padding:20px 20px;}
+    .security-groups .spreadsheet{margin-bottom:30px;}
+    .security-groups .spreadsheet td:nth-child(1){width:80px;}
+    .security-groups .spreadsheet td:nth-child(2){width:300px;}
+    .security-groups .spreadsheet td:nth-child(3){max-width:100px;}
+    .security-groups .spreadsheet td:nth-child(4){width:175px;}
+</style>
+
+{{groups}}
+
+<script id="security_groups_toolbar" type="text/html">
+    <button class="new-group button">+ New Group</button>
+</script>
+<script id="template_newuser" type="text/html">
+    <form autocomplete="chrome-off">
+        <div class="row msg hide"><span></span></div>
+        <div class="row field">Name</div>
+        <div class="row input">
+            <input type="text" name="newfield1" autocomplete="new-name" id="newname" placeholder="Contributers" />
+        </div>
+        <div class="row text-center pad-top">
+            <div class="col">
+                <input type="submit" class="button apply" value="Create Group" />
+            </div>
+        </div>
+    </form>
+</script>

@@ -129,6 +129,11 @@ namespace Saber.Controllers
                         view.Show("manage-users");
                         websiteSecurity = true;
                     }
+                    if (CheckSecurity("manage-security"))
+                    {
+                        view.Show("manage-security");
+                        websiteSecurity = true;
+                    }
                     if (websiteSecurity)
                     {
                         view.Show("website-management");

@@ -91,4 +91,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="userId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="048aab04-2e99-4183-b7fa-ddd6bd1559a8" ChangeDateTime="11/20/2020 07:37:02">
+    <Property Name="ElementName" Value="[dbo].[Security_Users].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Security_Users]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="userId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d9bdcd0f-c6d0-4f32-8dcf-961bfe34854a" ChangeDateTime="11/20/2020 07:38:43">
+    <Property Name="ElementName" Value="[dbo].[Security_Groups].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Security_Groups]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="groupId" />
+  </Operation>
 </Operations>

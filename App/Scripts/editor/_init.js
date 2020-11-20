@@ -83,6 +83,7 @@ S.editor.init = function () {
     $('.editor-drop-menu .item-page-resources').on('click', S.editor.filebar.resources.show);
     $('.editor-drop-menu .item-page-settings').on('click', S.editor.filebar.settings.show);
     $('.editor-drop-menu .item-user-management').on('click', S.editor.users.show);
+    $('.editor-drop-menu .item-security').on('click', S.editor.security.show);
     $('.editor-drop-menu .item-analytics').on('click', S.editor.analytics.show);
     $('.editor-drop-menu .item-app-settings').on('click', S.editor.appsettings.show);
     $('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);

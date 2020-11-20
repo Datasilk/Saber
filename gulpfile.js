@@ -115,6 +115,7 @@ paths.working = {
             paths.scripts + 'editor/fields.js',
             paths.scripts + 'editor/language.js',
             paths.scripts + 'editor/users.js',
+            paths.scripts + 'editor/security.js',
             paths.scripts + 'editor/pagesettings.js',
             paths.scripts + 'editor/appsettings.js',
             paths.scripts + 'editor/analytics.js',
