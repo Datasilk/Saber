@@ -15,6 +15,7 @@ S.editor.tabs = {
         //deselect other tabs
         if (opts.selected == true) {
             $('.edit-tabs ul.row li, .edit-tabs ul.row > li > div').removeClass('selected');
+            $('.tab-toolbar').html('');
         }
         var elem = $('.edit-tabs ul.row .tab-' + id);
         if (elem.length == 0) {
@@ -50,6 +51,7 @@ S.editor.tabs = {
                         $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
                     }
                     elem.addClass('selected');
+                    $('.tab-toolbar').html('');
                     S.editor.tabs.changed = true;
                     if (typeof onfocus == 'function') { onfocus(); }
                 },

@@ -75,9 +75,7 @@
     li{position:relative;}
     .tab-title{padding:9px 25px 9px 20px;}
     .row.hover:hover .btn-close.hover-only{opacity:0.5 !important;
-        &:hover{opacity:1 !important;
-            use{fill:#0070ff;color:#0070ff;}
-        }
+        &:hover{opacity:1 !important;}
     }
     .btn-close{position:absolute; right:8px; top:11px; z-index:5; 
         svg{width:9px !important; height:9px !important;}
@@ -109,7 +107,7 @@
     ul .icon svg{width:16px; height:16px; position:relative; top:5px;}
     .bread .icon svg{position:relative; top:-2px;}
 }
-.browser-path{font-family:monospace; font-size:0.7rem; color:#90d3ff !important;  overflow:hidden;
+.browser-path{font-family:monospace; font-size:0.7rem;  overflow:hidden;
               white-space:nowrap; text-overflow:ellipsis; direction:rtl; text-align:left;
               width:~"calc(100% - 40px)" !important; min-height:23px;}
 
@@ -117,14 +115,14 @@
 .file-bar{padding:0 0 4px 0;
     & > div{height:42px;}
     .file-icon{padding-left:10px; padding-top:8px; svg{width:20px;}}
-    .file-path{padding:14px 0 0 10px; font-size:14px; color:#90d3ff; font-weight:400;}
+    .file-path{padding:14px 0 0 10px; font-size:14px; font-weight:400;}
 }
 .file-tabs{
     li .col{padding:8px 10px 6px 10px;}
     svg{width:20px;}
 }
 .tab-toolbar{padding-top:6px;
-    .button{font-size:13px; background:rgba(255,255,255,0.1);}
+    .button{font-size:13px;}
 }
 
 /* when file browser is visible */
@@ -189,20 +187,19 @@
 .resources-list{max-width:1250px; margin:0 auto;
     & > ul::after{content:" "; overflow:hidden; clear:both; display:block; font-size:0px; height:0px;}
     & > ul > li{float:left; padding:20px; list-style:none; width:250px; height:270px;}
-    .img{position:relative; width:250px; height:200px; overflow:hidden; display:table-cell; text-align:center; vertical-align:middle; background-color:#000; background-image:url(/editor/grid.png); background-repeat:repeat; line-height:0;
+    .img{position:relative; width:250px; height:200px; overflow:hidden; display:table-cell; text-align:center; vertical-align:middle; background-image:url(/editor/grid.png); background-repeat:repeat; line-height:0;
          .pic{display:inline-block; overflow:hidden; max-height:200px; max-width:250px;}
         img{width:100%;}
         svg{width:100%; height:100%;}
         .svgicon{padding:50px; box-sizing:border-box;}
     }
-    .img:hover{background-color:#111;}
     & > ul > li.type-file .img{padding:15px 50px 0px 50px;}
     .title{width:100%; text-align:center; font-size:15px; line-height:1.1; padding-top:10px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;}
     .close-btn{position:absolute; z-index:100; top:10px; right:10px; display:none;
-        use{color:#cc0000; fill:#cc0000; opacity:0.7;}
+        use{opacity:0.7;}
     }
     .close-btn:hover{
-        use{color:#ff0000; fill:#ff0000; opacity:1;}
+        use{ opacity:1;}
     } 
     & > ul > li:hover .close-btn{display:block;}
 }
@@ -259,7 +256,7 @@
     .tooltip.below{top:~"calc(100% + 12px)";
         &:after{
             bottom: 100%; left:~"calc(50% - 15px)"; border: solid transparent; content: " "; height: 0; width: 0; 
-            position: absolute; pointer-events: none; border-bottom-color: #2a2a2a; border-width: 15px; margin-left: -15px;
+            position: absolute; pointer-events: none; border-width: 15px; margin-left: -15px;
         }
         &.tip-left:after{left:10%;}
         &.tip-right:after{left:90%;}

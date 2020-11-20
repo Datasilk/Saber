@@ -112,10 +112,6 @@
     border-bottom-color:#0099ff; 
 }
 
-.box .edit-tabs ul.tabs{ 
-    .row(transparent, #003c64, #035092, #ddd, #b1d3ea, #d8efff, #009B87, #007aff, #007aff, #0099ff, #6ac3ff, #007aff, #007aff, #0099ff, #6ac3ff);
-}
-
 .box header{
     .box(#222222, transparent, #ddd); 
 }
@@ -155,15 +151,28 @@
                 &:hover{background:#1d1d1d;}
             }
         }
-
+        .icons(#fff, #fff, #fff, #fff);
     }
+    .tab-toolbar .button{background:rgba(255,255,255,0.1);}
     .file-bar{
         .row.hover:hover{background:#0082ff;}
+        .file-path{color:#90d3ff;}
     }
     ul.list{
         li:hover{background:#1a2834;}
     }
-
+    .browser-path{color:#90d3ff;}
+    .resources-list{
+        .img{background-color:#000;}
+        .img:hover{background-color:#111;}
+        .close-btn use{color:#cc0000; fill:#cc0000; }
+        .close-btn:hover use{color:#ff0000; fill:#ff0000;}
+    }
     .accordion .expander:hover{background:#125997;}
     .accordion > .title:hover{background:#1c2f40 !important;}
+    .tooltip-container{
+        .tooltip.below{
+            &:after{border-bottom-color: #2a2a2a;}
+        }
+    }
 }
