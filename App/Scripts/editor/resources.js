@@ -12,7 +12,6 @@ S.editor.resources = {
                     S.editor.tabs.create(isRoot ? 'Resources' : 'Page Resources', id + '-section', { isPageResource: !isRoot },
                         () => { //onfocus
                             $('.tab.' + id).removeClass('hide');
-                            console.log('on focus');
                             updateFilebar();
                         },
                         () => { //onblur
@@ -25,7 +24,6 @@ S.editor.resources = {
 
                     function updateFilebar() {
                         S.editor.filebar.update((isRoot ? 'Resources for ' + pagename : 'Page Resources for <a href="/' + pagename + '">/' + pagename + '</a>'), 'icon-photos', $('#page_resources_toolbar').html());
-                        console.log($('.tab-toolbar .uploader'));
                         if (S.editor.resources.uploader != null) {
                             $('.tab-toolbar .uploader').on('click', S.editor.resources.uploader.click);
                         }
@@ -58,7 +56,6 @@ S.editor.resources = {
                                     }
                                 });
                             }
-                            console.log(S.editor.resources.uploader);
                             updateFilebar();
                         }
                     );

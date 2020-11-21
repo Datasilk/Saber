@@ -70,37 +70,9 @@ namespace Saber.Services
                 }
                 if (filetype > 0)
                 {
-                    var fileView = new View(filepath);
                     var details = new Models.Page.Template()
                     {
-                        file = filepath.Replace("/Content/partials/", ""),
-                        fields = fileView.Fields.Select(a =>
-                        {
-                            var configElem = new Models.Page.Template();
-                            switch (filetype)
-                            {
-                                case TemplateFileType.header:
-                                    configElem = config.header;
-                                    break;
-                                case TemplateFileType.footer:
-                                    configElem = config.footer;
-                                    break;
-                            }
-                            return new KeyValuePair<string, string>(a.Key,
-                                configElem.fields.ContainsKey(a.Key) ? configElem.fields[a.Key] : "");
-                        }).Where(a => {
-                            var partial = fileView.Partials.Where(b => a.Key.IndexOf(b.Prefix) == 0)
-                                .OrderByDescending(o => o.Prefix.Length).FirstOrDefault();
-                            var prefix = "";
-                            var naturalKey = a.Key;
-                            if (partial != null)
-                            {
-                                prefix = partial.Prefix;
-                                naturalKey = a.Key.Replace(prefix, "");
-                            }
-                            return !htmlVars.Contains(naturalKey);
-                        }
-                    ).ToDictionary(a => a.Key, b => b.Value)
+                        file = filepath.Replace("/Content/partials/", "")
                     };
                     switch (filetype)
                     {
@@ -166,9 +138,6 @@ namespace Saber.Services
             view["page-header-list"] = headerList.ToString();
             view["page-footer-list"] = footerList.ToString();
             view["page-template"] = path.Replace("content/", "/") + "/template";
-            view["no-header-fields"] = headerFields.Length == 0 ? "True" : "";
-            view["no-footer-fields"] = footerFields.Length == 0 ? "True" : "";
-            view["header-fields"] = headerFields.ToString();
             view["scripts-list"] = RenderScriptsList(path);
 
             //build JSON Response object

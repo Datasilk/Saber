@@ -21,7 +21,6 @@
                 suffix: px != '0' ? '-' + px + 'x' + px : '-icon',
                 path: px != '0' ? 'mobile/' : ''
             };
-            console.log(selbtn);
             upload_app_icon.click();
         });
     }
@@ -33,7 +32,6 @@
             (e) => { //oncomplete
                 //update icon
                 setTimeout(function () {
-                    console.log(selbtn);
                     selbtn.img.attr('src', '/images/' + selbtn.path + selbtn.name + selbtn.suffix + '.png?r=' + Math.round(Math.random() * 9999));
                     selbtn.img.parent().removeClass('hide');
                 }, 1000);

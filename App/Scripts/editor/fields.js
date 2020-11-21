@@ -59,8 +59,6 @@ S.editor.fields = {
             }
 
         });
-        console.log(fields);
-
         S.ajax.post('ContentFields/Save', { path: S.editor.path, fields: fields, language: $('#lang').val() },
             function (d) {
                 if (d == 'success') {

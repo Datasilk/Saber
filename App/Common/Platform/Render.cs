@@ -74,9 +74,11 @@ namespace Saber.Common.Platform
             //load user content from json file, depending on selected language
             var contentfile = ContentFields.ContentFile(path, language);
             var contents = Cache.LoadFile(contentfile);
-            if(contents != "")
+            var data = new Dictionary<string, string>();
+            
+            if (contents != "")
             {
-                var data = JsonSerializer.Deserialize<Dictionary<string, string>>(contents);
+                data = JsonSerializer.Deserialize<Dictionary<string, string>>(contents);
                 if (data != null)
                 {
                     //get view blocks
@@ -120,22 +122,25 @@ namespace Saber.Common.Platform
             {
                 //render all content
                 results = GetPlatformData(header, request);
-                results.AddRange(config.header.fields);
-                if (results.Count > 0)
+
+                //results.AddRange(config.header.fields);
+                foreach (var item in results)
                 {
-                    foreach (var item in results)
-                    {
-                        header[item.Key] = item.Value;
-                    }
+                    header[item.Key] = item.Value;
+                }
+                foreach (var item in data)
+                {
+                    header[item.Key] = item.Value;
                 }
                 results = GetPlatformData(footer, request);
-                results.AddRange(config.footer.fields);
-                if (results.Count > 0)
+                //results.AddRange(config.footer.fields);
+                foreach (var item in results)
                 {
-                    foreach (var item in results)
-                    {
-                        footer[item.Key] = item.Value;
-                    }
+                    footer[item.Key] = item.Value;
+                }
+                foreach (var item in data)
+                {
+                    footer[item.Key] = item.Value;
                 }
                 content["content"] = view.Render();
                 return header.Render() + content.Render() + footer.Render();

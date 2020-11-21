@@ -80,7 +80,6 @@
                         S.editor.users.search(p.start, p.length, p.search, p.orderby);
                     },
                     function (err) {
-                        console.log(err);
                         S.editor.message('.popup .msg', err.responseText, "error");
                     }
                 );

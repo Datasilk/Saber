@@ -4,7 +4,14 @@
     .box .security-group .key{padding-top:5px;}
     .box .security-group .key p{opacity:0.7; padding-bottom:7px;}
     .box .security-group .key .col:nth-child(1){padding:5px 5px 0 5px;}
+    .box .security-group form{overflow:hidden;}
 </style>
 <div class="security-group">
-    {{scopes}}
+    <form>
+        {{scopes}}
+    </form>
+
+    <div class="pad-top">
+        <button class="delete">Delete Security Group</button>
+    </div>
 </div>

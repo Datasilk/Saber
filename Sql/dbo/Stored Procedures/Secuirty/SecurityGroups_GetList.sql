@@ -5,16 +5,16 @@ AS
 	CROSS APPLY (
 		SELECT COUNT(*) AS total FROM Security_Keys
 		WHERE groupId=g.groupId
-		AND isplatform=1
+		AND isplatform=1 AND [value]=1
 	) as pk
 	CROSS APPLY (
 		SELECT COUNT(*) AS total FROM Security_Keys
 		WHERE groupId=g.groupId
-		AND isplatform=0
+		AND isplatform=0 AND [value]=1
 	) as pk2
 	CROSS APPLY (
 		SELECT TOP 10 STRING_AGG([key], ', ') AS list
 		FROM Security_Keys
-		WHERE groupId=g.groupId
+		WHERE groupId=g.groupId AND [value]=1
 	) as keys
 	ORDER BY pk.total DESC, g.[name] ASC

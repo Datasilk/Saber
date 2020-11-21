@@ -1,7 +1,6 @@
 S.editor.tabs = {
     changed: false,
     create: function (title, path, options, onfocus, onblur, onsave) {
-        console.log('create tab for ' + path);
         //build options
         var opts = {
             selected: options ? (options.selected != null ? options.selected : true) : true,
@@ -85,7 +84,9 @@ S.editor.tabs = {
         }
 
         //update user session
-        S.ajax.post('Files/Close', { path: path }, callback);
+        if (path.indexOf('/') >= 0) {
+            S.ajax.post('Files/Close', { path: path }, callback);
+        }
     },
 
     closeFromPath: function (path) {

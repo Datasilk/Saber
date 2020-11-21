@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Linq;
 
 namespace Saber.Services
 {
@@ -7,7 +8,7 @@ namespace Saber.Services
         public string Groups()
         {
             if (!CheckSecurity("manage-security")) { return AccessDenied(); }
-            var view = new View("/Views/Security/security.html");
+            var view = new View("/Views/Security/groups.html");
             var listitem = new View("/Views/Security/group-item.html");
             var html = new StringBuilder();
             var groups = Query.Security.Groups.GetList();
@@ -37,6 +38,7 @@ namespace Saber.Services
             var viewKey = new View("/Views/Security/key.html");
             var html = new StringBuilder();
             var scopes = new StringBuilder();
+            var groupkeys = Query.Security.Keys.GetList(groupId);
 
             //show platform-specific keys
             viewScope["label"] = "Saber Editor";
@@ -45,6 +47,10 @@ namespace Saber.Services
                 viewKey["key"] = key.Value;
                 viewKey["label"] = key.Label;
                 viewKey["description"] = key.Description;
+                if(groupkeys.Any(a => a.key == key.Value && a.value == true))
+                {
+                    viewKey.Show("checked");
+                }
                 html.Append(viewKey.Render());
                 viewKey.Clear();
             }
@@ -62,6 +68,10 @@ namespace Saber.Services
                     viewKey["key"] = key.Value;
                     viewKey["label"] = key.Label;
                     viewKey["description"] = key.Description;
+                    if (groupkeys.Any(a => a.key == key.Value && a.value == true))
+                    {
+                        viewKey.Show("checked");
+                    }
                     html.Append(viewKey.Render());
                     viewKey.Clear();
                 }
@@ -72,6 +82,29 @@ namespace Saber.Services
 
             view["scopes"] = scopes.ToString();
             return view.Render();
+        }
+
+        public string SaveKey(int groupId, string key, bool value)
+        {
+            if (!CheckSecurity("manage-security")) { return AccessDenied(); }
+            var isplatform = true;
+            var seckey = Core.Security.Keys.Where(a => a.Value == key).FirstOrDefault();
+            if(seckey == null)
+            {
+                isplatform = false;
+                seckey = Vendors.Keys.Where(a => a.Keys.Any(b => b.Value == key)).FirstOrDefault()
+                    ?.Keys.Where(a => a.Value == key).FirstOrDefault();
+            }
+            if(seckey == null) { return Error("could not find security key"); }
+            Query.Security.Keys.Create(groupId, key, value, isplatform);
+            return Success();
+        }
+
+        public string DeleteGroup(int groupId)
+        {
+            if (!CheckSecurity("manage-security")) { return AccessDenied(); }
+            Query.Security.Groups.Delete(groupId);
+            return Success();
         }
     }
 }

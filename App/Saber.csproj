@@ -112,9 +112,6 @@
     <Content Include="Views\PageResources\resources.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PageSettings\partial-field.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Views\PageSettings\pagesettings.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

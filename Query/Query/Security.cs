@@ -10,8 +10,12 @@ namespace Query
             {
                 return Sql.Populate<Models.SecurityKey>("SecurityKeys_GetByUserId", new { userId });
             }
+            public static List<Models.SecurityKey> GetList(int groupId)
+            {
+                return Sql.Populate<Models.SecurityKey>("SecurityKeys_GetList", new { groupId });
+            }
 
-            public static void Create(int groupId, string key, string value, bool isplatform = false)
+            public static void Create(int groupId, string key, bool value, bool isplatform = false)
             {
                 Sql.ExecuteNonQuery("SecurityKey_Create", new { groupId, key, value, isplatform });
             }
