@@ -20,8 +20,9 @@ namespace Saber.Services
             var view = new View(string.Join("/", paths) + ".html");
             var fieldText = new View("/Views/ContentFields/text.html");
             var fieldBlock = new View("/Views/ContentFields/block.html");
-            foreach (var elem in view.Elements)
+           for(var x = 0; x < view.Elements.Count; x++)
             {
+                var elem = view.Elements[x];
                 if (elem.Name != "" && elem.Name.Substring(0,1) != "/")
                 {
                     var val = "";
@@ -42,12 +43,71 @@ namespace Saber.Services
                     }
                     else
                     {
+                        var found = false;
+                        //find vendor content field
+
+                        
+                        if(found == false)
+                        {
+                            //check to see if content field is inside an HTML element
+                            if (x > 0)
+                            {
+                                var prev = view.Elements[x - 1];
+                                var inQuotes = false;
+                                var quotes = 0;
+                                for (var i = prev.Htm.Length - 1; x >= 0; x--)
+                                {
+                                    if (prev.Htm[i] == '"') { quotes++; }
+                                    if (prev.Htm[i] == '=' && quotes == 1) { inQuotes = true; }
+                                    if (prev.Htm[i] == '>') { break; }
+                                    if (prev.Htm[i] == '<')
+                                    {
+                                        //found html element
+                                        if(inQuotes == true)
+                                        {
+                                            //content field exists inside an HTML element attribute value
+                                            try
+                                            {
+                                                var htmElem = prev.Htm.Substring(i + 1);
+                                                var tagParts = htmElem.Split(" ");
+                                                var tagName = tagParts[0].ToLower();
+                                                var attrName = tagParts[^1].Split("=")[0];
+
+                                                switch (attrName)
+                                                {
+                                                    case "style":
+                                                        //TODO: style parsing support to check if field exists in
+                                                        //background or background-image CSS property
+                                                        break;
+                                                    case "href":
+                                                        if(tagName == "img")
+                                                        {
+                                                            found = true;
+                                                            //load image selection field
+                                                        }
+                                                        break;
+                                                }
+                                            }
+                                            catch (Exception ex) 
+                                            {
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+
                         //load text field
-                        fieldText.Clear();
-                        fieldText["title"] = elem.Name.Capitalize().Replace("-", " ").Replace("_", " ");
-                        fieldText["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
-                        fieldText["default"] = val;
-                        html.Append(fieldText.Render());
+                        if (found == false) 
+                        { 
+                            fieldText.Clear();
+                            fieldText["title"] = elem.Name.Capitalize().Replace("-", " ").Replace("_", " ");
+                            fieldText["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
+                            fieldText["default"] = val;
+                            html.Append(fieldText.Render());
+                        }
                     }
                 }
             }
@@ -82,7 +142,6 @@ namespace Saber.Services
                     }
                 }
             }
-
             try
             {
                 //save fields as json

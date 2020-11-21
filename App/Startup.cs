@@ -74,6 +74,7 @@ namespace Saber
             //get a list of DLLs in the Vendors folder (if any)
             var vendorDLLs = Vendors.LoadDLLs();
 
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorController interface
             foreach (var assembly in assemblies)
             {
@@ -85,12 +86,11 @@ namespace Saber
                     Vendors.GetControllerFromType(type);
                 }
             }
-
-            //get list of DLLs that contain the IVendorViewRenderer
+            //get list of DLLs that contain the IVendorController interface
             Vendors.GetControllersFromFileSystem();
+            Console.WriteLine("Found " + Vendors.Controllers.Count + " Vendor Controller" + (Vendors.Controllers.Count != 1 ? "s" : ""));
 
-            Console.WriteLine("Found " + Vendors.Controllers.Count + " Vendor Controller" + (Vendors.Controllers.Count != 1 ? "s" : "")); // + " that inherit IVendorController");
-
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorViewRenderer interface
             foreach (var assembly in assemblies)
             {
@@ -102,12 +102,48 @@ namespace Saber
                     Vendors.GetViewRendererFromType(type);
                 }
             }
-
             //get list of DLLs that contain the IVendorViewRenderer interface
             Vendors.GetViewRenderersFromFileSystem();
+            Console.WriteLine("Found " + Vendors.ViewRenderers.Count + " Vendor View Renderer" + (Vendors.ViewRenderers.Count != 1 ? "s" : ""));
 
-            Console.WriteLine("Found " + Vendors.ViewRenderers.Count + " Vendor View Renderer" + (Vendors.ViewRenderers.Count != 1 ? "s" : "")); // + " that inherit IVendorViewRenderer");
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IVendorContentField interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorContentField).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Vendors.GetContentFieldsFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorContentField interface
+            Vendors.GetContentFieldsFromFileSystem();
+            Console.WriteLine("Found " + Vendors.ContentFields.Count + " Vendor Content Field" + (Vendors.ContentFields.Count != 1 ? "s" : ""));
 
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IVendorKeys interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorKeys).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Vendors.GetSecurityKeysFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorKeys interface
+            Vendors.GetSecurityKeysFromFileSystem();
+            var totalKeys = 0;
+            foreach(var chain in Vendors.Keys)
+            {
+                totalKeys += chain.Keys.Length;
+            }
+            Console.WriteLine("Found " + Vendors.Keys.Count + " Vendor" + (Vendors.Keys.Count != 1 ? "s" : "") + " with Security Keys (" + totalKeys + " key" + (totalKeys != 1 ? "s" : "") + ")");
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorStartup interface
             foreach (var assembly in assemblies)
             {
@@ -119,14 +155,13 @@ namespace Saber
                     Vendors.GetStartupFromType(type);
                 }
             }
-
             //get list of DLLs that contain the IVendorStartup interface
             Vendors.GetStartupsFromFileSystem();
+            Console.WriteLine("Found " + Vendors.Startups.Count + " Vendor Startup Class" + (Vendors.Startups.Count != 1 ? "es" : ""));
 
-            Console.WriteLine("Found " + Vendors.Startups.Count + " Vendor Startup Class" + (Vendors.Startups.Count != 1 ? "es" : "")); // + " that inherit IVendorStartup");
-
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
-            foreach(var kv in Vendors.Startups)
+            foreach (var kv in Vendors.Startups)
             {
                 var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
                 try

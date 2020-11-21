@@ -13,10 +13,11 @@ namespace Saber
     {
         private static List<string> DLLs { get; set; } = new List<string>();
         private static List<Assembly> Assemblies { get; set; } = new List<Assembly>();
-        public static Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<Vendor.IVendorViewRenderer>>();
+        public static Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<IVendorViewRenderer>>();
+        public static Dictionary<string, List<IVendorContentField>> ContentFields { get; set; } = new Dictionary<string, List<IVendorContentField>>();
         public static Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
         public static Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
-        private static List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
+        public static List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
         public static List<Type> ViewDataBinders { get; set; } = new List<Type>();
 
         private class AssemblyInfo
@@ -164,6 +165,41 @@ namespace Saber
         }
         #endregion
 
+        #region "Content Fields"
+        public static void GetContentFieldsFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorContentField")
+                        {
+                            GetContentFieldsFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetContentFieldsFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorContentField))) { return; }
+            var attributes = type.GetCustomAttributes<ContentFieldAttribute>();
+            foreach (var attr in attributes)
+            {
+                if (!ContentFields.ContainsKey(attr.FieldName))
+                {
+                    ContentFields.Add(attr.FieldName, new List<IVendorContentField>());
+                }
+                ContentFields[attr.FieldName].Add((IVendorContentField)Activator.CreateInstance(type));
+            }
+        }
+        #endregion
+
         #region "Controllers"
         public static void GetControllersFromFileSystem()
         {
@@ -219,9 +255,8 @@ namespace Saber
         #endregion
 
         #region "Security Keys"
-        public static void GetSecurityKeysFromFileSystem(string[] files)
+        public static void GetSecurityKeysFromFileSystem()
         {
-            if (files == null) { return; }
             foreach (var assembly in Assemblies)
             {
                 foreach (var type in assembly.ExportedTypes)

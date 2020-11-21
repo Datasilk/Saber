@@ -36,5 +36,43 @@ S.editor.fields = {
             $('.item-save').removeClass('faded').removeAttr('disabled');
             S.editor.fields.changed = true;
         }
+    },
+    save: function () {
+        var fields = {};
+        var texts = $('.content-fields form').find('textarea, input, select');
+        texts.each(function (txt) {
+            if (!txt.id || (txt.id && txt.id.indexOf('field_') < 0)) { return;}
+            var t = $(txt);
+            var id = txt.id.replace('field_', '');
+            switch (txt.tagName.toLowerCase()) {
+                case 'textarea':
+                    fields[id] = t.val();
+                    break;
+                case 'input':
+                    var type = t.attr('type');
+                    switch (type) {
+                        case 'checkbox':
+                            fields[id] = txt.checked == true ? '1' : '0';
+                            break;
+                    }
+                    break;
+            }
+
+        });
+        console.log(fields);
+
+        S.ajax.post('ContentFields/Save', { path: S.editor.path, fields: fields, language: $('#lang').val() },
+            function (d) {
+                if (d == 'success') {
+                    S.editor.fields.changed = false;
+                    //html resource has changed because content fields have changed
+                    S.editor.files.html.changed = true;
+                    S.message.show('.content-fields .message', 'confirm', 'Content fields were saved.', false, 4000, true);
+                } else { S.editor.error(); }
+            },
+            function () {
+                S.editor.error();
+            }
+        );
     }
 };
