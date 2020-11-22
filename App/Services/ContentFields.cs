@@ -24,10 +24,11 @@ namespace Saber.Services
             var section = new View("/Views/ContentFields/section.html");
             var fieldText = new View("/Views/ContentFields/text.html");
             var fieldBlock = new View("/Views/ContentFields/block.html");
+            var fieldImage = new View("/Views/ContentFields/image.html");
 
-            var result = processView("Body", view, fields, section, fieldBlock, fieldText, htmlVars);
-            var resultHead = processView(PageInfo.NameFromFile(config.header.file), viewHeader, fields, section, fieldBlock, fieldText, htmlVars);
-            var resultFoot = processView(PageInfo.NameFromFile(config.footer.file), viewFooter, fields, section, fieldBlock, fieldText, htmlVars);
+            var result = processView("Body", view, fields, section, fieldBlock, fieldText, fieldImage, htmlVars);
+            var resultHead = processView(PageInfo.NameFromFile(config.header.file), viewHeader, fields, section, fieldBlock, fieldText, fieldImage, htmlVars);
+            var resultFoot = processView(PageInfo.NameFromFile(config.footer.file), viewFooter, fields, section, fieldBlock, fieldText, fieldImage, htmlVars);
 
             if (string.IsNullOrWhiteSpace(result) &&
                 string.IsNullOrWhiteSpace(resultHead) &&
@@ -40,13 +41,14 @@ namespace Saber.Services
             return resultHead + result + resultFoot;
         }
 
-        private string processView(string title, View view, Dictionary<string, string> fields, View section, View fieldBlock, View fieldText, string[] vars)
+        private string processView(string title, View view, Dictionary<string, string> fields, View section, View fieldBlock, View fieldText, View fieldImage, string[] vars)
         {
             var html = new StringBuilder();
             for (var x = 0; x < view.Elements.Count; x++)
             {
                 var elem = view.Elements[x];
-                
+
+
                 if (elem.Name != "" && elem.Name.Substring(0, 1) != "/")
                 {
                     //get element name with no partial file prefixes
@@ -55,6 +57,7 @@ namespace Saber.Services
                     {
                         elemName = elemName.Replace(partial.Prefix, "");
                     }
+                    var fieldTitle = elemName.Capitalize().Replace("-", " ").Replace("_", " ");
                     var val = "";
                     if (fields.ContainsKey(elem.Name))
                     {
@@ -66,7 +69,7 @@ namespace Saber.Services
                     {
                         //load block field
                         fieldBlock.Clear();
-                        fieldBlock["title"] = elemName.Capitalize().Replace("-", " ").Replace("_", " ");
+                        fieldBlock["title"] = fieldTitle;
                         fieldBlock["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
                         if (val == "1") { fieldBlock.Show("checked"); }
                         html.Append(fieldBlock.Render());
@@ -109,11 +112,16 @@ namespace Saber.Services
                                                         //TODO: style parsing support to check if field exists in
                                                         //background or background-image CSS property
                                                         break;
-                                                    case "href":
+                                                    case "src":
                                                         if (tagName == "img")
                                                         {
                                                             found = true;
                                                             //load image selection field
+                                                            fieldImage.Clear();
+                                                            fieldImage["title"] = fieldTitle;
+                                                            fieldImage["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
+                                                            fieldImage["default"] = val;
+                                                            html.Append(fieldImage.Render());
                                                         }
                                                         break;
                                                 }
@@ -133,7 +141,7 @@ namespace Saber.Services
                         if (found == false && !vars.Any(a => a == elemName))
                         {
                             fieldText.Clear();
-                            fieldText["title"] = elemName.Capitalize().Replace("-", " ").Replace("_", " ");
+                            fieldText["title"] = fieldTitle;
                             fieldText["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
                             fieldText["default"] = val;
                             html.Append(fieldText.Render());
