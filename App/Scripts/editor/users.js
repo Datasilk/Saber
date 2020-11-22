@@ -1,5 +1,6 @@
 ﻿S.editor.users = {
     _loaded: false,
+    _loadedUsers: [],
     parameters: {start:1, length:25, search:'', orderby:1},
 
     show: () => {
@@ -43,6 +44,13 @@
             function (d) {
                 $('.sections > .users-management .scroller').html(d);
                 S.editor.users._loaded = true;
+                //add event listeners
+                $('.users-management tbody tr').on('click', (e) => {
+                    var tr = $(S.target.find(e, 'tr'));
+                    var id = tr.children().first().html().trim();
+                    var email = tr.children()[1].innerHTML.trim();
+                    S.editor.users.details.show(id, email);
+                });
                 if (typeof callback == 'function') { callback();}
             }
         );
@@ -84,6 +92,94 @@
                     }
                 );
             })
+        }
+    },
+
+    details: {
+        show: (id, email) => {
+            var self = S.editor.users;
+            if (self._loadedUsers.filter(a => a == id).length > 0) {
+                //tab already exists
+                S.editor.tabs.select('user-' + id);
+            } else {
+                //create tab & load user details
+                $('.editor .sections > .tab').addClass('hide');
+                $('.sections').append('<div class="tab user-' + id + '"><div class="scroller"></div></div>');
+                S.editor.resizeWindow();
+
+                S.editor.tabs.create('User: ' + email, 'user-' + id, { isPageResource: false },
+                    () => { //onfocus
+                        $('.tab.user-' + id).removeClass('hide');
+                        self.details.updateFilebar(id, email);
+                    },
+                    () => { //onblur
+
+                    },
+                    () => { //onsave
+
+                    }
+                );
+
+                S.ajax.post('Users/Details', { userId: id },
+                    function (d) {
+                        $('.tab.user-' + id + ' .scroller').html(d);
+                        S.editor.users._loadedUsers.push(id);
+                        self.details.updateFilebar(id, email);
+                        //add event listeners
+                        $('.btn-assign-group').on('click', () => { S.editor.users.security.assign(id); })
+                        $('.user-group .btn-delete-group').on('click', (e) => {
+                            var groupId = $(e.target).parents('.user-group').attr('data-id');
+                            S.editor.users.security.remove(id, groupId);
+                        });
+                    }
+                );
+            }
+        },
+
+        updateFilebar: (id, email) => {
+            S.editor.filebar.update('User: ' + email, 'icon-users');
+        }
+    },
+
+    security: {
+        assign: (userId) => {
+            S.popup.show('Assign Security Group', $('#template_assigngroup').html());
+            //set up button events within popup
+            $('.popup button.apply').on('click', (e) => {
+                var data = {
+                    userId: userId,
+                    groupId: $('.popup #groupid').val()
+                };
+
+                S.ajax.post('Users/AssignGroup', data,
+                    function (d) {
+                        S.popup.hide();
+                        S.editor.users.security.update(userId);
+                    },
+                    function (err) {
+                        S.editor.message('.popup .msg', err.responseText, "error");
+                    }
+                );
+            });
+        },
+        remove: (userId, groupId) => {
+            S.ajax.post('Users/RemoveGroup', { userId: userId, groupId: groupId },
+                function (d) {
+                    S.editor.users.security.update(userId);
+                }
+            );
+        },
+        update: (userId) => {
+            S.ajax.post('Users/AssignedGroups', { userId: userId },
+                function (d) {
+                    $('.tab.user-' + userId + ' .group-list').html(d);
+                    //add event listeners
+                    $('.user-group .btn-delete-group').on('click', (e) => {
+                        var groupId = $(e.target).parents('.user-group').attr('data-id');
+                        S.editor.users.security.remove(userId, groupId);
+                    });
+                }
+            );
         }
     }
 };

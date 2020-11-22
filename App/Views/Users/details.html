@@ -1,7 +1,41 @@
-﻿<style>
-    .details{padding:20px;}
-</style>
-<div class="details">
-    <h1>{{user.email}}</h1>
-    <h2>{{user.name}}</h2>
+﻿<div class="user-details">
+    <div class="row">
+        <div class="col six pad-right">
+            <h2>User Information</h2>
+            <div class="row">
+                <div class="col six pad-right">
+                    <div class="row field">Email Address</div>
+                    <div class="row input hover">
+                        <input type="email" value="{{user.email}}" id="user_email"/>
+                    </div>
+                </div>
+                <div class="col six pad-left">
+                    <div class="row field">Name</div>
+                    <div class="row input hover">
+                        <input type="text" value="{{user.name}}" id="user_name"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col six pad-left">
+            <div class="row">
+                <div class="col">
+                    <h2>Assigned Security Groups</h2>
+                </div>
+                {{can-assign}}
+                <div class="col right pad-left-lg icon">
+                    <a href="javascript:" class="btn-assign-group" title="Add an assigned security group for this user">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-add" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </a>
+                </div>
+                {{/can-assign}}
+            </div>
+            <div class="row group-list">{{group-list}}</div>
+        </div>
+    </div>
+    <div class="row pad-top text-right">
+        <div class="col"><button class="apply">Update User</button></div>
+    </div>
 </div>

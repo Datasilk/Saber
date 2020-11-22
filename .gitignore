@@ -37,7 +37,7 @@ PublishProfiles
 *.bak
 *.jfm
 *.sh
-/.vs/
+.vs
 *.pubxml*
 *.prod.json
 package-lock.json

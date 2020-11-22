@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 
 namespace Saber.Services
 {
@@ -49,17 +46,72 @@ namespace Saber.Services
                 lists.Append(list.Render());
             }
             view["lists"] = lists.ToString();
+
+            //get list of security groups that can be assigned to users
+            var groups = Query.Security.Groups.GetList();
+            html.Clear();
+            foreach(var group in groups)
+            {
+                html.Append("<option value=\"" + group.groupId + "\">" + group.name + "</option>");
+            }
+            view["group-list"] = html.ToString();
+
             return view.Render();
         }
 
-        public string Details(string userId)
+        public string Details(int userId)
         {
             if (!CheckSecurity("manage-users")) { return AccessDenied(); }
             var view = new View("/Views/Users/details.html");
-            var viewScope = new View("/Views/Security/scope.html");
-            var viewKey = new View("/Views/Security/key.html");
-
+            var user = Query.Users.GetDetails(userId);
+            if(userId != 1)
+            {
+                view["group-list"] = AssignedGroups(userId);
+                view.Show("can-assign");
+            }
+            else
+            {
+                view["group-list"] = Cache.LoadFile(App.MapPath("/Views/Users/admin-group.html"));
+            }
+            
+            view.Bind(new { user });
             return view.Render();
+        }
+
+        public string AssignGroup(int groupId, int userId)
+        {
+            if (!CheckSecurity("manage-users")) { return AccessDenied(); }
+            Query.Security.Users.Add(groupId, userId);
+            return Success();
+        }
+
+        public string RemoveGroup(int groupId, int userId)
+        {
+            if (!CheckSecurity("manage-users")) { return AccessDenied(); }
+            Query.Security.Users.Remove(groupId, userId);
+            return Success();
+        }
+
+        public string AssignedGroups(int userId)
+        {
+            if (!CheckSecurity("manage-users")) { return AccessDenied(); }
+            var groups = Query.Security.Users.GetGroups(userId);
+            var view = new View("/Views/Users/group-item.html");
+            var html = new StringBuilder();
+            if(groups.Count == 0)
+            {
+                html.Append(Cache.LoadFile(App.MapPath("/Views/Users/no-groups.html")));
+            }
+            else
+            {
+                foreach (var group in groups)
+                {
+                    view.Bind(new { group });
+                    html.Append(view.Render());
+                    view.Clear();
+                }
+            }
+            return html.ToString();
         }
     }
 }

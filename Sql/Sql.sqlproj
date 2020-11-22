@@ -66,17 +66,24 @@
     <Folder Include="dbo\Sequences" />
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="dbo\Views" />
-    <Folder Include="dbo\Functions" />
     <Folder Include="dbo\Stored Procedures\Users" />
     <Folder Include="dbo\Stored Procedures\Languages" />
     <Folder Include="dbo\Stored Procedures\PageTitles" />
     <Folder Include="dbo\Stored Procedures\Utility" />
     <Folder Include="dbo\Stored Procedures\Logs" />
-    <Folder Include="dbo\Stored Procedures\SecurityRoles" />
+    <Folder Include="dbo\Stored Procedures\Secuirty" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\Users.sql" />
     <Build Include="dbo\Sequences\SequenceUsers.sql" />
+    <Build Include="dbo\Sequences\SequencePageTitles.sql" />
+    <Build Include="dbo\Sequences\SequenceLogUrls.sql" />
+    <Build Include="dbo\Tables\Users.sql" />
+    <Build Include="dbo\Tables\Log_Urls.sql" />
+    <Build Include="dbo\Tables\Log_UrlRequests.sql" />
+    <Build Include="dbo\Tables\Languages.sql" />
+    <Build Include="dbo\Tables\Page_Titles.sql" />
+    <Build Include="dbo\Tables\User_AuthTokens.sql" />
+    <Build Include="dbo\Tables\Log_Errors.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_Create.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_GetEmail.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_GetPassword.sql" />
@@ -86,35 +93,40 @@
     <Build Include="dbo\Stored Procedures\Users\Users_HasPasswords.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_Authenticate.sql" />
     <Build Include="dbo\Stored Procedures\Users\Users_HasAdmin.sql" />
-    <None Include="utility\resetdb.sql" />
-    <Build Include="dbo\Tables\Languages.sql" />
     <Build Include="dbo\Stored Procedures\Languages\Language_Create.sql" />
     <Build Include="dbo\Stored Procedures\Languages\Languages_GetList.sql" />
     <Build Include="dbo\Stored Procedures\Languages\Language_Delete.sql" />
-    <Build Include="dbo\Tables\Page_Titles.sql" />
-    <Build Include="dbo\Sequences\SequencePageTitles.sql" />
     <Build Include="dbo\Stored Procedures\PageTitles\Page_Title_Create.sql" />
     <Build Include="dbo\Stored Procedures\PageTitles\Page_Title_Delete.sql" />
     <Build Include="dbo\Stored Procedures\PageTitles\Page_Titles_GetList.sql" />
     <Build Include="dbo\Stored Procedures\PageTitles\Page_Title_Get.sql" />
-    <Build Include="dbo\Tables\User_AuthTokens.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_CreateAuthToken.sql" />
     <Build Include="dbo\Stored Procedures\Utility\GetCustomId.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_AuthenticateByToken.sql" />
-    <Build Include="dbo\Tables\Log_Urls.sql" />
-    <Build Include="dbo\Tables\Log_UrlRequests.sql" />
     <Build Include="dbo\Stored Procedures\Logs\Log_Url.sql" />
     <Build Include="dbo\Stored Procedures\Logs\Log_GetUrlAnalytics.sql" />
-    <Build Include="dbo\Tables\Log_Errors.sql" />
     <Build Include="dbo\Stored Procedures\Logs\Log_Error.sql" />
-    <Build Include="dbo\Tables\Security_Roles.sql" />
-    <Build Include="dbo\Stored Procedures\SecurityRoles\SecurityRoles_GetByUserId.sql" />
-    <Build Include="dbo\Stored Procedures\SecurityRoles\SecurityRole_Create.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_Exists.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_GetDetails.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityUser_Add.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityGroup_Create.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityGroup_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityGroup_Exists.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityGroup_Update.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityGroups_GetList.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityKey_Create.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityKeys_BulkCreate.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityKeys_GetByUserId.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityKeys_GetList.sql" />
+    <Build Include="dbo\Tables\Security_Groups.sql" />
+    <Build Include="dbo\Tables\Security_Keys.sql" />
+    <Build Include="dbo\Tables\Security_Users.sql" />
+    <None Include="utility\resetdb.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityUser_Remove.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityUser_GetGroups.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />
-    <Build Include="dbo\Sequences\SequenceLogUrls.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Sql.refactorlog" />

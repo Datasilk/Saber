@@ -234,10 +234,7 @@ S.editor.settings = {
         },
 
         remove: function (e) {
-            var target = $(e.target);
-            if (!target.hasClass('close-btn')) {
-                target = target.parents('.close-btn').first();
-            }
+            var target = $(S.target.findByClassName(e.target, 'close-btn'));
             var data = { file: target.attr('data-path'), path: S.editor.path };
             S.ajax.post('PageSettings/RemoveScriptFromPage', data, (list) => {
                 //add script to page

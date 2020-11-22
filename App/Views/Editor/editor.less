@@ -216,6 +216,42 @@
 /* website analytics */
 .website-analytics{padding:0 20px;}
 
+/* security groups */
+.security-groups {
+    .lists{padding:20px 20px;}
+    .spreadsheet{margin-bottom:30px;
+        td:nth-child(1){white-space:nowrap;}
+        tbody td:nth-child(2){width:100%;
+            span{opacity:0.5;}
+        }
+    }
+}
+.box .security-group{
+    .scope{width:50%; float:left; padding-bottom:20px; cursor:default;}
+    h3{font-size:16px; padding-bottom:5px;}
+    .key{padding-top:5px;
+         p{opacity:0.7; padding-bottom:7px;}
+         .col:nth-child(1){padding:5px 5px 0 5px;}
+    }
+    form{overflow:hidden;}
+}
+
+/* user details */
+.user-details{padding:20px;
+    h1{font-size:22px !important;}
+    h2{font-size:18px !important;}
+    .btn-delete-group{opacity:0.2;
+        svg{width:12px; height:12px; top:4px; right:4px;}
+    }
+    .user-group{padding:5px 10px; cursor:default;
+        .col{padding-top:3px;}
+        &:hover{
+            .btn-delete-group{opacity:0.5;}
+        }
+    }
+    .btn-delete-group:hover{opacity:1;}
+}
+
 /* message */
 .editor, .for-popup{
     .message{position:relative; margin: 0 10px;

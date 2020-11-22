@@ -59,6 +59,16 @@ namespace Query
             {
                 Sql.ExecuteNonQuery("SecurityUser_Add", new { groupId, userId });
             }
+            
+            public static void Remove(int groupId, int userId)
+            {
+                Sql.ExecuteNonQuery("SecurityUser_Remove", new { groupId, userId });
+            }
+
+            public static List<Models.SecurityGroup> GetGroups(int userId)
+            {
+                return Sql.Populate<Models.SecurityGroup>("SecurityUser_GetGroups", new { userId });
+            }
         }
     }
 }

@@ -1,3 +1,20 @@
+S.target = {
+    find: (e, tagName) => {
+        var elem = e.target;
+        if (elem.tagName.toLowerCase() != tagName) {
+            return $(e.target).parents(tagName).first()[0];
+        }
+        return elem;
+    },
+    findByClassName: (e, className) => {
+        var elem = e.target;
+        if (!elem.hasClass(className)) {
+            return $(elem).parents('.' + className)[0];
+        }
+        return elem;
+    }
+}
+
 S.editor.fileId = function (path) {
     if (path == null) { path = 'content' + window.location.pathname.toLowerCase(); }
     return path.replace(/\//g, '_').replace(/\./g, '_');
