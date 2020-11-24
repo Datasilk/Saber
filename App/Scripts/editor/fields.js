@@ -8,8 +8,9 @@ S.editor.fields = {
         $('.content-fields form').html('');
         S.ajax.post('ContentFields/Render', { path: S.editor.path, language: lang },
             function (d) {
+                d.selector = '.content-fields form';
+                S.ajax.inject(d);
                 S.editor.fields.selected = S.editor.selected;
-                $('.content-fields form').html(d);
 
                 //add language button
                 $('.content-fields .add-lang a').on('click', S.editor.lang.add.show);
@@ -21,7 +22,8 @@ S.editor.fields = {
                     }
                 );
             },
-            function () { S.editor.error(); }
+            function () { S.editor.error(); },
+            true
         );
     },
     change: function (e) {

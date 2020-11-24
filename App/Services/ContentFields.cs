@@ -25,10 +25,11 @@ namespace Saber.Services
             var fieldText = new View("/Views/ContentFields/text.html");
             var fieldBlock = new View("/Views/ContentFields/block.html");
             var fieldImage = new View("/Views/ContentFields/image.html");
+            var fieldVendor = new View("/Views/ContentFields/vendor.html");
 
-            var result = processView("Body", view, fields, section, fieldBlock, fieldText, fieldImage, htmlVars);
-            var resultHead = processView(PageInfo.NameFromFile(config.header.file), viewHeader, fields, section, fieldBlock, fieldText, fieldImage, htmlVars);
-            var resultFoot = processView(PageInfo.NameFromFile(config.footer.file), viewFooter, fields, section, fieldBlock, fieldText, fieldImage, htmlVars);
+            var result = processView("Body", view, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
+            var resultHead = processView(PageInfo.NameFromFile(config.header.file), viewHeader, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
+            var resultFoot = processView(PageInfo.NameFromFile(config.footer.file), viewFooter, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
 
             if (string.IsNullOrWhiteSpace(result) &&
                 string.IsNullOrWhiteSpace(resultHead) &&
@@ -38,10 +39,10 @@ namespace Saber.Services
                 nofields["filename"] = paths[paths.Length - 1];
                 return nofields.Render();
             }
-            return resultHead + result + resultFoot;
+            return Response(resultHead + result + resultFoot);
         }
 
-        private string processView(string title, View view, Dictionary<string, string> fields, View section, View fieldBlock, View fieldText, View fieldImage, string[] vars)
+        private string processView(string title, View view, Dictionary<string, string> fields, View section, View fieldBlock, View fieldText, View fieldImage, View fieldVendor, string[] vars)
         {
             var html = new StringBuilder();
             for (var x = 0; x < view.Elements.Count; x++)
@@ -103,6 +104,8 @@ namespace Saber.Services
                         fieldValue = fields[elem.Name];
 
                     }
+
+                    //determine which content field layout to load
                     if (view.Elements.Any(a => a.Name == "/" + elem.Name) && !vars.Any(a => a == elemName))
                     {
                         //load block field
@@ -116,11 +119,16 @@ namespace Saber.Services
                     {
                         var found = false;
                         //find vendor content field
-                        var vendorField = Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0)?.Select(a => a.Value).FirstOrDefault();
-                        if(vendorField != null)
+                        var vendor = Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0)?.Select(a => a.Value).FirstOrDefault();
+                        if(vendor != null)
                         {
                             found = true;
-                            html.Append(vendorField.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName));
+                            fieldVendor.Clear();
+                            fieldVendor["title"] = fieldTitle;
+                            fieldVendor["id"] = fieldId;
+                            fieldVendor["value"] = fieldValue;
+                            fieldVendor["content"] = vendor.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName);
+                            html.Append(fieldVendor.Render());
                         }
 
                         if (found == false)
@@ -184,7 +192,7 @@ namespace Saber.Services
                             fieldText.Clear();
                             fieldText["title"] = fieldTitle;
                             fieldText["id"] = fieldId;
-                            fieldText["default"] = fieldValue;
+                            fieldText["value"] = fieldValue;
                             html.Append(fieldText.Render());
                         }
                     }

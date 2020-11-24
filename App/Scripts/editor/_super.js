@@ -15,3 +15,6 @@ S.editor = {
     Rhino: null,
     visible: false
 };
+
+//used by vendors to extend Saber
+S.vendor = {};

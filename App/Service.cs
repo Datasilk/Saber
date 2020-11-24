@@ -110,5 +110,10 @@ namespace Saber
             Resources.Add(url);
             return false;
         }
+
+        protected string Response(string html)
+        {
+            return JsonResponse(new Response(html, Css.ToString() + Scripts.ToString()));
+        }
     }
 }

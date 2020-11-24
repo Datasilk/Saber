@@ -107,6 +107,22 @@ namespace Saber
             Console.WriteLine("Found " + Vendors.ViewRenderers.Count + " Vendor View Renderer" + (Vendors.ViewRenderers.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IViewDataBinder interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IViewDataBinder).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Vendors.GetViewDataBindersFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorContentField interface
+            Vendors.GetViewDataBindersFromFileSystem();
+            Console.WriteLine("Found " + Vendors.ViewDataBinders.Count + " View Data Binder" + (Vendors.ViewDataBinders.Count != 1 ? "s" : ""));
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorContentField interface
             foreach (var assembly in assemblies)
             {
