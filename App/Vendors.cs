@@ -14,7 +14,7 @@ namespace Saber
         private static List<string> DLLs { get; set; } = new List<string>();
         private static List<Assembly> Assemblies { get; set; } = new List<Assembly>();
         public static Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<IVendorViewRenderer>>();
-        public static Dictionary<string, List<IVendorContentField>> ContentFields { get; set; } = new Dictionary<string, List<IVendorContentField>>();
+        public static Dictionary<string, IVendorContentField> ContentFields { get; set; } = new Dictionary<string, List<IVendorContentField>>();
         public static Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
         public static Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
         public static List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
@@ -191,11 +191,7 @@ namespace Saber
             var attributes = type.GetCustomAttributes<ContentFieldAttribute>();
             foreach (var attr in attributes)
             {
-                if (!ContentFields.ContainsKey(attr.FieldName))
-                {
-                    ContentFields.Add(attr.FieldName, new List<IVendorContentField>());
-                }
-                ContentFields[attr.FieldName].Add((IVendorContentField)Activator.CreateInstance(type));
+                ContentFields.Add(attr.FieldName, (IVendorContentField)Activator.CreateInstance(type));
             }
         }
         #endregion

@@ -109,7 +109,7 @@ namespace Saber.Common.Platform
             
 
             //load platform-specific data into view template
-            var results = GetPlatformData(view, request);
+            var results = GetPlatformData(view, request, data);
             if (results.Count > 0)
             {
                 foreach (var item in results)
@@ -121,7 +121,7 @@ namespace Saber.Common.Platform
             if(uselayout)
             {
                 //render all content
-                results = GetPlatformData(header, request);
+                results = GetPlatformData(header, request, data);
 
                 //results.AddRange(config.header.fields);
                 foreach (var item in results)
@@ -132,7 +132,7 @@ namespace Saber.Common.Platform
                 {
                     header[item.Key] = item.Value;
                 }
-                results = GetPlatformData(footer, request);
+                results = GetPlatformData(footer, request, data);
                 //results.AddRange(config.footer.fields);
                 foreach (var item in results)
                 {
@@ -152,7 +152,7 @@ namespace Saber.Common.Platform
             }
         }
 
-        private static List<KeyValuePair<string, string>> GetPlatformData(View view, IRequest request)
+        private static List<KeyValuePair<string, string>> GetPlatformData(View view, IRequest request, Dictionary<string, string> data)
         {
             var results = new List<KeyValuePair<string, string>>();
             var prefix = "";
@@ -168,14 +168,16 @@ namespace Saber.Common.Platform
                 var vars = ViewDataBinder.HtmlVars;
                 foreach (var item in vars)
                 {
-                    var fields = view.Fields.Where(a => a.Key.IndexOf(prefix + item.Key + " ") == 0 || a.Key == prefix + item.Key);
+                    var fields = view.Fields.Where(a => a.Key.IndexOf(prefix + item.Key) == 0);
                     if(fields.Count() > 0) {
                         foreach(var field in fields)
                         {
+                            var rnd = new System.Random().Next();
                             var elem = view.Elements[field.Value[0]];
                             var args = elem.Vars ?? new Dictionary<string, string>();
+                            var d = data.ContainsKey(elem.Name) ? data[elem.Name] : "";
                             //run the Data Binder callback method
-                            var range = item.Callback(view, request, args, prefix, elem.Name);
+                            var range = item.Callback(view, request, args, d, prefix, elem.Name);
                             if (range.Count > 0)
                             {
                                 //add Data Binder callback method results to list

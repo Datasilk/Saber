@@ -48,21 +48,59 @@ namespace Saber.Services
             {
                 var elem = view.Elements[x];
 
-
                 if (elem.Name != "" && elem.Name.Substring(0, 1) != "/")
                 {
                     //get element name with no partial file prefixes
                     var elemName = elem.Name;
+                    var prefix = "";
                     foreach (var partial in view.Partials)
                     {
                         elemName = elemName.Replace(partial.Prefix, "");
                     }
+                    //get partial view prefix from element name
+                    prefix = elem.Name.Replace(elemName, "");
+                    if(prefix == elemName) { prefix = ""; }
+
+                    //clean field title & field Id
                     var fieldTitle = elemName.Capitalize().Replace("-", " ").Replace("_", " ");
-                    var val = "";
+                    var fieldId = "field_" + elem.Name
+                        .Replace("!", "_1_")
+                        .Replace("@", "_2_")
+                        .Replace("#", "_3_")
+                        .Replace("$", "_4_")
+                        .Replace("%", "_5_")
+                        .Replace("^", "_6_")
+                        .Replace("&", "_7_")
+                        .Replace("*", "_8_")
+                        .Replace("(", "_9_")
+                        .Replace(")", "_0_")
+                        .Replace("+", "_p_")
+                        .Replace("[", "_a_")
+                        .Replace("{", "_b_")
+                        .Replace("]", "_c_")
+                        .Replace("}", "_d_")
+                        .Replace("=", "_e_")
+                        .Replace("|", "_f_")
+                        .Replace("\\", "_g_")
+                        .Replace(";", "_h_")
+                        .Replace(":", "_i_")
+                        .Replace("'", "_j_")
+                        .Replace(",", "_k_")
+                        .Replace("<", "_l_")
+                        .Replace(".", "_m_")
+                        .Replace(">", "_n_")
+                        .Replace("/", "_o_")
+                        .Replace("?", "_p_")
+                        .Replace("\"", "_q_")
+                        .Replace("`", "_r_")
+                        .Replace(" ", "_s_")
+                        .Replace("~", "_t_");
+
+                    //get existing content for field
+                    var fieldValue = "";
                     if (fields.ContainsKey(elem.Name))
                     {
-                        //get existing content for field
-                        val = fields[elem.Name];
+                        fieldValue = fields[elem.Name];
 
                     }
                     if (view.Elements.Any(a => a.Name == "/" + elem.Name) && !vars.Any(a => a == elemName))
@@ -70,15 +108,20 @@ namespace Saber.Services
                         //load block field
                         fieldBlock.Clear();
                         fieldBlock["title"] = fieldTitle;
-                        fieldBlock["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
-                        if (val == "1") { fieldBlock.Show("checked"); }
+                        fieldBlock["id"] = fieldId;
+                        if (fieldValue == "1") { fieldBlock.Show("checked"); }
                         html.Append(fieldBlock.Render());
                     }
                     else
                     {
                         var found = false;
                         //find vendor content field
-
+                        var vendorField = Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0)?.Select(a => a.Value).FirstOrDefault();
+                        if(vendorField != null)
+                        {
+                            found = true;
+                            html.Append(vendorField.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName));
+                        }
 
                         if (found == false)
                         {
@@ -119,16 +162,14 @@ namespace Saber.Services
                                                             //load image selection field
                                                             fieldImage.Clear();
                                                             fieldImage["title"] = fieldTitle;
-                                                            fieldImage["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
-                                                            fieldImage["default"] = val;
+                                                            fieldImage["src"] = fieldValue;
+                                                            fieldImage["id"] = fieldId;
                                                             html.Append(fieldImage.Render());
                                                         }
                                                         break;
                                                 }
                                             }
-                                            catch (Exception ex)
-                                            {
-                                            }
+                                            catch (Exception) {}
                                         }
                                         break;
                                     }
@@ -142,8 +183,8 @@ namespace Saber.Services
                         {
                             fieldText.Clear();
                             fieldText["title"] = fieldTitle;
-                            fieldText["id"] = "field_" + elem.Name.Replace("-", "").Replace("_", "");
-                            fieldText["default"] = val;
+                            fieldText["id"] = fieldId;
+                            fieldText["default"] = fieldValue;
                             html.Append(fieldText.Render());
                         }
                     }
@@ -189,7 +230,38 @@ namespace Saber.Services
             {
                 if (elem.Name != "")
                 {
-                    var name = elem.Name.Replace("-", "").Replace("_", "");
+                    var name = elem.Name
+                        .Replace("_1_", "!")
+                        .Replace("_2_", "@")
+                        .Replace("_3_", "#")
+                        .Replace("_4_", "$")
+                        .Replace("_5_", "%")
+                        .Replace("_6_", "^")
+                        .Replace("_7_", "&")
+                        .Replace("_8_", "*")
+                        .Replace("_9_", "(")
+                        .Replace("_0_", ")")
+                        .Replace("_p_", "+")
+                        .Replace("_a_", "[")
+                        .Replace("_b_", "{")
+                        .Replace("_c_", "]")
+                        .Replace("_d_", "}")
+                        .Replace("_e_", "=")
+                        .Replace("_f_", "|")
+                        .Replace("_g_", "\\")
+                        .Replace("_h_", ";")
+                        .Replace("_i_", ":")
+                        .Replace("_j_", "'")
+                        .Replace("_k_", ",")
+                        .Replace("_l_", "<")
+                        .Replace("_m_", ".")
+                        .Replace("_n_", ">")
+                        .Replace("_o_", "/")
+                        .Replace("_p_", "?")
+                        .Replace("_q_", "\"")
+                        .Replace("_r_", "`")
+                        .Replace("_s_", " ")
+                        .Replace("_t_", "~");
                     if (fields.ContainsKey(name) && fields[name] != "" && !results.ContainsKey(name))
                     {
                         results.Add(name, fields[name]);
