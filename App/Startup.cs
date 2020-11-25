@@ -257,7 +257,7 @@ namespace Saber
             var provider = new FileExtensionContentTypeProvider();
 
             // Add static file mappings
-            provider.Mappings[".svg"] = "image/svg";
+            provider.Mappings[".svg"] = "image/svg+xml";
             var options = new StaticFileOptions
             {
                 ContentTypeProvider = provider

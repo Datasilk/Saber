@@ -348,7 +348,7 @@ gulp.task('vendors:images', function () {
 gulp.task('vendors', gulp.series('vendors:images'));
 
 //default task ////////////////////////////////////////////////////////////////////////////
-gulp.task('default', gulp.series('js', 'less', 'css', 'icons', 'vendor'));
+gulp.task('default', gulp.series('js', 'less', 'css', 'icons', 'vendors'));
 
 //specific file task //////////////////////////////////////////////////////////////////////
 gulp.task('file', function () {

@@ -66,7 +66,9 @@ S.editor.tabs = {
             if (opts.selected == true) {
                 for (var x = 0; x < routes.length; x++) {
                     //blur all other tabs
-                    routes[x].onblur();
+                    if (routes[x].onblur) {
+                        routes[x].onblur();
+                    }
                 }
                 route.onfocus();
             }
@@ -76,7 +78,9 @@ S.editor.tabs = {
             var blur = routes.filter(a => a.path != path)
             for (var x = 0; x < blur.length; x++) {
                 //blur all other tabs
-                blur[x].onblur();
+                if (blur[x].onblur) {
+                    blur[x].onblur();
+                }
             }
             route = routes.filter(a => a.path == path)[0];
             route.onfocus();
@@ -89,7 +93,9 @@ S.editor.tabs = {
         var blur = S.editor.explorer.routes.filter(a => a.id != id)
         for (var x = 0; x < blur.length; x++) {
             //blur all other tabs
-            blur[x].onblur();
+            if (blur[x].onblur) {
+                blur[x].onblur();
+            }
         }
         $('.tab-' + id)[0].focus();
     },

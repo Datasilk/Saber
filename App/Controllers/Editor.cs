@@ -70,7 +70,6 @@ namespace Saber.Controllers
                     //load editor resources
                     if (CheckSecurity("code-editor"))
                     {
-                        view.Show("components");
                         view.Show("code-editor");
                         switch (EditorUsed)
                         {
@@ -98,7 +97,11 @@ namespace Saber.Controllers
                             viewComponent["description"] = component.Description;
                             html.Append(viewComponent.Render());
                         }
-                        view["components-list"] = html.ToString();
+                        if(html.Length > 0)
+                        {
+                            view.Show("components");
+                            view["components-list"] = html.ToString();
+                        }
                     }
 
                     AddScript("/editor/js/editor.js");
