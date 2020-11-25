@@ -99,10 +99,10 @@ namespace Saber
                         switch (f.Extension)
                         {
                             case ".js":
-                                File.Copy(f.FullName, App.MapPath(jsPath + Path.GetFileName(f.FullName)));
+                                File.Copy(f.FullName, App.MapPath(jsPath + Path.GetFileName(f.FullName)), true);
                                 break;
                             case ".css":
-                                File.Copy(f.FullName, App.MapPath(cssPath + Path.GetFileName(f.FullName)));
+                                File.Copy(f.FullName, App.MapPath(cssPath + Path.GetFileName(f.FullName)), true);
                                 break;
                         }
                     }

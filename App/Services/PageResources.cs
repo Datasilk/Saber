@@ -9,9 +9,10 @@ namespace Saber.Services
 {
     public class PageResources: Service
     {
-        public string Render(string path, int sort = 0)
+        public string Render(string path, string filetypes = "", int sort = 0)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
+            if(path == "") { return Error("No path specified"); }
             var canEdit = CheckSecurity("code-editor");
             var canUpload = CheckSecurity("upload");
             var view = new View("/Views/PageResources/resources.html");
@@ -41,6 +42,17 @@ namespace Saber.Services
                 //get list of files in directory (excluding thumbnail images)
                 var info = new DirectoryInfo(App.MapPath(pubdir));
                 var files = info.GetFiles();
+                if(filetypes != "")
+                {
+                    var ftypes = filetypes;
+                    switch (filetypes) {
+                        case "images":
+                            ftypes = ".jpg, .png, .gif";
+                            break;
+                    }
+                    var types = ftypes.Split(',', StringSplitOptions.TrimEntries);
+                    files = files.Where(a => types.Any(b => b == a.Extension)).ToArray();
+                }
 
                 //sort files
                 switch (sort)

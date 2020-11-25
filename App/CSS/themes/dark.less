@@ -61,8 +61,7 @@
     .input(#2a2a2a, #ddd, #444, #aaa, #2a2a2a, #ddd, #274052, #2a2a2a, #ddd, #185682, #7eccff, #40b4ff);
     .line(#2f2f2f); 
     .button(default,  #0082ff, #004eff, #004eff, #0082ff, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
-    .button(apply,    #0082ff, #004eff, #004eff, #0082ff, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
-    .button(special,  #009557, #03ba6e, #03ba6e, #03ba6e, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
+    .button(special,  #6666ff, #5353f7, #5353f7, #5353f7, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
     .button(cancel,   #7dd0ae, #31be85, #31be85, #31be85, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
     .button(disabled, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
     .button(delete,   #5d4040, #c95454, #c95454, #c95454, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #d4a6a6, #fff, #fff, #fff);
@@ -126,12 +125,14 @@
 
 .box .edit-bar, .box .accordion > .title{background:#2a2a2a}
 
-.editor .img .menu{background:#2a2a2a; padding-bottom:0;
-    li{
-        &:hover{background:#124d80;}
-        a:link, a:visited{color:#a9d1ec;}
-        a:hover{color:#82c6f5;}
-        a:active{color:#3eb1ff;}
+.editor, .popup{
+    .img .menu{background:#2a2a2a; padding-bottom:0;
+        li{
+            &:hover{background:#124d80;}
+            a:link, a:visited{color:#a9d1ec;}
+            a:hover{color:#82c6f5;}
+            a:active{color:#3eb1ff;}
+        }
     }
 }
 

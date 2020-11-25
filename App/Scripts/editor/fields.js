@@ -18,6 +18,9 @@ S.editor.fields = {
                 //set up events for fields
                 $('.content-fields form .input-field').on('keyup, keydown, change', S.editor.fields.change).each(
                     function (field) {
+                        if ($(field).hasClass('text-field')) {
+                            S.editor.fields.resize({ target: field });
+                        }
                         S.editor.fields.change({ target: field });
                     }
                 );
@@ -26,7 +29,7 @@ S.editor.fields = {
             true
         );
     },
-    change: function (e) {
+    resize: function (e) {
         if (S.editor.visible == false) { return; }
         if (e) {
             //resize field
@@ -35,6 +38,9 @@ S.editor.fields = {
             clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
             field.css({ height: clone.height() });
         }
+    },
+    change: function (e) {
+        if (S.editor.visible == false) { return; }
         if (S.editor.fields.changed == false) {
             //enable save menu
             $('.item-save').removeClass('faded').removeAttr('disabled');

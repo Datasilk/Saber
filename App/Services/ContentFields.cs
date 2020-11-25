@@ -102,8 +102,8 @@ namespace Saber.Services
                     if (fields.ContainsKey(elem.Name))
                     {
                         fieldValue = fields[elem.Name];
-
                     }
+                    var fieldValueHtml = fieldValue.Replace("\"", "&quot;");
 
                     //determine which content field layout to load
                     if (view.Elements.Any(a => a.Name == "/" + elem.Name) && !vars.Any(a => a == elemName))
@@ -126,7 +126,7 @@ namespace Saber.Services
                             fieldVendor.Clear();
                             fieldVendor["title"] = fieldTitle;
                             fieldVendor["id"] = fieldId;
-                            fieldVendor["value"] = fieldValue;
+                            fieldVendor["value"] = fieldValueHtml;
                             fieldVendor["content"] = vendor.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName);
                             html.Append(fieldVendor.Render());
                         }
@@ -184,7 +184,6 @@ namespace Saber.Services
                                 }
                             }
                         }
-
 
                         //load text field
                         if (found == false && !vars.Any(a => a == elemName))
