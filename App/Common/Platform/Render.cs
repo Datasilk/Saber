@@ -173,7 +173,6 @@ namespace Saber.Common.Platform
                     if(fields.Count() > 0) {
                         foreach(var field in fields)
                         {
-                            var rnd = new System.Random().Next();
                             var elem = view.Elements[field.Value[0]];
                             var args = elem.Vars ?? new Dictionary<string, string>();
                             var d = data.ContainsKey(elem.Name) ? data[elem.Name] : "";
