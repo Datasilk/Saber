@@ -75,6 +75,22 @@ namespace Saber
             var vendorDLLs = Vendors.LoadDLLs();
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IVendorStartup interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorStartup).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Vendors.GetStartupFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorStartup interface
+            Vendors.GetStartupsFromFileSystem();
+            Console.WriteLine("Found " + Vendors.Startups.Count + " Vendor Startup Class" + (Vendors.Startups.Count != 1 ? "es" : ""));
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorController interface
             foreach (var assembly in assemblies)
             {
@@ -107,20 +123,20 @@ namespace Saber
             Console.WriteLine("Found " + Vendors.ViewRenderers.Count + " Vendor View Renderer" + (Vendors.ViewRenderers.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //get list of vendor classes that inherit IViewDataBinder interface
+            //get list of vendor classes that inherit IVendorHtmlComponent interface
             foreach (var assembly in assemblies)
             {
                 //get a list of interfaces from the assembly
                 var types = assembly.GetTypes()
-                    .Where(type => typeof(Vendor.IViewDataBinder).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                    .Where(type => typeof(Vendor.IVendorHtmlComponent).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
                 foreach (var type in types)
                 {
-                    Vendors.GetViewDataBindersFromType(type);
+                    Vendors.GetHtmlComponentsFromType(type);
                 }
             }
             //get list of DLLs that contain the IVendorContentField interface
-            Vendors.GetViewDataBindersFromFileSystem();
-            Console.WriteLine("Found " + Vendors.ViewDataBinders.Count + " View Data Binder" + (Vendors.ViewDataBinders.Count != 1 ? "s" : ""));
+            Vendors.GetHtmlComponentsFromFileSystem();
+            Console.WriteLine("Found " + (Vendors.HtmlComponents.Count - 1) + " Vendor HTML Component" + ((Vendors.HtmlComponents.Count - 1) != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorContentField interface
@@ -158,22 +174,6 @@ namespace Saber
                 totalKeys += chain.Keys.Length;
             }
             Console.WriteLine("Found " + Vendors.Keys.Count + " Vendor" + (Vendors.Keys.Count != 1 ? "s" : "") + " with Security Keys (" + totalKeys + " key" + (totalKeys != 1 ? "s" : "") + ")");
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //get list of vendor classes that inherit IVendorStartup interface
-            foreach (var assembly in assemblies)
-            {
-                //get a list of interfaces from the assembly
-                var types = assembly.GetTypes()
-                    .Where(type => typeof(Vendor.IVendorStartup).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
-                foreach (var type in types)
-                {
-                    Vendors.GetStartupFromType(type);
-                }
-            }
-            //get list of DLLs that contain the IVendorStartup interface
-            Vendors.GetStartupsFromFileSystem();
-            Console.WriteLine("Found " + Vendors.Startups.Count + " Vendor Startup Class" + (Vendors.Startups.Count != 1 ? "es" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
@@ -345,7 +345,7 @@ namespace Saber
             });
             
             //initialize platform-specific html variables for views
-            ViewDataBinder.Initialize();
+            HtmlComponentBinder.Initialize();
 
             //execute Configure method for all vendors that use IVendorStartup interface
             foreach (var kv in Vendors.Startups)

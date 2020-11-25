@@ -109,10 +109,10 @@ S.editor.explorer = {
         var tab = $('.edit-tabs ul.row .tab-' + id);
 
         //find route that matches path (if route exists)
-        var route = S.editor.explorer.routes.filter(a => a.path == paths[0]);
+        var route = S.editor.explorer.routes.filter(a => a.path == path);
         if (route.length > 0) {
             route = route[0];
-            var routes = S.editor.explorer.routes.filter(a => a.path != paths[0]);
+            var routes = S.editor.explorer.routes.filter(a => a.path != path);
             routes.forEach(a => {
                 if (typeof a.onblur == 'function') { a.onblur(); }
             });
@@ -168,10 +168,13 @@ S.editor.explorer = {
         }
 
         if (isready !== false) {
-            $('.tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
+            $('.tab-components, .tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
             if (isPageResource) {
                 //show file bar icons for page html resource
                 $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
+            }
+            if (path.indexOf('.html') > 0) {
+                $('.tab-components').show();
             }
         }
 

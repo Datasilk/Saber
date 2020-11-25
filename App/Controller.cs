@@ -117,5 +117,10 @@ namespace Saber
 
             return view.Render();
         }
+
+        public override string AccessDenied()
+        {
+            return AccessDenied<Controllers.Login>();
+        }
     }
 }

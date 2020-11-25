@@ -47,7 +47,7 @@ namespace Saber.Services
                     var ftypes = filetypes;
                     switch (filetypes) {
                         case "images":
-                            ftypes = ".jpg, .png, .gif";
+                            ftypes = string.Join(", ", Image.Extensions);
                             break;
                     }
                     var types = ftypes.Split(',', StringSplitOptions.TrimEntries);
@@ -91,14 +91,17 @@ namespace Saber.Services
 
                         switch (ext.ToLower())
                         {
+                            //excluded
                             case "js":
                             case "html":
                             case "css":
                             case "less":
                             case "config":
                                 continue;
-
-                            case "png": //images
+                            
+                            //images
+                            
+                            case "png":
                             case "jpg":
                             case "jpeg":
                             case "gif":

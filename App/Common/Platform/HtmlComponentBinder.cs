@@ -6,35 +6,19 @@ using Saber.Core;
 namespace Saber.Common.Platform
 {
     /// <summary>
-    /// Used to bind view html variables to platform data
+    /// Used to bind HTML mustache variables to HTML components
     /// </summary>
-    public class ViewDataBinder
+    public class HtmlComponentBinder
     {
-        public static List<ViewDataBinderModel> HtmlVars = new List<ViewDataBinderModel>();
+        public static List<HtmlComponentModel> HtmlVars = new List<HtmlComponentModel>();
         private static string[] _htmlVarKeys { get; set; }
 
         public static void Initialize()
         {
-            //find all derived types of ViewDataBinder, then execute the Bind() method of each derived type
-            //so that all Vendor-specific html variables will be added to the HtmlVars dictionary
-            var binders = (from domainAssembly in AppDomain.CurrentDomain.GetAssemblies()
-                           from assemblyType in domainAssembly.GetTypes()
-                           where typeof(Vendor.IViewDataBinder).IsAssignableFrom(assemblyType)
-                           select assemblyType);
-
-            if(binders.Count() > 0)
+            foreach (var type in Vendors.HtmlComponents)
             {
-                Vendors.ViewDataBinders.AddRange(binders);
-            }
-
-            //get list of DLLs that contain the IViewDataBinder interface
-            Vendors.GetViewDataBindersFromFileSystem();
-
-
-            foreach (var type in Vendors.ViewDataBinders)
-            {
-                if (type.Name.Contains("IViewDataBinder")) { continue; }
-                var binder = (Vendor.IViewDataBinder)Activator.CreateInstance(type);
+                if (type.Name.Contains("IVendorHtmlComponent")) { continue; }
+                var binder = (Vendor.IVendorHtmlComponent)Activator.CreateInstance(type);
                 HtmlVars.AddRange(binder.Bind());
             }
         }
@@ -47,9 +31,6 @@ namespace Saber.Common.Platform
         {
             if(_htmlVarKeys != null) { return _htmlVarKeys; }
             var list = new List<string>();
-            //{
-            //    "user", "username", "userid", "no-user", "year"
-            //};
             list.AddRange(HtmlVars.Select(a => a.Key));
             _htmlVarKeys = list.ToArray();
             return _htmlVarKeys;
@@ -59,19 +40,19 @@ namespace Saber.Common.Platform
     /// <summary>
     /// Define Saber-specific html variables
     /// </summary>
-    public class ViewDataBinderDefaults : Vendor.IViewDataBinder
+    public class ViewDataBinderDefaults : Vendor.IVendorHtmlComponent
     {
-        public List<ViewDataBinderModel> Bind()
+        public List<HtmlComponentModel> Bind()
         {
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return new List<ViewDataBinderModel>(){
-                new ViewDataBinderModel()
+            return new List<HtmlComponentModel>(){
+                new HtmlComponentModel()
                 {
                     Key = "user",
                     Name = "User Information",
                     Description = "Display information about a user if logged into their account",
-                    Parameters = new Dictionary<string, ViewDataBinderParameter>(){},
-                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Parameters = new Dictionary<string, HtmlComponentParameter>(){},
+                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if user is logged in
@@ -83,13 +64,13 @@ namespace Saber.Common.Platform
                     })
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                , new ViewDataBinderModel()
+                , new HtmlComponentModel()
                 {
                     Key = "username",
                     Name = "User Name",
                     Description = "Display the user's name",
-                    Parameters = new Dictionary<string, ViewDataBinderParameter>(){},
-                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Parameters = new Dictionary<string, HtmlComponentParameter>(){},
+                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if user is logged in
@@ -101,13 +82,13 @@ namespace Saber.Common.Platform
                     })
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                , new ViewDataBinderModel()
+                , new HtmlComponentModel()
                 {
                     Key = "userid",
                     Name = "User ID",
                     Description = "Display the user's ID",
-                    Parameters = new Dictionary<string, ViewDataBinderParameter>(){},
-                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Parameters = new Dictionary<string, HtmlComponentParameter>(){},
+                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if user is logged in
@@ -119,13 +100,13 @@ namespace Saber.Common.Platform
                     })
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                , new ViewDataBinderModel()
+                , new HtmlComponentModel()
                 {
                     Key = "no-user",
                     Name = "No User",
                     Description = "Display information when a user is not logged into their account",
-                    Parameters = new Dictionary<string, ViewDataBinderParameter>() { },
-                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Parameters = new Dictionary<string, HtmlComponentParameter>() { },
+                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if user is logged in
@@ -137,13 +118,13 @@ namespace Saber.Common.Platform
                     })
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                , new ViewDataBinderModel()
+                , new HtmlComponentModel()
                 {
                     Key = "page-url",
                     Name = "Page URL",
                     Description = "Return the canonical URL based on the page request",
-                    Parameters = new Dictionary<string, ViewDataBinderParameter>() { },
-                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Parameters = new Dictionary<string, HtmlComponentParameter>() { },
+                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                         {
                             var results = new List<KeyValuePair<string, string>>();
                             var req = request.Context.Request;
@@ -161,13 +142,13 @@ namespace Saber.Common.Platform
                     }
                 , 
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                new ViewDataBinderModel()
+                new HtmlComponentModel()
                 {
                     Key = "page-id",
                     Name = "Page ID",
                     Description = "Return an ID based on the page URL",
-                    Parameters = new Dictionary<string, ViewDataBinderParameter>() { },
-                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Parameters = new Dictionary<string, HtmlComponentParameter>() { },
+                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         var paths = request.Path.Split('/');
@@ -177,13 +158,13 @@ namespace Saber.Common.Platform
                 },
 
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                new ViewDataBinderModel()
+                new HtmlComponentModel()
                 {
                     Key = "year",
                     Name = "Current Year",
                     Description = "Display the current year",
-                    Parameters = new Dictionary<string, ViewDataBinderParameter>() { },
-                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Parameters = new Dictionary<string, HtmlComponentParameter>() { },
+                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         results.Add(new KeyValuePair<string, string>(prefix + "year", DateTime.Now.Year.ToString()));
@@ -192,13 +173,13 @@ namespace Saber.Common.Platform
                 },
 
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                new ViewDataBinderModel()
+                new HtmlComponentModel()
                 {
                     Key = "language-options",
                     Name = "Language Options",
                     Description = "Render HTML <option> elements for all supported languages",
-                    Parameters = new Dictionary<string, ViewDataBinderParameter>() { },
-                    Callback = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Parameters = new Dictionary<string, HtmlComponentParameter>() { },
+                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var selected = request.Parameters.ContainsKey("lang") ? request.Parameters["lang"] : request.User.Language;
                         var results = new List<KeyValuePair<string, string>>();

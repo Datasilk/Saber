@@ -17,7 +17,7 @@ namespace Saber.Services
             var paths = PageInfo.GetRelativePath(path);
             var fields = Core.ContentFields.GetPageContent(path, language);
             var config = PageInfo.GetPageConfig(path);
-            var htmlVars = Common.Platform.ViewDataBinder.GetHtmlVariables();
+            var htmlVars = Common.Platform.HtmlComponentBinder.GetHtmlVariables();
             var view = new View(string.Join("/", paths) + ".html");
             var viewHeader = new View("/Content/partials/" + config.header.file);
             var viewFooter = new View("/Content/partials/" + config.footer.file);

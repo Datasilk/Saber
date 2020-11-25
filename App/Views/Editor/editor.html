@@ -218,6 +218,20 @@
             <div class="col file-path"></div>
             <div class="col buttons right">
                 <ul class="row file-tabs">
+                    {{components}}
+                    <li class="tab-components selected" title="Available HTML Components">
+                        <div class="row hover">
+                            <div class="col">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-plugin" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="components-menu hide">
+                            {{components-list}}
+                        </div>
+                    </li>
+                    {{/components}}
                     {{page-content}}
                     <li class="tab-content-fields" title="Multi-lingual Page Content">
                         <div class="row hover">

@@ -155,9 +155,11 @@ S.editor.filebar = {
                 S.editor.files.html.changed = false;
                 S.ajax.post('Page/Render', { path: S.editor.path + '.html', language: window.language || 'en' },
                     function (d) {
-                        $('.editor-preview').html(d);
+                        d.selector = '.editor-preview';
+                        S.ajax.inject(d);
                         changeJs(true);
-                    }
+                    },
+                    null, true
                 );
             } else if (S.editor.files.js.changed == true) {
                 changeJs();

@@ -17,6 +17,7 @@ S.editor.tabs = {
             $('.tab-toolbar').html('');
         }
         var elem = $('.edit-tabs ul.row .tab-' + id);
+        var routes = S.editor.explorer.routes;
         if (elem.length == 0) {
             //load new tab
             var temp = $('#template_tab').html().trim();
@@ -44,25 +45,40 @@ S.editor.tabs = {
                 elem: elem,
                 options: opts,
                 onfocus: () => {
+                    $('.tab-components, .tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
                     if (opts.isPageResource == true) {
                         $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
-                    } else {
-                        $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
+                    }
+                    if (path.indexOf('.html') > 0) {
+                        $('.tab-components').show();
                     }
                     elem.addClass('selected');
                     $('.tab-toolbar').html('');
                     S.editor.tabs.changed = true;
                     if (typeof onfocus == 'function') { onfocus(); }
                 },
-                onblur: onblur,
+                onblur: () => {
+                    $('.tab-components').hide();
+                    if (typeof onblur == 'function') { onblur(); }
+                },
                 onsave: onsave
             };
-            S.editor.explorer.routes.push(route);
             if (opts.selected == true) {
+                for (var x = 0; x < routes.length; x++) {
+                    //blur all other tabs
+                    routes[x].onblur();
+                }
                 route.onfocus();
             }
+            
+            S.editor.explorer.routes.push(route);
         } else {
-            route = S.editor.explorer.routes.filter(a => a.path == path)[0];
+            var blur = routes.filter(a => a.path != path)
+            for (var x = 0; x < blur.length; x++) {
+                //blur all other tabs
+                blur[x].onblur();
+            }
+            route = routes.filter(a => a.path == path)[0];
             route.onfocus();
         }
         S.editor.selected = path;
@@ -70,6 +86,11 @@ S.editor.tabs = {
     select: (id) => {
         $('.edit-tabs li > div').removeClass('selected');
         $('.tab-' + id + ' > div').addClass('selected');
+        var blur = S.editor.explorer.routes.filter(a => a.id != id)
+        for (var x = 0; x < blur.length; x++) {
+            //blur all other tabs
+            blur[x].onblur();
+        }
         $('.tab-' + id)[0].focus();
     },
     close: function (id, path, callback) {

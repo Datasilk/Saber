@@ -44,7 +44,7 @@ namespace Saber.Services
             }
 
             //get all platform-specific html variables
-            var htmlVars = ViewDataBinder.GetHtmlVariables();
+            var htmlVars = HtmlComponentBinder.GetHtmlVariables();
 
             //generate list of page headers & footers
             var headers = new List<Models.Page.Template>();

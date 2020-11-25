@@ -71,7 +71,7 @@ namespace Saber.Controllers
                                 {
                                     try
                                     {
-                                        Image.Shrink(pubdir + filename, pubdir + thumbdir + filename, 480);
+                                        Common.Utility.Image.Shrink(pubdir + filename, pubdir + thumbdir + filename, 480);
                                     }
                                     catch (Exception ex)
                                     {

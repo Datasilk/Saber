@@ -13,7 +13,7 @@ namespace Saber.Services
         {
             try
             {
-                return Common.Platform.Render.Page(path, this, PageInfo.GetPageConfig(path), language);
+                return Response(Common.Platform.Render.Page(path, this, PageInfo.GetPageConfig(path), language));
             }
             catch (ServiceErrorException ex)
             {

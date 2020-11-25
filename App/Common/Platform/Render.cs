@@ -166,7 +166,7 @@ namespace Saber.Common.Platform
                 }
 
                 //get platform data from the View Data Binder
-                var vars = ViewDataBinder.HtmlVars;
+                var vars = HtmlComponentBinder.HtmlVars;
                 foreach (var item in vars)
                 {
                     var fields = view.Fields.Where(a => a.Key.IndexOf(prefix + item.Key) == 0);
@@ -177,7 +177,7 @@ namespace Saber.Common.Platform
                             var args = elem.Vars ?? new Dictionary<string, string>();
                             var d = data.ContainsKey(elem.Name) ? data[elem.Name] : "";
                             //run the Data Binder callback method
-                            var range = item.Callback(view, request, args, d, prefix, elem.Name);
+                            var range = item.Render(view, request, args, d, prefix, elem.Name);
                             if (range.Count > 0)
                             {
                                 //add Data Binder callback method results to list

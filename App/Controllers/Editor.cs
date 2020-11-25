@@ -70,6 +70,7 @@ namespace Saber.Controllers
                     //load editor resources
                     if (CheckSecurity("code-editor"))
                     {
+                        view.Show("components");
                         view.Show("code-editor");
                         switch (EditorUsed)
                         {
@@ -84,6 +85,20 @@ namespace Saber.Controllers
                                 view["editor-type"] = "ace";
                                 break;
                         }
+
+                        //load components list
+                        var viewComponent = new View("/Views/Components/list-item.html");
+                        var html = new StringBuilder();
+                        foreach(var component in Common.Platform.HtmlComponentBinder.HtmlVars)
+                        {
+                            if(string.IsNullOrEmpty(component.Icon) || string.IsNullOrEmpty(component.Name)) { continue; }
+                            viewComponent.Clear();
+                            viewComponent["icon"] = "/editor/images/" + component.Icon.ToLower();
+                            viewComponent["name"] = component.Name;
+                            viewComponent["description"] = component.Description;
+                            html.Append(viewComponent.Render());
+                        }
+                        view["components-list"] = html.ToString();
                     }
 
                     AddScript("/editor/js/editor.js");

@@ -18,7 +18,7 @@ namespace Saber
         public static Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
         public static Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
         public static List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
-        public static List<Type> ViewDataBinders { get; set; } = new List<Type>();
+        public static List<Type> HtmlComponents { get; set; } = new List<Type>();
 
         private class AssemblyInfo
         {
@@ -73,7 +73,7 @@ namespace Saber
 
                 if (isnew)
                 {
-                    //copy any required JS & CSS files to the wwwroot folder
+                    //copy any public vendor resource files to the wwwroot folder
                     var filename = Path.GetFileName(file);
                     var path = file.Replace(filename, "");
                     var relpath = path.Replace("\\", "/").Split("/Vendors/")[1];
@@ -81,6 +81,7 @@ namespace Saber
                     var files = dir.GetFiles().Where(Current => Regex.IsMatch(Current.Extension, "\\.(js|css)", RegexOptions.IgnoreCase));
                     var jsPath = "/wwwroot/editor/js/vendors/" + relpath.ToLower();
                     var cssPath = "/wwwroot/editor/css/vendors/" + relpath.ToLower();
+                    var imagesPath = "/wwwroot/editor/images/vendors/" + relpath.ToLower();
                     if (files.Count() > 0)
                     {
                         //create wwwroot paths
@@ -92,10 +93,14 @@ namespace Saber
                         {
                             Directory.CreateDirectory(App.MapPath(cssPath));
                         }
+                        if (!Directory.Exists(App.MapPath(imagesPath)))
+                        {
+                            Directory.CreateDirectory(App.MapPath(imagesPath));
+                        }
                     }
                     foreach(var f in files)
                     {
-                        //copy all required JS & CSS files
+                        //copy all required vendor resources
                         switch (f.Extension)
                         {
                             case ".js":
@@ -103,6 +108,13 @@ namespace Saber
                                 break;
                             case ".css":
                                 File.Copy(f.FullName, App.MapPath(cssPath + Path.GetFileName(f.FullName)), true);
+                                break;
+                            default:
+                                if (Core.Image.Extensions.Any(a => a == f.Extension))
+                                {
+                                    //images
+                                    File.Copy(f.FullName, App.MapPath(imagesPath + Path.GetFileName(f.FullName)), true);
+                                }
                                 break;
                         }
                     }
@@ -277,8 +289,8 @@ namespace Saber
         }
         #endregion
 
-        #region "View Data Binders"
-        public static void GetViewDataBindersFromFileSystem()
+        #region "Html Components"
+        public static void GetHtmlComponentsFromFileSystem()
         {
             foreach (var assembly in Assemblies)
             {
@@ -286,9 +298,9 @@ namespace Saber
                 {
                     foreach (var i in type.GetInterfaces())
                     {
-                        if (i.Name == "IViewDataBinder")
+                        if (i.Name == "IVendorHtmlComponent")
                         {
-                            GetViewDataBindersFromType(type);
+                            GetHtmlComponentsFromType(type);
                             break;
                         }
                     }
@@ -296,11 +308,11 @@ namespace Saber
             }
         }
 
-        public static void GetViewDataBindersFromType(Type type)
+        public static void GetHtmlComponentsFromType(Type type)
         {
             if (type == null) { return; }
-            if (type.Equals(typeof(IViewDataBinder))) { return; }
-            ViewDataBinders.Add(type);
+            if (type.Equals(typeof(IVendorHtmlComponent))) { return; }
+            HtmlComponents.Add(type);
         }
         #endregion
     }

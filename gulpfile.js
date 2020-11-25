@@ -112,6 +112,7 @@ paths.working = {
             paths.scripts + 'editor/explorer.js',
             paths.scripts + 'editor/filebar.js',
             paths.scripts + 'editor/codebar.js',
+            paths.scripts + 'editor/components.js',
             paths.scripts + 'editor/fields.js',
             paths.scripts + 'editor/language.js',
             paths.scripts + 'editor/users.js',
@@ -151,6 +152,15 @@ paths.working = {
         app: paths.app + '**/*.css'
     },
 
+    vendor: {
+        images: [
+            paths.app + 'vendors/**/icon.svg',
+            paths.app + 'vendors/**/*.jpg',
+            paths.app + 'vendors/**/*.png',
+            paths.app + 'vendors/**/*.gif'
+        ]
+    },
+
     exclude: {
         app: [
             '!' + paths.app + 'wwwroot/**/*',
@@ -171,7 +181,10 @@ paths.compiled = {
     js: paths.webroot + 'editor/js/',
     css: paths.webroot + 'editor/css/',
     app: paths.webroot + 'editor/css/',
-    themes: paths.webroot + 'editor/css/themes/'
+    themes: paths.webroot + 'editor/css/themes/',
+    vendor: {
+        images: paths.webroot + 'editor/images/vendors/'
+    }
 };
 
 //tasks for compiling javascript //////////////////////////////////////////////////////////////
@@ -321,8 +334,21 @@ gulp.task('icons', function () {
     return gulp.src(paths.app + 'Content/pages/*.js');
 });
 
+//copy vendor resources ///////////////////////////////////////////////////////////////////
+gulp.task('vendors:images', function () {
+    var p = gulp.src(paths.working.vendor.images)
+        .pipe(rename(function (path) {
+            path.dirname = path.dirname.toLowerCase();
+            path.basename = path.basename.toLowerCase();
+            path.extname = path.extname.toLowerCase();
+        }));
+    return p.pipe(gulp.dest(paths.compiled.vendor.images, { overwrite: true }));
+});
+
+gulp.task('vendors', gulp.series('vendors:images'));
+
 //default task ////////////////////////////////////////////////////////////////////////////
-gulp.task('default', gulp.series('js', 'less', 'css', 'icons'));
+gulp.task('default', gulp.series('js', 'less', 'css', 'icons', 'vendor'));
 
 //specific file task //////////////////////////////////////////////////////////////////////
 gulp.task('file', function () {

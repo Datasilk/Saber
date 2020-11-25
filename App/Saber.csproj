@@ -143,6 +143,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\content" />
+    <Folder Include="wwwroot\editor\images\" />
     <Folder Include="wwwroot\images" />
     <Folder Include="wwwroot\js" />
   </ItemGroup>
