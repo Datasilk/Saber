@@ -32,29 +32,32 @@
 
     configure: {
         show: (key, name, params) => {
-            var html = $('#template_htmlcomponent').html();
+            var html = $('#template_htmlcomponent').html()
+                .replace('##key##', key).replace('##name##', name)
+                .replace('##button-title##', 'Create ' + name);
             var htmlparam = $('#template_component_param').html();
+            var fields = [];
             if (params != null && params.length > 0) {
-                var fields = [];
                 for (var x = 0; x < params.length; x++) {
                     var param = params[x];
-                    var id = ' id="param_' + key + '"';
+                    var id = ' id="param_' + param.Key + '"';
                     var defaultVal = param.DefaultValue ?? '';
                     var required = param.Required ?? false;
-                    var field = htmlparam.replace('##name##', name)
+                    var title = ' title="' + param.Description + '"';
+                    var field = htmlparam.replace('##name##', param.Name)
                         .replace('##required##', !required ? '<span class="faded">optional</span>' : '');
                     switch (param.DataType) {
                         case 0: //text
                             fields.push(field.replace('##input##', '<input type="text"' + id + ' ' +
-                                (defaultVal != '' ? 'value="' + defaultVal + '"' : '') + '/>'));
+                                (defaultVal != '' ? 'value="' + defaultVal + '"' : '') + title + '/>'));
                             break;
                         case 1: //number
                             fields.push(field.replace('##input##', '<input type="number"' + id + ' ' +
-                                (defaultVal != '' ? 'value="' + defaultVal + '"' : '') + '/>'));
+                                (defaultVal != '' ? 'value="' + defaultVal + '"' : '') + title + '/>'));
                             break;
                         case 2: //boolean
-                            fields.push(field.replace(name, '').replace('##input##', '<input type="checkbox"' + id + '/>' +
-                                '<label for="' + 'param_' + key + '">' + name + '</label>'));
+                            fields.push(field.replace(param.Name, '').replace('##input##', '<input type="checkbox"' + id + '/>' +
+                                '<label for="' + 'param_' + key + '"' + title + '>' + param.Name + '</label>'));
                             break;
                         case 3: //list
 
@@ -73,9 +76,8 @@
                             break;
                     }
                 }
-
             }
-            S.popup.show('Configure ' + name, html);
+            S.popup.show('Configure ' + name, html.replace('##fields##', fields.join('')));
         }
     }
 };

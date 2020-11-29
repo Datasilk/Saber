@@ -497,13 +497,19 @@
 </script>
 {{components}}
 <script language="text/html" id="template_htmlcomponent">
+    <input type="hidden" id="component_key" value="##key##"/>
     <div class="row field">ID <span class="faded">optional</span></div>
     <div class="row input">
         <input type="text" id="component_id"/>
     </div>
     ##fields##
+    <div class="row text-center pad-top">
+        <div class="col">
+            <input type="submit" class="button apply" value="##button-title##" />
+        </div>
+    </div>
 </script>
-<script language="text/html" id="tempalte_component_param">
+<script language="text/html" id="template_component_param">
     <div class="row field">##name##</div>
     <div class="row input">##input##</div>
 </script>
