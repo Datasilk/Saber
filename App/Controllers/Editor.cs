@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Linq;
 using Datasilk.Core.Web;
 using Saber.Core;
@@ -93,14 +95,32 @@ namespace Saber.Controllers
                             if(string.IsNullOrEmpty(component.Icon) || string.IsNullOrEmpty(component.Name)) { continue; }
                             viewComponent.Clear();
                             viewComponent["icon"] = "/editor/images/" + component.Icon.ToLower();
+                            viewComponent["key"] = component.Key;
                             viewComponent["name"] = component.Name;
                             viewComponent["description"] = component.Description;
+                            var parameters = new List<Models.HtmlComponentParams>();
+                            foreach(var param in component.Parameters)
+                            {
+                                parameters.Add(new Models.HtmlComponentParams()
+                                {
+                                    Key = param.Key,
+                                    Name = param.Value.Name,
+                                    DataType = (int)param.Value.DataType,
+                                    DefaultValue = param.Value.DefaultValue,
+                                    ListOptions = param.Value.ListOptions
+                                });
+                            }
+                            viewComponent["data-params"] = JsonSerializer.Serialize(parameters, new JsonSerializerOptions()
+                            {
+                                WriteIndented = false
+                            }).Replace("\"", "&quot;");
                             html.Append(viewComponent.Render());
                         }
                         if(html.Length > 0)
                         {
                             view.Show("components");
                             view["components-list"] = html.ToString();
+
                         }
                     }
 
@@ -113,10 +133,16 @@ namespace Saber.Controllers
                             "S.editor.type = " + (int)EditorUsed + ";" +
                         "</script>");
                     }
-                    Scripts.Append(
+
+                    if (CheckSecurity("code-editor"))
+                    {
+                        Scripts.Append(
                     "<script language=\"javascript\">" +
-                        "S.editor.useCodeEditor = " + (CheckSecurity("code-editor") ? "true" : "false") + ";" +
+                        "S.editor.useCodeEditor = true;" +
+                        "S.editor.components.load();" +
                     "</script>");
+                    }
+                    
 
                     //check security permissions in order to show certain features
                     var websiteSecurity = false;

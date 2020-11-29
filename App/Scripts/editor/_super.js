@@ -13,7 +13,8 @@ S.editor = {
     initialized: false,
     savedTabs: [],
     Rhino: null,
-    visible: false
+    visible: false,
+    useCodeEditor: false
 };
 
 //used by vendors to extend Saber
