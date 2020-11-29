@@ -7,7 +7,8 @@
             }
             var key = target.attr('data-key');
             var name = target.find('h4').html().trim();
-            S.editor.components.configure.show(key, name);
+            var params = JSON.parse(target.attr('data-params'));
+            S.editor.components.configure.show(key, name, params);
         });
     },
 
@@ -30,8 +31,50 @@
     },
 
     configure: {
-        show: (key, name) => {
+        show: (key, name, params) => {
             var html = $('#template_htmlcomponent').html();
+            var htmlparam = $('#template_component_param').html();
+            if (params != null && params.length > 0) {
+                var fields = [];
+                for (var x = 0; x < params.length; x++) {
+                    var param = params[x];
+                    var id = ' id="param_' + key + '"';
+                    var defaultVal = param.DefaultValue ?? '';
+                    var required = param.Required ?? false;
+                    var field = htmlparam.replace('##name##', name)
+                        .replace('##required##', !required ? '<span class="faded">optional</span>' : '');
+                    switch (param.DataType) {
+                        case 0: //text
+                            fields.push(field.replace('##input##', '<input type="text"' + id + ' ' +
+                                (defaultVal != '' ? 'value="' + defaultVal + '"' : '') + '/>'));
+                            break;
+                        case 1: //number
+                            fields.push(field.replace('##input##', '<input type="number"' + id + ' ' +
+                                (defaultVal != '' ? 'value="' + defaultVal + '"' : '') + '/>'));
+                            break;
+                        case 2: //boolean
+                            fields.push(field.replace(name, '').replace('##input##', '<input type="checkbox"' + id + '/>' +
+                                '<label for="' + 'param_' + key + '">' + name + '</label>'));
+                            break;
+                        case 3: //list
+
+                            break;
+                        case 4: //date
+
+                            break;
+                        case 5: //datetime
+
+                            break;
+                        case 6: //currency
+
+                            break;
+                        case 7: //image
+
+                            break;
+                    }
+                }
+
+            }
             S.popup.show('Configure ' + name, html);
         }
     }
