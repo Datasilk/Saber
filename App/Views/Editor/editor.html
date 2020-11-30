@@ -501,12 +501,14 @@
 {{components}}
 <script language="text/html" id="template_component_config">
     <div class="row"><h4>##name##</h4></div>
-    <input type="hidden" id="component_key" value="##key##"/>
-    <div class="row field">ID <span class="faded">optional</span></div>
-    <div class="row input">
-        <input type="text" id="component_id"/>
+    <div class="scroller">
+        <input type="hidden" id="component_key" value="##key##"/>
+        <div class="row field">ID <span class="faded">optional</span></div>
+        <div class="row input">
+            <input type="text" id="component_id"/>
+        </div>
+        ##fields##
     </div>
-    ##fields##
     <div class="row text-center pad-top">
         <div class="col pad-right">
             <input type="submit" class="button cancel" value="Cancel" />

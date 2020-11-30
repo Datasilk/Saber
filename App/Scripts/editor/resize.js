@@ -39,4 +39,5 @@ S.editor.resizeWindow = function () {
     }
     $('.editor > div > .sections > .tab').css({ height: win.h - pos.top });
     $('.file-browser').css({ height: win.h - pos2.top });
+    $('.component-configure .scroller').css({ 'max-height': (win.h - 200) + 'px' });
 };

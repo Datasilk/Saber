@@ -90,6 +90,14 @@
     p, ul, li{padding-bottom:15px;}
 }
 
+/* html component menu */
+.component-configure{
+    .scroller{overflow-x:hidden; overflow-y:auto; scrollbar-color: #333 #555;
+        &::-webkit-scrollbar-track{background:#555;}
+        &::-webkit-scrollbar-thumb{background:#333;}
+    }
+}
+
 /* file browser */
 @browserWidth: 200px;
 .file-browser{float:left; width:@browserWidth; position:relative; top:-46px; margin-bottom:-48px; z-index:10;

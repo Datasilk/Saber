@@ -87,6 +87,7 @@
             }
             $('.component-configure').html(html.replace('##fields##', fields.join(''))).removeClass('hide');
             $('.components-list').addClass('hide');
+            S.editor.resizeWindow();
 
             //add event listeners
             $('.component-configure .button.cancel').on('click', () => {
