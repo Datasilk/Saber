@@ -24,6 +24,26 @@ S.editor.fields = {
                         S.editor.fields.change({ target: field });
                     }
                 );
+
+                //set up event for image selection buttons
+                $('.content-fields .select-image button').on('click', (e) => {
+                    e.preventDefault();
+                    S.editor.resources.select(S.editor.path, '.jpg, .png, .gif', true, "Select An Image", "Select Image", (results) => {
+                        var container = $(e.target).parents('.content-field');
+                        var field = container.find('.input-field');
+                        var newpath = S.editor.path.replace('content/', 'content/pages/') + '/';
+                        var src = newpath + results[0];
+                        container.find('.img').html('<div><img src="' + src + '"/></div>');
+                        field.val(src);
+                        S.editor.fields.save();
+                    });
+                });
+
+                $('.content-fields .select-image .input-field').on('change', (e) => {
+                    var container = $(e.target).parents('.content-field');
+                    var field = container.find('.input-field');
+                    container.find('.img').html('<div><img src="' + field.val() + '"/></div>');
+                });
             },
             function () { S.editor.error(); },
             true

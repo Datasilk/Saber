@@ -107,9 +107,9 @@ namespace Saber.Controllers
                                     Name = param.Value.Name,
                                     DataType = (int)param.Value.DataType,
                                     DefaultValue = param.Value.DefaultValue,
-                                    ListOptions = param.Value.ListOptions,
-                                    Description = param.Value.Description
-                                });
+                                    ListOptions = param.Value.ListOptions?.Select(a => a.Replace("\"", "&quot;")).ToArray(),
+                                    Description = param.Value.Description.Replace("\"", "&quot;")
+                                }); ;
                             }
                             viewComponent["data-params"] = JsonSerializer.Serialize(parameters, new JsonSerializerOptions()
                             {

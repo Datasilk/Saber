@@ -119,15 +119,17 @@ namespace Saber.Services
                     {
                         var found = false;
                         //find vendor content field
-                        var vendor = Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0)?.Select(a => a.Value).FirstOrDefault();
-                        if(vendor != null)
+                        var vendor = Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0).FirstOrDefault();
+                        if(vendor.Value != null)
                         {
                             found = true;
                             fieldVendor.Clear();
-                            fieldVendor["title"] = fieldTitle;
+                            var fieldTitleId = fieldTitle.Replace(vendor.Key.Capitalize().Replace("-", " ").Replace("_", " "), "");
+                            var fieldTitleKey = fieldTitle.Replace(fieldTitleId, "");
+                            fieldVendor["title"] = fieldTitleKey + ": " + fieldTitleId.Capitalize();
                             fieldVendor["id"] = fieldId;
                             fieldVendor["value"] = fieldValueHtml;
-                            fieldVendor["content"] = vendor.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName);
+                            fieldVendor["content"] = vendor.Value.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName);
                             html.Append(fieldVendor.Render());
                         }
 
@@ -170,8 +172,8 @@ namespace Saber.Services
                                                             //load image selection field
                                                             fieldImage.Clear();
                                                             fieldImage["title"] = fieldTitle;
-                                                            fieldImage["src"] = fieldValue;
                                                             fieldImage["id"] = fieldId;
+                                                            fieldImage["value"] = fieldValue;
                                                             html.Append(fieldImage.Render());
                                                         }
                                                         break;
