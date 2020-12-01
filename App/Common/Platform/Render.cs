@@ -3,13 +3,16 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using Saber.Core;
-using CommonMark;
+using Markdig;
 
 namespace Saber.Common.Platform
 {
     public class Render
     {
         #region "Page"
+
+        private static MarkdownPipeline markdownPipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+
         /// <summary>
         /// Renders a page, including language-specific content, and uses page-specific config to check for security & other features
         /// </summary>
@@ -18,7 +21,7 @@ namespace Saber.Common.Platform
         public static string Page(string path, IRequest request, Models.Page.Settings config, string language = "en")
         {
             //translate root path to relative path
-            if(App.Environment == Environment.development) { ViewCache.Clear(); }
+            if (App.Environment == Environment.development) { ViewCache.Clear(); }
             var content = new View("/Views/Editor/content.html");
             var header = new View("/Content/partials/" + (config.header.file != "" ? config.header.file : "header.html"));
             var footer = new View("/Content/partials/" + (config.footer.file != "" ? config.footer.file : "footer.html"));
@@ -82,22 +85,23 @@ namespace Saber.Common.Platform
                 data = JsonSerializer.Deserialize<Dictionary<string, string>>(contents);
                 if (data != null)
                 {
+                    
                     //get view blocks
                     var blocks = view.Elements.Where(a => a.Name.StartsWith("/")).Select(a => a.Name.Substring(1));
                     foreach (var item in data)
                     {
-                        if (item.Value.IndexOf("\n") >= 0)
+                        if (blocks.Contains(item.Key))
                         {
-                            view[item.Key] = CommonMarkConverter.Convert(item.Value);
+                            if (item.Value == "1")
+                            {
+                                view.Show(item.Key);
+                            }
                         }
                         else
                         {
-                            if(blocks.Contains(item.Key))
+                            if (item.Value.Contains('\n'))
                             {
-                                if(item.Value == "1")
-                                {
-                                    view.Show(item.Key);
-                                }
+                                view[item.Key] = Markdown.ToHtml(item.Value, markdownPipeline);
                             }
                             else
                             {

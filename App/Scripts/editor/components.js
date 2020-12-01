@@ -110,7 +110,7 @@
             $('.component-configure .select-page button').on('click', (e) => {
                 //show file select popup for page selection
                 S.editor.explorer.select('Select Web Page', 'Content/partials', '.html', (file) => {
-                    $(e.target).parents('.select-page').first().find('input').val(file.replace('Content/', ''));
+                    $(e.target).parents('.select-page').first().find('input').val(file.replace('Content/', '').replace('content/', ''));
                 });
             });
             $('.component-configure .button.apply').on('click', () => {

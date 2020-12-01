@@ -18,9 +18,6 @@ S.editor.fields = {
                 //set up events for fields
                 $('.content-fields form .input-field').on('keyup, keydown, change', S.editor.fields.change).each(
                     function (field) {
-                        if ($(field).hasClass('text-field')) {
-                            S.editor.fields.resize({ target: field });
-                        }
                         S.editor.fields.change({ target: field });
                     }
                 );
@@ -54,9 +51,11 @@ S.editor.fields = {
         if (e) {
             //resize field
             var field = $(e.target);
-            var clone = S.editor.fields.clone;
-            clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
-            field.css({ height: clone.height() });
+            if (field.hasClass('text-field')) {
+                var clone = S.editor.fields.clone;
+                clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
+                field.css({ height: clone.height() });
+            }
         }
     },
     change: function (e) {
@@ -66,6 +65,7 @@ S.editor.fields = {
             $('.item-save').removeClass('faded').removeAttr('disabled');
             S.editor.fields.changed = true;
         }
+        S.editor.fields.resize(e);
     },
     save: function () {
         var fields = {};

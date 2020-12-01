@@ -196,8 +196,8 @@
     .message{margin-bottom:-5px; position:relative; top:-5px;}
     .col.field{width:200px;}
     .col.input{width:~"calc(100% - 200px)"; min-height:46px;}
-    .textarea-clone{opacity:0; position:absolute; z-index:-1; width:100%; height:0px; top:0;
-        & > div{position:absolute; width:100%; min-height:30px; font-weight:200; padding:10px 10px 10px 220px; line-height:1.15; box-sizing:border-box; border-width:1px; font-family:monospace;}
+    .textarea-clone{opacity:0; position:absolute; z-index:-1; width:100%; height:0px; top:0; left:-100%;
+        & > div{width:100%; min-height:30px; font-weight:200; font-size:13px; padding:10px 10px 10px 220px; line-height:1.15; box-sizing:border-box; border-width:1px;}
     }
     .no-fields{padding: 20px 50px;
         li{padding-bottom:10px;}
@@ -329,7 +329,7 @@
 .editor .accordion {margin-bottom:5px;
     .title{padding:5px 20px; cursor:default;
         h1, h2, h3, h4, h5, h6{padding-bottom:0;}
-        h6{font-weight:bold;}
+        h6{font-weight:bold; display:inline-block;}
     }
     .expander{float:right; transform: rotate(-90deg); border-radius:6px; cursor:pointer; width:25px; height:25px; margin-top:-2px;
         svg{width:16px;position:relative; left:5px;}

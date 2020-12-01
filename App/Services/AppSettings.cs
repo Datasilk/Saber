@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Saber.Common.Utility;
 
 namespace Saber.Services
@@ -103,11 +103,12 @@ namespace Saber.Services
         public string UploadPngIcon(int type, int px)
         {
             if (!CheckSecurity("website-settings")) { return AccessDenied(); }
-            if (Context.Request.Form.Files.Count == 0)
+            if (Parameters.Files.Count == 0 || !Parameters.Files.ContainsKey("file"))
             {
                 return Error("File upload was not found");
             }
-            if (Context.Request.Form.Files[0].ContentType != "image/png")
+            var file = Parameters.Files["file"];
+            if (file.ContentType != "image/png")
             {
                 return Error("Icon must be PNG image format.");
             }
@@ -123,30 +124,25 @@ namespace Saber.Services
             try
             {
                 //check icon dimensions
-                using (var file = Context.Request.Form.Files[0].OpenReadStream())
+                var image = Image.Load(file);
+                if (px != 0 && (image.width != px || image.height != px))
                 {
-                    var image = Image.Load(file);
-                    if (px != 0 && (image.width != px || image.height != px))
-                    {
-                        return Error($"Icon must be {px} pixels in width & height.");
-                    }else if(px == 0 && (image.width > 128))
-                    {
-                        return Error($"Icon must be less than 129 pixels in width & height.");
-                    }
+                    return Error($"Icon must be {px} pixels in width & height.");
+                }else if(px == 0 && (image.width > 128))
+                {
+                    return Error($"Icon must be less than 129 pixels in width & height.");
                 }
                 //save image to disk
                 if (!Directory.Exists(App.MapPath("/wwwroot/images/" + imgpath)))
                 {
                     Directory.CreateDirectory(App.MapPath("/wwwroot/images/" + imgpath));
                 }
-                using (var file = Context.Request.Form.Files[0].OpenReadStream())
+                var filepath = App.MapPath($"/wwwroot/images/{imgpath}{iconType}{imgSuffix}.png");
+                File.Delete(filepath);
+                file.Seek(0, SeekOrigin.Begin);
+                using (var fs = new FileStream(filepath, FileMode.Create))
                 {
-                    var filepath = App.MapPath($"/wwwroot/images/{imgpath}{iconType}{imgSuffix}.png");
-                    File.Delete(filepath);
-                    using (var fs = new FileStream(filepath, FileMode.Create))
-                    {
-                        file.CopyTo(fs);
-                    }
+                    file.CopyTo(fs);
                 }
             }
             catch (Exception)
