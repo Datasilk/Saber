@@ -503,7 +503,7 @@
     <div class="row"><h4>##name##</h4></div>
     <div class="scroller">
         <input type="hidden" id="component_key" value="##key##"/>
-        <div class="row field">ID <span class="faded">optional</span></div>
+        <div class="row field">ID ##optional##</div>
         <div class="row input">
             <input type="text" id="component_id"/>
         </div>
@@ -523,3 +523,7 @@
     <div class="row input">##input##</div>
 </script>
 {{/components}}
+<script language="text/html" id="template_select_file">
+    <div class="row modal-path"></div>
+    <div class="row modal-browser"><ul class="menu"></ul></div>
+</script>

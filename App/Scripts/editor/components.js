@@ -1,4 +1,5 @@
 ﻿S.editor.components = {
+
     load: () => {
         $('.components-menu .component-item').on('click', (e) => {
             var target = $(e.target);
@@ -14,16 +15,12 @@
 
     show: () => {
         var menu = $('.components-menu');
-        //if (!menu.hasClass('hide')) {
-        //    $(document.body).off(hideMenu);
-        //    menu.addClass('hide');
-        //    return;
-        //}
         menu.removeClass('hide');
         $(document.body).off(hideMenu).on('click', hideMenu);
 
         function hideMenu(e) {
-            if ($(e.target).parents('.tab-components').length <= 0) {
+            if ($(e.target).parents('.tab-components').length <= 0 && 
+                $(e.target).parents('.popup').length <= 0) {
                 menu.addClass('hide');
                 $('.component-configure').addClass('hide');
                 $('.components-list').removeClass('hide');
@@ -39,6 +36,13 @@
                 .replace('##button-title##', 'Create ' + name);
             var htmlparam = $('#template_component_param').html();
             var fields = [];
+
+            if (key == 'partial-view') {
+                html = html.replace('##optional##', '');
+            } else {
+                html = html.replace('##optional##', '<span class="faded">optional</span>');
+            }
+
             if (params != null && params.length > 0) {
                 for (var x = 0; x < params.length; x++) {
                     var param = params[x];
@@ -79,8 +83,14 @@
                                 (defaultVal != '' ? 'value="' + defaultVal + '"' : '') + title + '/>'));
                             break;
                         case 7: //image
-                            fields.push(field.replace('##input##', '<button class="select-image" value="Select Image...">' +
+                            fields.push(field.replace('##input##', '<button class="select-image">Select Image...</button>' +
                                 '<input type="hidden"' + id + "/>"));
+                            break;
+                        case 8: //web page
+                            fields.push(field.replace('##input##', '<div class="select-page">' +
+                                '<div class="pad-right"><input type="text"' + id + '/></div>' +
+                                '<div class="pad-top-sm"><button>Select Web Page...</button></div>' +
+                                '</div>'));
                             break;
                     }
                 }
@@ -97,30 +107,40 @@
             $('.component-configure .select-image').on('click', (e) => {
                 //show page references popup for image selection
             });
+            $('.component-configure .select-page button').on('click', (e) => {
+                //show file select popup for page selection
+                S.editor.explorer.select('Select Web Page', 'Content/partials', '.html', (file) => {
+                    $(e.target).parents('.select-page').first().find('input').val(file.replace('Content/', ''));
+                });
+            });
             $('.component-configure .button.apply').on('click', () => {
                 //generate component instance in selected HTML page
                 var inputs = $('.component-configure').find('input, select');
-                console.log(inputs);
                 var suffix = $('#component_id').val();
                 var mustache = '{{' + $('#component_key').val() +
                     (suffix && suffix != '' ? '-' + suffix : '');
-                var paramlen = 0;
-                for (var x = 0; x < inputs.length; x++) {
-                    var input = $(inputs[x]);
-                    console.log(input);
-                    var id = input.attr('id');
-                    if (!id || id == 'component_key' || id == 'component_id') { continue; }
-                    id = id.replace('param_', '');
-                    var value = input.val();
-                    if (input.attr('type') == 'checkbox') {
-                        value = input[0].checked ? '1' : '0';
+                if (key == 'partial-view') {
+                    //generate partial view
+                    mustache = '{{' + suffix + ' "' + $('#param_page').val() + '"}}';
+                } else {
+                    //generate vendor HTML components
+                    var paramlen = 0;
+                    for (var x = 0; x < inputs.length; x++) {
+                        var input = $(inputs[x]);
+                        var id = input.attr('id');
+                        if (!id || id == 'component_key' || id == 'component_id') { continue; }
+                        id = id.replace('param_', '');
+                        var value = input.val();
+                        if (input.attr('type') == 'checkbox') {
+                            value = input[0].checked ? '1' : '0';
+                        }
+                        if (id && id != '' && value && value != '') {
+                            mustache += (paramlen > 0 ? ',' : '') + ' ' + id + ':"' + value + '"';
+                        }
+                        paramlen++;
                     }
-                    if (id && id != '' && value && value != '') {
-                        mustache += (paramlen > 0 ? ',' : '') + ' ' + id + ':"' + value + '"';
-                    }
-                    paramlen++;
+                    mustache += '}}';
                 }
-                mustache += '}}';
                 if (S.editor.type == 0) {
                     //monaco editor
                     var editor = S.editor.instance;

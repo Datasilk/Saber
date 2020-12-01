@@ -112,12 +112,24 @@
     .item:hover .delete-btn{opacity:0.5;
         &:hover{opacity:1;}
     }
+    ul{list-style:none;}
     ul .icon svg{width:16px; height:16px; position:relative; top:5px;}
     .bread .icon svg{position:relative; top:-2px;}
 }
 .browser-path{font-family:monospace; font-size:0.7rem;  overflow:hidden;
               white-space:nowrap; text-overflow:ellipsis; direction:rtl; text-align:left;
               width:~"calc(100% - 40px)" !important; min-height:23px;}
+
+.modal-browser{
+    .label{font-size:13px;}
+    .item{cursor:default;
+        & > div{padding:0 0 0 5px;}
+    }
+    ul{list-style:none;}
+    ul .icon svg{width:16px; height:16px; position:relative; top:5px;}
+}
+.modal-path{font-family:monospace; font-size:0.7rem;  overflow:hidden;
+              white-space:nowrap; text-overflow:ellipsis; direction:rtl; text-align:left;}
 
 /* file bar */
 .file-bar{padding:0 0 4px 0;
@@ -141,7 +153,7 @@
 	    bottom: 100%; left: 50%; border: solid transparent; content: ""; height: 0; width: 0; position: absolute;
 	    pointer-events: none; border-color: transparent; border-width: 15px; margin-left: -15px;
     }
-    .component-item{border-bottom:1px solid;}
+    .component-item{border-bottom:1px solid; height:75px; padding-top:7px;}
     .col{padding:0 !important;}
     .img{padding:5px 15px 0 5px !important;}
     img{width:32px; height:32px;}

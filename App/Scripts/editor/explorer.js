@@ -251,5 +251,41 @@ S.editor.explorer = {
             }, 200);
             if (typeof callback == 'function') { callback(); }
         }
+    },
+
+    select: (title, path, filetypes, callback) => {
+        //show a pop up to select a file from the file explorer
+        var html = $('#template_select_file').html();
+        S.popup.show(title, html);
+        //load path via api
+        S.ajax.post('Files/Dir', { path: path, fileTypes:filetypes, showDelete:false },
+            function (d) {
+                $('.modal-browser ul.menu').html(d);
+                var folders = $('.modal-browser .item[data-type="folder"]');
+                var files = $('.modal-browser .item[data-type="file"]');
+                folders.attr('onclick', '');
+                files.attr('onclick', '');
+                folders.on('click', (e) => {
+                    var target = $(e.target);
+                    if (!target.hasClass('item')) { target = target.parents('.item').first(); }
+                    S.editor.explorer.select(title, target.attr('data-path'), filetypes, callback);
+                });
+                files.on('click', (e) => {
+                    var target = $(e.target);
+                    if (!target.hasClass('item')) { target = target.parents('.item').first(); }
+                    callback(target.attr('data-path'));
+                    S.popup.hide();
+                });
+                var url = path;
+                if (path.indexOf('root') == 0) {
+                    url = url.replace('root', '');
+                }
+                url += '/';
+                $('.popup .modal-path').html(url);
+            },
+            function () {
+                S.editor.error();
+            }
+        );
     }
 };

@@ -90,7 +90,29 @@ namespace Saber.Controllers
                         //load components list
                         var viewComponent = new View("/Views/Components/list-item.html");
                         var html = new StringBuilder();
-                        foreach(var component in Common.Platform.HtmlComponentBinder.HtmlVars)
+                        var htmlVars = Common.Platform.HtmlComponentBinder.HtmlVars;
+
+                        //add custom component for generating Partial Views
+                        viewComponent["icon"] = "/editor/images/partial-view.svg";
+                        viewComponent["key"] = "partial-view";
+                        viewComponent["name"] = "Partial View";
+                        viewComponent["description"] = "Render a partial HTML file inside of your web page.";
+                        viewComponent["data-params"] = JsonSerializer.Serialize(new List<Models.HtmlComponentParams>()
+                        {
+                            new Models.HtmlComponentParams()
+                            {
+                                Key = "page",
+                                Name = "HTML File",
+                                DataType = 8, //8 = WebPage
+                                Description = "The relative path to your partial HTML file (e.g. \"partials/menu.html\")"
+                            }
+                        }, new JsonSerializerOptions()
+                        {
+                            WriteIndented = false
+                        }).Replace("\"", "&quot;");
+                        html.Append(viewComponent.Render());
+
+                        foreach (var component in Common.Platform.HtmlComponentBinder.HtmlVars)
                         {
                             if(string.IsNullOrEmpty(component.Icon) || string.IsNullOrEmpty(component.Name)) { continue; }
                             viewComponent.Clear();

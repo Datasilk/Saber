@@ -19,7 +19,7 @@ namespace Saber.Services
             public string Filename { get; set; }
             public string Extension { get; set; }
         }
-        public string Dir(string path)
+        public string Dir(string path, string fileTypes = "", bool showDelete = true)
         {
             if (!CheckSecurity()) { return AccessDenied(); }
 
@@ -39,8 +39,13 @@ namespace Saber.Services
             var exclude = new string[] { };
             var editable = new string[] { ".js", ".less", ".css" };
             var canEdit = CheckSecurity("code-editor");
-            var canDeleteFiles = CheckSecurity("delete-files");
-            var canDeletePages = CheckSecurity("delete-pages");
+            var canDeleteFiles = showDelete == false ? false : CheckSecurity("delete-files");
+            var canDeletePages = showDelete == false ? false : CheckSecurity("delete-pages");
+            var extensions = new string[] { };
+            if (!string.IsNullOrEmpty(fileTypes))
+            {
+                extensions = fileTypes.Split(",", StringSplitOptions.TrimEntries);
+            }
 
             if (paths[0] == "" && paths.Length == 1 && canEdit)
             {
@@ -96,7 +101,7 @@ namespace Saber.Services
                     }
                     foreach (var file in info.GetFiles())
                     {
-                        if (!exclude.Contains(file.Name.ToLower()))
+                        if (!exclude.Contains(file.Name.ToLower()) && (extensions.Length == 0 || extensions.Contains(file.Extension))) 
                         {
                             var f = file.Name.GetFileExtension().ToLower();
                             if(paths.Length > 1 && paths[1] == "pages" && f != "html") { continue; }
@@ -177,10 +182,10 @@ namespace Saber.Services
             item["title"] = title;
             item["icon"] = "folder";
             item["path"] = path;
+            item["type"] = isDir ? "folder" : "file";
 
             if (canDelete) { 
                 item.Show("delete");
-                item["type"] = isDir ? "folder" : "file";
             }
             if (title.IndexOf(".") > 0)
             {
