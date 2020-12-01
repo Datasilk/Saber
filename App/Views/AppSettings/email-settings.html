@@ -1,0 +1,90 @@
+﻿<div class="row">
+    <div class="col four tablet-six mobile-twelve">
+        <h4>Email Clients</h4>
+        <div class="row input">
+            <select>{{emailclients}}</select>
+        </div>
+        <form autocomplete="chrome-off">
+            <div class="row field">Domain/IP Address</div>
+            <div class="row input"><input type="text" id="smtp_domain" placeholder="mail.yoursite.com" value="{{smtp.domain}}" /></div>
+            <div class="row field">Port</div>
+            <div class="row input"><input type="number" id="smtp_port" value="{{smtp.port}}" /></div>
+            <div class="row input">
+                <input type="checkbox" id="smtp_ssl" />
+                <label for="smtp_ssl">Use SSL</label>
+            </div>
+            <div class="row field">Username/Email</div>
+            <div class="row input"><input type="text" id="smtp_user" value="{{smtp.user}}" autocomplete="new-email" /></div>
+            <div class="row field">Password</div>
+            <div class="row input"><input type="password" id="smtp_pass" value="{{smtp.pass}}" autocomplete="new-password" /></div>
+            <div class="row text-right pad-height">
+                <button>Save Email Client</button>
+            </div>
+        </form>
+    </div>
+    <div class="col right seven tablet-five mobile-twelve">
+        <h4>Email Actions</h4>
+        <p>
+            When performing various actions, the user may receive an email from your website. 
+            Please select which preferred email client will send emails on your behalf to your
+            users for these various actions.
+        </p>
+        <div class="row">
+            <div class="row">
+                <h5>Sign Up Email</h5>
+                <p>Uses the file <span class="code string">emails/signup.html</span> to generate emails.</p>
+            </div>
+            <div class="row">
+                <div class="col four">
+                    <div class="row field">Email Client</div>
+                    <div class="row input">
+                        <select id="emailaction_signup">{{emailaction.signup}}</select>
+                    </div>
+                </div>
+                <div class="col eight">
+                    <div class="row field">Subject</div>
+                    <div class="row input">
+                        <input type="text" id="emailaction_signup_subject" value="{{emailaction.signup.subject}}" />
+                    </div>
+                </div>
+            </div>
+            <hr />
+        </div>
+        <div class="row">
+            <div class="row">
+                <h5>Forgot Password Email</h5>
+                <p>Uses the file <span class="code string">emails/forgot-pass.html</span> to generate emails.</p>
+            </div>
+            <div class="row">
+                <div class="col four">
+                    <div class="row field">Email Client</div>
+                    <div class="row input">
+                        <select id="emailaction_forgotpass">{{emailaction.forgotpass}}</select>
+                    </div>
+                </div>
+                <div class="col eight">
+                    <div class="row field">Subject</div>
+                    <div class="row input">
+                        <input type="text" id="emailaction_forgotpass_subject" value="{{emailaction.forgotpass.subject}}" />
+                    </div>
+                </div>
+            </div>
+            <hr />
+        </div>
+        <div class="row">
+            <div class="row">
+                <h5>Newsletter Email</h5>
+                <p>User can select any HTML file from <span class="code string">emails/</span> folder to generate emails.</p>
+            </div>
+            <div class="row">
+                <div class="col four">
+                    <div class="row field">Email Client</div>
+                    <div class="row input">
+                        <select id="emailaction_newsletter">{{emailaction.newsletter}}</select>
+                    </div>
+                </div>
+            </div>
+            <hr />
+        </div>
+    </div>
+</div>

@@ -5,7 +5,7 @@
     h2{font-size:24px;}
     h3{font-size:22px;}
     h4{font-size:20px;}
-    h5{font-size:18px;}
+    h5{font-size:17px;}
     h6{font-size:16px;}
     &.monaco .code-editor{overflow-y:hidden !important; padding-right:0 !important;}
     &.box ul.tabs > li{margin:0 5px 0 0; overflow:hidden; /*border-top-right-radius:9px;*/}
@@ -14,6 +14,10 @@
     button, a.button{font-size:13px;}
     input, textarea, select{border-radius:0 !important; font-size:13px !important;}
     .col.field{padding:9px 7px 11px 4px;}
+    
+    .code{padding:5px 7px; font-family:monospace;}
+    .bold{font-weight:bold;}
+    hr{margin:15px 0; border-width:0; border-top-width:2px;}
 }
 
 /* editor header */
@@ -202,7 +206,6 @@
     .no-fields{padding: 20px 50px;
         li{padding-bottom:10px;}
     }
-    .code{padding:5px 7px; font-family:monospace;}
     .vendor-input{padding-top:6px; min-height:46px; width:~"calc(100% - 200px)";}
     .select-image {
         .input.for-button{width:115px !important; padding-top:10px;}
@@ -347,6 +350,7 @@
     & > *:not(.tooltip){cursor:default;}
     .tooltip{display:none; position:absolute; z-index:1000; padding:10px; border-radius:6px; width:~"calc(100% - 10px)";
         ul{padding-left:15px;}
+        li{padding:10px;}
     }
     .tooltip.below{top:~"calc(100% + 12px)";
         &:after{

@@ -1,0 +1,29 @@
+﻿<div class="row icon-box web-app-icon">
+    <div class="col nine tablet-twelve desktop-sm-seven pad-bottom">
+        <h5>Website Icon</h5>
+        <div>Select an icon to display for your website. 16x16 up to 128x128 PNG file supported.</div>
+        <div class="row pad-top">
+            <button for="web">Upload Icon</button>
+        </div>
+    </div>
+    <div class="icon-img col three tablet-twelve desktop-sm-five right">
+        <div class="right pad-right icon-img{{favicon-missing}} hide{{/favicon-missing}}"><img src="{{favicon-src}}" /></div>
+    </div>
+</div>
+<div class="row">
+    <h5>Android App Icons</h5>
+    <div class="pad-bottom">
+        Upload icons for your web application to display on Android as an app icon. 
+        PNG files only and by specified sizes only.
+    </div>
+    <div>{{android-icons}}</div>
+</div>
+<div class="row">
+    <h5>Apple App Icons</h5>
+    <div class="pad-bottom">
+        Upload icons for your web application to display on iPhone as an app icon. 
+        PNG files only and by specified sizes only.
+    </div>
+    <div>{{apple-icons}}</div>
+</div>
+<input type="file" id="upload_app_icon" class="hide" />

@@ -176,6 +176,38 @@ namespace Saber
             Console.WriteLine("Found " + Vendors.Keys.Count + " Vendor" + (Vendors.Keys.Count != 1 ? "s" : "") + " with Security Keys (" + totalKeys + " key" + (totalKeys != 1 ? "s" : "") + ")");
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IVendorEmailClient interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorEmailClient).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Vendors.GetEmailClientsFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorEmailClient interface
+            Vendors.GetEmailClientsFromFileSystem();
+            Console.WriteLine("Found " + Vendors.EmailClients.Count + " Vendor Email Client" + (Vendors.EmailClients.Count != 1 ? "s" : ""));
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IVendorWebsiteSettings interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorWebsiteSettings).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Vendors.GetWebsiteSettingsFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorWebsiteSettings interface
+            Vendors.GetWebsiteSettingsFromFileSystem();
+            Console.WriteLine("Found " + Vendors.WebsiteSettings.Count + " Vendor Website Setting" + (Vendors.WebsiteSettings.Count != 1 ? "s" : ""));
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
             foreach (var kv in Vendors.Startups)
             {

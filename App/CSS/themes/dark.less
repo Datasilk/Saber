@@ -89,11 +89,6 @@
     background:#2a2a2a;
     .line(#444); 
 }
-.box .tooltip{
-    background:#15345a;
-    color:#a9dbff;
-}
-.tooltip-container .tooltip.below:after{border-bottom-color:#15345a !important;}
 
 .box .code-bar{
     color:#999;
@@ -145,6 +140,7 @@
 }
 
 .box{
+    p{color:#777;}
     .edit-bar li {
         & > div{ background:#363636;
             &:not(.selected):hover{background:#0082ff; color:#fff; fill:#fff;}
@@ -181,7 +177,15 @@
     .accordion > .title:hover{background:#1c2f40 !important;}
     .tooltip-container{
         .tooltip.below{
-            &:after{border-bottom-color: #2a2a2a;}
+            &:after{border-bottom-color: #333;}
         }
     }
+    .tooltip{background:#333; color:#eee;
+        p{color:#999;}
+    }
+
+    .code{background-color:#2a2a2a;
+          .string, &.string{color:#97bc3d;}
+    }
+    hr{border-top-color:rgba(255,255,255,0.2);}
 }

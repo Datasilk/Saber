@@ -19,6 +19,8 @@ namespace Saber
         public static Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
         public static List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
         public static List<Type> HtmlComponents { get; set; } = new List<Type>();
+        public static Dictionary<string, IVendorEmailClient> EmailClients { get; set; } = new Dictionary<string, IVendorEmailClient>();
+        public static List<IVendorWebsiteSettings> WebsiteSettings { get; set; } = new List<IVendorWebsiteSettings>();
 
         private class AssemblyInfo
         {
@@ -313,6 +315,63 @@ namespace Saber
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorHtmlComponent))) { return; }
             HtmlComponents.Add(type);
+        }
+        #endregion
+
+        #region "Email Clients"
+        public static void GetEmailClientsFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorEmailClient")
+                        {
+                            GetEmailClientsFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetEmailClientsFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorEmailClient))) { return; }
+            var instance = (IVendorEmailClient)Activator.CreateInstance(type);
+            EmailClients.Add(instance.Id, instance);
+            instance.Init();
+        }
+        #endregion
+
+        #region "Website Settings"
+        public static void GetWebsiteSettingsFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorWebsiteSettings")
+                        {
+                            GetWebsiteSettingsFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetWebsiteSettingsFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorWebsiteSettings))) { return; }
+            var instance = (IVendorWebsiteSettings)Activator.CreateInstance(type);
+            WebsiteSettings.Add(instance);
         }
         #endregion
     }

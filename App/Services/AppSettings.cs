@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Microsoft.AspNetCore.Http;
+using System.Text.Json;
 using Saber.Common.Utility;
 
 namespace Saber.Services
@@ -14,15 +14,19 @@ namespace Saber.Services
             //display all application settings
             if (!CheckSecurity("website-settings")) { return AccessDenied(); }
             var view = new View("/Views/AppSettings/appsettings.html");
+            var accordion = new View("/Views/AppSettings/accordion.html");
+            var accordions = new StringBuilder();
 
+            //add icons accordion
+            var viewIcons = new View("/Views/AppSettings/icons.html");
             //add website icon
             if (!File.Exists(App.MapPath("/wwwroot/images/web-icon.png")))
             {
-                view.Show("favicon-missing");
+                viewIcons.Show("favicon-missing");
             }
             else {
 
-                view["favicon-src"] = "/images/web-icon.png";
+                viewIcons["favicon-src"] = "/images/web-icon.png";
             }
 
             //add icons
@@ -33,7 +37,7 @@ namespace Saber.Services
             appleIcons.Append(RenderAppleIcon(viewIcon, 76));
             appleIcons.Append(RenderAppleIcon(viewIcon, 120));
             appleIcons.Append(RenderAppleIcon(viewIcon, 152));
-            view["apple-icons"] = appleIcons.ToString();
+            viewIcons["apple-icons"] = appleIcons.ToString();
 
             //add android icons
             viewIcon = new View("/Views/AppSettings/androidicon.html");
@@ -44,8 +48,86 @@ namespace Saber.Services
             androidIcons.Append(RenderAndroidIcon(viewIcon, 144));
             androidIcons.Append(RenderAndroidIcon(viewIcon, 192));
             androidIcons.Append(RenderAndroidIcon(viewIcon, 512));
-            view["android-icons"] = androidIcons.ToString();
+            viewIcons["android-icons"] = androidIcons.ToString();
 
+            //render icons accordion
+            accordion.Clear();
+            accordion["title"] = "Icons";
+            accordion["contents"] = viewIcons.Render();
+            accordions.Append(accordion.Render());
+
+            //load website config
+            Models.Website.Settings config = new Models.Website.Settings();
+            var configFile = App.MapPath("website.json");
+            if (File.Exists(configFile))
+            {
+                config = JsonSerializer.Deserialize<Models.Website.Settings>(File.ReadAllText(configFile));
+            }
+
+            //load email settings
+            var viewEmails = new View("/Views/AppSettings/email-settings.html");
+            var emailclients = new StringBuilder("<option value=\"smtp\">SMTP Client</option>");
+            foreach(var client in Vendors.EmailClients)
+            {
+                emailclients.Append("<option value=\"" + client.Key + "\">" + client.Value.Name + "</option>");
+            }
+            viewEmails["emailclients"] = emailclients.ToString();
+
+            //email action: signup
+            emailclients = new StringBuilder("<option value=\"smtp\"" +
+                    (config.Email.Actions.SignUp == "smtp" ? " selected=\"selected\"" : "") +
+                    ">SMTP Client</option>");
+            foreach (var client in Vendors.EmailClients)
+            {
+                emailclients.Append("<option value=\"" + client.Key + "\"" + 
+                    (config.Email.Actions.SignUp == client.Key ? " selected=\"selected\"" : "") + 
+                    ">" + client.Value.Name + "</option>");
+            }
+            viewEmails["emailaction.signup"] = emailclients.ToString();
+
+            //email action: forgot password
+            emailclients = new StringBuilder("<option value=\"smtp\"" +
+                    (config.Email.Actions.ForgotPass == "smtp" ? " selected=\"selected\"" : "") +
+                    ">SMTP Client</option>");
+            foreach (var client in Vendors.EmailClients)
+            {
+                emailclients.Append("<option value=\"" + client.Key + "\"" +
+                    (config.Email.Actions.ForgotPass == client.Key ? " selected=\"selected\"" : "") +
+                    ">" + client.Value.Name + "</option>");
+            }
+            viewEmails["emailaction.forgotpass"] = emailclients.ToString();
+
+            //email action: newsletter
+            emailclients = new StringBuilder("<option value=\"smtp\"" +
+                    (config.Email.Actions.Newsletter == "smtp" ? " selected=\"selected\"" : "") +
+                    ">SMTP Client</option>");
+            foreach (var client in Vendors.EmailClients)
+            {
+                emailclients.Append("<option value=\"" + client.Key + "\"" +
+                    (config.Email.Actions.Newsletter == client.Key ? " selected=\"selected\"" : "") +
+                    ">" + client.Value.Name + "</option>");
+            }
+            viewEmails["emailaction.newsletter"] = emailclients.ToString();
+
+            //render email settings accordion
+            accordion.Clear();
+            accordion["title"] = "Email Settings";
+            accordion["contents"] = viewEmails.Render();
+            accordions.Append(accordion.Render());
+
+            //render accordions
+            view["accordions"] = accordions.ToString();
+
+            //add vendor plugins
+            var html = new StringBuilder();
+            foreach(var vendor in Vendors.WebsiteSettings)
+            {
+                accordion.Clear();
+                accordion["title"] = vendor.Name;
+                accordion["contents"] = vendor.Render(this);
+                if (accordion["contents"] != "") { html.Append(accordion.Render()); }
+            }
+            view["vendor.accordions"] = html.ToString();
 
             //add js file
             AddScript("/editor/js/views/appsettings/appsettings.js");
@@ -55,7 +137,7 @@ namespace Saber.Services
                 new Datasilk.Core.Web.Response()
                 {
                     selector = ".sections > .app-settings .settings-contents",
-                    html = Common.Platform.Render.View(this, view, "<ul class=\"vendors list\">", "</ul>", "<li>", "</li>"),
+                    html = Common.Platform.Render.View(this, view),
                     css = Css.ToString(),
                     javascript = Scripts.ToString()
                 }
@@ -92,10 +174,6 @@ namespace Saber.Services
                 viewIcon["src"] = $"/images/mobile/android-{px}x{px}.png";
             }
             viewIcon["px"] = px.ToString();
-            if(px > 240)
-            {
-                viewIcon["icon-img-attrs"] = " style=\"width:240px;\"";
-            }
             return viewIcon.Render();
         }
         #endregion

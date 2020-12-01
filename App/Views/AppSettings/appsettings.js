@@ -9,7 +9,10 @@
     for (var x = 0; x < icons.length; x++) {
         $('.' + icons[x].name + '-app-icon button').on('click', (a) => {
             var btn = $(a.target);
-            var img = btn.parent().find('.icon-img img');
+            var container = btn.parents('.icon-box').first();
+            var img = container.find('.icon-img img');
+            console.log(container);
+            console.log(img);
             var px = btn.attr('px') || '0';
             var icon = icons.filter(a => a.name == btn.attr('for'))[0];
             selbtn = {
