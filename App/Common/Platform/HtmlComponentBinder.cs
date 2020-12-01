@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Saber.Core;
+using Saber.Vendor;
 
 namespace Saber.Common.Platform
 {
@@ -18,7 +19,7 @@ namespace Saber.Common.Platform
             foreach (var type in Vendors.HtmlComponents)
             {
                 if (type.Name.Contains("IVendorHtmlComponent")) { continue; }
-                var binder = (Vendor.IVendorHtmlComponent)Activator.CreateInstance(type);
+                var binder = (IVendorHtmlComponent)Activator.CreateInstance(type);
                 HtmlVars.AddRange(binder.Bind());
             }
         }
@@ -40,7 +41,7 @@ namespace Saber.Common.Platform
     /// <summary>
     /// Define Saber-specific html variables
     /// </summary>
-    public class ViewDataBinderDefaults : Vendor.IVendorHtmlComponent
+    public class ViewDataBinderDefaults : IVendorHtmlComponent
     {
         public List<HtmlComponentModel> Bind()
         {

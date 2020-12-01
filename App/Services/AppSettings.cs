@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -57,21 +59,70 @@ namespace Saber.Services
             accordions.Append(accordion.Render());
 
             //load website config
-            Models.Website.Settings config = new Models.Website.Settings();
-            var configFile = App.MapPath("website.json");
-            if (File.Exists(configFile))
-            {
-                config = JsonSerializer.Deserialize<Models.Website.Settings>(File.ReadAllText(configFile));
-            }
+            var config = Common.Platform.Website.Settings.Load();
 
             //load email settings
             var viewEmails = new View("/Views/AppSettings/email-settings.html");
             var emailclients = new StringBuilder("<option value=\"smtp\">SMTP Client</option>");
-            foreach(var client in Vendors.EmailClients)
+            var clientforms = new StringBuilder();
+            viewEmails["smtp.domain"] = config.Email.Smtp.Domain;
+            viewEmails["smtp.port"] = config.Email.Smtp.Port.ToString();
+            if (config.Email.Smtp.SSL == true) { viewEmails.Show("smtp.ssl"); }
+            viewEmails["smtp.user"] = config.Email.Smtp.Username;
+            viewEmails["smtp.pass"] = config.Email.Smtp.Password != "" ? "********" : "";
+
+            foreach (var client in Vendors.EmailClients)
             {
                 emailclients.Append("<option value=\"" + client.Key + "\">" + client.Value.Name + "</option>");
+
+                //load vendor email client config
+                var vendorConfig = client.Value.GetConfig();
+
+                //generate email client form
+                clientforms.Append("<div class=\"email-client client-" + client.Key + " hide\">");
+                foreach(var param in client.Value.Parameters)
+                {
+                    var value = (vendorConfig.ContainsKey(param.Key) ? vendorConfig[param.Key] : "").Replace("\"", "&quot;");
+                    var id = " id=\"" + client.Key + "_" + param.Key + "\"";
+                    switch (param.Value.DataType)
+                    {
+                        case Vendor.EmailClientDataType.Boolean:
+                            break;
+                        default:
+                            clientforms.Append("<div class=\"row field\">" + param.Value.Name + "</div>");
+                            break;
+                    }
+                    switch (param.Value.DataType)
+                    {
+                        case Vendor.EmailClientDataType.Text:
+                            clientforms.Append("<div class=\"row input\"><input type=\"text\"" + id + " value=\"" + value + "\"/></div>");
+                            break;
+                        case Vendor.EmailClientDataType.UserOrEmail:
+                            clientforms.Append("<div class=\"row input\"><input type=\"text\"" + id + " value=\"" + value + "\" autocomplete=\"new-email\"/></div>");
+                            break;
+                        case Vendor.EmailClientDataType.Password:
+                            clientforms.Append("<div class=\"row input\"><input type=\"password\"" + id + " value=\"" + (value != "" ? "********" : "") + "\" autocomplete=\"new-password\"/></div>");
+                            break;
+                        case Vendor.EmailClientDataType.Number:
+                            clientforms.Append("<div class=\"row input\"><input type=\"number\"" + id + " value=\"" + value + "\"/></div>");
+                            break;
+                        case Vendor.EmailClientDataType.List:
+                            clientforms.Append("<div class=\"row input\"><select" + id + ">" + 
+                                string.Join("", param.Value.ListOptions?.Select(a => "<option value=\"" + a + "\">" + a + "</option>") ?? new string[] { "" }) +
+                                "</select></div>");
+                            break;
+                        case Vendor.EmailClientDataType.Boolean:
+                            clientforms.Append("<div class=\"row input\"><input type=\"checkbox\"" + id + " />" + 
+                                "<label for=\"" + client.Key + "_" + param.Key + "\">" + param.Value.Name + "</label>" +
+                                "</div>");
+                            break;
+                    }
+                    
+                }
+                clientforms.Append("</div>");
             }
             viewEmails["emailclients"] = emailclients.ToString();
+            viewEmails["emailclients.forms"] = clientforms.ToString();
 
             //email action: signup
             emailclients = new StringBuilder("<option value=\"smtp\"" +
@@ -142,6 +193,38 @@ namespace Saber.Services
                     javascript = Scripts.ToString()
                 }
             );
+        }
+
+        public string SaveEmailClient(string id, Dictionary<string, string> parameters)
+        {
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (id == "smtp")
+            {
+                //save default email client settings
+                var settings = Common.Platform.Website.Settings.Load();
+                int.TryParse(parameters["port"], out var port);
+                var ssl = parameters["ssl"] ?? "";
+                var pass = parameters["pass"] ?? "";
+                settings.Email.Smtp.Domain = parameters["domain"] ?? "";
+                settings.Email.Smtp.Port = port;
+                settings.Email.Smtp.SSL = ssl.ToLower() == "true";
+                settings.Email.Smtp.Username = parameters["user"];
+                if(pass != "" && pass.Any(a => a != '*'))
+                {
+                    settings.Email.Smtp.Password = parameters["pass"];
+                }
+                Common.Platform.Website.Settings.Save(settings);
+            }
+            else
+            {
+                //save vendor email client settings
+                var vendor = Vendors.EmailClients.Where(a => a.Key == id).FirstOrDefault().Value;
+                if(vendor != null)
+                {
+                    vendor.SaveConfig(parameters);
+                }
+            }
+            return Success();
         }
 
         private string RenderAppleIcon(View viewIcon, int px)

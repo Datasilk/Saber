@@ -1,0 +1,16 @@
+{
+  "Email": {
+    "Smtp": {
+      "Domain": "127.0.0.1",
+      "Port": 967,
+      "SSL": true,
+      "Username": "markentingh",
+      "Password": "kljHie7Ckmfro2H9"
+    },
+    "Actions": {
+      "SignUp": null,
+      "ForgotPass": null,
+      "Newsletter": null
+    }
+  }
+}

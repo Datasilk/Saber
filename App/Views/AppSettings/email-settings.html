@@ -1,24 +1,27 @@
 ﻿<div class="row">
-    <div class="col four tablet-six mobile-twelve">
+    <div class="email-clients col four tablet-six mobile-twelve">
         <h4>Email Clients</h4>
         <div class="row input">
-            <select>{{emailclients}}</select>
+            <select id="emailclients">{{emailclients}}</select>
         </div>
         <form autocomplete="chrome-off">
-            <div class="row field">Domain/IP Address</div>
-            <div class="row input"><input type="text" id="smtp_domain" placeholder="mail.yoursite.com" value="{{smtp.domain}}" /></div>
-            <div class="row field">Port</div>
-            <div class="row input"><input type="number" id="smtp_port" value="{{smtp.port}}" /></div>
-            <div class="row input">
-                <input type="checkbox" id="smtp_ssl" />
-                <label for="smtp_ssl">Use SSL</label>
+            <div class="email-client client-smtp">
+                <div class="row field">Domain/IP Address</div>
+                <div class="row input"><input type="text" id="smtp_domain" placeholder="mail.yoursite.com" value="{{smtp.domain}}" /></div>
+                <div class="row field">Port</div>
+                <div class="row input"><input type="number" id="smtp_port" value="{{smtp.port}}" /></div>
+                <div class="row input">
+                    <input type="checkbox" id="smtp_ssl" {{smtp.ssl}}checked="checked"{{/smtp.ssl}} />
+                    <label for="smtp_ssl">Use SSL</label>
+                </div>
+                <div class="row field">Username/Email</div>
+                <div class="row input"><input type="text" id="smtp_user" value="{{smtp.user}}" autocomplete="new-email" /></div>
+                <div class="row field">Password</div>
+                <div class="row input"><input type="password" id="smtp_pass" value="{{smtp.pass}}" autocomplete="new-password" /></div>
             </div>
-            <div class="row field">Username/Email</div>
-            <div class="row input"><input type="text" id="smtp_user" value="{{smtp.user}}" autocomplete="new-email" /></div>
-            <div class="row field">Password</div>
-            <div class="row input"><input type="password" id="smtp_pass" value="{{smtp.pass}}" autocomplete="new-password" /></div>
+            {{emailclients.forms}}
             <div class="row text-right pad-height">
-                <button>Save Email Client</button>
+                <button class="save apply">Save Email Client</button>
             </div>
         </form>
     </div>

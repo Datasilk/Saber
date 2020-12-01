@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Saber.Models.Website
+﻿namespace Saber.Models.Website
 {
     public class Settings
     {
@@ -17,6 +15,7 @@ namespace Saber.Models.Website
     {
         public string Domain { get; set; }
         public int Port { get; set; }
+        public bool SSL { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
     }

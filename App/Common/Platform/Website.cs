@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using Saber.Core;
 using Saber.Core.Extensions.Strings;
 using dotless.Core;
@@ -223,6 +224,30 @@ namespace Saber.Common.Platform
             catch (Exception)
             {
                 throw new ServiceErrorException("Error generating compiled LESS resource");
+            }
+        }
+
+        public static class Settings
+        {
+            private static JsonSerializerOptions jsonOptions = new JsonSerializerOptions()
+            {
+                WriteIndented = true
+            };
+
+            public static Models.Website.Settings Load()
+            {
+                var file = App.MapPath("website.json");
+                if (File.Exists(file))
+                {
+                    return JsonSerializer.Deserialize<Models.Website.Settings>(Cache.LoadFile(file));
+                }
+                return new Models.Website.Settings();
+            }
+
+            public static void Save(Models.Website.Settings settings)
+            {
+                var file = App.MapPath("website.json");
+                File.WriteAllText(file, JsonSerializer.Serialize(settings, jsonOptions));
             }
         }
     }

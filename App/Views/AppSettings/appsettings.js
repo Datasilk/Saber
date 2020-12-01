@@ -47,7 +47,38 @@
         );
     });
 
-    
+    //set up email settings
+    $('#emailclients').on('change', () => {
+        var id = $('#emailclients').val();
+        $('.email-client').addClass('hide');
+        $('.email-client.client-' + id).removeClass('hide');
+    });
+
+    $('.email-clients button.save').on('click', (e) => {
+        e.preventDefault();
+        var section = $('.email-client:not(.hide)').first();
+        var id = section[0].className.replace('email-client client-', '');
+        var inputs = section.find('input, select');
+        var params = {};
+        inputs.each(a => {
+            var b = $(a);
+            var type = b.attr('type') ?? '';
+            params[b.attr('id').replace(id + '_', '')] = (
+                type == 'checkbox' ? (a.checked == true ? 'True' : 'False') : b.val()
+            );
+        });
+        var data = {
+            id: id,
+            parameters: params
+        };
+        console.log(data);
+
+        S.ajax.post('AppSettings/SaveEmailClient', data, () => {
+            S.editor.message('', 'Email Client settings saved');
+        }, (err) => {
+            S.editor.message('', err.responseText, 'error');
+        })
+    });
 
     //load accordion functionality 
     S.accordion.load({}, () => { S.editor.resizeWindow(); }); 

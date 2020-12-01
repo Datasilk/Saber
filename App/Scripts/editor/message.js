@@ -1,5 +1,5 @@
 S.editor.message = function (elem, msg, type) {
-    $(elem ? elem : '.editor > div > .messages').append(template_message.innerHTML
+    $(elem && elem != '' ? elem : '.editor > div > .messages').append(template_message.innerHTML
         .replace('##text##', msg)
         .replace('##type##', type)
     );
