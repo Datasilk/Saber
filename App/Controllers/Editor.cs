@@ -93,7 +93,7 @@ namespace Saber.Controllers
                         var htmlVars = Common.Platform.HtmlComponentBinder.HtmlVars;
 
                         //add custom component for generating Partial Views
-                        viewComponent["icon"] = "/editor/images/partial-view.svg";
+                        viewComponent["icon"] = "/editor/partial-view.svg";
                         viewComponent["key"] = "partial-view";
                         viewComponent["name"] = "Partial View";
                         viewComponent["description"] = "Render a partial HTML file inside of your web page.";

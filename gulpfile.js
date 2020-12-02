@@ -92,8 +92,8 @@ paths.working = {
         ],
         app: paths.app + '**/*.js',
         utility: [
-            paths.scripts + 'utility/*.js',
-            paths.scripts + 'utility/**/*.js'
+            paths.scripts + 'utility/*.*',
+            paths.scripts + 'utility/**/*.*'
         ],
         editor: [
             paths.scripts + 'editor/_super.js',

@@ -81,31 +81,17 @@
     );
 }
 
-.box.bg{
-    background:#1d1d1d;
-}
-
+.box.bg{background:#1d1d1d;}
 .editor-drop-menu .box.bg, .file-browser, .code-bar, .box .tooltip{
     background:#2a2a2a;
     .line(#444); 
 }
-
-.box .code-bar{
-    color:#999;
-}
-
-.box .content-fields .code{
-    background:#353535; 
-}
-
+.box .code-bar{color:#999;}
+.box .content-fields .code{background:#353535; }
 .box .section, .popup{
     .box(#222, #444, #ddd); 
 }
-
-.box .tabs li.selected > .row{
-    border-bottom-color:#0099ff; 
-}
-
+.box .tabs li.selected > .row{border-bottom-color:#0099ff; }
 .box header{
     .box(#222222, transparent, #ddd); 
 }
@@ -117,9 +103,7 @@
 .editor-tab:hover > .box{
     &.bg{background-color:#00295e;}
 }
-
 .box .edit-bar, .box .accordion > .title{background:#2a2a2a}
-
 .editor, .popup{
     .img .menu{background:#2a2a2a; padding-bottom:0;
         li{
@@ -130,7 +114,6 @@
         }
     }
 }
-
 .editor-drop-menu{
     li{
         .row.hover:hover{background:#0082ff; color:#fff; fill:#fff;}
@@ -138,7 +121,6 @@
         use{color:#fff; fill:#fff;}
     }
 }
-
 .box{
     p{color:#777;}
     .edit-bar li {
@@ -162,10 +144,9 @@
     .components-menu{background:#333; 
         &:after{border-bottom-color: #333; }
         .component-item{border-bottom-color:rgba(255,255,255,0.1);}
+        p{color:#ccc;}
     }
-    ul.list{
-        li:hover{background:#1a2834;}
-    }
+    ul.list li:hover{background:#1a2834;}
     .browser-path{color:#90d3ff;}
     .resources-list{
         .img{background-color:#000;}
@@ -176,16 +157,13 @@
     .accordion .expander:hover{background:#125997;}
     .accordion > .title:hover{background:#1c2f40 !important;}
     .tooltip-container{
-        .tooltip.below{
-            &:after{border-bottom-color: #333;}
+        .tooltip{background:#333; color:#eee;
+            .below:after{border-bottom-color: #333;}
+            p{color:#999;}
         }
     }
-    .tooltip{background:#333; color:#eee;
-        p{color:#999;}
-    }
-
     .code{background-color:#2a2a2a;
-          .string, &.string{color:#97bc3d;}
+        .string, &.string{color:#97bc3d;}
     }
     hr{border-top-color:rgba(255,255,255,0.2);}
 }
