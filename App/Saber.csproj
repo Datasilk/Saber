@@ -143,10 +143,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\content" />
+    <Folder Include="Content\temp\pages\home\" />
     <Folder Include="wwwroot\editor\images\" />
-    <Folder Include="wwwroot\images" />
-    <Folder Include="wwwroot\js" />
   </ItemGroup>
 
   <ItemGroup>

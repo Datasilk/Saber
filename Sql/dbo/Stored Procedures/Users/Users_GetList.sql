@@ -14,9 +14,9 @@ BEGIN
 		SELECT 
 		CASE WHEN u.userId = 1 THEN 999
 		ELSE COUNT(*) END AS total
-		FROM Security_Roles sr
-		WHERE sr.userId = u.userId
-		AND sr.isplatform = 1
+		FROM Security_Keys sk
+		WHERE sk.groupId IN (SELECT groupId FROM Security_Users WHERE userId=u.userId)
+		AND sk.isplatform = 1
 	) AS sec
 
 	WHERE 

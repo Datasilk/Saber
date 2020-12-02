@@ -330,44 +330,7 @@ namespace Saber
             });
 
             //check if default website exists
-            if (!File.Exists(App.MapPath("/Content/pages/home.html")))
-            {
-                //copy default website since none exists yet
-                Directory.CreateDirectory(App.MapPath("/wwwroot/content/"));
-                Directory.CreateDirectory(App.MapPath("/wwwroot/content/pages/"));
-                Directory.CreateDirectory(App.MapPath("/wwwroot/fonts/"));
-                Directory.CreateDirectory(App.MapPath("/wwwroot/images/"));
-                Directory.CreateDirectory(App.MapPath("/wwwroot/js/"));
-                Directory.CreateDirectory(App.MapPath("/Content/pages/"));
-                Directory.CreateDirectory(App.MapPath("/Content/partials/"));
-                
-                //copy all temp folders into wwwroot
-                var dir = new DirectoryInfo(App.MapPath("/Content/temp"));
-                var exclude = new string[]
-                {
-                    "\\pages",
-                    "\\partials",
-                    "\\app-css"
-                };
-                foreach(var d in dir.GetDirectories())
-                {
-                    if (!exclude.Any(a => d.FullName.IndexOf(a) >= 0)) 
-                    { 
-                        Common.Utility.FileSystem.CopyDirectoryContents(d.FullName, App.MapPath("/wwwroot/" + d.Name));
-                    }
-                }
-
-                Common.Utility.FileSystem.CopyDirectoryContents(App.MapPath("/Content/temp/pages/"), App.MapPath("/Content/pages/")); 
-                Common.Utility.FileSystem.CopyDirectoryContents(App.MapPath("/Content/temp/partials/"), App.MapPath("/Content/partials/"));
-                
-                File.Copy(App.MapPath("/Content/temp/app-css/website.less"), App.MapPath("/CSS/website.less"), true);
-
-                //TODO: compile website.less
-
-                //TODO: compile all LESS files for all pages & partials
-
-                //TODO: copy all JavaScript files for pages & partials into wwwroot
-            }
+            
 
             //set up path pointers for View partials (e.g. {{side-bar "partials/side-bar.html"}} instead of {{side-bar "/Content/partials/side-bar.html"}})
             ViewPartialPointers.Paths.AddRange(new List<KeyValuePair<string, string>>()
@@ -393,6 +356,9 @@ namespace Saber
                     Console.WriteLine(ex.StackTrace);
                 }
             }
+
+            //copy temporary website (if neccessary)
+            Website.CopyTempWebsite();
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
