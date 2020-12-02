@@ -37,7 +37,6 @@ var gulp = require('gulp'),
     cleancss = require('gulp-clean-css'),
     less = require('gulp-less'),
     rename = require('gulp-rename'),
-    changed = require('gulp-changed'),
     del = require('del'),
     replace = require('gulp-replace'),
     config = require('./App/config.json'),
@@ -217,9 +216,7 @@ gulp.task('js:editor', function () {
 });
 
 gulp.task('js:utility', function () {
-    //check file changes & replace changed files in destination
     return gulp.src(paths.working.js.utility)
-        .pipe(changed(paths.compiled.js + 'utility'))
         .pipe(gulp.dest(paths.compiled.js + 'utility'));
 });
 

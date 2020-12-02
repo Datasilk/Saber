@@ -119,7 +119,7 @@ namespace Saber.Services
                     {
                         var found = false;
                         //find vendor content field
-                        var vendor = Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0).FirstOrDefault();
+                        var vendor = Common.Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0).FirstOrDefault();
                         if(vendor.Value != null)
                         {
                             found = true;

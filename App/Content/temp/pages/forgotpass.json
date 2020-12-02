@@ -1,0 +1,15 @@
+﻿{
+  "title": {
+    "prefix": "",
+    "body": "Forgot My Password",
+    "suffix": " - Saber",
+    "prefixId": 0,
+    "suffixId": 1
+  },
+  "description": "If you are having trouble logging into your account, you can request a password reset.",
+  "security": {
+    "secure": false,
+    "read": [],
+    "write": []
+  }
+}

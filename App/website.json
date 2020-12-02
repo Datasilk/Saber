@@ -2,15 +2,27 @@
   "Email": {
     "Smtp": {
       "Domain": "127.0.0.1",
-      "Port": 967,
-      "SSL": true,
+      "Port": 25,
+      "SSL": false,
       "Username": "markentingh",
-      "Password": "kljHie7Ckmfro2H9"
+      "Password": "sd879l372Kl9d"
     },
     "Actions": {
-      "SignUp": null,
-      "ForgotPass": null,
-      "Newsletter": null
+      "SignUp": {
+        "Client": "smtp",
+        "Subject": "Welcome to Saber!",
+        "File": null
+      },
+      "ForgotPass": {
+        "Client": "smtp",
+        "Subject": "Saber Password Recovery",
+        "File": null
+      },
+      "Newsletter": {
+        "Client": "smtp",
+        "Subject": null,
+        "File": null
+      }
     }
   }
 }

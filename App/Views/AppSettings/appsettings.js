@@ -1,4 +1,7 @@
 ﻿(function () {
+    //load accordion functionality 
+    S.accordion.load({}, () => { S.editor.resizeWindow(); }); 
+
     //set up icon buttons
     var selbtn = {};
     var icons = [
@@ -11,8 +14,6 @@
             var btn = $(a.target);
             var container = btn.parents('.icon-box').first();
             var img = container.find('.icon-img img');
-            console.log(container);
-            console.log(img);
             var px = btn.attr('px') || '0';
             var icon = icons.filter(a => a.name == btn.attr('for'))[0];
             selbtn = {
@@ -55,6 +56,7 @@
     });
 
     $('.email-clients button.save').on('click', (e) => {
+        //save selected email client settings
         e.preventDefault();
         var section = $('.email-client:not(.hide)').first();
         var id = section[0].className.replace('email-client client-', '');
@@ -71,15 +73,37 @@
             id: id,
             parameters: params
         };
-        console.log(data);
 
         S.ajax.post('AppSettings/SaveEmailClient', data, () => {
-            S.editor.message('', 'Email Client settings saved');
+            S.editor.message('', 'Email Client settings saved successfully');
         }, (err) => {
             S.editor.message('', err.responseText, 'error');
         })
     });
 
-    //load accordion functionality 
-    S.accordion.load({}, () => { S.editor.resizeWindow(); }); 
+    $('.email-actions button.save').on('click', (e) => {
+        //save email actions
+        e.preventDefault();
+        var data = {
+            actions: {
+                SignUp: {
+                    Client: $('#emailaction_signup').val(),
+                    Subject: $('#emailaction_signup_subject').val()
+                },
+                ForgotPass: {
+                    Client: $('#emailaction_forgotpass').val(),
+                    Subject: $('#emailaction_forgotpass_subject').val()
+                },
+                Newsletter: {
+                    Client: $('#emailaction_newsletter').val()
+                }
+            }
+        };
+
+        S.ajax.post('AppSettings/SaveEmailActions', data, () => {
+            S.editor.message('', 'Email Action settings saved successfully');
+        }, (err) => {
+            S.editor.message('', err.responseText, 'error');
+        })
+    });
 })();

@@ -7,7 +7,7 @@ using Saber.Vendor;
 using System.Reflection;
 using System.Text.Json;
 
-namespace Saber
+namespace Saber.Common
 {
     public static class Vendors
     {

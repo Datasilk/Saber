@@ -22,10 +22,10 @@ namespace Saber
                 case "logout": return new Controllers.Logout();
                 case "upload": return new Controllers.Upload();
             }
-            if (Vendors.Controllers.ContainsKey(name))
+            if (Common.Vendors.Controllers.ContainsKey(name))
             {
                 //load Vendor controller
-                return (IController)Activator.CreateInstance(Vendors.Controllers[name]);
+                return (IController)Activator.CreateInstance(Common.Vendors.Controllers[name]);
             }
             //if all else fails, render Saber Editor
             return new Controllers.Editor();
