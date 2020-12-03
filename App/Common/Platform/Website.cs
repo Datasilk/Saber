@@ -256,7 +256,7 @@ namespace Saber.Common.Platform
                 };
                 foreach (var d in dir.GetDirectories())
                 {
-                    if (!exclude.Any(a => d.FullName.IndexOf(a) >= 0))
+                    if (!exclude.Any(a => d.FullName.Contains(a)))
                     {
                         Utility.FileSystem.CopyDirectoryContents(d.FullName, App.MapPath("/wwwroot/" + d.Name));
                     }

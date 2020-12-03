@@ -22,10 +22,10 @@ namespace Saber.Common.Utility
             }
 
             //next, copy all files in sub directories
-            foreach (var path in Directory.EnumerateFiles(targetFolder, "*.*", SearchOption.AllDirectories))
+            foreach (var path in Directory.GetFiles(targetFolder, "*.*", SearchOption.AllDirectories))
             {
                 var ext = "." + path.GetFileExtension();
-                if (!extensions.Contains(ext)) { continue; }
+                if (extensions.Length > 0 && !extensions.Contains(ext)) { continue; }
                 try
                 {
                     File.Copy(path, path.Replace(targetFolder, outputFolder), true);
@@ -38,7 +38,7 @@ namespace Saber.Common.Utility
         {
             if(exclude == null) { exclude = new string[] { }; }
             exclude = exclude.Select(a => a.Replace("\\", "/")).ToArray();
-            return Directory.EnumerateFiles(App.MapPath(targetFolder), filePattern, recurseFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+            return Directory.GetFiles(App.MapPath(targetFolder), filePattern, recurseFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
                 .Where(a =>
                 {
                     var a2 = a.Replace("\\", "/");
