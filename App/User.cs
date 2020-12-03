@@ -116,6 +116,7 @@ namespace Saber
             Photo = false;
             changed = true;
             Context.Response.Cookies.Delete("authId");
+            Save();
         }
 
         public void SetLanguage(string language)

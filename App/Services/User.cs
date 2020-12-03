@@ -66,11 +66,11 @@
             return "";
         }
 
-        public string Create(string name, string emailaddr, string password)
+        public string SignUp(string name, string emailaddr, string password, string password2)
         {
-            if (!CheckSecurity("manage-users")) { return AccessDenied(); }
             if (!CheckEmailAddress(emailaddr)) { return Error("Email address is invalid"); }
             if (Query.Users.Exists(emailaddr)) { return Error("Another account is already using the email address \"" + emailaddr + "\""); }
+            if (password == password2) { return Error("Passwords do not match"); }
             Query.Users.CreateUser(new Query.Models.User()
             {
                 name = name,

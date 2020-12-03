@@ -36,11 +36,14 @@
                 .replace('##button-title##', 'Create ' + name);
             var htmlparam = $('#template_component_param').html();
             var fields = [];
+            var idfield = $('#template_component_id').html();
 
             if (key == 'partial-view') {
-                html = html.replace('##optional##', '');
+                html = html.replace('##id-field##', idfield).replace('##optional##', '');
+            } else if (key == 'special-vars') {
+                html = html.replace('##id-field##', '');
             } else {
-                html = html.replace('##optional##', '<span class="faded">optional</span>');
+                html = html.replace('##id-field##', idfield).replace('##optional##', '<span class="faded">optional</span>');
             }
 
             if (params != null && params.length > 0) {
@@ -66,8 +69,9 @@
                                 '<label for="' + 'param_' + param.Key + '"' + title + '>' + param.Name + '</label>'));
                             break;
                         case 3: //list
+                            console.log(param.ListOptions);
                             fields.push(field.replace('##input##', '<select' + id + '>' +
-                                (param.ListOptions ? param.ListOptions.map(a => '<option value="' + a + '">' + a + '</option>').join('') : '') +
+                                (param.ListOptions ? param.ListOptions.map(a => '<option value="' + a.Key + '">' + a.Value + '</option>').join('') : '') +
                                 '</select>'));
                             break;
                         case 4: //date
@@ -116,12 +120,24 @@
             $('.component-configure .button.apply').on('click', () => {
                 //generate component instance in selected HTML page
                 var inputs = $('.component-configure').find('input, select');
-                var suffix = $('#component_id').val();
-                var mustache = '{{' + $('#component_key').val() +
+                var suffix = $('#component_id').length > 0 ? $('#component_id').val() : '';
+                var componentId = $('#component_key').val();
+                var mustache = '{{' + componentId +
                     (suffix && suffix != '' ? '-' + suffix : '');
                 if (key == 'partial-view') {
                     //generate partial view
                     mustache = '{{' + suffix + ' "' + $('#param_page').val() + '"}}';
+                } else if (key == 'special-vars') {
+                    var val = $('#param_var').val();
+                    parts = val.split('|');
+                    var id = parts[0];
+                    var isblock = parts.length > 1 ? (parts[1] == '1' ? true : false) : false;
+                    if (isblock) {
+                        mustache = '{{' + id + '}}{{/' + id + '}}';
+                    } else {
+                        mustache = '{{' + id + '}}';
+                    }
+                    
                 } else {
                     //generate vendor HTML components
                     var paramlen = 0;

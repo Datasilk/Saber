@@ -114,7 +114,7 @@ namespace Saber.Common.Platform
             
 
             //load platform-specific data into view template
-            var results = GetPlatformData(view, request, data);
+            var results = HtmlComponents(view, request, data);
             if (results.Count > 0)
             {
                 foreach (var item in results)
@@ -126,7 +126,7 @@ namespace Saber.Common.Platform
             if(uselayout)
             {
                 //render all content
-                results = GetPlatformData(header, request, data);
+                results = HtmlComponents(header, request, data);
 
                 //results.AddRange(config.header.fields);
                 foreach (var item in results)
@@ -137,7 +137,7 @@ namespace Saber.Common.Platform
                 {
                     header[item.Key] = item.Value;
                 }
-                results = GetPlatformData(footer, request, data);
+                results = HtmlComponents(footer, request, data);
                 //results.AddRange(config.footer.fields);
                 foreach (var item in results)
                 {
@@ -157,7 +157,7 @@ namespace Saber.Common.Platform
             }
         }
 
-        private static List<KeyValuePair<string, string>> GetPlatformData(View view, IRequest request, Dictionary<string, string> data)
+        private static List<KeyValuePair<string, string>> HtmlComponents(View view, IRequest request, Dictionary<string, string> data)
         {
             var results = new List<KeyValuePair<string, string>>();
             var prefix = "";
@@ -169,8 +169,8 @@ namespace Saber.Common.Platform
                     prefix = view.Partials[x].Prefix;
                 }
 
-                //get platform data from the View Data Binder
-                var vars = HtmlComponentBinder.HtmlVars;
+                //get HTML components from vendors
+                var vars = Vendors.HtmlComponents;
                 foreach (var item in vars)
                 {
                     var fields = view.Fields.Where(a => a.Key.IndexOf(prefix + item.Key) == 0);
@@ -181,10 +181,10 @@ namespace Saber.Common.Platform
                             var args = elem.Vars ?? new Dictionary<string, string>();
                             var d = data.ContainsKey(elem.Name) ? data[elem.Name] : "";
                             //run the Data Binder callback method
-                            var range = item.Render(view, request, args, d, prefix, elem.Name);
+                            var range = item.Value.Render(view, request, args, d, prefix, elem.Name);
                             if (range.Count > 0)
                             {
-                                //add Data Binder callback method results to list
+                                //add HTML component render results to list
                                 results.AddRange(range);
                             }
                         }

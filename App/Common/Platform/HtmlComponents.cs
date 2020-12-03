@@ -7,41 +7,9 @@ using Saber.Vendor;
 namespace Saber.Common.Platform
 {
     /// <summary>
-    /// Used to bind HTML mustache variables to HTML components
-    /// </summary>
-    public class HtmlComponentBinder
-    {
-        public static List<HtmlComponentModel> HtmlVars = new List<HtmlComponentModel>();
-        private static string[] _htmlVarKeys { get; set; }
-
-        public static void Initialize()
-        {
-            foreach (var type in Vendors.HtmlComponents)
-            {
-                if (type.Name.Contains("IVendorHtmlComponent")) { continue; }
-                var binder = (IVendorHtmlComponent)Activator.CreateInstance(type);
-                HtmlVars.AddRange(binder.Bind());
-            }
-        }
-
-        /// <summary>
-        /// Get a list of platform-specific html variables that are used to load custom data and plugins
-        /// </summary>
-        /// <returns></returns>
-        public static string[] GetHtmlVariables()
-        {
-            if(_htmlVarKeys != null) { return _htmlVarKeys; }
-            var list = new List<string>();
-            list.AddRange(HtmlVars.Select(a => a.Key));
-            _htmlVarKeys = list.ToArray();
-            return _htmlVarKeys;
-        }
-    }
-
-    /// <summary>
     /// Define Saber-specific html variables
     /// </summary>
-    public class ViewDataBinderDefaults : IVendorHtmlComponent
+    public class HtmlComponents : IVendorHtmlComponent
     {
         public List<HtmlComponentModel> Bind()
         {
@@ -50,9 +18,9 @@ namespace Saber.Common.Platform
                 new HtmlComponentModel()
                 {
                     Key = "user",
-                    Name = "User Information",
+                    Name = "User Logged In",
+                    Block = true,
                     Description = "Display information about a user if logged into their account",
-                    Parameters = new Dictionary<string, HtmlComponentParameter>(){},
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
@@ -70,7 +38,6 @@ namespace Saber.Common.Platform
                     Key = "username",
                     Name = "User Name",
                     Description = "Display the user's name",
-                    Parameters = new Dictionary<string, HtmlComponentParameter>(){},
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
@@ -88,7 +55,6 @@ namespace Saber.Common.Platform
                     Key = "userid",
                     Name = "User ID",
                     Description = "Display the user's ID",
-                    Parameters = new Dictionary<string, HtmlComponentParameter>(){},
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
@@ -104,9 +70,9 @@ namespace Saber.Common.Platform
                 , new HtmlComponentModel()
                 {
                     Key = "no-user",
-                    Name = "No User",
+                    Name = "User Not Logged In",
+                    Block = true,
                     Description = "Display information when a user is not logged into their account",
-                    Parameters = new Dictionary<string, HtmlComponentParameter>() { },
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
@@ -124,7 +90,6 @@ namespace Saber.Common.Platform
                     Key = "page-url",
                     Name = "Page URL",
                     Description = "Return the canonical URL based on the page request",
-                    Parameters = new Dictionary<string, HtmlComponentParameter>() { },
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                         {
                             var results = new List<KeyValuePair<string, string>>();
@@ -148,7 +113,6 @@ namespace Saber.Common.Platform
                     Key = "page-id",
                     Name = "Page ID",
                     Description = "Return an ID based on the page URL",
-                    Parameters = new Dictionary<string, HtmlComponentParameter>() { },
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
@@ -164,7 +128,6 @@ namespace Saber.Common.Platform
                     Key = "year",
                     Name = "Current Year",
                     Description = "Display the current year",
-                    Parameters = new Dictionary<string, HtmlComponentParameter>() { },
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
@@ -176,10 +139,9 @@ namespace Saber.Common.Platform
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 new HtmlComponentModel()
                 {
-                    Key = "language-options",
-                    Name = "Language Options",
-                    Description = "Render HTML <option> elements for all supported languages",
-                    Parameters = new Dictionary<string, HtmlComponentParameter>() { },
+                    Key = "languages.list-options",
+                    Name = "Language List Options",
+                    Description = "Render HTML select <option> elements for all supported languages",
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var selected = request.Parameters.ContainsKey("lang") ? request.Parameters["lang"] : request.User.Language;

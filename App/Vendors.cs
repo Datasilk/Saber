@@ -18,7 +18,9 @@ namespace Saber.Common
         public static Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
         public static Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
         public static List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
-        public static List<Type> HtmlComponents { get; set; } = new List<Type>();
+        public static Dictionary<string, HtmlComponentModel> HtmlComponents { get; set; } = new Dictionary<string, HtmlComponentModel>();
+        public static string[] HtmlComponentKeys { get; set; }
+        public static Dictionary<string, HtmlComponentModel> SpecialVars { get; set; } = new Dictionary<string, HtmlComponentModel>();
         public static Dictionary<string, IVendorEmailClient> EmailClients { get; set; } = new Dictionary<string, IVendorEmailClient>();
         public static List<IVendorWebsiteSettings> WebsiteSettings { get; set; } = new List<IVendorWebsiteSettings>();
 
@@ -314,7 +316,20 @@ namespace Saber.Common
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorHtmlComponent))) { return; }
-            HtmlComponents.Add(type);
+            var instance = (IVendorHtmlComponent)Activator.CreateInstance(type);
+            var components = instance.Bind();
+            foreach (var component in components) {
+                if(component.Parameters.Count == 0)
+                {
+                    SpecialVars.Add(component.Key, component);
+                }
+                HtmlComponents.Add(component.Key, component);
+            }
+        }
+
+        public static void GetHtmlComponentKeys()
+        {
+            HtmlComponentKeys = HtmlComponents.Select(a => a.Key).OrderBy(a => a).ToArray();
         }
         #endregion
 

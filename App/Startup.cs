@@ -136,7 +136,11 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorContentField interface
             Common.Vendors.GetHtmlComponentsFromFileSystem();
-            Console.WriteLine("Found " + (Common.Vendors.HtmlComponents.Count - 1) + " Vendor HTML Component" + ((Common.Vendors.HtmlComponents.Count - 1) != 1 ? "s" : ""));
+            Common.Vendors.GetHtmlComponentKeys();
+            var totalcomponents = (Common.Vendors.HtmlComponents.Count - Common.Vendors.SpecialVars.Count);
+            Console.WriteLine("Found " + (Common.Vendors.HtmlComponents.Count - 1) + " Vendor HTML Component" + ((Common.Vendors.HtmlComponents.Count - 1) != 1 ? "s" : "") +
+                " (" + totalcomponents + " component" + (totalcomponents > 1 ? "s" : "") + ", " + 
+                Common.Vendors.SpecialVars.Count + " special variable" + (Common.Vendors.SpecialVars.Count > 1 ? "s" : "") + ")");
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorContentField interface
@@ -338,9 +342,6 @@ namespace Saber
                 new KeyValuePair<string, string>("partials", "Content/partials"),
                 new KeyValuePair<string, string>("pages", "Content/pages")
             });
-            
-            //initialize platform-specific html variables for views
-            HtmlComponentBinder.Initialize();
 
             //execute Configure method for all vendors that use IVendorStartup interface
             foreach (var kv in Common.Vendors.Startups)

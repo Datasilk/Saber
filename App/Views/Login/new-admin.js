@@ -10,7 +10,6 @@
         var pass = $('#password').val();
         var pass2 = $('#password2').val();
         var msg = $('.login .message');
-        var msglbl = $('.login .message > span');
 
         //validate name
         if (name == '') {

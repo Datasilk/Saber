@@ -90,7 +90,7 @@ namespace Saber.Controllers
                         //load components list
                         var viewComponent = new View("/Views/Components/list-item.html");
                         var html = new StringBuilder();
-                        var htmlVars = Common.Platform.HtmlComponentBinder.HtmlVars;
+                        var htmlVars = Common.Vendors.HtmlComponentKeys;
 
                         //add custom component for generating Partial Views
                         viewComponent["icon"] = "/editor/partial-view.svg";
@@ -103,7 +103,7 @@ namespace Saber.Controllers
                             {
                                 Key = "page",
                                 Name = "HTML File",
-                                DataType = 8, //8 = WebPage
+                                DataType = (int)Vendor.HtmlComponentParameterDataType.WebPage,
                                 Description = "The relative path to your partial HTML file (e.g. \"partials/menu.html\")"
                             }
                         }, new JsonSerializerOptions()
@@ -112,7 +112,28 @@ namespace Saber.Controllers
                         }).Replace("\"", "&quot;");
                         html.Append(viewComponent.Render());
 
-                        foreach (var component in Common.Platform.HtmlComponentBinder.HtmlVars)
+                        //add custom component for generating Special Variables
+                        viewComponent["icon"] = "/editor/special-vars.svg";
+                        viewComponent["key"] = "special-vars";
+                        viewComponent["name"] = "Special Variables";
+                        viewComponent["description"] = "Generate special variables that contain dynamic info about your website.";
+                        viewComponent["data-params"] = JsonSerializer.Serialize(new List<Models.HtmlComponentParams>()
+                        {
+                            new Models.HtmlComponentParams()
+                            {
+                                Key = "var",
+                                Name = "Select a special variable to use",
+                                DataType = (int)Vendor.HtmlComponentParameterDataType.List,
+                                ListOptions = Common.Vendors.SpecialVars.Select(a => new KeyValuePair<string, string>(a.Value.Key + "|" + (a.Value.Block ? "1" : ""), a.Value.Name + (a.Value.Block == true ? " (block)" : ""))).OrderBy(a => a.Key).ToArray(),
+                                Description = "The relative path to your partial HTML file (e.g. \"partials/menu.html\")"
+                            }
+                        }, new JsonSerializerOptions()
+                        {
+                            WriteIndented = false
+                        }).Replace("\"", "&quot;");
+                        html.Append(viewComponent.Render());
+
+                        foreach (var component in Common.Vendors.HtmlComponents.Values.OrderBy(a => a.Key))
                         {
                             if(string.IsNullOrEmpty(component.Icon) || string.IsNullOrEmpty(component.Name)) { continue; }
                             viewComponent.Clear();
@@ -129,7 +150,7 @@ namespace Saber.Controllers
                                     Name = param.Value.Name,
                                     DataType = (int)param.Value.DataType,
                                     DefaultValue = param.Value.DefaultValue,
-                                    ListOptions = param.Value.ListOptions?.Select(a => a.Replace("\"", "&quot;")).ToArray(),
+                                    ListOptions = param.Value.ListOptions?.Select(a => new KeyValuePair<string, string>(a.Key, a.Value.Replace("\"", "&quot;"))).ToArray(),
                                     Description = param.Value.Description.Replace("\"", "&quot;")
                                 }); ;
                             }

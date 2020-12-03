@@ -169,6 +169,18 @@
                     </li>
                     {{/website-management}}
                     <li>
+                        <div class="row hover item item-new-tab">
+                            <a href="#" target="_blank">
+                            <div class="col icon">
+                                <svg viewBox="0 0 32 32">
+                                    <use xlink:href="#icon-new-tab" x="0" y="0" width="32" height="32"></use>
+                                </svg>
+                            </div>
+                            <div class="col text">New Tab</div>
+                            </a>
+                        </div>
+                    </li>
+                    <li>
                         <div class="row hover item item-new-window">
                             <div class="col icon">
                                 <svg viewBox="0 0 32 32">
@@ -179,14 +191,16 @@
                         </div>
                     </li>
                     <li>
-                        <a class="row hover item item-live-preview" href="" target="_blank" title="Inspect a live preview of this web page which will not contain any Saber editor resources">
-                            <div class="col icon">
-                                <svg viewBox="0 0 32 32">
-                                    <use xlink:href="#icon-preview" x="0" y="0" width="32" height="32"></use>
-                                </svg>
-                            </div>
-                            <div class="col text">Live Preview</div>
-                        </a>
+                        <div class="row hover item item-live-preview">
+                            <a href="" target="_blank" title="Inspect a live preview of this web page which will not contain any Saber editor resources">
+                                <div class="col icon">
+                                    <svg viewBox="0 0 32 32">
+                                        <use xlink:href="#icon-preview" x="0" y="0" width="32" height="32"></use>
+                                    </svg>
+                                </div>
+                                <div class="col text">Live Preview</div>
+                            </a>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -499,14 +513,17 @@
     </div>
 </script>
 {{components}}
+<script language="text/html" id="template_component_id">
+    <div class="row field">ID ##optional##</div>
+    <div class="row input">
+        <input type="text" id="component_id"/>
+    </div>
+</script>
 <script language="text/html" id="template_component_config">
     <div class="row"><h4>##name##</h4></div>
     <div class="scroller">
         <input type="hidden" id="component_key" value="##key##"/>
-        <div class="row field">ID ##optional##</div>
-        <div class="row input">
-            <input type="text" id="component_id"/>
-        </div>
+        ##id-field##
         ##fields##
     </div>
     <div class="row text-center pad-top">
