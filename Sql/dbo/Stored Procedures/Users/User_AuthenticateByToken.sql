@@ -6,4 +6,5 @@ AS
 	DELETE FROM User_AuthTokens WHERE token=@token
 	IF @userId IS NOT NULL BEGIN
 		SELECT * FROM Users WHERE userId = @userId
+		AND dateactivated IS NOT NULL AND dateactivated < GETUTCDATE()
 	END

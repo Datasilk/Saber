@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[User_UpdatePassword]
-	@userId int,
+	@email nvarchar(64),
 	@password nvarchar(255)
 AS
-	UPDATE Users SET [password]=@password WHERE userId=@userId
+	UPDATE Users SET [password]=@password WHERE email=@email

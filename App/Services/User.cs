@@ -1,4 +1,6 @@
-﻿namespace Saber.Services
+﻿using Saber.Core.Extensions.Strings;
+
+namespace Saber.Services
 {
     public class User : Service
     {
@@ -57,7 +59,7 @@
                     name = name,
                     email = email,
                     password = EncryptPassword(email, password)
-                });
+                }, true);
                 Server.HasAdmin = true;
                 Server.ResetPass = false;
                 return "success";
@@ -66,20 +68,68 @@
             return "";
         }
 
-        public string SignUp(string name, string emailaddr, string password, string password2)
+        public string SignUp(string name, string emailaddr, string password)
         {
             if (!CheckEmailAddress(emailaddr)) { return Error("Email address is invalid"); }
             if (Query.Users.Exists(emailaddr)) { return Error("Another account is already using the email address \"" + emailaddr + "\""); }
-            if (password == password2) { return Error("Passwords do not match"); }
-            Query.Users.CreateUser(new Query.Models.User()
+            //TODO: Check password strength
+            if (string.IsNullOrEmpty(name)) { return Error("Please specify your name"); }
+            var userId = Query.Users.CreateUser(new Query.Models.User()
             {
                 name = name,
                 email = emailaddr,
                 password = EncryptPassword(emailaddr, password)
             });
-            Server.HasAdmin = true;
-            Server.ResetPass = false;
+
+            //TODO: send signup activation email
+
             return "success";
+        }
+
+        public string RequestActivation(string emailaddr)
+        {
+            if (Query.Users.CanActivate(emailaddr))
+            {
+                var activationkey = Generate.NewId(16);
+                Query.Users.RequestActivation(emailaddr, activationkey);
+                //TODO: send signup activation email
+            }
+            return Success();
+        }
+
+        public string Activate(string emailaddr, string activationkey)
+        {
+            if(Query.Users.Activate(emailaddr, activationkey))
+            {
+                return Success();
+            }
+            else {
+                return Error();
+            }
+        }
+
+        public string ForgotPassword(string emailaddr)
+        {
+            if (!Query.Users.CanActivate(emailaddr))
+            {
+                var activationkey = Generate.NewId(16);
+                Query.Users.ForgotPassword(emailaddr, activationkey);
+                //TODO: send forgot password email
+                return Success();
+            }
+            return Error("Email is not eligible for a password reset");
+        }
+
+        public string ResetPassword(string emailaddr, string password, string activationkey)
+        {
+            if (Query.Users.ResetPassword(emailaddr, password, activationkey))
+            {
+                return Success();
+            }
+            else
+            {
+                return Error("Password reset authentication key expired.");
+            }
         }
 
         public void LogOut()

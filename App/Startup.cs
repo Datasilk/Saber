@@ -212,6 +212,10 @@ namespace Saber
             Console.WriteLine("Found " + Common.Vendors.WebsiteSettings.Count + " Vendor Website Setting" + (Common.Vendors.WebsiteSettings.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //Run any services required after initializing all vendor plugins but before configuring vendor startup services
+            Core.Email.Handle = Email.Send;
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
             foreach (var kv in Common.Vendors.Startups)
             {

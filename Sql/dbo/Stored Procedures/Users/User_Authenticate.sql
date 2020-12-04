@@ -3,7 +3,8 @@
 	@password nvarchar(255) = ''
 AS
 BEGIN
-	SELECT u.*
-	FROM Users u
+	SELECT *
+	FROM Users
 	WHERE email=@email AND [password]=@password
+	AND dateactivated IS NOT NULL AND dateactivated < GETUTCDATE()
 END

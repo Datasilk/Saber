@@ -9,10 +9,10 @@ namespace Query
             return Sql.ExecuteScalar<int>("User_Exists", new { email }) == 1;
         }
 
-        public static int CreateUser(Models.User user)
+        public static int CreateUser(Models.User user, bool activate = false)
         {
             return Sql.ExecuteScalar<int>("User_Create",
-                new { user.name, user.email, user.password, user.photo }
+                new { user.name, user.email, user.password, user.photo, user.activationkey, activate }
             );
         }
 
@@ -30,6 +30,36 @@ namespace Query
             return null;
         }
 
+        public static bool CanActivate(string email)
+        {
+            return Sql.ExecuteScalar<int>("User_CanActivate", new { email }) == 1;
+        }
+
+        public static bool Activate(string email, string tempkey)
+        {
+            return Sql.ExecuteScalar<int>("User_Activate", new { email, tempkey }) == 1;
+        }
+
+        public static void RequestActivation(string email, string tempkey)
+        {
+            Sql.ExecuteNonQuery("User_RequestActivation", new { email, tempkey });
+        }
+
+        public static bool ForgotPassword(string email, string tempkey)
+        {
+            return Sql.ExecuteScalar<int>("User_ForgotPassword", new { email, tempkey }) == 1;
+        }
+
+        public static bool ResetPassword(string email, string password, string tempkey)
+        {
+            return Sql.ExecuteScalar<int>("User_ResetPassword", new { email, password, tempkey }) == 1;
+        }
+
+        public static void UpdatePassword(string email, string password)
+        {
+            Sql.ExecuteNonQuery("User_UpdatePassword", new { email, password });
+        }
+
         public static Models.User GetDetails(int userId)
         {
             var list = Sql.Populate<Models.User>("User_GetDetails", new { userId });
@@ -40,11 +70,6 @@ namespace Query
         public static string CreateAuthToken(int userId, int expireDays = 30)
         {
             return Sql.ExecuteScalar<string>("User_CreateAuthToken", new { userId, expireDays });
-        }
-
-        public static void UpdatePassword(int userId, string password)
-        {
-            Sql.ExecuteNonQuery("User_UpdatePassword", new { userId, password });
         }
 
         public static string GetEmail(int userId)

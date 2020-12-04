@@ -15,6 +15,11 @@ namespace Query
             Sql.ExecuteNonQuery("Log_Error", new { userId, url, area, message, stacktrace });
         }
 
+        public static void LogForgotPassword(string email)
+        {
+            Sql.ExecuteNonQuery("Log_ForgotPassword", new { email });
+        }
+
         public enum TimeScale
         {
             Hour = 0,
@@ -28,6 +33,5 @@ namespace Query
         {
             return Sql.Populate<Models.Logs.UrlAnalytic>("Log_GetUrlAnalytics", new { timeScale, startDate });
         }
-
     }
 }
