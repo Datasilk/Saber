@@ -48,7 +48,7 @@ namespace Saber.Common
             //load assemblies from DLL files
             foreach (var file in DLLs)
             {
-                var context = new Common.Assemblies.AssemblyLoader(file);
+                var context = new Assemblies.AssemblyLoader(file);
                 AssemblyName assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(file));
                 var assembly = context.LoadFromAssemblyName(assemblyName);
                 Assemblies.Add(assembly);

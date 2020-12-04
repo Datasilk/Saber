@@ -10,7 +10,7 @@
 /App/config.json
 /App/config.docker.json
 /App/website.json
-/App/wwwroot/
+/App/wwwroot/**/
 !/App/wwwroot/editor/
 /App/Content/
 !/App/Content/temp

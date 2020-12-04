@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Saber.Models
+﻿namespace Saber.Models
 {
     public class HtmlComponentParams
     {
@@ -9,7 +7,7 @@ namespace Saber.Models
         public string Name { get; set; }
         public int DataType { get; set; }
         public string DefaultValue { get; set; }
-        public KeyValuePair<string, string>[] ListOptions { get; set; }
+        public string[] ListOptions { get; set; }
         public string Description { get; set; }
     }
 }

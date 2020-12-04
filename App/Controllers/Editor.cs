@@ -17,7 +17,7 @@ namespace Saber.Controllers
             View view;
 
             //get selected language
-            var lang = "en";
+            var lang = User.Language ?? "en";
             if (Parameters.ContainsKey("lang"))
             {
                 lang = Parameters["lang"];
@@ -115,7 +115,7 @@ namespace Saber.Controllers
                         //add custom component for generating Special Variables
                         viewComponent["icon"] = "/editor/special-vars.svg";
                         viewComponent["key"] = "special-vars";
-                        viewComponent["name"] = "Special Variables";
+                        viewComponent["name"] = "Special Variable";
                         viewComponent["description"] = "Generate special variables that contain dynamic info about your website.";
                         viewComponent["data-params"] = JsonSerializer.Serialize(new List<Models.HtmlComponentParams>()
                         {
@@ -124,7 +124,10 @@ namespace Saber.Controllers
                                 Key = "var",
                                 Name = "Select a special variable to use",
                                 DataType = (int)Vendor.HtmlComponentParameterDataType.List,
-                                ListOptions = Common.Vendors.SpecialVars.Select(a => new KeyValuePair<string, string>(a.Value.Key + "|" + (a.Value.Block ? "1" : ""), a.Value.Name + (a.Value.Block == true ? " (block)" : ""))).OrderBy(a => a.Key).ToArray(),
+                                ListOptions = Common.Vendors.SpecialVars.OrderBy(a => a.Key).Select(a => ("<option value=\"" +
+                                     a.Value.HtmlHead.Replace("\"", "&qt;") + "{{" + a.Value.Key + "}}" + (a.Value.Block ? "{{/" + a.Value.Key + "}}" : "") + a.Value.HtmlFoot.Replace("\"", "&qt;") +
+                                     "\" title=\"" + a.Value.Description.Replace("\"", "&qt;") + "\">" +
+                                    a.Value.Name + (a.Value.Block == true ? " (block)" : "") + "</option>").Replace("\"", "&q;")).ToArray(),
                                 Description = "The relative path to your partial HTML file (e.g. \"partials/menu.html\")"
                             }
                         }, new JsonSerializerOptions()
@@ -150,7 +153,7 @@ namespace Saber.Controllers
                                     Name = param.Value.Name,
                                     DataType = (int)param.Value.DataType,
                                     DefaultValue = param.Value.DefaultValue,
-                                    ListOptions = param.Value.ListOptions?.Select(a => new KeyValuePair<string, string>(a.Key, a.Value.Replace("\"", "&quot;"))).ToArray(),
+                                    ListOptions = param.Value.ListOptions?.Select(a => "<option value=\"" + a.Key + "\">" + a.Value.Replace("\"", "&quot;") + "</option>").ToArray(),
                                     Description = param.Value.Description.Replace("\"", "&quot;")
                                 }); ;
                             }
@@ -273,7 +276,7 @@ namespace Saber.Controllers
                     }
                     else
                     {
-                        view["content"] = Common.Platform.Render.Page("Views/404.html", this, config, lang);
+                        view["content"] = Common.Platform.Render.Page("content/pages/404.html", this, config, lang);
                     }
                 }
                 else if (File.Exists(App.MapPath(rpath + "/template.html")))
