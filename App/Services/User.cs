@@ -40,7 +40,7 @@ namespace Saber.Services
                 }
                 if (update == true)
                 {
-                    Query.Users.UpdatePassword(adminId, EncryptPassword(emailAddr, password));
+                    Query.Users.UpdatePassword(emailAddr, EncryptPassword(emailAddr, password));
                     Server.ResetPass = false;
                 }
                 return Success();
