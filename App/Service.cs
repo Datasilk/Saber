@@ -39,6 +39,15 @@ namespace Saber
             }
         }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+            if (user != null)
+            {
+                User.Save();
+            }
+        }
+
         public string JsonResponse(dynamic obj)
         {
             Context.Response.ContentType = "text/json";
@@ -57,14 +66,6 @@ namespace Saber
                 return false;
             }
             return true;
-        }
-
-        public override void Dispose()
-        {
-            if (user != null)
-            {
-                User.Save();
-            }
         }
 
         public string Success()

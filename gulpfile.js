@@ -157,7 +157,8 @@ paths.working = {
             paths.app + 'vendors/**/*.jpg',
             paths.app + 'vendors/**/*.png',
             paths.app + 'vendors/**/*.gif'
-        ]
+        ],
+        js: paths.app + 'vendors/**/*.js'
     },
 
     exclude: {
@@ -342,10 +343,10 @@ gulp.task('vendors:images', function () {
     return p.pipe(gulp.dest(paths.compiled.vendor.images, { overwrite: true }));
 });
 
-gulp.task('vendors', gulp.series('vendors:images'));
+gulp.task('vendors', gulp.series('vendors:images', 'js:app'));
 
 //default task ////////////////////////////////////////////////////////////////////////////
-gulp.task('default', gulp.series('js', 'less', 'css', 'icons', 'vendors'));
+gulp.task('default', gulp.series('js', 'less', 'css', 'icons', 'vendors:images'));
 
 //specific file task //////////////////////////////////////////////////////////////////////
 gulp.task('file', function () {

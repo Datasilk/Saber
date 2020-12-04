@@ -20,7 +20,7 @@ namespace Saber.Common.Platform
                     Key = "user",
                     Name = "User Logged In",
                     Block = true,
-                    Description = "Display information about a user if logged into their account",
+                    Description = "Display a block of HTML if the user is logged into their account",
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
@@ -72,7 +72,7 @@ namespace Saber.Common.Platform
                     Key = "no-user",
                     Name = "User Not Logged In",
                     Block = true,
-                    Description = "Display information when a user is not logged into their account",
+                    Description = "Display a block of HTML when the user is not logged into their account",
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
@@ -139,20 +139,22 @@ namespace Saber.Common.Platform
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 new HtmlComponentModel()
                 {
-                    Key = "languages.list-options",
-                    Name = "Language List Options",
-                    Description = "Render HTML select <option> elements for all supported languages",
+                    Key = "languages.options",
+                    Name = "Language List Form",
+                    Description = "Render an HTML form so your users can select their preferred language.",
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var selected = request.Parameters.ContainsKey("lang") ? request.Parameters["lang"] : request.User.Language;
                         var results = new List<KeyValuePair<string, string>>();
-                        results.Add(new KeyValuePair<string, string>(prefix + "language-options",
+                        results.Add(new KeyValuePair<string, string>(prefix + "languages.options",
                             "<option value=\"en\">English</option>" +
                             string.Join("\n", Query.Languages.GetList().Select(a => "<option value=\"" + a.langId + "\"" +
                                 (selected == a.langId ? " selected" : "") + ">" + a.language + "</option>").ToArray())
                             ));
                         return results;
-                    })
+                    }),
+                    HtmlHead = "<form id=\"changelang\" method=\"post\"><select name=\"lang\" onchange=\"changelang.submit()\">",
+                    HtmlFoot = "</select></form>"
                 }
             };
         }

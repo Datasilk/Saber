@@ -69,9 +69,9 @@
                                 '<label for="' + 'param_' + param.Key + '"' + title + '>' + param.Name + '</label>'));
                             break;
                         case 3: //list
-                            console.log(param.ListOptions);
+                            console.log(param.ListOptions ? param.ListOptions.join('').replace(/\&q\;/g, '"') : '');
                             fields.push(field.replace('##input##', '<select' + id + '>' +
-                                (param.ListOptions ? param.ListOptions.map(a => '<option value="' + a.Key + '">' + a.Value + '</option>').join('') : '') +
+                                (param.ListOptions ? param.ListOptions.join('').replace(/\&q\;/g, '"') : '') +
                                 '</select>'));
                             break;
                         case 4: //date
@@ -128,16 +128,7 @@
                     //generate partial view
                     mustache = '{{' + suffix + ' "' + $('#param_page').val() + '"}}';
                 } else if (key == 'special-vars') {
-                    var val = $('#param_var').val();
-                    parts = val.split('|');
-                    var id = parts[0];
-                    var isblock = parts.length > 1 ? (parts[1] == '1' ? true : false) : false;
-                    if (isblock) {
-                        mustache = '{{' + id + '}}{{/' + id + '}}';
-                    } else {
-                        mustache = '{{' + id + '}}';
-                    }
-                    
+                    mustache = $('#param_var').val().replace(/\&qt\;/g, '"');
                 } else {
                     //generate vendor HTML components
                     var paramlen = 0;

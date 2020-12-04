@@ -79,7 +79,7 @@ You can upload image files & other resources for a specific web page or within t
 * Display a language selection drop down list on your website by adding the following HTML code:
 ```
 <form id="changelang" method="post">
-	<select name="lang" onchange="changelang.submit()">{{language-options}}</select>
+	<select name="lang" onchange="changelang.submit()">{{languages.options}}</select>
 </form>
 ```
 
