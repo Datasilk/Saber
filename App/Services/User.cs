@@ -1,4 +1,5 @@
-﻿using Saber.Core.Extensions.Strings;
+﻿using System;
+using Saber.Core.Extensions.Strings;
 
 namespace Saber.Services
 {
@@ -24,36 +25,21 @@ namespace Saber.Services
             return Error();
         }
 
-        public string SaveAdminPassword(string password)
+        public string CreateAdminAccount(string name, string email, string password, string password2)
         {
-            if (Server.ResetPass == true)
-            {
-                var update = false; //security check
-                var emailAddr = "";
-                var adminId = 1;
-                if (Server.ResetPass == true)
-                {
-                    //securely change admin password
-                    //get admin email address from database
-                    emailAddr = Query.Users.GetEmail(adminId);
-                    if (emailAddr != "" && emailAddr != null) { update = true; }
-                }
-                if (update == true)
-                {
-                    Query.Users.UpdatePassword(emailAddr, EncryptPassword(emailAddr, password));
-                    Server.ResetPass = false;
-                }
-                return Success();
-            }
-            Context.Response.StatusCode = 500;
-            return "";
-        }
-
-        public string CreateAdminAccount(string name, string email, string password)
-        {
-            if (!CheckEmailAddress(email)) { return Error("Email address is invalid"); }
             if (Server.HasAdmin == false)
             {
+                if (!CheckEmailAddress(email)) { return Error("Email address is invalid"); }
+                if (password != password2) { return Error("Passwords do not match"); }
+                try
+                {
+                    CheckPassword(password);
+                }
+                catch (Exception ex)
+                {
+                    return Error(ex.Message);
+                }
+                if (string.IsNullOrEmpty(name)) { return Error("Please specify your name"); }
                 Query.Users.CreateUser(new Query.Models.User()
                 {
                     name = name,
@@ -68,17 +54,27 @@ namespace Saber.Services
             return "";
         }
 
-        public string SignUp(string name, string emailaddr, string password)
+        public string SignUp(string name, string emailaddr, string password, string password2)
         {
             if (!CheckEmailAddress(emailaddr)) { return Error("Email address is invalid"); }
             if (Query.Users.Exists(emailaddr)) { return Error("Another account is already using the email address \"" + emailaddr + "\""); }
-            //TODO: Check password strength
+            if(password != password2) { return Error("Passwords do not match"); }
+            try
+            {
+                CheckPassword(password);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
             if (string.IsNullOrEmpty(name)) { return Error("Please specify your name"); }
+            var activationkey = Generate.NewId(16);
             var userId = Query.Users.CreateUser(new Query.Models.User()
             {
                 name = name,
                 email = emailaddr,
-                password = EncryptPassword(emailaddr, password)
+                password = EncryptPassword(emailaddr, password),
+                tempkey = activationkey
             });
 
             //TODO: send signup activation email
@@ -122,6 +118,13 @@ namespace Saber.Services
 
         public string ResetPassword(string emailaddr, string password, string activationkey)
         {
+            try
+            {
+                CheckPassword(password);
+            }catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
             if (Query.Users.ResetPassword(emailaddr, password, activationkey))
             {
                 return Success();
@@ -147,6 +150,64 @@ namespace Saber.Services
             catch
             {
                 return false;
+            }
+        }
+
+        private void CheckPassword(string password)
+        {
+            var config = Common.Platform.Website.Settings.Load();
+            if (password.Length < config.Passwords.MinChars)
+            {
+                throw new Exception("Password must be at least " + config.Passwords.MinChars + " characters in length");
+            }
+            if (password.Length > config.Passwords.MaxChars)
+            {
+                throw new Exception("Password must be less than " + (config.Passwords.MaxChars + 1) + " characters in length");
+            }
+            char lastchar = char.MaxValue;
+            var numbers = 0;
+            var uppercase = 0;
+            var special = 0;
+            var spaces = 0;
+            var consecutives = 0;
+            var maxconsecutives = 0;
+            for (var x = 0; x < password.Length; x++)
+            {
+                var p = password[x];
+                if(lastchar == p)
+                {
+                    consecutives++;
+                    if(consecutives > maxconsecutives)
+                    {
+                        maxconsecutives = consecutives;
+                    }
+                }
+                else if(consecutives > 0)
+                {
+                    consecutives = 0;
+                }
+                if (char.IsNumber(p)) { numbers++; }
+                else if (char.IsUpper(p)) { uppercase++; }
+                else if (p == ' ') { spaces++; }
+                else if (char.IsLetter(p)) { }
+                else { special++; }
+            }
+
+            if (numbers < config.Passwords.MinNumbers)
+            {
+                throw new Exception("Password must contain at least " + config.Passwords.MinNumbers + " number" + (config.Passwords.MinNumbers > 1 ? "s" : ""));
+            }
+            if (numbers < config.Passwords.MinUppercase)
+            {
+                throw new Exception("Password must contain at least " + config.Passwords.MinUppercase + " uppercase letter" + (config.Passwords.MinUppercase > 1 ? "s" : ""));
+            }
+            if (numbers < config.Passwords.MinSpecialChars)
+            {
+                throw new Exception("Password must contain at least " + config.Passwords.MinSpecialChars + " special character" + (config.Passwords.MinSpecialChars > 1 ? "s" : ""));
+            }
+            if (config.Passwords.NoSpaces && spaces > 0)
+            {
+                throw new Exception("Password cannot contain spaces");
             }
         }
 

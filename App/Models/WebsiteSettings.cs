@@ -3,6 +3,7 @@
     public class Settings
     {
         public Email Email { get; set; } = new Email();
+        public Passwords Passwords { get; set; } = new Passwords();
     }
 
     public class Email
@@ -32,5 +33,16 @@
         public string Client { get; set; }
         public string Subject { get; set; }
         public string File { get; set; }
+    }
+
+    public class Passwords
+    {
+        public int MinChars { get; set; } = 8;
+        public int MaxChars { get; set; } = 16;
+        public int MinNumbers { get; set; } = 1;
+        public int MinUppercase { get; set; } = 1;
+        public int MinSpecialChars { get; set; } = 0;
+        public bool NoSpaces { get; set; } = true;
+        public int MaxConsecutiveChars { get; set; } = 3;
     }
 }

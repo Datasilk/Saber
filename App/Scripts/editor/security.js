@@ -14,7 +14,7 @@
         $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
         //load users list
-        S.editor.tabs.create('Security Groups', 'security-groups-section', { isPageResource: false },
+        S.editor.tabs.create('Security Groups', 'security-groups-section', null,
             () => { //onfocus
                 $('.tab.security-groups').removeClass('hide');
                 self.groups.updateFilebar();
@@ -86,16 +86,17 @@
     group: {
         load: (id, name) => {
             var self = S.editor.security;
-            if (self._loadedGroups.filter(a => a == id).length > 0) {
+            if (self._loadedGroups.filter(a => a == id).length > 0 && $('.tab-security-group-' + id).length > 0) {
                 //tab already exists
                 S.editor.tabs.select('security-group-' + id);
             } else {
                 //create tab & load security group details
+                $('.tab.security-group-' + id).remove();
                 $('.editor .sections > .tab').addClass('hide');
                 $('.sections').append('<div class="tab security-group-' + id + '"><div class="scroller"></div></div>');
                 S.editor.resizeWindow();
 
-                S.editor.tabs.create('Security Group: ' + name, 'security-group-' + id, { isPageResource: false },
+                S.editor.tabs.create('Security Group: ' + name, 'security-group-' + id, null,
                     () => { //onfocus
                         $('.tab.security-group-' + id).removeClass('hide');
                         self.group.updateFilebar(id, name);

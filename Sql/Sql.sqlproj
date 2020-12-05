@@ -124,6 +124,13 @@
     <None Include="utility\resetdb.sql" />
     <Build Include="dbo\Stored Procedures\Secuirty\SecurityUser_Remove.sql" />
     <Build Include="dbo\Stored Procedures\Secuirty\SecurityUser_GetGroups.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_Activate.sql" />
+    <Build Include="dbo\Stored Procedures\Logs\Log_ForgotPassword.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_CanActivate.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_ForgotPassword.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_RequestActivation.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_ResetPassword.sql" />
+    <Build Include="dbo\Tables\Log_ForgotPasswords.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

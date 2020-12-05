@@ -43,8 +43,8 @@
 
     function error(msg){
         var box = byClass('msg');
-        var label = byClass('msg-lbl');
-        label.innerHTML(msg);
+        box.className = 'msg error';
+        box.innerHTML = msg;
         box.style.display = 'block';
     }
 

@@ -98,11 +98,12 @@
     details: {
         show: (id, email) => {
             var self = S.editor.users;
-            if (self._loadedUsers.filter(a => a == id).length > 0) {
+            if (self._loadedUsers.filter(a => a == id).length > 0 && $('.tab-user-' + id).length > 0) {
                 //tab already exists
                 S.editor.tabs.select('user-' + id);
             } else {
                 //create tab & load user details
+                $('.tab.user-' + id).remove();
                 $('.editor .sections > .tab').addClass('hide');
                 $('.sections').append('<div class="tab user-' + id + '"><div class="scroller"></div></div>');
                 S.editor.resizeWindow();

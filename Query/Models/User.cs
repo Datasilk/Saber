@@ -11,8 +11,8 @@ namespace Query.Models
         public bool photo { get; set; }
         public DateTime datecreated { get; set; }
         public DateTime dateactivated { get; set; }
-        public DateTime activationexpires { get; set; }
-        public string activationkey { get; set; }
+        public DateTime keyexpires { get; set; }
+        public string tempkey { get; set; }
     }
 
     public class UserWithSecurityCount: User

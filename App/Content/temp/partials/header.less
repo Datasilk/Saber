@@ -1,6 +1,11 @@
-header{ padding:15px; width:100%; background-color:#222222; color:#ffffff;
-    .logo{width:100%; text-align:center;}
-    .login-link{font-size:17px;}
-    .no-user, .user{position:absolute; right:20px;}
+header{ padding:15px; width:100%; background-color:#222222; color:#ddd; box-sizing:border-box;
+    .logo{float:left; line-height:0; 
+        img{height:24px;}
+    }
+    .no-user a{font-size:17px; margin-left: 10px; display:inline-block;}
+    .no-user, .user{position:relative; float:right;}
     .user{color:#aaa;}
+    .lang{float:right; padding-right:10px;
+        select{background-color:#333; color:#ccc; padding:2px 5px;}
+    }
 }

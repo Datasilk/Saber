@@ -31,7 +31,7 @@
 
     $('#upload_app_icon').on("change", (e) => {
         S.loader();
-        S.upload.file(upload_app_icon.files[0], '/api/AppSettings/UploadPngIcon?type=' + selbtn.type + '&px=' + selbtn.px,
+        S.upload.file(upload_app_icon.files[0], '/api/WebsiteSettings/UploadPngIcon?type=' + selbtn.type + '&px=' + selbtn.px,
             null, //onprogress
             (e) => { //oncomplete
                 //update icon
@@ -74,7 +74,7 @@
             parameters: params
         };
 
-        S.ajax.post('AppSettings/SaveEmailClient', data, () => {
+        S.ajax.post('WebsiteSettings/SaveEmailClient', data, () => {
             S.editor.message('', 'Email Client settings saved successfully');
         }, (err) => {
             S.editor.message('', err.responseText, 'error');
@@ -100,8 +100,32 @@
             }
         };
 
-        S.ajax.post('AppSettings/SaveEmailActions', data, () => {
+        S.ajax.post('WebsiteSettings/SaveEmailActions', data, () => {
             S.editor.message('', 'Email Action settings saved successfully');
+        }, (err) => {
+            S.editor.message('', err.responseText, 'error');
+        })
+    });
+
+    $('.passwords button.save').on('click', (e) => {
+        //save email actions
+        e.preventDefault();
+        var data = {
+            passwords: {
+                MinChars: parseInt($('#pass_minchars').val()),
+                MaxChars: parseInt($('#pass_maxchars').val()),
+                MinNumbers: parseInt($('#pass_minnumbers').val()),
+                MinUppercase: parseInt($('#pass_minuppercase').val()),
+                MinSpecialChars: parseInt($('#pass_minspecial').val()),
+                MaxConsecutiveChars: parseInt($('#pass_consecutivechars').val()),
+                NoSpaces: $('#pass_nospaces')[0].checked
+            }
+        };
+
+        console.log(data);
+
+        S.ajax.post('WebsiteSettings/SavePasswords', data, () => {
+            S.editor.message('', 'Password settings saved successfully');
         }, (err) => {
             S.editor.message('', err.responseText, 'error');
         })

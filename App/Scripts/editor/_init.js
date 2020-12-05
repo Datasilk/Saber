@@ -85,7 +85,7 @@ S.editor.init = function () {
     $('.editor-drop-menu .item-user-management').on('click', S.editor.users.show);
     $('.editor-drop-menu .item-security').on('click', S.editor.security.show);
     $('.editor-drop-menu .item-analytics').on('click', S.editor.analytics.show);
-    $('.editor-drop-menu .item-app-settings').on('click', S.editor.appsettings.show);
+    $('.editor-drop-menu .item-web-settings').on('click', S.editor.websettings.show);
     $('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);
     $('.editor-drop-menu .item-new-folder').on('click', S.editor.folder.create.show);
     $('.editor-drop-menu .item-new-window').on('click', S.editor.newWindow);

@@ -1,5 +1,11 @@
 <header>
     {{user}}<div class="user">Welcome, {{username}}. <a href="javascript:" onclick="logout()">Log Out</a></div>{{/user}}
-    {{no-user}}<div class="no-user"><a href="/login" class="login-link">Log In</a></div>{{/no-user}}
+    {{no-user}}
+    <div class="no-user">
+        <a href="/signup">Sign Up</a>
+        <a href="/login">Log In</a>
+    </div>
+    {{/no-user}}
+    <div class="lang"><form id="changelang" method="post"><select name="lang" onchange="changelang.submit()">{{languages.options}}</select></form></div>
     <div class="logo"><img src="/images/logo-xs.png" /></div>
 </header>

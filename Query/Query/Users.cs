@@ -12,7 +12,7 @@ namespace Query
         public static int CreateUser(Models.User user, bool activate = false)
         {
             return Sql.ExecuteScalar<int>("User_Create",
-                new { user.name, user.email, user.password, user.photo, user.activationkey, activate }
+                new { user.name, user.email, user.password, user.photo, user.tempkey, activate }
             );
         }
 

@@ -1,19 +1,8 @@
 .signup{
     /* stylize login form & fields */
-    label{padding-bottom:5px;} 
-    input[type="text"], input[type="password"]{
-        padding:10px 15px; margin-bottom:25px; border:1px solid rgba(0,0,0,0.25); background-color:#666; color:#aaa; font-size:17px;
-    }
-
-    /* replace built-in Chrome autofill yellow input fields with custom color scheme */
-    input:-webkit-autofill{outline:none;
-        &       {border-color:#444; -webkit-box-shadow:0 0 0 30px #444 inset; -webkit-text-fill-color:#ccc !important;}
-        &:hover {border-color:#4f4f4f; -webkit-box-shadow:0 0 0 30px #4f4f4f inset; -webkit-text-fill-color:#bbb !important;}
-        &:focus {border-color:#0099ff; -webkit-box-shadow:0 0 0 30px #035092 inset; -webkit-text-fill-color:#ccc !important;}
-    }
-    label, input{display:block;} 
-
-    /* stylize log in button */
-    button{float:right; padding:10px 25px;}
+    form{width:300px;}
+    h2{font-size:24px; padding-bottom:25px;}
+    input[type="text"], input[type="password"]{margin-bottom:25px;}
+    button{float:right;}
 }
 

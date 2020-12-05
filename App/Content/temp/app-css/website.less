@@ -62,7 +62,6 @@ body{width:100%; position:relative; overflow-x:hidden;}
 .row{width:100%; box-sizing:border-box; position:relative;
      &:after{clear:both; content:""; display:block;}
 }
-
 .col{float:left; display:inline-block; position:relative;}
 
 /* links */
@@ -86,19 +85,37 @@ body{background:#292929; color:#ccc; width:100%; position:relative; overflow-x:h
 .content{flex:1; display:flex; align-self:stretch; flex-direction:column; font-family:'Open Sans', arial;
   p{padding:0 0 20px 0;}
 }
+div, input, p, select, textarea{box-sizing:border-box;}
+
+/* forms */
+input[type="text"], input[type="password"]{
+    width:100%; padding:10px 15px; border:1px solid rgba(0,0,0,0.25); background-color:#666; color:#aaa; font-size:17px;
+}
+
+/* replace built-in Chrome autofill yellow input fields with custom color scheme */
+input:-webkit-autofill{outline:none;
+    &       {border-color:#444; -webkit-box-shadow:0 0 0 30px #444 inset; -webkit-text-fill-color:#ccc !important;}
+    &:hover {border-color:#4f4f4f; -webkit-box-shadow:0 0 0 30px #4f4f4f inset; -webkit-text-fill-color:#bbb !important;}
+    &:focus {border-color:#0099ff; -webkit-box-shadow:0 0 0 30px #035092 inset; -webkit-text-fill-color:#ccc !important;}
+}
+label, input{display:inline-block;} 
 
 /* panel */
 .panel{
-    /* stylize login form & fields */
-    color:#aaa; padding-top:50px; font-size:17px; font-weight:400;
-    .container{max-width:500px; margin:0 auto; padding:30px; background-color:#333; width:fit-content; border-radius:4px;}
-    .container:after{content:" "; display:block; clear:both; overflow:hidden; font-size:0;}
+  /* stylize login form & fields */
+  color:#aaa; padding-top:50px; font-size:17px; font-weight:400;
+  .container{max-width:500px; margin:0 auto; padding:30px; background-color:#333; width:fit-content; border-radius:4px;}
+  .container:after{content:" "; display:block; clear:both; overflow:hidden; font-size:0;}
 }
 
 button{
-    padding:10px 25px; color:#aaa; background-color:#222; border:0 none; border-radius:4px;  font-size:17px;
-    &:hover{color:#ccc; background-color:#0099ff;} 
-    &:focus{border:0 none; outline:1px solid #0099ff; background-color:#035092; color:#ccc;}
+  padding:10px 25px; color:#aaa; background-color:#222; border:0 none; border-radius:4px;  font-size:17px;
+  &:hover{color:#ccc; background-color:#0099ff;} 
+  &:focus{border:0 none; outline:1px solid #0099ff; background-color:#035092; color:#ccc;}
+}
+
+.msg{display:none; width:100%; box-sizing:border-box; padding:5px 20px; margin-bottom:15px; background-color:#48667f; color:#93c5ff;
+  &.error{background-color:#7f4848; color:#ff9393;}
 }
 
 /* imports */

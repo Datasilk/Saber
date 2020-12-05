@@ -3,24 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
-using System.Text.Json;
 using Saber.Common.Utility;
 
 namespace Saber.Services
 {
-    public class AppSettings : Service
+    public class WebsiteSettings : Service
     {
         #region "Render"
         public string Render()
         {
             //display all application settings
             if (!CheckSecurity("website-settings")) { return AccessDenied(); }
-            var view = new View("/Views/AppSettings/appsettings.html");
-            var accordion = new View("/Views/AppSettings/accordion.html");
+            var view = new View("/Views/WebsiteSettings/websitesettings.html");
+            var accordion = new View("/Views/WebsiteSettings/accordion.html");
             var accordions = new StringBuilder();
 
             //add icons accordion
-            var viewIcons = new View("/Views/AppSettings/icons.html");
+            var viewIcons = new View("/Views/WebsiteSettings/icons.html");
             //add website icon
             if (!File.Exists(App.MapPath("/wwwroot/images/web-icon.png")))
             {
@@ -32,7 +31,7 @@ namespace Saber.Services
             }
 
             //add icons
-            var viewIcon = new View("/Views/AppSettings/appleicon.html");
+            var viewIcon = new View("/Views/WebsiteSettings/appleicon.html");
             var appleIcons = new StringBuilder();
             var androidIcons = new StringBuilder();
             appleIcons.Append(RenderAppleIcon(viewIcon, 60));
@@ -42,7 +41,7 @@ namespace Saber.Services
             viewIcons["apple-icons"] = appleIcons.ToString();
 
             //add android icons
-            viewIcon = new View("/Views/AppSettings/androidicon.html");
+            viewIcon = new View("/Views/WebsiteSettings/androidicon.html");
             androidIcons.Append(RenderAndroidIcon(viewIcon, 36));
             androidIcons.Append(RenderAndroidIcon(viewIcon, 48));
             androidIcons.Append(RenderAndroidIcon(viewIcon, 72));
@@ -62,7 +61,7 @@ namespace Saber.Services
             var config = Common.Platform.Website.Settings.Load();
 
             //load email settings
-            var viewEmails = new View("/Views/AppSettings/email-settings.html");
+            var viewEmails = new View("/Views/WebsiteSettings/email-settings.html");
             var emailclients = new StringBuilder("<option value=\"smtp\">SMTP Client</option>");
             var clientforms = new StringBuilder();
             viewEmails["smtp.domain"] = config.Email.Smtp.Domain;
@@ -168,6 +167,20 @@ namespace Saber.Services
             accordion["contents"] = viewEmails.Render();
             accordions.Append(accordion.Render());
 
+            //load passwords settings
+            var viewPasswords = new View("/Views/WebsiteSettings/passwords.html");
+            viewPasswords.Bind(new { pass = config.Passwords });
+            if (config.Passwords.NoSpaces)
+            {
+                viewPasswords.Show("nospaces");
+            }
+
+            //render passwords accordion
+            accordion.Clear();
+            accordion["title"] = "Password Settings";
+            accordion["contents"] = viewPasswords.Render();
+            accordions.Append(accordion.Render());
+
             //render accordions
             view["accordions"] = accordions.ToString();
 
@@ -183,13 +196,13 @@ namespace Saber.Services
             view["vendor.accordions"] = html.ToString();
 
             //add js file
-            AddScript("/editor/js/views/appsettings/appsettings.js");
+            AddScript("/editor/js/views/websitesettings/websitesettings.js");
 
             //render view
             return JsonResponse(
                 new Datasilk.Core.Web.Response()
                 {
-                    selector = ".sections > .app-settings .settings-contents",
+                    selector = ".sections > .web-settings .settings-contents",
                     html = Common.Platform.Render.View(this, view),
                     css = Css.ToString(),
                     javascript = Scripts.ToString()
@@ -197,6 +210,41 @@ namespace Saber.Services
             );
         }
 
+        private string RenderAppleIcon(View viewIcon, int px)
+        {
+            viewIcon["favicon-missing"] = "";
+            viewIcon["src"] = "";
+            viewIcon["px"] = px.ToString();
+            if (!File.Exists(App.MapPath($"/wwwroot/images/mobile/apple-{px}x{px}.png")))
+            {
+                viewIcon.Show("favicon-missing");
+            }
+            else
+            {
+                viewIcon["src"] = $"/images/mobile/apple-{px}x{px}.png";
+            }
+            return viewIcon.Render();
+        }
+
+        private string RenderAndroidIcon(View viewIcon, int px)
+        {
+            viewIcon["favicon-missing"] = "";
+            viewIcon["src"] = "";
+            viewIcon["px"] = px.ToString();
+            if (!File.Exists(App.MapPath($"/wwwroot/images/mobile/android-{px}x{px}.png")))
+            {
+                viewIcon.Show("favicon-missing");
+            }
+            else
+            {
+                viewIcon["src"] = $"/images/mobile/android-{px}x{px}.png";
+            }
+            viewIcon["px"] = px.ToString();
+            return viewIcon.Render();
+        }
+        #endregion
+
+        #region "Save Settings"
         public string SaveEmailClient(string id, Dictionary<string, string> parameters)
         {
             if (!CheckSecurity("website-settings")) { return AccessDenied(); }
@@ -238,40 +286,18 @@ namespace Saber.Services
             return Success();
         }
 
-        private string RenderAppleIcon(View viewIcon, int px)
+        public string SavePasswords(Models.Website.Passwords passwords)
         {
-            viewIcon["favicon-missing"] = "";
-            viewIcon["src"] = "";
-            viewIcon["px"] = px.ToString();
-            if (!File.Exists(App.MapPath($"/wwwroot/images/mobile/apple-{px}x{px}.png")))
-            {
-                viewIcon.Show("favicon-missing");
-            }
-            else
-            {
-                viewIcon["src"] = $"/images/mobile/apple-{px}x{px}.png";
-            }
-            return viewIcon.Render();
-        }
-
-        private string RenderAndroidIcon(View viewIcon, int px)
-        {
-            viewIcon["favicon-missing"] = "";
-            viewIcon["src"] = "";
-            viewIcon["px"] = px.ToString();
-            if (!File.Exists(App.MapPath($"/wwwroot/images/mobile/android-{px}x{px}.png")))
-            {
-                viewIcon.Show("favicon-missing");
-            }
-            else
-            {
-                viewIcon["src"] = $"/images/mobile/android-{px}x{px}.png";
-            }
-            viewIcon["px"] = px.ToString();
-            return viewIcon.Render();
+            if(passwords == null) { return Error("No data recieved"); }
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            var settings = Common.Platform.Website.Settings.Load();
+            settings.Passwords = passwords;
+            Common.Platform.Website.Settings.Save(settings);
+            return Success();
         }
         #endregion
 
+        #region "Upload"
         public string UploadPngIcon(int type, int px)
         {
             if (!CheckSecurity("website-settings")) { return AccessDenied(); }
@@ -323,5 +349,6 @@ namespace Saber.Services
             }
             return Success();
         }
+        #endregion
     }
 }

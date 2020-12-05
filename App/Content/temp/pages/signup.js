@@ -13,7 +13,6 @@
             password: byId('password').value,
             password2: byId('password2').value,
         };
-        return;
 
         //set up AJAX request
         var req = new XMLHttpRequest();
@@ -22,8 +21,7 @@
         req.onload = function () {
             if (req.status >= 200 && req.status < 400) {
                 //request success
-                response = JSON.parse(req.responseText);
-                document.location.href = '/' + response.redirect;
+                document.location.href = '/signup-complete';
             } else {
                 //connected to server, but returned an error
                 error(req.responseText);
@@ -43,10 +41,8 @@
 
     function error(msg){
         var box = byClass('msg');
-        var label = byClass('msg-lbl');
-        label.innerHTML(msg);
+        box.className = 'msg error';
+        box.innerHTML = msg;
         box.style.display = 'block';
     }
-
-
 })();

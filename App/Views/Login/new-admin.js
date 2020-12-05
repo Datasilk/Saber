@@ -41,7 +41,7 @@
         $('#btnsavepass').prop("disabled", "disabled");
 
         //send new account info to server
-        S.ajax.post('User/CreateAdminAccount', { name:name, email: email, password: pass }, function (data) {
+        S.ajax.post('User/CreateAdminAccount', { name:name, email: email, password: pass, password2: pass2 }, function (data) {
             //callback, replace form with message
             if (data == 'success') { 
                 //show success message

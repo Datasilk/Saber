@@ -52,19 +52,19 @@
   <ItemGroup>
     <None Remove="CSS\tapestry\LICENSE" />
     <None Remove="Scripts\editor\editor.js" />
-    <None Remove="Views\AppSettings\androidicon.html" />
-    <None Remove="Views\AppSettings\appleicon.html" />
+    <None Remove="Views\WebsiteSettings\androidicon.html" />
+    <None Remove="Views\WebsiteSettings\appleicon.html" />
     <None Remove="Views\ContentFields\block.html" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Views\AppSettings\androidicon.html">
+    <Content Include="Views\WebsiteSettings\androidicon.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\AppSettings\appleicon.html">
+    <Content Include="Views\WebsiteSettings\appleicon.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\AppSettings\appsettings.html">
+    <Content Include="Views\WebsiteSettings\websitesettings.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\ContentFields\block.html">

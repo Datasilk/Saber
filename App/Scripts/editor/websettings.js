@@ -1,8 +1,8 @@
-S.editor.appsettings = {
+S.editor.websettings = {
     show: function () {
-        S.editor.tabs.create("Website Settings", "app-settings-section", {},
+        S.editor.tabs.create("Website Settings", "web-settings-section", {},
             () => { //onfocus
-                $('.tab.app-settings').removeClass('hide');
+                $('.tab.web-settings').removeClass('hide');
                 S.editor.filebar.update('Website Settings', 'icon-settings');
             },
             () => { //onblur
@@ -14,13 +14,13 @@ S.editor.appsettings = {
         );
         S.editor.dropmenu.hide();
         $('.editor .sections > .tab').addClass('hide');
-        $('.editor .sections > .app-settings').removeClass('hide');
+        $('.editor .sections > .web-settings').removeClass('hide');
 
         //disable save menu
         $('.item-save').addClass('faded').attr('disabled', 'disabled');
         $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
-        S.ajax.post('AppSettings/Render', {},
+        S.ajax.post('WebsiteSettings/Render', {},
             function (d) {
                 var data = JSON.parse(d);
                 S.ajax.inject(data);

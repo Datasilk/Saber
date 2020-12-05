@@ -324,6 +324,7 @@ namespace Saber.Common.Platform
             {
                 var file = App.MapPath("website.json");
                 File.WriteAllText(file, JsonSerializer.Serialize(settings, jsonOptions));
+                Cache.Remove(file);
             }
         }
     }
