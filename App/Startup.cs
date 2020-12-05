@@ -128,7 +128,7 @@ namespace Saber
             {
                 //get a list of interfaces from the assembly
                 var types = assembly.GetTypes()
-                    .Where(type => typeof(Vendor.IVendorHtmlComponent).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                    .Where(type => typeof(Vendor.IVendorHtmlComponents).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
                 foreach (var type in types)
                 {
                     Common.Vendors.GetHtmlComponentsFromType(type);

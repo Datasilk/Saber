@@ -84,21 +84,19 @@
     $('.email-actions button.save').on('click', (e) => {
         //save email actions
         e.preventDefault();
+        var actions = $('.email-action');
         var data = {
-            actions: {
-                SignUp: {
-                    Client: $('#emailaction_signup').val(),
-                    Subject: $('#emailaction_signup_subject').val()
-                },
-                ForgotPass: {
-                    Client: $('#emailaction_forgotpass').val(),
-                    Subject: $('#emailaction_forgotpass_subject').val()
-                },
-                Newsletter: {
-                    Client: $('#emailaction_newsletter').val()
-                }
-            }
+            actions: []
         };
+        for (var x = 0; x < actions.length; x++) {
+            var action = $(actions[x]);
+            var key = action.attr('data-key');
+            data.actions.push({
+                Type: key,
+                Client: $('#emailaction_' + key).val(),
+                Subject: $('#emailaction_' + key + '_subject').val() ?? ''
+            });
+        }
 
         S.ajax.post('WebsiteSettings/SaveEmailActions', data, () => {
             S.editor.message('', 'Email Action settings saved successfully');
@@ -121,9 +119,6 @@
                 NoSpaces: $('#pass_nospaces')[0].checked
             }
         };
-
-        console.log(data);
-
         S.ajax.post('WebsiteSettings/SavePasswords', data, () => {
             S.editor.message('', 'Password settings saved successfully');
         }, (err) => {

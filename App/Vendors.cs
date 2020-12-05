@@ -22,6 +22,7 @@ namespace Saber.Common
         public static string[] HtmlComponentKeys { get; set; }
         public static Dictionary<string, HtmlComponentModel> SpecialVars { get; set; } = new Dictionary<string, HtmlComponentModel>();
         public static Dictionary<string, IVendorEmailClient> EmailClients { get; set; } = new Dictionary<string, IVendorEmailClient>();
+        public static Dictionary<string, EmailType> EmailTypes { get; set; } = new Dictionary<string, EmailType>();
         public static List<IVendorWebsiteSettings> WebsiteSettings { get; set; } = new List<IVendorWebsiteSettings>();
 
         private class AssemblyInfo
@@ -315,8 +316,8 @@ namespace Saber.Common
         public static void GetHtmlComponentsFromType(Type type)
         {
             if (type == null) { return; }
-            if (type.Equals(typeof(IVendorHtmlComponent))) { return; }
-            var instance = (IVendorHtmlComponent)Activator.CreateInstance(type);
+            if (type.Equals(typeof(IVendorHtmlComponents))) { return; }
+            var instance = (IVendorHtmlComponents)Activator.CreateInstance(type);
             var components = instance.Bind();
             foreach (var component in components) {
                 if(component.Parameters.Count == 0)
@@ -357,8 +358,40 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorEmailClient))) { return; }
             var instance = (IVendorEmailClient)Activator.CreateInstance(type);
-            EmailClients.Add(instance.Id, instance);
+            if(instance.Key == "smtp") { return; } //skip internal email client
+            EmailClients.Add(instance.Key, instance);
             instance.Init();
+        }
+        #endregion
+
+        #region "Emails"
+        public static void GetEmailsFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorEmails")
+                        {
+                            GetEmailsFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetEmailsFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorEmails))) { return; }
+            var emails = (IVendorEmails)Activator.CreateInstance(type);
+            foreach(var email in emails.Types)
+            {
+                EmailTypes.Add(email.Key, email);
+            }
         }
         #endregion
 

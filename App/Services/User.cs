@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Mail;
 using Saber.Core.Extensions.Strings;
 
 namespace Saber.Services
@@ -77,7 +78,14 @@ namespace Saber.Services
                 tempkey = activationkey
             });
 
-            //TODO: send signup activation email
+            //send signup activation email
+            var viewEmail = new View("/Content/emails/signup.html");
+            viewEmail["userId"] = userId.ToString();
+            viewEmail["name"] = name;
+            viewEmail["email"] = emailaddr;
+            viewEmail["activation-key"] = activationkey;
+            var message = new MailMessage("saber@datasilk.io", emailaddr, "Welcome to Saber!", viewEmail.Render());
+            Core.Email.Send(message, "signup");
 
             return "success";
         }

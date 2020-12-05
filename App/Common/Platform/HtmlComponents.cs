@@ -9,7 +9,7 @@ namespace Saber.Common.Platform
     /// <summary>
     /// Define Saber-specific html variables
     /// </summary>
-    public class HtmlComponents : IVendorHtmlComponent
+    public class HtmlComponents : IVendorHtmlComponents
     {
         public List<HtmlComponentModel> Bind()
         {

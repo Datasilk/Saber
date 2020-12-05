@@ -62,26 +62,24 @@ namespace Saber.Services
 
             //load email settings
             var viewEmails = new View("/Views/WebsiteSettings/email-settings.html");
-            var emailclients = new StringBuilder("<option value=\"smtp\">SMTP Client</option>");
+            var clientoptions = new StringBuilder();
             var clientforms = new StringBuilder();
-            viewEmails["smtp.domain"] = config.Email.Smtp.Domain;
-            viewEmails["smtp.port"] = config.Email.Smtp.Port.ToString();
-            if (config.Email.Smtp.SSL == true) { viewEmails.Show("smtp.ssl"); }
-            viewEmails["smtp.user"] = config.Email.Smtp.Username;
-            viewEmails["smtp.pass"] = config.Email.Smtp.Password != "" ? "********" : "";
+            var emailClients = new List<Vendor.IVendorEmailClient>();
+            emailClients.AddRange(Common.Platform.Email.Clients);
+            emailClients.AddRange(Common.Vendors.EmailClients.Values.OrderBy(a => a.Name));
 
-            foreach (var client in Common.Vendors.EmailClients)
+            foreach (var client in emailClients)
             {
-                emailclients.Append("<option value=\"" + client.Key + "\">" + client.Value.Name + "</option>");
+                clientoptions.Append("<option value=\"" + client.Key + "\">" + client.Name + "</option>");
 
                 //load vendor email client config
-                var vendorConfig = client.Value.GetConfig();
+                var vendorConfig = client.GetConfig();
 
                 //generate email client form
-                clientforms.Append("<div class=\"email-client client-" + client.Key + " hide\">");
-                foreach(var param in client.Value.Parameters)
+                clientforms.Append("<div class=\"email-client client-" + client.Key + (client.Key != "smtp" ? " hide" : "") + "\">");
+                foreach(var param in client.Parameters)
                 {
-                    var value = (vendorConfig.ContainsKey(param.Key) ? vendorConfig[param.Key] : "").Replace("\"", "&quot;");
+                    var value = (vendorConfig.ContainsKey(param.Key) ? vendorConfig[param.Key] : param.Value.DefaultValue).Replace("\"", "&quot;");
                     var id = " id=\"" + client.Key + "_" + param.Key + "\"";
                     switch (param.Value.DataType)
                     {
@@ -111,7 +109,7 @@ namespace Saber.Services
                                 "</select></div>");
                             break;
                         case Vendor.EmailClientDataType.Boolean:
-                            clientforms.Append("<div class=\"row input\"><input type=\"checkbox\"" + id + " />" + 
+                            clientforms.Append("<div class=\"row input\"><input type=\"checkbox\"" + id + (value == "1" || value.ToLower() == "true" ? " checked=\"checked\"" : "") + " />" + 
                                 "<label for=\"" + client.Key + "_" + param.Key + "\">" + param.Value.Name + "</label>" +
                                 "</div>");
                             break;
@@ -120,46 +118,41 @@ namespace Saber.Services
                 }
                 clientforms.Append("</div>");
             }
-            viewEmails["emailclients"] = emailclients.ToString();
+            viewEmails["emailclients"] = clientoptions.ToString();
             viewEmails["emailclients.forms"] = clientforms.ToString();
 
-            //email action: signup
-            emailclients = new StringBuilder("<option value=\"smtp\"" +
-                    (config.Email.Actions.SignUp.Client == "smtp" ? " selected=\"selected\"" : "") +
-                    ">SMTP Client</option>");
-            foreach (var client in Common.Vendors.EmailClients)
-            {
-                emailclients.Append("<option value=\"" + client.Key + "\"" + 
-                    (config.Email.Actions.SignUp.Client == client.Key ? " selected=\"selected\"" : "") + 
-                    ">" + client.Value.Name + "</option>");
-            }
-            viewEmails["emailaction.signup"] = emailclients.ToString();
-            viewEmails["emailaction.signup.subject"] = config.Email.Actions.SignUp.Subject;
+            //render email actions
+            var viewEmailAction = new View("/Views/WebsiteSettings/email-action.html");
+            var emailActions = new List<Vendor.EmailType>();
+            emailActions.AddRange(Common.Platform.Email.Types);
+            emailActions.AddRange(Common.Vendors.EmailTypes.Values);
+            var html = new StringBuilder();
 
-            //email action: forgot password
-            emailclients = new StringBuilder("<option value=\"smtp\"" +
-                    (config.Email.Actions.ForgotPass.Client == "smtp" ? " selected=\"selected\"" : "") +
-                    ">SMTP Client</option>");
-            foreach (var client in Common.Vendors.EmailClients)
+            foreach(var action in emailActions)
             {
-                emailclients.Append("<option value=\"" + client.Key + "\"" +
-                    (config.Email.Actions.ForgotPass.Client == client.Key ? " selected=\"selected\"" : "") +
-                    ">" + client.Value.Name + "</option>");
+                var configAction = config.Email.Actions.Where(a => a.Type == action.Key).FirstOrDefault();
+                viewEmailAction.Bind(new
+                {
+                    action = new
+                    {
+                        key = action.Key,
+                        name = action.Name,
+                        templatefile = action.TemplateFile,
+                        subject = configAction?.Subject ?? "",
+                        options = string.Join("", 
+                            emailClients.Select(a => "<option value=\"" + a.Key + "\"" +
+                            (configAction?.Client == a.Key ? " selected=\"selected\"" : "") + 
+                            ">" + a.Name + "</option>"
+                            ))
+                    }
+                });
+                if (action.UserDefinedSubject) { viewEmailAction.Show("user-subject"); }
+                if(action.TemplateFile == "") { viewEmailAction.Show("any-file"); }
+                else { viewEmailAction.Show("template-file"); }
+                html.Append(viewEmailAction.Render());
+                viewEmailAction.Clear();
             }
-            viewEmails["emailaction.forgotpass"] = emailclients.ToString();
-            viewEmails["emailaction.forgotpass.subject"] = config.Email.Actions.ForgotPass.Subject;
-
-            //email action: newsletter
-            emailclients = new StringBuilder("<option value=\"smtp\"" +
-                    (config.Email.Actions.Newsletter.Client == "smtp" ? " selected=\"selected\"" : "") +
-                    ">SMTP Client</option>");
-            foreach (var client in Common.Vendors.EmailClients)
-            {
-                emailclients.Append("<option value=\"" + client.Key + "\"" +
-                    (config.Email.Actions.Newsletter.Client == client.Key ? " selected=\"selected\"" : "") +
-                    ">" + client.Value.Name + "</option>");
-            }
-            viewEmails["emailaction.newsletter"] = emailclients.ToString();
+            viewEmails["email-actions"] = html.ToString();
 
             //render email settings accordion
             accordion.Clear();
@@ -185,7 +178,7 @@ namespace Saber.Services
             view["accordions"] = accordions.ToString();
 
             //add vendor plugins
-            var html = new StringBuilder();
+            html.Clear();
             foreach(var vendor in Common.Vendors.WebsiteSettings)
             {
                 accordion.Clear();
@@ -251,19 +244,7 @@ namespace Saber.Services
             if (id == "smtp")
             {
                 //save default email client settings
-                var settings = Common.Platform.Website.Settings.Load();
-                int.TryParse(parameters["port"], out var port);
-                var ssl = parameters["ssl"] ?? "";
-                var pass = parameters["pass"] ?? "";
-                settings.Email.Smtp.Domain = parameters["domain"] ?? "";
-                settings.Email.Smtp.Port = port;
-                settings.Email.Smtp.SSL = ssl.ToLower() == "true";
-                settings.Email.Smtp.Username = parameters["user"];
-                if(pass != "" && pass.Any(a => a != '*'))
-                {
-                    settings.Email.Smtp.Password = parameters["pass"];
-                }
-                Common.Platform.Website.Settings.Save(settings);
+                Common.Platform.Email.Clients.Where(a => a.Key == "smtp").FirstOrDefault()?.SaveConfig(parameters);
             }
             else
             {
@@ -277,7 +258,7 @@ namespace Saber.Services
             return Success();
         }
 
-        public string SaveEmailActions(Models.Website.EmailActions actions)
+        public string SaveEmailActions(List<Models.Website.EmailAction> actions)
         {
             if (!CheckSecurity("website-settings")) { return AccessDenied(); }
             var settings = Common.Platform.Website.Settings.Load();
