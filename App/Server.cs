@@ -3,8 +3,6 @@ using Microsoft.Extensions.Configuration;
 
 public static class Server
 {
-    public static string hostUri { get; set; } = "https://localhost:5000/";
-
     //config properties
     public static IConfiguration Config { get; set; }
     public static string[] ServicePaths { get; set; } = new string[] { "api" };

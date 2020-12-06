@@ -1,4 +1,5 @@
 {
+  "hostUri": "http://localhost:7000",
   "sql": {
     "active": "SqlServerTrusted",
     "SqlServerTrusted": "Data Source=host.docker.internal,1433;Initial Catalog=Saber;Persist Security Info=False;User ID=docker;Password=test123;MultipleActiveResultSets=True;"

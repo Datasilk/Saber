@@ -1,4 +1,5 @@
 {
+  "hostUri": "http://localhost:7000",
   "sql": {
     "active": "SqlServerTrusted",
     "SqlServerTrusted": "server=.\\SQL2017; database=Saber; Trusted_Connection=true"

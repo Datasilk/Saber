@@ -28,31 +28,27 @@ namespace Saber.Services
 
         public string CreateAdminAccount(string name, string email, string password, string password2)
         {
-            if (Server.HasAdmin == false)
+            if (Server.HasAdmin == true) { return Error(); }
+            if (!CheckEmailAddress(email)) { return Error("Email address is invalid"); }
+            if (password != password2) { return Error("Passwords do not match"); }
+            try
             {
-                if (!CheckEmailAddress(email)) { return Error("Email address is invalid"); }
-                if (password != password2) { return Error("Passwords do not match"); }
-                try
-                {
-                    CheckPassword(password);
-                }
-                catch (Exception ex)
-                {
-                    return Error(ex.Message);
-                }
-                if (string.IsNullOrEmpty(name)) { return Error("Please specify your name"); }
-                Query.Users.CreateUser(new Query.Models.User()
-                {
-                    name = name,
-                    email = email,
-                    password = EncryptPassword(email, password)
-                }, true);
-                Server.HasAdmin = true;
-                Server.ResetPass = false;
-                return "success";
+                CheckPassword(password);
             }
-            Context.Response.StatusCode = 500;
-            return "";
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+            if (string.IsNullOrEmpty(name)) { return Error("Please specify your name"); }
+            Query.Users.CreateUser(new Query.Models.User()
+            {
+                name = name,
+                email = email,
+                password = EncryptPassword(email, password)
+            }, true);
+            Server.HasAdmin = true;
+            Server.ResetPass = false;
+            return "success";
         }
 
         public string SignUp(string name, string emailaddr, string password, string password2)
@@ -84,8 +80,8 @@ namespace Saber.Services
             viewEmail["name"] = name;
             viewEmail["email"] = emailaddr;
             viewEmail["activation-key"] = activationkey;
-            var message = new MailMessage("saber@datasilk.io", emailaddr, "Welcome to Saber!", viewEmail.Render());
-            Core.Email.Send(message, "signup");
+            var msg = Core.Email.Create(new MailAddress(emailaddr, name), "Welcome to Saber!", viewEmail.Render());
+            Core.Email.Send(msg, "signup");
 
             return "success";
         }
@@ -118,7 +114,13 @@ namespace Saber.Services
             {
                 var activationkey = Generate.NewId(16);
                 Query.Users.ForgotPassword(emailaddr, activationkey);
-                //TODO: send forgot password email
+                Query.Logs.LogForgotPassword(emailaddr);
+                var viewEmail = new View("/Content/emails/forgot-pass.html");
+                viewEmail["email"] = emailaddr;
+                viewEmail["url"] = App.Host + "/resetpass#" + activationkey;
+                viewEmail["activation-key"] = activationkey;
+                var msg = Core.Email.Create(new MailAddress(emailaddr), "Password reset for Saber", viewEmail.Render());
+                Core.Email.Send(msg, "forgotpass");
                 return Success();
             }
             return Error("Email is not eligible for a password reset");

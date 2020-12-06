@@ -3,7 +3,7 @@
 	@tempkey varchar(16)
 AS
 	IF EXISTS(SELECT * FROM Users WHERE email=@email AND dateactivated IS NOT NULL) BEGIN
-		UPDATE Users SET [password]='', tempkey=@tempkey, keyexpires = DATEADD(DAY, 1, GETUTCDATE())
+		UPDATE Users SET tempkey=@tempkey, keyexpires = DATEADD(DAY, 1, GETUTCDATE())
 		WHERE email=@email
 		SELECT 1
 	END ELSE BEGIN

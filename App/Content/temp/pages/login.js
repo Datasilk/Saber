@@ -47,6 +47,4 @@
         box.innerHTML = msg;
         box.style.display = 'block';
     }
-
-
 })();

@@ -265,7 +265,7 @@ namespace Saber
             Server.Config = config;
 
             //configure Server defaults
-            Server.hostUri = config.GetSection("hostUri").Value;
+            App.Host = config.GetSection("hostUri").Value ?? "http://localhost:7000";
             var servicepaths = config.GetSection("servicePaths").Value;
             if (servicepaths != null && servicepaths != "")
             {
@@ -280,8 +280,8 @@ namespace Saber
             Query.Sql.ConnectionString = config.GetSection("sql:" + config.GetSection("sql:Active").Value).Value;
 
             //configure Server security
-            Server.BcryptWorkfactor = int.Parse(config.GetSection("Encryption:bcrypt_work_factor").Value);
-            Server.Salt = config.GetSection("Encryption:salt").Value;
+            Server.BcryptWorkfactor = int.Parse(config.GetSection("encryption:bcrypt_work_factor").Value);
+            Server.Salt = config.GetSection("encryption:salt").Value;
 
             //configure cookie-based authentication
             var expires = !string.IsNullOrWhiteSpace(config.GetSection("Session:Expires").Value) ? int.Parse(config.GetSection("Session:Expires").Value) : 60;
