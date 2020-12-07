@@ -126,8 +126,9 @@ namespace Saber.Services
             return Error("Email is not eligible for a password reset");
         }
 
-        public string ResetPassword(string emailaddr, string password, string activationkey)
+        public string ResetPassword(string key, string password, string password2)
         {
+            if (password != password2) { return Error("Passwords do not match"); }
             try
             {
                 CheckPassword(password);
@@ -135,7 +136,12 @@ namespace Saber.Services
             {
                 return Error(ex.Message);
             }
-            if (Query.Users.ResetPassword(emailaddr, password, activationkey))
+            var email = Query.Users.GetEmailFromResetKey(key);
+            if (string.IsNullOrEmpty(email))
+            {
+                return Error("Password reset authentication key has expired.");
+            }
+            if (Query.Users.ResetPassword(EncryptPassword(email, password), key))
             {
                 return Success();
             }

@@ -50,9 +50,14 @@ namespace Query
             return Sql.ExecuteScalar<int>("User_ForgotPassword", new { email, tempkey }) == 1;
         }
 
-        public static bool ResetPassword(string email, string password, string tempkey)
+        public static string GetEmailFromResetKey(string tempkey)
         {
-            return Sql.ExecuteScalar<int>("User_ResetPassword", new { email, password, tempkey }) == 1;
+            return Sql.ExecuteScalar<string>("User_GetEmailFromResetKey", new { tempkey });
+        }
+
+        public static bool ResetPassword(string password, string tempkey)
+        {
+            return Sql.ExecuteScalar<int>("User_ResetPassword", new { password, tempkey }) == 1;
         }
 
         public static void UpdatePassword(string email, string password)

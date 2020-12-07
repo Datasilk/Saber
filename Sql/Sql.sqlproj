@@ -131,6 +131,7 @@
     <Build Include="dbo\Stored Procedures\Users\User_RequestActivation.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_ResetPassword.sql" />
     <Build Include="dbo\Tables\Log_ForgotPasswords.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_GetEmailFromResetKey.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />
