@@ -22,6 +22,7 @@ namespace Saber
         public DateTime DateCreated { get; set; }
         public string Language { get; set; }
         public List<KeyValuePair<string, bool>> Keys { get; set; } = new List<KeyValuePair<string, bool>>();
+        public int[] Groups { get; set; } = new int[] { };
         public bool ResetPass { get; set; }
 
         public static User Get(HttpContext context)
@@ -94,6 +95,11 @@ namespace Saber
             foreach(var key in keys)
             {
                 Keys.Add(new KeyValuePair<string, bool>(key.key, key.value));
+            }
+            var groups = Query.Security.Users.GetGroups(userId);
+            if(groups != null && groups.Count > 0)
+            {
+                Groups = groups.Select(a => a.groupId).ToArray();
             }
 
             //create persistant cookie

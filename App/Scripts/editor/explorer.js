@@ -36,7 +36,7 @@ S.editor.explorer = {
                 });
                 var url = path;
                 if (path.indexOf('root') == 0) {
-                    url = url.replace('root', '');
+                    url = url.replace('root', '').replace('content/', '');
                 }
                 url += '/';
                 $('.browser-path').html(url);
@@ -193,13 +193,14 @@ S.editor.explorer = {
 
         //change file path
         var cleanPath = path;
-        if (path.indexOf('content/partials/') == 0) {
-        } else if (path.indexOf('content/pages')) {
-        } else if (path.indexOf('content/') == 0) {
-            cleanPath = path.replace('content/', 'content/pages/');
+        console.log(cleanPath);
+        if (cleanPath.indexOf('content/partials/') == 0) {
+            cleanPath = cleanPath.replace('content/', '');
+        } else if (cleanPath.indexOf('content/') == 0) {
+            cleanPath = cleanPath.replace('content/', 'pages/');
         }
-        if (path.indexOf('root/') == 0) { cleanPath = path.replace('root/', ''); }
-
+        if (cleanPath.indexOf('root/') == 0) { cleanPath = cleanPath.replace('root/', ''); }
+        cleanPath = cleanPath.replace('CSS/', '');
         if (isready !== false) {
             //set file bar path text & icon
             S.editor.filebar.update(cleanPath, 'icon-file-' + ext);

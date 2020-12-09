@@ -67,11 +67,11 @@ namespace Saber.Common.Platform
             }
 
             //check security
-            if (config.security.secure == true)
+            if (config.security.groups.Length > 0)
             {
-                if (!request.CheckSecurity() || !config.security.read.Contains(request.User.UserId))
+                if (!request.CheckSecurity() || (request.User.UserId != 1 && !config.security.groups.Any(a => request.User.Groups.Contains(a))))
                 {
-                    throw new ServiceDeniedException("You do not have read access for this page");
+                    throw new ServiceDeniedException("You do not have access to this page");
                 }
             }
 

@@ -255,45 +255,56 @@ namespace Saber.Controllers
                     AddScript(script, "custom_js_" + scriptIndex);
                     scriptIndex++;
                 }
-
-                if (File.Exists(App.MapPath(rpath + rfile + ".html")))
+                try
                 {
-                    //page exists
-                    view["content"] = Common.Platform.Render.Page("content/" + pathname + ".html", this, config, lang);
-                    AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
-                    AddScript(rpath.ToLower() + rfile + ".js", "page_js");
-                }
-                else if(User.UserId == 0 || Parameters.ContainsKey("live"))
-                {
-                    //show 404 error
-                    Context.Response.StatusCode = 404;
-                    if (File.Exists(App.MapPath("content/pages/404.html")))
+                    if (File.Exists(App.MapPath(rpath + rfile + ".html")))
                     {
-                        config = PageInfo.GetPageConfig("content/404");
-                        view["content"] = Common.Platform.Render.Page("content/pages/404.html", this, config, lang);
-                        AddCSS("/content/pages/404.css", "page_css");
-                        AddScript("/content/pages/404.js", "page_js");
+                        //page exists
+                        view["content"] = Common.Platform.Render.Page("content/" + pathname + ".html", this, config, lang);
+                        AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
+                        AddScript(rpath.ToLower() + rfile + ".js", "page_js");
+                    }
+                    else if (User.UserId == 0 || Parameters.ContainsKey("live"))
+                    {
+                        //show 404 error
+                        Context.Response.StatusCode = 404;
+                        if (File.Exists(App.MapPath("content/pages/404.html")))
+                        {
+                            config = PageInfo.GetPageConfig("content/404");
+                            view["content"] = Common.Platform.Render.Page("content/pages/404.html", this, config, lang);
+                            AddCSS("/content/pages/404.css", "page_css");
+                            AddScript("/content/pages/404.js", "page_js");
+                        }
+                        else
+                        {
+                            view["content"] = Common.Platform.Render.Page("content/pages/404.html", this, config, lang);
+                        }
+                    }
+                    else if (File.Exists(App.MapPath(rpath + "/template.html")))
+                    {
+                        //page does not exist, try to load template page from parent
+                        var templatePath = string.Join('/', PathParts.Take(PathParts.Length - 1).ToArray());
+                        view["content"] = Common.Platform.Render.Page("content/" + templatePath + "/template.html", this, config, lang);
+                        AddCSS(rpath.ToLower() + "template.css", "page_css");
+                        AddScript(rpath.ToLower() + "template.js", "page_js");
                     }
                     else
                     {
-                        view["content"] = Common.Platform.Render.Page("content/pages/404.html", this, config, lang);
+                        //last resort, page & template doesn't exists
+                        view["content"] = Common.Platform.Render.Page("content/" + pathname + ".html", this, config, lang);
+                        AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
+                        AddScript(rpath.ToLower() + rfile + ".js", "page_js");
                     }
                 }
-                else if (File.Exists(App.MapPath(rpath + "/template.html")))
+                catch (ServiceDeniedException)
                 {
-                    //page does not exist, try to load template page from parent
-                    var templatePath = string.Join('/', PathParts.Take(PathParts.Length - 1).ToArray());
-                    view["content"] = Common.Platform.Render.Page("content/" + templatePath + "/template.html", this, config, lang);
-                    AddCSS(rpath.ToLower() + "template.css", "page_css");
-                    AddScript(rpath.ToLower() + "template.js", "page_js");
+                    view["content"] = Common.Platform.Render.Page("content/access-denied.html", this, config, lang);
                 }
-                else
+                catch (ServiceErrorException)
                 {
-                    //last resort, page & template doesn't exists
-                    view["content"] = Common.Platform.Render.Page("content/" + pathname + ".html", this, config, lang);
-                    AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
-                    AddScript(rpath.ToLower() + rfile + ".js", "page_js");
+                    view["content"] = Common.Platform.Render.Page("content/error.html", this, config, lang);
                 }
+                
 
                 //log page request
                 var url = string.Join("/", PathParts) + (Context.Request.QueryString.HasValue ? "?" + Context.Request.QueryString.Value : "");
@@ -304,8 +315,21 @@ namespace Saber.Controllers
             else
             {
                 //don't load layout, which includes CSS & Javascript files
-                return "<span style=\"display:none;\"></span>\n" + //CORS fix: add empty span at top of page to trick CORB validation
-                    Common.Platform.Render.Page("content/" + pathname + ".html", this, config, lang);
+                try
+                {
+                    return "<span style=\"display:none;\"></span>\n" + //CORS fix: add empty span at top of page to trick CORB validation
+                        Common.Platform.Render.Page("content/" + pathname + ".html", this, config, lang);
+                }
+                catch (ServiceDeniedException)
+                {
+                    return "<span style=\"display:none;\"></span>\n" + //CORS fix: add empty span at top of page to trick CORB validation
+                        Common.Platform.Render.Page("content/access-denied.html", this, config, lang);
+                }
+                catch (ServiceErrorException)
+                {
+                    return "<span style=\"display:none;\"></span>\n" + //CORS fix: add empty span at top of page to trick CORB validation
+                        Common.Platform.Render.Page("content/error.html", this, config, lang);
+                }
             }
         }
     }
