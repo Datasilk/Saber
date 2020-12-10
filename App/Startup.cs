@@ -43,23 +43,6 @@ namespace Saber
             //add health checks
             services.AddHealthChecks();
 
-            //add gzip compression
-            services.AddResponseCompression(options =>
-            {
-                //options.Providers.Add<GzipCompressionProvider>();
-                options.Providers.Add<BrotliCompressionProvider>();
-                options.MimeTypes =  new[] { "text/css", "image/svg" };
-                options.EnableForHttps = true;
-            });
-            //services.Configure<GzipCompressionProviderOptions>(options =>
-            //{
-            //    options.Level = CompressionLevel.Optimal;
-            //});
-            services.Configure<BrotliCompressionProviderOptions>(options =>
-            {
-                options.Level = CompressionLevel.Optimal;
-            });
-
             //get list of assemblies for Vendor related functionality
             var assemblies = new List<Assembly> { Assembly.GetCallingAssembly() };
             if (!assemblies.Contains(Assembly.GetExecutingAssembly()))
@@ -209,6 +192,7 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorWebsiteSettings interface
             Common.Vendors.GetWebsiteSettingsFromFileSystem();
+            Common.Vendors.WebsiteSettings = Common.Vendors.WebsiteSettings.OrderBy(a => a.Name).ToList();
             Console.WriteLine("Found " + Common.Vendors.WebsiteSettings.Count + " Vendor Website Setting" + (Common.Vendors.WebsiteSettings.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -302,7 +286,7 @@ namespace Saber
             {
                 ContentTypeProvider = provider
             };
-            app.UseResponseCompression();
+
             app.UseStaticFiles(options);
 
             //exception handling

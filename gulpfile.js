@@ -90,7 +90,10 @@ paths.working = {
             paths.scripts + 'platform/window.js', //  <---- End of Optional features
             paths.scripts + 'utility/launchpad/launchpad.js'
         ],
-        app: paths.app + '**/*.js',
+        app: [
+            paths.app + '**/*.js',
+            '!' + paths.app + 'Vendors/**/*.js'
+        ],
         utility: [
             paths.scripts + 'utility/*.*',
             paths.scripts + 'utility/**/*.*'
@@ -131,7 +134,8 @@ paths.working = {
             paths.css + 'platform.less'
         ],
         app: [
-            paths.app + '**/*.less'
+            paths.app + '**/*.less',
+            '!' + paths.app + 'Vendors/**/*.less'
         ],
         themes: paths.css + 'themes/*.less',
         tapestry: [
@@ -148,17 +152,25 @@ paths.working = {
             paths.scripts + 'utility/**/*.css'
         ],
         themes: paths.themes + '**/*.css',
-        app: paths.app + '**/*.css'
+        app: [
+            paths.app + '**/*.css',
+            '!' + paths.app + 'Vendors/**/*.js'
+        ]
     },
 
-    vendor: {
-        images: [
+    vendors: {
+        resources: [
+            paths.app + 'vendors/**/*.js',
+            '!' + paths.app + 'vendors/**/gulpfile.js',
+            paths.app + 'vendors/**/*.css',
             paths.app + 'vendors/**/icon.svg',
             paths.app + 'vendors/**/*.jpg',
             paths.app + 'vendors/**/*.png',
             paths.app + 'vendors/**/*.gif'
         ],
-        js: paths.app + 'vendors/**/*.js'
+        less: [
+            paths.app + 'vendors/**/*.less'
+        ]
     },
 
     exclude: {
@@ -182,15 +194,12 @@ paths.compiled = {
     css: paths.webroot + 'editor/css/',
     app: paths.webroot + 'editor/css/',
     themes: paths.webroot + 'editor/css/themes/',
-    vendor: {
-        images: paths.webroot + 'editor/images/vendors/'
-    }
+    vendors: paths.webroot + 'editor/vendors/'
 };
 
 //tasks for compiling javascript //////////////////////////////////////////////////////////////
 gulp.task('js:app', function () {
-    var pathlist = paths.working.exclude.app.slice(0);
-    pathlist.unshift(paths.working.js.app);
+    var pathlist = [...paths.working.js.app, ...paths.working.exclude.app];
     var p = gulp.src(pathlist)
         .pipe(rename(function (path) {
             path.dirname = path.dirname.toLowerCase();
@@ -333,20 +342,36 @@ gulp.task('icons', function () {
 });
 
 //copy vendor resources ///////////////////////////////////////////////////////////////////
-gulp.task('vendors:images', function () {
-    var p = gulp.src(paths.working.vendor.images)
+gulp.task('vendors:resources', function () {
+    var pathlist = paths.working.vendors.resources;
+    var p = gulp.src(pathlist)
         .pipe(rename(function (path) {
             path.dirname = path.dirname.toLowerCase();
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
         }));
-    return p.pipe(gulp.dest(paths.compiled.vendor.images, { overwrite: true }));
+
+    if (prod == true) { p = p.pipe(uglify()); }
+    return p.pipe(gulp.dest(paths.compiled.vendors, { overwrite: true }));
 });
 
-gulp.task('vendors', gulp.series('vendors:images', 'js:app'));
+gulp.task('vendors:less', function () {
+    var pathlist = paths.working.vendors.less;
+    var p = gulp.src(pathlist)
+        .pipe(less())
+        .pipe(rename(function (path) {
+            path.dirname = path.dirname.toLowerCase();
+            path.basename = path.basename.toLowerCase();
+            path.extname = path.extname.toLowerCase();
+        }));
+    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    return p.pipe(gulp.dest(paths.compiled.vendors, { overwrite: true }));
+});
+
+gulp.task('vendors', gulp.series('vendors:resources', 'vendors:less'));
 
 //default task ////////////////////////////////////////////////////////////////////////////
-gulp.task('default', gulp.series('js', 'less', 'css', 'icons', 'vendors:images'));
+gulp.task('default', gulp.series('js', 'less', 'css', 'icons', 'vendors'));
 
 //specific file task //////////////////////////////////////////////////////////////////////
 gulp.task('file', function () {
@@ -378,7 +403,7 @@ gulp.task('watch', function () {
     gulp.watch(paths.working.js.editor, gulp.series('js:editor'));
 
     //watch app JS
-    var pathjs = [paths.working.js.app, ...paths.working.exclude.app.map(a => a + '*.js')];
+    var pathjs = [...paths.working.js.app, ...paths.working.exclude.app.map(a => a + '*.js')];
     gulp.watch(pathjs, gulp.series('js:app'));
 
     //watch utility JS
@@ -400,7 +425,7 @@ gulp.task('watch', function () {
     ], gulp.series('less:themes', 'less:platform'));
 
     //watch app CSS
-    var pathcss = [paths.working.css.app, ...paths.working.exclude.app.map(a => a + '*.css')];
+    var pathcss = [...paths.working.css.app, ...paths.working.exclude.app.map(a => a + '*.css')];
     gulp.watch(pathcss, gulp.series('css:app'));
 
 });

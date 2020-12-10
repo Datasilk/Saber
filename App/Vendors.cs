@@ -16,6 +16,7 @@ namespace Saber.Common
         public static Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<IVendorViewRenderer>>();
         public static Dictionary<string, IVendorContentField> ContentFields { get; set; } = new Dictionary<string, IVendorContentField>();
         public static Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
+        public static Dictionary<string, Type> Services { get; set; } = new Dictionary<string, Type>();
         public static Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
         public static List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
         public static Dictionary<string, HtmlComponentModel> HtmlComponents { get; set; } = new Dictionary<string, HtmlComponentModel>();
@@ -31,12 +32,26 @@ namespace Saber.Common
             public string Version { get; set; }
         }
 
+        private static void RecurseDirectories(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                var dir = new DirectoryInfo(path);
+                DLLs.AddRange(dir.GetFiles(App.IsDocker ? "*.so" : "*.dll").Select(a => a.FullName).ToArray());
+                foreach (var sub in dir.GetDirectories())
+                {
+                    RecurseDirectories(sub.FullName);
+                }
+            }
+        }
+
         public static string[] LoadDLLs()
         {
             //search Vendor folder for DLL files
             if (Directory.Exists(App.MapPath("/Vendors")))
             {
                 RecurseDirectories(App.MapPath("/Vendors"));
+                DLLs = DLLs.OrderBy(a => a).ToList();
             }
             //update JSON file with current versions of DLL files
             var versions = new List<AssemblyInfo>();
@@ -84,9 +99,9 @@ namespace Saber.Common
                     var relpath = path.Replace("\\", "/").Split("/Vendors/")[1];
                     var dir = new DirectoryInfo(path);
                     var files = dir.GetFiles().Where(Current => Regex.IsMatch(Current.Extension, "\\.(js|css)", RegexOptions.IgnoreCase));
-                    var jsPath = "/wwwroot/editor/js/vendors/" + relpath.ToLower();
-                    var cssPath = "/wwwroot/editor/css/vendors/" + relpath.ToLower();
-                    var imagesPath = "/wwwroot/editor/images/vendors/" + relpath.ToLower();
+                    var jsPath = "/wwwroot/editor/vendors/" + relpath.ToLower();
+                    var cssPath = "/wwwroot/editor/vendors/" + relpath.ToLower();
+                    var imagesPath = "/wwwroot/editor/vendors/" + relpath.ToLower();
                     if (files.Count() > 0)
                     {
                         //create wwwroot paths
@@ -132,19 +147,6 @@ namespace Saber.Common
             }
 
             return DLLs.ToArray();
-        }
-
-        private static void RecurseDirectories(string path)
-        {
-            if (Directory.Exists(path))
-            {
-                var dir = new DirectoryInfo(path);
-                DLLs.AddRange(dir.GetFiles(App.IsDocker ? "*.so" : "*.dll").Select(a => a.FullName).ToArray());
-                foreach(var sub in dir.GetDirectories())
-                {
-                    RecurseDirectories(sub.FullName);
-                }
-            }
         }
 
         #region "View Renderers"
@@ -237,6 +239,33 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorController))) { return; }
             Controllers.Add(type.Name.ToLower(), type);
+        }
+        #endregion
+
+        #region "Services"
+        public static void GetServicesFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorService")
+                        {
+                            GetServiceFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetServiceFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorService))) { return; }
+            Services.Add(type.Name.ToLower(), type);
         }
         #endregion
 
