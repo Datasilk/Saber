@@ -16,6 +16,8 @@ The above statement is true for the end-user, but for us developers who wish to 
     *  all files related to a web page will be stored here (*.html, *.js, *.less, *.json), including language files & page settings files.
   * **partials**
     * All partial HTML files will be stored here and can be accessed via the *file browser* within Saber's IDE. These files can be referenced in page HTML files.
+  * **website.less**
+    * This LESS file can be modified via Saber's IDE and is compiled & published to */wwwroot/css/website.css*, which is loaded on every page of the user's website.
   * **temp**
     * When Saber's web server loads, it checks to see if a *home.html* file exists in the *Content/pages* folder. If not, Saber will proceed to copy all the files from the *temp* folder into various folders throughout the project in order to initialize the default website that comes with the Saber platform.
 * **Controllers**
@@ -34,8 +36,6 @@ The above statement is true for the end-user, but for us developers who wish to 
     * Tapestry color schemes for Saber's IDE reside in this folder
   * **platform.less**
     * This LESS file is the main style sheet used by Saber's IDE
-  * **website.less**
-    * This LESS file can be modified via Saber's IDE and is compiled & published to */wwwroot/css/website.css*, which is loaded on every page of the user's website.
 * **Models**
   * Class files that represent data structures belong in this folder
 * **Scripts**

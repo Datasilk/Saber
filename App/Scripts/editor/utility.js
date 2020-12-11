@@ -7,9 +7,9 @@ S.target = {
         return elem;
     },
     findByClassName: (e, className) => {
-        var elem = e.target;
+        var elem = $(e.target);
         if (!elem.hasClass(className)) {
-            return $(elem).parents('.' + className)[0];
+            return elem.parents('.' + className)[0];
         }
         return elem;
     }
@@ -46,7 +46,7 @@ S.editor.isResource = function (path, type) {
         switch (dir + fileparts.join('.')) {
             case 'content/partials/header.less':
             case 'content/partials/footer.less':
-            case 'root/css/website.less':
+            case 'content/website.less':
                 return true;
         }
     } else if (type == 'website.js') {

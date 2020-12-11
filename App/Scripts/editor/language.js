@@ -15,6 +15,7 @@ S.editor.lang = {
                 function (d) {
                     var abbr = data.abbr.toLowerCase();
                     $('.content-fields #lang').append('<option value="' + abbr + '">' + data.name + '</option>').val(abbr);
+                    S.editor.fields.load();
                 }
             );
             S.popup.hide();

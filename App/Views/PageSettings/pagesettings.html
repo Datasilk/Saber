@@ -67,7 +67,10 @@
 <div class="row line margin-top"></div>
 
 <div class="row pad-top page-scripts">
-    <div class="col"><h5>Page Scripts</h5></div>
+    <div class="col">
+        <h5>Page Scripts</h5>
+        <p>Load JavaScript libraries onto your web page that can be used for user interaction and content manipulation</p>
+    </div>
     <div class="col right">
         <button class="button btn-add-script">+ Add Script</button>
     </div>    
@@ -78,12 +81,29 @@
     </ul>
 </div>
 
+<div class="row line margin-top"></div>
+
+<div class="row pad-top page-security">
+    <div class="col">
+        <h5>Security Groups</h5>
+        <p>Make this web page private and only give access to users associated with selected security groups</p>
+    </div>
+    <div class="col right">
+        <button class="button btn-add-group">+ Add Group</button>
+    </div>    
+</div>
+<div class="security-list">
+    <ul class="list">
+        {{security-list}} 
+    </ul>
+</div>
+
 <div class="row line pad-bottom margin-top"></div>
 
 <div class="row pad-top"><h5>Subpage Template</h5></div>
-<div class="template-info">
+<p class="template-info">
     <a href="{{page-template}}" target="_blank">Modify</a> the web page that will be used to generate new sub-pages
-</div>
+</p>
 
 <div class="row line pad-bottom margin-top"></div>
 
@@ -129,6 +149,20 @@
         <div class="row text-center pad-top-sm">
             <div class="col">
                 <input type="submit" class="button apply" value="Add Script To Page" />
+            </div>
+        </div>
+    </form>
+</script>
+
+<script language="text/html" id="template_security_add">
+    <form>
+        <div class="row field">Available Security Groups</div>
+        <div class="row input">
+            <select id="available_groups"></select>
+        </div>
+        <div class="row text-center pad-top-sm">
+            <div class="col">
+                <input type="submit" class="button apply" value="Add Security Group" />
             </div>
         </div>
     </form>

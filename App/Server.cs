@@ -13,6 +13,5 @@ public static class Server
     public static string Version { get; set; } = "1.0";
 
     //other settings
-    public static Dictionary<string, string> Languages { get; set; }
     public static bool IsDocker { get; set; }
 }

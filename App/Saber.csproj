@@ -18,16 +18,12 @@
 
   <ItemGroup>
     <Compile Remove="Content\temp\scripts\**" />
-    <Compile Remove="wwwroot\css\**" />
     <Compile Remove="wwwroot\editor\fonts\**" />
     <Content Remove="Content\temp\scripts\**" />
-    <Content Remove="wwwroot\css\**" />
     <Content Remove="wwwroot\editor\fonts\**" />
     <EmbeddedResource Remove="Content\temp\scripts\**" />
-    <EmbeddedResource Remove="wwwroot\css\**" />
     <EmbeddedResource Remove="wwwroot\editor\fonts\**" />
     <None Remove="Content\temp\scripts\**" />
-    <None Remove="wwwroot\css\**" />
     <None Remove="wwwroot\editor\fonts\**" />
     <None Include="..\LICENSE">
       <Pack>True</Pack>
@@ -51,10 +47,6 @@
 
   <ItemGroup>
     <None Remove="CSS\tapestry\LICENSE" />
-    <None Remove="Scripts\editor\editor.js" />
-    <None Remove="Views\WebsiteSettings\androidicon.html" />
-    <None Remove="Views\WebsiteSettings\appleicon.html" />
-    <None Remove="Views\ContentFields\block.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -143,6 +135,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\css\" />
     <Folder Include="wwwroot\editor\images\" />
   </ItemGroup>
 

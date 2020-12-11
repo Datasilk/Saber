@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace Query.Models
@@ -7,21 +6,11 @@ namespace Query.Models
     public class Xml
     {
         [Serializable]
-        [XmlRoot("keys")]
-        public class Keys
+        [XmlRoot("ids")]
+        public class Ids
         {
-            [XmlElement("key")]
-            public List<Key> Key { get; set; }
-        }
-
-        public class Key
-        {
-            [XmlAttribute("name")]
-            public Key Name { get; set; }
-            [XmlAttribute("value")]
-            public Key Value { get; set; }
-            [XmlAttribute("isplatform")]
-            public Key IsPlatform { get; set; }
+            [XmlElement("id")]
+            public int[] Id { get; set; }
         }
     }
 }

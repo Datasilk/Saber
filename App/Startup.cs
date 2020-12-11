@@ -197,7 +197,8 @@ namespace Saber
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //Run any services required after initializing all vendor plugins but before configuring vendor startup services
-            Core.Email.Handle = Email.Send;
+            Core.Delegates.Email.Send = Email.Send;
+            Core.Delegates.Website.SaveLessFile = Website.SaveLessFile;
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
@@ -245,6 +246,8 @@ namespace Saber
             config = new ConfigurationBuilder()
                 .AddJsonFile(App.MapPath(configFile))
                 .AddEnvironmentVariables().Build();
+
+            var webconfig = Website.Settings.Load();
 
             Server.Config = config;
 
@@ -315,10 +318,11 @@ namespace Saber
             Server.HasAdmin = Query.Users.HasAdmin();
 
             //set up Saber language support
-            Server.Languages = new Dictionary<string, string>();
-            Server.Languages.Add("en", "English"); //english should be the default language
-            Query.Languages.GetList().ForEach((lang) => {
-                Server.Languages.Add(lang.langId, lang.language);
+            App.Languages = new Dictionary<string, string>();
+            App.Languages.Add("en", "English"); //english should be the default language
+
+            webconfig.Languages.ForEach((lang) => {
+                App.Languages.Add(lang.Id, lang.Name);
             });
 
             //check if default website exists

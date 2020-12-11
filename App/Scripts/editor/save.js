@@ -27,63 +27,20 @@ S.editor.save = function (path, content) {
 
                 //save title
                 if (settings.title.changed == true) {
-                    var data = {
-                        path: S.editor.path,
-                        prefixId: $('#page_title_prefix').val(),
-                        suffixId: $('#page_title_suffix').val(),
-                        title: $('#page_title').val()
-                    };
-                    S.ajax.post('PageSettings/UpdatePageTitle', data,
-                        function (d) {
-                            //show message to user
-                            showmsg();
-                        },
-                        function () { S.editor.error(); }
-                    );
+                    settings.title.save(showmsg);
+                    return;
                 }
 
                 //save description
                 if (settings.description.changed == true) {
-                    var data = {
-                        path: S.editor.path,
-                        description: $('#page_description').val()
-                    };
-                    S.ajax.post('PageSettings/UpdatePageDescription', data,
-                        function (d) {
-                            //show message to user
-                            showmsg();
-                        },
-                        function () { S.editor.error(); }
-                    );
+                    settings.description.save(showmsg);
+                    return;
                 }
 
                 //save header & footer with fields
                 if (settings.partials.changed == true) {
-                    //get list of field values
-                    var header_fields = {};
-                    var footer_fields = {};
-                    var elems = $('.header-fields .fields input');
-                    elems.each(a => {
-                        header_fields[a.name] = $(a).val();
-                    });
-                    elems = $('.footer-fields .fields input');
-                    elems.each(a => {
-                        footer_fields[a.name] = $(a).val();
-                    });
-                    var data = {
-                        path: S.editor.path,
-                        header: { file: $('#page_header').val(), fields: header_fields },
-                        footer: { file: $('#page_footer').val(), fields: footer_fields }
-                    };
-                    S.ajax.post('PageSettings/UpdatePagePartials', data,
-                        function (d) {
-                            //show message to user
-                            showmsg();
-                            //html resource has changed because header & footer partials have changed
-                            S.editor.files.html.changed = true;
-                        },
-                        function () { S.editor.error(); }
-                    );
+                    settings.partials.save(showmsg);
+                    return;
                 }
 
                 function showmsg() {

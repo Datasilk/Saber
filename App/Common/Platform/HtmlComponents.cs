@@ -148,8 +148,8 @@ namespace Saber.Common.Platform
                         var results = new List<KeyValuePair<string, string>>();
                         results.Add(new KeyValuePair<string, string>(prefix + "languages.options",
                             "<option value=\"en\">English</option>" +
-                            string.Join("\n", Query.Languages.GetList().Select(a => "<option value=\"" + a.langId + "\"" +
-                                (selected == a.langId ? " selected" : "") + ">" + a.language + "</option>").ToArray())
+                            string.Join("\n", App.Languages.Select(a => "<option value=\"" + a.Key + "\"" +
+                                (selected == a.Key ? " selected" : "") + ">" + a.Value + "</option>").ToArray())
                             ));
                         return results;
                     }),

@@ -20,26 +20,27 @@ namespace Saber.Services
 
         public string Render(string path)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
             var config = Core.PageInfo.GetPageConfig(path);
+            var webconfig = Website.Settings.Load();
             var view = new View("/Views/PageSettings/pagesettings.html");
             var fieldView = new View("/Views/PageSettings/partial-field.html");
             var prefixes = new StringBuilder();
             var suffixes = new StringBuilder();
 
             //generate list of page prefixes
-            var titles = Query.PageTitles.GetList(Query.PageTitles.TitleType.all);
-            prefixes.Append("<option value=\"0\">[None]</option>\n");
-            suffixes.Append("<option value=\"0\">[None]</option>\n");
+            var titles = webconfig.PageTitles;
+            prefixes.Append("<option value=\"\">[None]</option>\n");
+            suffixes.Append("<option value=\"\">[None]</option>\n");
             foreach (var t in titles)
             {
-                if (t.pos == false)
+                if (t.Type == Models.Website.PageTitleType.Prefix)
                 {
-                    prefixes.Append("<option value=\"" + t.titleId + "\"" + (config.title.prefixId == t.titleId ? " selected" : "") + ">" + t.title + "</option>\n");
+                    prefixes.Append("<option value=\"" + t.Value + "\"" + (config.title.prefix == t.Value ? " selected" : "") + ">" + t.Value + "</option>\n");
                 }
                 else
                 {
-                    suffixes.Append("<option value=\"" + t.titleId + "\"" + (config.title.suffixId == t.titleId ? " selected" : "") + ">" + t.title + "</option>\n");
+                    suffixes.Append("<option value=\"" + t.Value + "\"" + (config.title.suffix == t.Value ? " selected" : "") + ">" + t.Value + "</option>\n");
                 }
             }
 
@@ -138,7 +139,8 @@ namespace Saber.Services
             view["page-header-list"] = headerList.ToString();
             view["page-footer-list"] = footerList.ToString();
             view["page-template"] = path.Replace("content/", "/") + "/template";
-            view["scripts-list"] = RenderScriptsList(path);
+            view["scripts-list"] = RenderScriptsList(config);
+            view["security-list"] = RenderSecurityGroupsList(config);
 
             //build JSON Response object
             return JsonResponse(
@@ -154,47 +156,15 @@ namespace Saber.Services
             );
         }
 
-        public string RenderScriptsList(string path)
+        public string UpdatePageTitle(string path, string prefix, string suffix, string title)
         {
-            var config = Core.PageInfo.GetPageConfig(path);
-            var scriptItem = new View("/Views/PageSettings/script-item.html");
-            var scripts = new StringBuilder();
-            if (config.scripts.Count > 0)
-            {
-                foreach (var script in config.scripts)
-                {
-                    scriptItem["script"] = script;
-                    scripts.Append(scriptItem.Render());
-                }
-            }
-            return scripts.ToString();
-        }
-
-        public string UpdatePageTitle(string path, int prefixId, int suffixId, string title)
-        {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
                 config.title.body = title;
-                config.title.prefixId = prefixId;
-                config.title.suffixId = suffixId;
-                if (prefixId == 0)
-                {
-                    config.title.prefix = "";
-                }
-                else
-                {
-                    config.title.prefix = Query.PageTitles.Get(prefixId);
-                }
-                if (suffixId == 0)
-                {
-                    config.title.suffix = "";
-                }
-                else
-                {
-                    config.title.suffix = Query.PageTitles.Get(suffixId);
-                }
+                config.title.prefix = prefix;
+                config.title.suffix = suffix;
                 Core.PageInfo.SavePageConfig(path, config);
                 return Success();
             }
@@ -204,16 +174,9 @@ namespace Saber.Services
             }
         }
 
-        /// <summary>
-        /// Creates a partial page title, such as the name of the website or the authors name, 
-        /// which can be used as a prefix or suffix for the web page title
-        /// </summary>
-        /// <param name="title"></param>
-        /// <param name="prefix">Whether or not the page title part is a prefix (true) or suffix (false)</param>
-        /// <returns></returns>
         public string CreatePageTitlePart(string title, bool prefix)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
             //add space at end if user didn't
             if (prefix == true)
             {
@@ -226,15 +189,53 @@ namespace Saber.Services
 
             try
             {
-                var id = Query.PageTitles.Create(title, !prefix);
-                return id + "|" + title;
+                var config = Website.Settings.Load();
+                var type = prefix ? Models.Website.PageTitleType.Prefix : Models.Website.PageTitleType.Suffix;
+                if (!config.PageTitles.Any(a => a.Value == title && a.Type == type))
+                {
+                    config.PageTitles.Add(new Models.Website.PageTitle() { 
+                        Value = title, 
+                        Type = type
+                    });
+                    Website.Settings.Save(config);
+                    return title;
+                }
+                return Error();
+            }
+            catch (Exception) { return Error(); }
+        }
+
+        public string DeletePageTitlePart(string title, bool prefix)
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            //add space at end if user didn't
+            if (prefix == true)
+            {
+                if (title.Last() != ' ') { title += " "; }
+            }
+            else
+            {
+                if (title.First() != ' ') { title = " " + title; }
+            }
+
+            try
+            {
+                var config = Website.Settings.Load();
+                var type = prefix ? Models.Website.PageTitleType.Prefix : Models.Website.PageTitleType.Suffix;
+                if (config.PageTitles.Any(a => a.Value == title && a.Type == type))
+                {
+                    config.PageTitles.Remove(config.PageTitles.Where(a => a.Value == title && a.Type == type).FirstOrDefault());
+                    Website.Settings.Save(config);
+                    return title;
+                }
+                return Error();
             }
             catch (Exception) { return Error(); }
         }
 
         public string UpdatePageDescription(string path, string description)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
@@ -250,7 +251,7 @@ namespace Saber.Services
 
         public string UpdatePagePartials(string path, Models.Page.Template header, Models.Page.Template footer)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
@@ -265,9 +266,33 @@ namespace Saber.Services
             }
         }
 
+        #region "Page Scripts"
+
+        public string RenderScriptsList(string path)
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            var config = Core.PageInfo.GetPageConfig(path);
+            return RenderScriptsList(config);
+        }
+
+        private string RenderScriptsList(Models.Page.Settings config)
+        {
+            var scriptItem = new View("/Views/PageSettings/script-item.html");
+            var scripts = new StringBuilder();
+            if (config.scripts.Count > 0)
+            {
+                foreach (var script in config.scripts)
+                {
+                    scriptItem["script"] = script;
+                    scripts.Append(scriptItem.Render());
+                }
+            }
+            return scripts.ToString();
+        }
+
         public string GetAvailableScripts()
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 return JsonResponse(RenderAvailableScriptsList());
@@ -307,16 +332,17 @@ namespace Saber.Services
 
         public string AddScriptToPage(string file, string path)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
+                if(file == "") { return Error(); }
                 var config = Core.PageInfo.GetPageConfig(path);
                 if (!config.scripts.Contains(file))
                 {
                     config.scripts.Add(file);
                 }
                 Core.PageInfo.SavePageConfig(path, config);
-                return RenderScriptsList(path);
+                return RenderScriptsList(config);
             }
             catch (Exception)
             {
@@ -326,7 +352,7 @@ namespace Saber.Services
 
         public string RemoveScriptFromPage(string file, string path)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
@@ -335,12 +361,99 @@ namespace Saber.Services
                     config.scripts.Remove(file);
                 }
                 Core.PageInfo.SavePageConfig(path, config);
-                return RenderScriptsList(path);
+                return RenderScriptsList(config);
             }
             catch (Exception)
             {
                 return Error();
             }
         }
+
+        #endregion
+
+        #region "Security Groups"
+
+        public string RenderSecurityGroupsList(string path)
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            var config = Core.PageInfo.GetPageConfig(path);
+            return RenderSecurityGroupsList(config);
+        }
+
+        private string RenderSecurityGroupsList(Models.Page.Settings config)
+        {
+            var groupItem = new View("/Views/PageSettings/group-item.html");
+            var html = new StringBuilder();
+            if (config.security.groups.Length > 0)
+            {
+                var groups = Query.Security.Groups.GetListByIds(config.security.groups);
+                if (groups != null && groups.Count > 0)
+                {
+                    foreach(var group in groups)
+                    {
+                        groupItem["id"] = group.groupId.ToString();
+                        groupItem["name"] = group.name;
+                        html.Append(groupItem.Render());
+                        groupItem.Clear();
+                    }
+                }
+            }
+            return html.ToString();
+        }
+
+        public string GetAvailableSecurityGroups()
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            var groups = Query.Security.Groups.GetList();
+            if(groups != null && groups.Count > 0)
+            {
+                return JsonResponse(groups.Select(a => new { id = a.groupId, name = a.name }).ToArray());
+            }
+            return "";
+        }
+
+        public string AddSecurityGroup(int groupId, string path)
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            try
+            {
+                var config = Core.PageInfo.GetPageConfig(path);
+                if (!config.security.groups.Contains(groupId))
+                {
+                    var groups = config.security.groups.ToList();
+                    groups.Add(groupId);
+                    config.security.groups = groups.ToArray();
+                }
+                Core.PageInfo.SavePageConfig(path, config);
+                return RenderSecurityGroupsList(config);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        public string RemoveSecurityGroup(int groupId, string path)
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            try
+            {
+                var config = Core.PageInfo.GetPageConfig(path);
+                if (config.security.groups.Contains(groupId))
+                {
+                    var groups = config.security.groups.ToList();
+                    groups.Remove(groupId);
+                    config.security.groups = groups.ToArray();
+                }
+                Core.PageInfo.SavePageConfig(path, config);
+                return RenderSecurityGroupsList(config);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        #endregion
     }
 }

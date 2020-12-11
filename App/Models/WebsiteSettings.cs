@@ -6,6 +6,8 @@ namespace Saber.Models.Website
     {
         public Email Email { get; set; } = new Email();
         public Passwords Passwords { get; set; } = new Passwords();
+        public List<Language> Languages { get; set; } = new List<Language>();
+        public List<PageTitle> PageTitles { get; set; } = new List<PageTitle>();
     }
 
     public class Email
@@ -46,5 +48,23 @@ namespace Saber.Models.Website
         public int MinSpecialChars { get; set; } = 0;
         public bool NoSpaces { get; set; } = true;
         public int MaxConsecutiveChars { get; set; } = 3;
+    }
+
+    public class Language
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public enum PageTitleType
+    {
+        Prefix = 0,
+        Suffix = 1
+    }
+
+    public class PageTitle
+    {
+        public string Value { get; set; }
+        public PageTitleType Type { get; set; }
     }
 }

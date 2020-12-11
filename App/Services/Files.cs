@@ -50,11 +50,6 @@ namespace Saber.Services
             if (paths[0] == "" && paths.Length == 1 && canEdit)
             {
                 //display root folders for website
-                items = new List<DirItem>()
-                {
-                    //new KeyValuePair<string, string>("backups", "backups"),
-                    new DirItem(){ Label = "website.less", Filename = "website.less", Path = "CSS/website.less" }
-                };
             }
             else
             {
@@ -63,10 +58,6 @@ namespace Saber.Services
                 {
                     //get list of directories
                     var info = new DirectoryInfo(App.MapPath(rpath));
-                    if (paths[0] == "/CSS" && paths.Length == 1)
-                    {
-                        exclude = exclude.Concat(new string[] { "tapestry", "themes" }).ToArray();
-                    }
                     if (paths[0] == "/wwwroot")
                     {
                         if (paths.Length == 1)
@@ -91,10 +82,6 @@ namespace Saber.Services
 
                     //get list of files
                     exclude = new string[] { "gulpfile.js" };
-                    if (paths[0] == "/CSS" && paths.Length == 1)
-                    {
-                        exclude = new string[] { "platform.less" };
-                    }
                     if (paths[0] == "/wwwroot" && paths.Length > 1 && paths[1] == "css")
                     {
                         exclude = new string[] { "website.css" };
@@ -143,10 +130,11 @@ namespace Saber.Services
             }
             else if (rawpaths.Length == 1 && paths[0] == "")
             {
-                //add special directories
+                //add special directories & files
                 html.Append(RenderBrowserItem(item, "wwwroot", "wwwroot", "folder", "wwwroot", true));
                 html.Append(RenderBrowserItem(item, "pages", "pages", "folder", "content/pages", true));
                 html.Append(RenderBrowserItem(item, "partials", "partials", "folder", "content/partials", true));
+                html.Append(RenderBrowserItem(item, "website.less", "website.less", "file", "content/website.less"));
             }
             else if (paths[0] == "/wwwroot")
             {

@@ -197,10 +197,9 @@ S.editor.explorer = {
         if (cleanPath.indexOf('content/partials/') == 0) {
             cleanPath = cleanPath.replace('content/', '');
         } else if (cleanPath.indexOf('content/') == 0) {
-            cleanPath = cleanPath.replace('content/', 'pages/');
+            cleanPath = cleanPath.replace('content/' , '');
         }
         if (cleanPath.indexOf('root/') == 0) { cleanPath = cleanPath.replace('root/', ''); }
-        cleanPath = cleanPath.replace('CSS/', '');
         if (isready !== false) {
             //set file bar path text & icon
             S.editor.filebar.update(cleanPath, 'icon-file-' + ext);

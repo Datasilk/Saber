@@ -19,11 +19,6 @@ namespace Query
             {
                 Sql.ExecuteNonQuery("SecurityKey_Create", new { groupId, key, value, isplatform });
             }
-
-            public static void Create(int groupId, List<Models.SecurityKey> keys)
-            {
-                Sql.ExecuteNonQuery("SecurityKeys_BulkCreate", new { groupId, keys = Common.Serializer.ToXmlDocument(keys).OuterXml });
-            }
         }
         
         public static class Groups
@@ -50,6 +45,15 @@ namespace Query
             public static void Update(int groupId, string name)
             {
                 Sql.ExecuteNonQuery("SecurityGroup_Update", new { groupId, name });
+            }
+
+            public static List<Models.SecurityGroup> GetListByIds(int[] groupIds)
+            {
+                var ids = new Models.Xml.Ids()
+                {
+                    Id = groupIds
+                };
+                return Sql.Populate<Models.SecurityGroup>("SecurityGroups_GetListByIds", new { ids = Common.Serializer.ToXmlDocument(ids).OuterXml });
             }
         }
 

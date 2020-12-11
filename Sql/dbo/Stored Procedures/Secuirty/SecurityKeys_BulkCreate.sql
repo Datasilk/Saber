@@ -7,7 +7,7 @@
 			<key name="manage-security" value="1" isplatform="1"></key>
 			<key name="upload" value="0" isplatform="1"></key>
 		</keys>
-*/
+	*/
 AS
 	
 	DECLARE @hdoc INT

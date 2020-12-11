@@ -235,8 +235,13 @@
     & > .col:nth-child(2){width:50%;padding-top:1px;}
 }
 
-.scripts-list{
-    .close-btn{cursor:pointer;}
+.editor {
+    .scripts-list, .security-list{
+        .close-btn{cursor:pointer; opacity:0.5; margin-left:30px;
+            &:hover{opacity:1;}
+        }
+
+    }
 }
 
 /* page resources */

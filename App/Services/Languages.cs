@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
+using Saber.Common.Platform;
 
 namespace Saber.Services
 {
@@ -8,7 +10,7 @@ namespace Saber.Services
         public string Get()
         {
             var html = new StringBuilder();
-            foreach (var lang in Server.Languages)
+            foreach (var lang in App.Languages)
             {
                 html.Append(lang.Key + ',' + lang.Value + '|');
             }
@@ -20,11 +22,13 @@ namespace Saber.Services
             if (!CheckSecurity("edit-content")) { return AccessDenied(); }
             try
             {
-                Query.Languages.Create(new Query.Models.Language()
+                var config = Website.Settings.Load();
+                if(!config.Languages.Any(a => a.Id == abbr))
                 {
-                    langId = abbr.ToLower(),
-                    language = name
-                });
+                    config.Languages.Add(new Models.Website.Language() { Id = abbr, Name = name });
+                    App.Languages.Add(abbr, name);
+                }
+                Website.Settings.Save(config);
                 return Success();
             }
             catch (Exception)

@@ -320,7 +320,7 @@ gulp.task('website:less', function () {
 });
 
 gulp.task('website:css', function () {
-    var p = gulp.src(paths.app + 'CSS/website.less')
+    var p = gulp.src(paths.app + 'Content/website.less')
         .pipe(less());
     if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
     return p.pipe(gulp.dest(paths.webroot + 'css/', { overwrite: true }));

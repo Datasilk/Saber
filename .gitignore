@@ -14,10 +14,6 @@
 !/App/wwwroot/editor/
 /App/Content/
 !/App/Content/temp
-/App/CSS/
-!/App/CSS/tapestry
-!/App/CSS/themes
-!/App/CSS/platform.less
 /App/Vendors/**
 !/App/Vendors/README.md
 /AWS/
