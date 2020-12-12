@@ -53,7 +53,7 @@ namespace Saber.Common.Platform
         {
             new EmailType()
             {
-                Key="signup",
+                Key = "signup",
                 Name = "Sign Up",
                 Description = "",
                 TemplateFile = "signup.html",

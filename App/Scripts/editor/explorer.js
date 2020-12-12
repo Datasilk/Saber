@@ -169,7 +169,7 @@ S.editor.explorer = {
 
         if (isready !== false) {
             $('.tab-components, .tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
-            if (isPageResource) {
+            if (isPageResource || (paths.indexOf('partials') >= 0 && file.indexOf('.html') > 0)) {
                 //show file bar icons for page html resource
                 $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
             }

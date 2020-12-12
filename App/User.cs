@@ -14,7 +14,6 @@ namespace Saber
 
         public int UserId { get; set; } = 0;
         public short UserType { get; set; } = 0;
-        public string VisitorId { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }
         public string DisplayName { get; set; }
@@ -50,11 +49,6 @@ namespace Saber
         {
             //generate visitor id
             Context = context;
-            if (VisitorId == "" || VisitorId == null)
-            {
-                VisitorId = NewId();
-                changed = true;
-            }
 
             //check for persistant cookie
             if (UserId <= 0 && context.Request.Cookies.ContainsKey("authId"))
@@ -63,7 +57,7 @@ namespace Saber
                 if (user != null)
                 {
                     //persistant cookie was valid, log in
-                    LogIn(user.userId, user.email, user.name, user.datecreated, "", 1, user.photo);
+                    LogIn(user.userId, user.email, user.name, user.datecreated, user.photo);
                 }
             }
         }
@@ -81,14 +75,12 @@ namespace Saber
             }
         }
 
-        public void LogIn(int userId, string email, string name, DateTime datecreated, string displayName = "", short userType = 1, bool photo = false)
+        public void LogIn(int userId, string email, string name, DateTime datecreated, bool photo = false)
         {
             UserId = userId;
-            UserType = userType;
             Email = email;
             Photo = photo;
             Name = name;
-            DisplayName = displayName;
             DateCreated = datecreated;
 
             var keys = Query.Security.Keys.GetByUserId(userId);

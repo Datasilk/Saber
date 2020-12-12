@@ -13,7 +13,6 @@ namespace Saber.Controllers
     {
         public override string Render(string body = "")
         {
-            Theme = "dark";
             View view;
 
             //get selected language
@@ -62,10 +61,13 @@ namespace Saber.Controllers
                 Title = config.title.prefix + config.title.body + config.title.suffix;
                 Description = config.description;
 
-                if (User.UserId > 0 && !Parameters.ContainsKey("live"))
+                if (User.UserId == 0 || Parameters.ContainsKey("live"))
                 {
-                    UsePlatform = true;
-
+                    UsePlatform = false;
+                    view = new View("/Views/Editor/no-editor.html");
+                }
+                else
+                {
                     //use editor.html
                     view = new View("/Views/Editor/editor.html");
 
@@ -229,11 +231,6 @@ namespace Saber.Controllers
                     {
                         view.Show("website-management");
                     }
-                }
-                else
-                {
-                    //use no-editor.html
-                    view = new View("/Views/Editor/no-editor.html");
                 }
 
                 //add page-specific references
