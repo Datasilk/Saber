@@ -375,12 +375,18 @@
     }
 }
 
-/* Ace Editor */
-.ace_gutter-active-line, .ace_active-line{background-color:transparent !important;background:transparent !important;}
-
 /* hidden elements */
 .editor{
     .hidden-iframe{width:0; height:0; border:none; visibility:hidden;}
     .hidden-button{visibility:hidden; width:0; height:0; line-height:0; border:none; background:transparent; outline:none; color:transparent; margin:0; padding:0;}
     .hidden{opacity:0; overflow:hidden; width:0; height:0;position:absolute;}
+}
+
+/* Ace Editor */
+.ace_gutter-active-line, .ace_active-line{background-color:transparent !important;background:transparent !important;}
+
+/* Monaco Editor */
+.monaco-editor{
+    .button, .button:focus{background-color:transparent; padding:0;}
+    .button.disabled{background-color:transparent;}
 }

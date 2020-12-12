@@ -15,7 +15,7 @@
         $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
         //load users list
-        S.editor.tabs.create('User Management', 'users-management-section', { isPageResource: false },
+        S.editor.tabs.create('User Management', 'users-management-section', {},
             () => { //onfocus
                 $('.tab.users-management').removeClass('hide');
                 updateFilebar();

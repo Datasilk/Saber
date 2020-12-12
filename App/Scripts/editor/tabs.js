@@ -89,7 +89,8 @@ S.editor.tabs = {
     },
     select: (id) => {
         $('.edit-tabs li > div').removeClass('selected');
-        $('.tab-' + id + ' > div').addClass('selected');
+        var div = $('.tab-' + id + ' > div');
+        div.addClass('selected');
         var blur = S.editor.explorer.routes.filter(a => a.id != id)
         for (var x = 0; x < blur.length; x++) {
             //blur all other tabs
@@ -98,6 +99,12 @@ S.editor.tabs = {
             }
         }
         $('.tab-' + id)[0].focus();
+
+        //show content area for tab
+        var tabid = div.attr('data-path');
+        if (S.editor.selected != tabid) {
+            div[0].click();
+        }
     },
     close: function (id, path, callback) {
         var tab = $('.tab-' + id);

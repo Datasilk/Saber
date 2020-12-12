@@ -11,6 +11,47 @@ S.editor.hotkey = {
                     has = true;
                     break;
             }
+        } else if (e.altKey == true) {
+            if (!isNaN(key) && !isNaN(parseFloat(key))) {
+                var index = parseInt(key);
+                if (index == 0) { index = 10; } //0 key is last index
+                var tabs = $('.edit-tabs li');
+                if (tabs.length > index) {
+                    S.editor.tabs.select(tabs[index].className.replace('tab-', '').replace(' selected', ''));
+                    has = true;
+                }
+            }
+        } else {
+            switch (e.code) {
+                case 'F2': //content fields
+                    S.editor.filebar.fields.show();
+                    has = true;
+                    break;
+                case 'F3': //page settings
+                    S.editor.filebar.settings.show();
+                    has = true;
+                    break;
+                case 'F4'://page resources
+                    S.editor.filebar.resources.show();
+                    has = true;
+                    break;
+                case 'F6'://website settings
+                    S.editor.websettings.show();
+                    has = true;
+                    break;
+                case 'F7'://user accounts
+                    S.editor.users.show();
+                    has = true;
+                    break;
+                case 'F8'://security groups
+                    S.editor.security.show();
+                    has = true;
+                    break;
+                case 'F9'://file browser
+                    S.editor.explorer.show();
+                    has = true;
+                    break;
+            }
         }
         if (has == true) {
             event.preventDefault();

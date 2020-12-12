@@ -1,4 +1,5 @@
 S.editor.websettings = {
+    _loaded:false,
     show: function () {
         S.editor.tabs.create("Website Settings", "web-settings-section", {},
             () => { //onfocus
@@ -19,13 +20,17 @@ S.editor.websettings = {
         //disable save menu
         $('.item-save').addClass('faded').attr('disabled', 'disabled');
         $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
-
-        S.ajax.post('WebsiteSettings/Render', {},
-            function (d) {
-                var data = JSON.parse(d);
-                S.ajax.inject(data);
-                S.editor.resizeWindow();
-            }
-        );
+        if (S.editor.websettings._loaded) {
+            S.editor.tabs.select('web-settings-section');
+        } else {
+            S.ajax.post('WebsiteSettings/Render', {},
+                function (d) {
+                    var data = JSON.parse(d);
+                    S.ajax.inject(data);
+                    S.editor.resizeWindow();
+                    S.editor.websettings._loaded = true;
+                }
+            );
+        }
     }
 };

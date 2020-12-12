@@ -74,9 +74,9 @@ S.editor.init = function () {
     this.resize();
 
     //add button events
-    $('.item-browse').on('click', S.editor.explorer.show);
     $('.tab-drop-menu').on('click', S.editor.dropmenu.show);
     $('.bg-overlay').on('click', S.editor.dropmenu.hide);
+    $('.editor-drop-menu .item-browse').on('click', S.editor.explorer.show);
     $('.editor-drop-menu .item-save').on('click', S.editor.save);
     $('.editor-drop-menu .item-save-as').on('click', S.editor.saveAs);
     $('.editor-drop-menu .item-content-fields').on('click', function () { S.editor.filebar.fields.show(true); });
