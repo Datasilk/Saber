@@ -18,6 +18,9 @@
     .code{padding:5px 7px; font-family:monospace;}
     .bold{font-weight:bold;}
     hr{margin:15px 0; border-width:0; border-top-width:2px;}
+    .absolute{position:absolute;
+        &.right{right:0;}
+    }
 }
 
 /* editor header */
@@ -277,8 +280,19 @@
     }
 }
 
-/* app settings */
-.web-settings{padding:0 20px;}
+/* website settings */
+.web-settings{padding:0 20px;
+    .plugin-info{
+        .features{
+            .col.field{width:125px;}
+        }
+        .uninstall {position:absolute;right:0;z-index:5;
+            button{opacity:0.5;
+                &:hover{opacity:1;}
+            }
+        }
+    }
+}
 
 /* website analytics */
 .website-analytics{padding:0 20px;}

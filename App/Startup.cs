@@ -58,6 +58,23 @@ namespace Saber
             var vendorDLLs = Common.Vendors.LoadDLLs();
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IVendorInfo interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorInfo).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Common.Vendors.GetInfoFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorInfo interface
+            Common.Vendors.GetInfoFromFileSystem();
+            var vendorCount = Common.Vendors.Details.Where(a => a.Info != null).Count();
+            Console.WriteLine("Found " + vendorCount + " Vendor" + (vendorCount != 1 ? "s" : ""));
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorStartup interface
             foreach (var assembly in assemblies)
             {

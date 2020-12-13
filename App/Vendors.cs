@@ -9,10 +9,31 @@ using System.Text.Json;
 
 namespace Saber.Common
 {
+    public class VendorDetails
+    {
+        public string DLL { get; set; }
+        public string Assembly { get; set; }
+        public string Path { get; set; }
+        public IVendorInfo Info { get; set; }
+        public Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<IVendorViewRenderer>>();
+        public Dictionary<string, IVendorContentField> ContentFields { get; set; } = new Dictionary<string, IVendorContentField>();
+        public Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
+        public Dictionary<string, Type> Services { get; set; } = new Dictionary<string, Type>();
+        public Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
+        public List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
+        public Dictionary<string, HtmlComponentModel> HtmlComponents { get; set; } = new Dictionary<string, HtmlComponentModel>();
+        public string[] HtmlComponentKeys { get; set; }
+        public Dictionary<string, HtmlComponentModel> SpecialVars { get; set; } = new Dictionary<string, HtmlComponentModel>();
+        public Dictionary<string, IVendorEmailClient> EmailClients { get; set; } = new Dictionary<string, IVendorEmailClient>();
+        public Dictionary<string, EmailType> EmailTypes { get; set; } = new Dictionary<string, EmailType>();
+        public List<IVendorWebsiteSettings> WebsiteSettings { get; set; } = new List<IVendorWebsiteSettings>();
+    }
+
     public static class Vendors
     {
         private static List<string> DLLs { get; set; } = new List<string>();
-        private static List<Assembly> Assemblies { get; set; } = new List<Assembly>();
+        private static List<KeyValuePair<string, Assembly>> Assemblies { get; set; } = new List<KeyValuePair<string, Assembly>>();
+        public static List<VendorDetails> Details { get; set; } = new List<VendorDetails>();
         public static Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<IVendorViewRenderer>>();
         public static Dictionary<string, IVendorContentField> ContentFields { get; set; } = new Dictionary<string, IVendorContentField>();
         public static Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
@@ -26,6 +47,7 @@ namespace Saber.Common
         public static Dictionary<string, EmailType> EmailTypes { get; set; } = new Dictionary<string, EmailType>();
         public static List<IVendorWebsiteSettings> WebsiteSettings { get; set; } = new List<IVendorWebsiteSettings>();
 
+        #region "Assemblies"
         private class AssemblyInfo
         {
             public string Assembly { get; set; }
@@ -67,7 +89,7 @@ namespace Saber.Common
                 var context = new Assemblies.AssemblyLoader(file);
                 AssemblyName assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(file));
                 var assembly = context.LoadFromAssemblyName(assemblyName);
-                Assemblies.Add(assembly);
+                Assemblies.Add(new KeyValuePair<string, Assembly>(file, assembly));
 
                 //check version of assembly
                 assemblyName = assembly.GetName();
@@ -149,18 +171,33 @@ namespace Saber.Common
             return DLLs.ToArray();
         }
 
+        private static VendorDetails GetDetails(Type type, string DLL = "")
+        {
+            var assemblyName = string.Join('.', type.FullName.Split('.').SkipLast(1));
+            var details = Details.Where(a => a.Assembly == assemblyName).FirstOrDefault();
+            if(details == null)
+            {
+                details = new VendorDetails();
+                details.Assembly = assemblyName;
+                details.DLL = DLL;
+                Details.Add(details);
+            }
+            return details;
+        }
+        #endregion
+
         #region "View Renderers"
         public static void GetViewRenderersFromFileSystem()
         {
             foreach(var assembly in Assemblies)
             {
-                foreach (var type in assembly.ExportedTypes)
+                foreach (var type in assembly.Value.ExportedTypes)
                 {
                     foreach (var i in type.GetInterfaces())
                     {
                         if (i.Name == "IVendorViewRenderer")
                         {
-                            GetViewRendererFromType(type);
+                            GetViewRendererFromType(type, assembly.Key);
                             break;
                         }
                     }
@@ -168,18 +205,22 @@ namespace Saber.Common
             }
         }
 
-        public static void GetViewRendererFromType(Type type)
+        public static void GetViewRendererFromType(Type type, string DLL = "")
         {
             if(type == null) { return; }
             if (type.Equals(typeof(IVendorViewRenderer))) { return; }
             var attributes = type.GetCustomAttributes<ViewPathAttribute>();
+            var details = GetDetails(type, DLL);
             foreach (var attr in attributes)
             {
                 if (!ViewRenderers.ContainsKey(attr.Path))
                 {
+                    details.ViewRenderers.Add(attr.Path, new List<IVendorViewRenderer>());
                     ViewRenderers.Add(attr.Path, new List<IVendorViewRenderer>());
                 }
-                ViewRenderers[attr.Path].Add((IVendorViewRenderer)Activator.CreateInstance(type));
+                var instance = (IVendorViewRenderer)Activator.CreateInstance(type);
+                details.ViewRenderers[attr.Path].Add(instance);
+                ViewRenderers[attr.Path].Add(instance);
             }
         }
         #endregion
@@ -189,13 +230,13 @@ namespace Saber.Common
         {
             foreach (var assembly in Assemblies)
             {
-                foreach (var type in assembly.ExportedTypes)
+                foreach (var type in assembly.Value.ExportedTypes)
                 {
                     foreach (var i in type.GetInterfaces())
                     {
                         if (i.Name == "IVendorContentField")
                         {
-                            GetContentFieldsFromType(type);
+                            GetContentFieldsFromType(type, assembly.Key);
                             break;
                         }
                     }
@@ -203,14 +244,17 @@ namespace Saber.Common
             }
         }
 
-        public static void GetContentFieldsFromType(Type type)
+        public static void GetContentFieldsFromType(Type type, string DLL = "")
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorContentField))) { return; }
             var attributes = type.GetCustomAttributes<ContentFieldAttribute>();
+            var details = GetDetails(type, DLL);
             foreach (var attr in attributes)
             {
-                ContentFields.Add(attr.FieldName, (IVendorContentField)Activator.CreateInstance(type));
+                var instance = (IVendorContentField)Activator.CreateInstance(type);
+                details.ContentFields.Add(attr.FieldName, instance);
+                ContentFields.Add(attr.FieldName, instance);
             }
         }
         #endregion
@@ -220,13 +264,13 @@ namespace Saber.Common
         {
             foreach (var assembly in Assemblies)
             {
-                foreach (var type in assembly.ExportedTypes)
+                foreach (var type in assembly.Value.ExportedTypes)
                 {
                     foreach (var i in type.GetInterfaces())
                     {
                         if (i.Name == "IVendorController")
                         {
-                            GetControllerFromType(type);
+                            GetControllerFromType(type, assembly.Key);
                             break;
                         }
                     }
@@ -234,10 +278,12 @@ namespace Saber.Common
             }
         }
 
-        public static void GetControllerFromType(Type type)
+        public static void GetControllerFromType(Type type, string DLL = "")
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorController))) { return; }
+            var details = GetDetails(type, DLL);
+            details.Controllers.Add(type.Name.ToLower(), type);
             Controllers.Add(type.Name.ToLower(), type);
         }
         #endregion
@@ -247,13 +293,13 @@ namespace Saber.Common
         {
             foreach (var assembly in Assemblies)
             {
-                foreach (var type in assembly.ExportedTypes)
+                foreach (var type in assembly.Value.ExportedTypes)
                 {
                     foreach (var i in type.GetInterfaces())
                     {
                         if (i.Name == "IVendorService")
                         {
-                            GetServiceFromType(type);
+                            GetServiceFromType(type, assembly.Key);
                             break;
                         }
                     }
@@ -261,10 +307,12 @@ namespace Saber.Common
             }
         }
 
-        public static void GetServiceFromType(Type type)
+        public static void GetServiceFromType(Type type, string DLL = "")
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorService))) { return; }
+            var details = GetDetails(type, DLL);
+            details.Services.Add(type.Name.ToLower(), type);
             Services.Add(type.Name.ToLower(), type);
         }
         #endregion
@@ -274,13 +322,13 @@ namespace Saber.Common
         {
             foreach (var assembly in Assemblies)
             {
-                foreach (var type in assembly.ExportedTypes)
+                foreach (var type in assembly.Value.ExportedTypes)
                 {
                     foreach (var i in type.GetInterfaces())
                     {
                         if (i.Name == "IVendorStartup")
                         {
-                            GetStartupFromType(type);
+                            GetStartupFromType(type, assembly.Key);
                             break;
                         }
                     }
@@ -288,10 +336,12 @@ namespace Saber.Common
             }
         }
 
-        public static void GetStartupFromType(Type type)
+        public static void GetStartupFromType(Type type, string DLL = "")
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorStartup))) { return; }
+            var details = GetDetails(type, DLL);
+            details.Startups.Add(type.Assembly.GetName().Name, type);
             Startups.Add(type.Assembly.GetName().Name, type);
         }
         #endregion
@@ -301,13 +351,13 @@ namespace Saber.Common
         {
             foreach (var assembly in Assemblies)
             {
-                foreach (var type in assembly.ExportedTypes)
+                foreach (var type in assembly.Value.ExportedTypes)
                 {
                     foreach (var i in type.GetInterfaces())
                     {
                         if (i.Name == "IVendorKeys")
                         {
-                            GetSecurityKeysFromType(type);
+                            GetSecurityKeysFromType(type, assembly.Key);
                             break;
                         }
                     }
@@ -315,11 +365,14 @@ namespace Saber.Common
             }
         }
 
-        public static void GetSecurityKeysFromType(Type type)
+        public static void GetSecurityKeysFromType(Type type, string DLL = "")
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorKeys))) { return; }
-            Keys.Add((IVendorKeys)Activator.CreateInstance(type));
+            var details = GetDetails(type, DLL);
+            var instance = (IVendorKeys)Activator.CreateInstance(type);
+            details.Keys.Add(instance);
+            Keys.Add(instance);
         }
         #endregion
 
@@ -328,13 +381,13 @@ namespace Saber.Common
         {
             foreach (var assembly in Assemblies)
             {
-                foreach (var type in assembly.ExportedTypes)
+                foreach (var type in assembly.Value.ExportedTypes)
                 {
                     foreach (var i in type.GetInterfaces())
                     {
                         if (i.Name == "IVendorHtmlComponent")
                         {
-                            GetHtmlComponentsFromType(type);
+                            GetHtmlComponentsFromType(type, assembly.Key);
                             break;
                         }
                     }
@@ -342,17 +395,20 @@ namespace Saber.Common
             }
         }
 
-        public static void GetHtmlComponentsFromType(Type type)
+        public static void GetHtmlComponentsFromType(Type type, string DLL = "")
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorHtmlComponents))) { return; }
+            var details = GetDetails(type, DLL);
             var instance = (IVendorHtmlComponents)Activator.CreateInstance(type);
             var components = instance.Bind();
             foreach (var component in components) {
                 if(component.Parameters.Count == 0)
                 {
+                    details.SpecialVars.Add(component.Key, component);
                     SpecialVars.Add(component.Key, component);
                 }
+                details.HtmlComponents.Add(component.Key, component);
                 HtmlComponents.Add(component.Key, component);
             }
         }
@@ -368,13 +424,13 @@ namespace Saber.Common
         {
             foreach (var assembly in Assemblies)
             {
-                foreach (var type in assembly.ExportedTypes)
+                foreach (var type in assembly.Value.ExportedTypes)
                 {
                     foreach (var i in type.GetInterfaces())
                     {
                         if (i.Name == "IVendorEmailClient")
                         {
-                            GetEmailClientsFromType(type);
+                            GetEmailClientsFromType(type, assembly.Key);
                             break;
                         }
                     }
@@ -382,12 +438,14 @@ namespace Saber.Common
             }
         }
 
-        public static void GetEmailClientsFromType(Type type)
+        public static void GetEmailClientsFromType(Type type, string DLL = "")
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorEmailClient))) { return; }
+            var details = GetDetails(type, DLL);
             var instance = (IVendorEmailClient)Activator.CreateInstance(type);
             if(instance.Key == "smtp") { return; } //skip internal email client
+            details.EmailClients.Add(instance.Key, instance);
             EmailClients.Add(instance.Key, instance);
             instance.Init();
         }
@@ -398,13 +456,13 @@ namespace Saber.Common
         {
             foreach (var assembly in Assemblies)
             {
-                foreach (var type in assembly.ExportedTypes)
+                foreach (var type in assembly.Value.ExportedTypes)
                 {
                     foreach (var i in type.GetInterfaces())
                     {
                         if (i.Name == "IVendorEmails")
                         {
-                            GetEmailsFromType(type);
+                            GetEmailsFromType(type, assembly.Key);
                             break;
                         }
                     }
@@ -412,13 +470,15 @@ namespace Saber.Common
             }
         }
 
-        public static void GetEmailsFromType(Type type)
+        public static void GetEmailsFromType(Type type, string DLL = "")
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorEmails))) { return; }
+            var details = GetDetails(type, DLL);
             var emails = (IVendorEmails)Activator.CreateInstance(type);
             foreach(var email in emails.Types)
             {
+                details.EmailTypes.Add(email.Key, email);
                 EmailTypes.Add(email.Key, email);
             }
         }
@@ -429,13 +489,13 @@ namespace Saber.Common
         {
             foreach (var assembly in Assemblies)
             {
-                foreach (var type in assembly.ExportedTypes)
+                foreach (var type in assembly.Value.ExportedTypes)
                 {
                     foreach (var i in type.GetInterfaces())
                     {
                         if (i.Name == "IVendorWebsiteSettings")
                         {
-                            GetWebsiteSettingsFromType(type);
+                            GetWebsiteSettingsFromType(type, assembly.Key);
                             break;
                         }
                     }
@@ -443,12 +503,43 @@ namespace Saber.Common
             }
         }
 
-        public static void GetWebsiteSettingsFromType(Type type)
+        public static void GetWebsiteSettingsFromType(Type type, string DLL = "")
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorWebsiteSettings))) { return; }
+            var details = GetDetails(type, DLL);
             var instance = (IVendorWebsiteSettings)Activator.CreateInstance(type);
+            details.WebsiteSettings.Add(instance);
             WebsiteSettings.Add(instance);
+        }
+        #endregion
+
+        #region "Vendor Info"
+        public static void GetInfoFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.Value.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorInfo")
+                        {
+                            GetInfoFromType(type, assembly.Key);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetInfoFromType(Type type, string DLL = "")
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorInfo))) { return; }
+            var details = GetDetails(type, DLL);
+            var instance = (IVendorInfo)Activator.CreateInstance(type);
+            details.Info = instance;
         }
         #endregion
     }

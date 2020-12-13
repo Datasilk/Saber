@@ -174,6 +174,116 @@ namespace Saber.Services
             accordion["contents"] = viewPasswords.Render();
             accordions.Append(accordion.Render());
 
+            //render plugins management accordion
+            var viewPlugin = new View("/Views/WebsiteSettings/plugin-item.html");
+            var viewFeature = new View("/Views/WebsiteSettings/plugin-feature.html");
+            var feature = new StringBuilder();
+            html.Clear();
+            foreach(var plugin in Common.Vendors.Details.Where(a => a.Info != null).OrderBy(a => a.Info.Key))
+            {
+                viewPlugin["name"] = plugin.Info.Name;
+                viewPlugin["key"] = plugin.Info.Key;
+                viewPlugin["description"] = plugin.Info.Description;
+
+                if(plugin.ViewRenderers.Count > 0)
+                {
+                    viewFeature["field"] = "View Renderers";
+                    viewFeature["text"] = plugin.ViewRenderers.Count.ToString();
+                    feature.Append(viewFeature.Render());
+                    viewFeature.Clear();
+                }
+
+                if (plugin.ContentFields.Count > 0)
+                {
+                    viewFeature["field"] = "Content Fields";
+                    viewFeature["text"] = plugin.ContentFields.Count.ToString();
+                    feature.Append(viewFeature.Render());
+                    viewFeature.Clear();
+                }
+
+                if (plugin.Controllers.Count > 0)
+                {
+                    viewFeature["field"] = "Controllers";
+                    viewFeature["text"] = string.Join(", ", plugin.Controllers.Select(a => a.Value.Name));
+                    feature.Append(viewFeature.Render());
+                    viewFeature.Clear();
+                }
+
+                if (plugin.Services.Count > 0)
+                {
+                    viewFeature["field"] = "Services";
+                    viewFeature["text"] = string.Join(", ", plugin.Services.Select(a => a.Value.Name));
+                    feature.Append(viewFeature.Render());
+                    viewFeature.Clear();
+                }
+
+                if (plugin.Startups.Count > 0)
+                {
+                    viewFeature["field"] = "Startup Config";
+                    viewFeature["text"] = "Yes";
+                    feature.Append(viewFeature.Render());
+                    viewFeature.Clear();
+                }
+
+                if (plugin.Keys.Count > 0)
+                {
+                    viewFeature["field"] = "Security Keys";
+                    viewFeature["text"] = string.Join(", ", plugin.Keys.SelectMany(a => a.Keys).Select(a => a.Label));
+                    feature.Append(viewFeature.Render());
+                    viewFeature.Clear();
+                }
+
+                if (plugin.HtmlComponents.Count > 0)
+                {
+                    viewFeature["field"] = "HTML Components";
+                    viewFeature["text"] = string.Join(", ", plugin.HtmlComponents.Select(a => a.Value.Name));
+                    feature.Append(viewFeature.Render());
+                    viewFeature.Clear();
+                }
+
+                if (plugin.SpecialVars.Count > 0)
+                {
+                    viewFeature["field"] = "Special Vars";
+                    viewFeature["text"] = string.Join(", ", plugin.SpecialVars.Select(a => a.Value.Name));
+                    feature.Append(viewFeature.Render());
+                    viewFeature.Clear();
+                }
+
+                if (plugin.EmailClients.Count > 0)
+                {
+                    viewFeature["field"] = "Email Clients";
+                    viewFeature["text"] = string.Join(", ", plugin.EmailClients.Select(a => a.Value.Name));
+                    feature.Append(viewFeature.Render());
+                    viewFeature.Clear();
+                }
+
+                if (plugin.EmailTypes.Count > 0)
+                {
+                    viewFeature["field"] = "Email Types";
+                    viewFeature["text"] = string.Join(", ", plugin.EmailTypes.Select(a => a.Value.Name));
+                    feature.Append(viewFeature.Render());
+                    viewFeature.Clear();
+                }
+
+                if (plugin.WebsiteSettings.Count > 0)
+                {
+                    viewFeature["field"] = "Website Settings";
+                    viewFeature["text"] = "Yes";
+                    feature.Append(viewFeature.Render());
+                    viewFeature.Clear();
+                }
+                viewPlugin["features"] = feature.ToString();
+                html.Append(viewPlugin.Render());
+                feature.Clear();
+            }
+
+            //render plugins management accordion
+            accordion.Clear();
+            accordion["title"] = "Plugins";
+            accordion["contents"] = html.ToString();
+            accordions.Append(accordion.Render());
+
+
             //render accordions
             view["accordions"] = accordions.ToString();
 
