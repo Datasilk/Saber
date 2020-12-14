@@ -121,6 +121,12 @@ namespace Saber.Common
                 try
                 {
                     Uninstalled.Add(vendor);
+                    //execute uninstall.sql
+                    if(File.Exists(App.MapPath("/Vendors/" + vendor + "/Sql/uninstall.sql")))
+                    {
+                        Query.Script.Execute(App.MapPath("/Vendors/" + vendor + "/Sql/uninstall.sql"));
+                        Console.WriteLine("Executed /Vendors/" + vendor + "/Sql/uninstall.sql");
+                    }
                     Directory.Delete(App.MapPath("/Vendors/" + vendor), true);
                     Console.WriteLine("Uninstalled Vendor " + vendor);
                 }
