@@ -179,11 +179,11 @@ namespace Saber.Services
             var viewFeature = new View("/Views/WebsiteSettings/plugin-feature.html");
             var feature = new StringBuilder();
             html.Clear();
-            foreach(var plugin in Common.Vendors.Details.Where(a => a.Info != null).OrderBy(a => a.Info.Key))
+            foreach(var plugin in Common.Vendors.Details.Where(a => a.Version != "").OrderBy(a => a.Key))
             {
-                viewPlugin["name"] = plugin.Info.Name;
-                viewPlugin["key"] = plugin.Info.Key;
-                viewPlugin["description"] = plugin.Info.Description;
+                viewPlugin["name"] = plugin.Name;
+                viewPlugin["key"] = plugin.Key;
+                viewPlugin["description"] = plugin.Description;
 
                 if(plugin.ViewRenderers.Count > 0)
                 {
@@ -384,6 +384,14 @@ namespace Saber.Services
             var settings = Common.Platform.Website.Settings.Load();
             settings.Passwords = passwords;
             Common.Platform.Website.Settings.Save(settings);
+            return Success();
+        }
+
+        public string UninstallPlugin(string key)
+        {
+            //create file delete.tmp in Vendor plugin folder
+            File.WriteAllText(App.MapPath("/Vendors/" + key + "/uninstall.sbr"), "");
+            Server.AppLifetime.StopApplication();
             return Success();
         }
         #endregion

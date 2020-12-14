@@ -1,19 +1,16 @@
 using System;
 using System.Linq;
 using System.IO;
-using System.IO.Compression;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.Threading;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Datasilk.Core.Extensions;
 using Saber.Common.Platform;
 
@@ -43,6 +40,9 @@ namespace Saber
             //add health checks
             services.AddHealthChecks();
 
+            //try deleting Vendors that are marked for uninstallation
+            Common.Vendors.DeleteVendors();
+
             //get list of assemblies for Vendor related functionality
             var assemblies = new List<Assembly> { Assembly.GetCallingAssembly() };
             if (!assemblies.Contains(Assembly.GetExecutingAssembly()))
@@ -71,7 +71,7 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorInfo interface
             Common.Vendors.GetInfoFromFileSystem();
-            var vendorCount = Common.Vendors.Details.Where(a => a.Info != null).Count();
+            var vendorCount = Common.Vendors.Details.Where(a => a.Version != "").Count();
             Console.WriteLine("Found " + vendorCount + " Vendor" + (vendorCount != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,7 +231,7 @@ namespace Saber
             }
         }
 
-        public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime appLifetime)
         {
             App.IsDocker = System.Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 
@@ -286,6 +286,9 @@ namespace Saber
             //configure Server security
             Server.BcryptWorkfactor = int.Parse(config.GetSection("encryption:bcrypt_work_factor").Value);
             Server.Salt = config.GetSection("encryption:salt").Value;
+
+            //inject app lifetime
+            Server.AppLifetime = appLifetime;
 
             //configure cookie-based authentication
             var expires = !string.IsNullOrWhiteSpace(config.GetSection("Session:Expires").Value) ? int.Parse(config.GetSection("Session:Expires").Value) : 60;
@@ -342,15 +345,15 @@ namespace Saber
                 App.Languages.Add(lang.Id, lang.Name);
             });
 
-            //check if default website exists
-            
-
             //set up path pointers for View partials (e.g. {{side-bar "partials/side-bar.html"}} instead of {{side-bar "/Content/partials/side-bar.html"}})
             ViewPartialPointers.Paths.AddRange(new List<KeyValuePair<string, string>>()
             {
                 new KeyValuePair<string, string>("partials", "Content/partials"),
                 new KeyValuePair<string, string>("pages", "Content/pages")
             });
+
+            //check vendor versions which may run SQL migration scripts
+            Common.Vendors.CheckVersions();
 
             //execute Configure method for all vendors that use IVendorStartup interface
             foreach (var kv in Common.Vendors.Startups)

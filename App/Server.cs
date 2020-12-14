@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 public static class Server
 {
@@ -11,6 +11,7 @@ public static class Server
     public static bool HasAdmin { get; set; } = false; //no admin account exists
     public static bool ResetPass { get; set; } = false; //force admin to reset password
     public static string Version { get; set; } = "1.0";
+    public static IHostApplicationLifetime AppLifetime { get; set; }
 
     //other settings
     public static bool IsDocker { get; set; }

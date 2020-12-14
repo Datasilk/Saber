@@ -78,7 +78,7 @@
             S.editor.message('', 'Email Client settings saved successfully');
         }, (err) => {
             S.editor.message('', err.responseText, 'error');
-        })
+        });
     });
 
     $('.email-actions button.save').on('click', (e) => {
@@ -102,7 +102,7 @@
             S.editor.message('', 'Email Action settings saved successfully');
         }, (err) => {
             S.editor.message('', err.responseText, 'error');
-        })
+        });
     });
 
     $('.passwords button.save').on('click', (e) => {
@@ -123,6 +123,19 @@
             S.editor.message('', 'Password settings saved successfully');
         }, (err) => {
             S.editor.message('', err.responseText, 'error');
-        })
+        });
+    });
+
+    $('.plugin-info button.delete').on('click', (e) => {
+        var target = $(e.target).parents('.plugin-info').first();
+        var key = $(target).attr('data-key');
+        if (confirm('Do you really want to uninstall the ' + key + ' plugin? This cannot be undone and the Saber application service will be terminated as a result. You may have to restart your web server if you cannot access your website afterwards.')) {
+            S.ajax.post('WebsiteSettings/UninstallPlugin', { key: key }, () => {
+                S.editor.message('', 'Plugin ' + key + ' was marked for uninstallation. Terminating Saber application service. Please wait...');
+                setTimeout(() => { location.reload(); }, 3000);
+            }, (err) => {
+                S.editor.message('', err.responseText, 'error');
+            });
+        }
     });
 })();
