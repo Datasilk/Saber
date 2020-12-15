@@ -12,7 +12,7 @@ AS
 	DECLARE @idlist TABLE (
 		[id] int
 	)
-	EXEC sp_xml_preparedocument @hdoc OUTPUT, @ids;
+	EXEC sp_xml_preparedocument @hdoc OUTPUT, @ids
 
 	/* create new addressbook entries based on email list */
 	INSERT INTO @idlist
