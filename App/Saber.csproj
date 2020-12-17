@@ -83,9 +83,6 @@
     <Content Include="Views\Editor\header.less">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\Editor\no-editor.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Views\FileBrowser\file.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

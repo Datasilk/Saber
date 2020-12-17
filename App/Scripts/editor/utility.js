@@ -62,3 +62,12 @@ S.editor.isResource = function (path, type) {
         }
     }
 };
+
+S.editor.queryString = function (url, param, decode) {
+    if (url.indexOf('?') < 0) { return ''; }
+    var querystring = url.split('?')[1].split('#')[0];
+    var params = querystring.split('&').map(a => a.split('='));
+    var val = params.filter(a => a[0] == param).map(a => a[1]);
+    if (val.length > 0) { val = val[0]; } else { val = ''; }
+    return decode ? decodeURIComponent(val) : val;
+};

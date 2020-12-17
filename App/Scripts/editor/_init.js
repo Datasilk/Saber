@@ -3,7 +3,7 @@ S.editor.init = function () {
     this.visible = true;
 
     //generate path
-    var path = window.location.pathname.toLowerCase();
+    var path = '/' + S.editor.queryString(window.location.href, 'path');
     if (path == '/') { path = '/home'; }
     if (path.substr(path.length - 1, 1) == '/') {
         //remove leading slash

@@ -15,7 +15,19 @@
     input, textarea, select{border-radius:0 !important; font-size:13px !important;}
     .col.field{padding:9px 7px 11px 4px;}
     
-    .code{padding:5px 7px; font-family:monospace;}
+    .code{padding:5px 7px; font-family:monospace;
+        .line{width:100%; min-height:19px;
+            @tabw:25px;
+            &.tabs-1{padding-left:@tabw;}
+            &.tabs-2{padding-left:@tabw * 2;}
+            &.tabs-3{padding-left:@tabw * 3;}
+            &.tabs-4{padding-left:@tabw * 4;}
+            &.tabs-5{padding-left:@tabw * 5;}
+            &.tabs-6{padding-left:@tabw * 6;}
+            &.tabs-7{padding-left:@tabw * 7;}
+            &.tabs-8{padding-left:@tabw * 8;}
+        }
+    }
     .bold{font-weight:bold;}
     hr{margin:15px 0; border-width:0; border-top-width:1px;}
     .absolute{position:absolute;
@@ -96,9 +108,10 @@
     }
     .loader{position:absolute; left:0; top:5px;}
 }
-.box editor .tab{
+.box.editor .tab{
     p, ul{display:block;}
     p, ul, li{padding-bottom:10px;}
+    p{padding-bottom:10px;}
 }
 
 /* html component menu */

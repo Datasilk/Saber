@@ -10,6 +10,7 @@ namespace Saber
         {
             switch (name)
             {
+                case "editor": return new Controllers.Editor();
                 case "login":
                     if (Server.HasAdmin == false || Server.ResetPass == true)
                     {
@@ -17,7 +18,7 @@ namespace Saber
                     }
                     else
                     {
-                        return new Controllers.Editor();
+                        return new Controllers.Page();
                     }
                 case "logout": return new Controllers.Logout();
                 case "upload": return new Controllers.Upload();
@@ -28,7 +29,7 @@ namespace Saber
                 return (IController)Activator.CreateInstance(Common.Vendors.Controllers[name]);
             }
             //if all else fails, render Saber Editor
-            return new Controllers.Editor();
+            return new Controllers.Page();
         }
 
         public override IService FromServiceRoutes(HttpContext context, Parameters parameters, string name)

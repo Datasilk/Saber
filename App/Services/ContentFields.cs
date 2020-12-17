@@ -37,7 +37,7 @@ namespace Saber.Services
             {
                 var nofields = new View("/Views/ContentFields/nofields.html");
                 nofields["filename"] = paths[paths.Length - 1];
-                return nofields.Render();
+                return Response(nofields.Render());
             }
             return Response(resultHead + result + resultFoot);
         }

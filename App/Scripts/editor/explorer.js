@@ -193,7 +193,6 @@ S.editor.explorer = {
 
         //change file path
         var cleanPath = path;
-        console.log(cleanPath);
         if (cleanPath.indexOf('content/partials/') == 0) {
             cleanPath = cleanPath.replace('content/', '');
         } else if (cleanPath.indexOf('content/') == 0) {

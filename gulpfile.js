@@ -127,7 +127,8 @@ paths.working = {
             paths.scripts + 'editor/hotkeys.js',
             paths.scripts + 'editor/utility.js',
             paths.scripts + 'editor/_init.js'
-        ]
+        ],
+        iframe: paths.scripts + 'iframe.js'
     },
 
     less: {
@@ -156,7 +157,8 @@ paths.working = {
         app: [
             paths.app + '**/*.css',
             '!' + paths.app + 'Vendors/**/*.js'
-        ]
+        ],
+        iframe:paths.app + 'CSS/iframe.css'
     },
 
     vendors: {
@@ -231,7 +233,12 @@ gulp.task('js:utility', function () {
         .pipe(gulp.dest(paths.compiled.js + 'utility'));
 });
 
-gulp.task('js', gulp.series('js:app', 'js:platform', 'js:editor', 'js:utility'));
+gulp.task('js:iframe', function () {
+    return gulp.src(paths.working.js.iframe)
+        .pipe(gulp.dest(paths.compiled.js));
+});
+
+gulp.task('js', gulp.series('js:app', 'js:platform', 'js:editor', 'js:utility', 'js:iframe'));
 
 //tasks for compiling LESS & CSS /////////////////////////////////////////////////////////////////////
 gulp.task('less:app', function () {
@@ -302,9 +309,15 @@ gulp.task('css:utility', function () {
     return p.pipe(gulp.dest(paths.compiled.css + 'utility', { overwrite: true }));
 });
 
+gulp.task('css:iframe', function () {
+    var p = gulp.src(paths.working.css.iframe);
+    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    return p.pipe(gulp.dest(paths.compiled.css, { overwrite: true }));
+});
+
 gulp.task('less', gulp.series('less:platform', 'less:app', 'less:themes', 'less:utility'));
 
-gulp.task('css', gulp.series('css:themes', 'css:app', 'css:utility'));
+gulp.task('css', gulp.series('css:themes', 'css:app', 'css:utility', 'css:iframe'));
 
 //tasks for compiling default website content ////////////////////////////////////////////
 gulp.task('website:less', function () {
@@ -409,6 +422,9 @@ gulp.task('watch', function () {
     //watch utility JS
     gulp.watch(paths.working.js.utility, gulp.series('js:utility'));
 
+    //watch iframe JS
+    gulp.watch(paths.working.js.iframe, gulp.series('js:iframe'));
+
     //watch app LESS
     var pathless = [...paths.working.less.app, ...paths.working.exclude.app.map(a => a + '*.less')];
     gulp.watch(pathless, gulp.series('less:app'));
@@ -427,6 +443,9 @@ gulp.task('watch', function () {
     //watch app CSS
     var pathcss = [...paths.working.css.app, ...paths.working.exclude.app.map(a => a + '*.css')];
     gulp.watch(pathcss, gulp.series('css:app'));
+
+    //watch iframe CSS
+    gulp.watch(paths.working.css.iframe, gulp.series('css:iframe'));
 
 });
 

@@ -122,15 +122,18 @@ S.editor.filebar = {
     preview: {
         toggle: function () {
             var self = S.editor.filebar.preview;
-            if (S('.editor-preview').hasClass('hide')) {
+            var iframe = window.parent.document.getElementsByClassName('editor-iframe')[0];
+            if (iframe.style.display == 'block') {
                 self.show();
             } else {
                 self.hide();
             }
         },
         show: function () {
-            var tagcss = S('#page_css');
-            var tagjs = S('#page_js');
+            var iframe = window.parent.document.getElementsByClassName('editor-iframe')[0];
+            var doc = window.parent.document;
+            var tagcss = doc.getElementById('page_css');
+            var tagjs = doc.getElementById('page_js');
             var css = '/' + S.editor.path.replace('content/', 'content/pages/') + '.css';
             var src = '/' + S.editor.path.replace('content/', 'content/pages/') + '.js';
             var rnd = Math.floor(Math.random() * 9999);
@@ -139,15 +142,18 @@ S.editor.filebar = {
             if (S.editor.files.less.changed == true) {
                 S.editor.files.less.changed = false;
                 tagcss.remove();
-                S('head').append(
-                    '<link rel="stylesheet" type="text/css" id="page_css" href="' + css + '?r=' + rnd + '"></link>'
-                );
+                var link = doc.createElement('link');
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.id = 'page_css';
+                link.href = css + '?r=' + rnd;
+                doc.head.appendChild(link);
             }
 
             if (S.editor.files.website.css.changed == true) {
                 //reload website.css
                 S.editor.files.website.css.changed = false;
-                S(website_css).attr('href', '/css/website.css?r=' + rnd);
+                doc.getElementById('website_css').setAttribute('href', '/css/website.css?r=' + rnd);
             }
 
             //next, reload rendered HTML
@@ -155,8 +161,11 @@ S.editor.filebar = {
                 S.editor.files.html.changed = false;
                 S.ajax.post('Page/Render', { path: S.editor.path + '.html', language: window.language || 'en' },
                     function (d) {
-                        d.selector = '.editor-preview';
-                        S.ajax.inject(d);
+                        var website = doc.getElementsByClassName('website')[0];
+                        website.innerHTML = d.html;
+                        if (d.javascript) {
+                            doc.addScript(d.javascript);
+                        }
                         changeJs(true);
                     },
                     null, true
@@ -173,37 +182,39 @@ S.editor.filebar = {
 
             //finally, reload javascript file
             function changeJs(htmlChanged) {
-                S('#website_js').remove();
+                var js = doc.getElementById('website_js');
+                js.parentNode.removeChild(js);
+
                 S.util.js.load('/js/website.js' + '?r=' + rnd, 'website_js',
                     function () {
                         if (S.editor.files.js.changed == true || htmlChanged == true) {
                             S.editor.files.js.changed = false;
                             tagjs.remove();
-                            S.util.js.load(src + '?r=' + rnd, 'page_js');
+                            S.util.js.load(src + '?r=' + rnd, 'page_js', null, null, doc);
                         }
-                    }
-                );
+                    }, (err) => {}, doc);
             }
 
             function showContent() {
-                S('.editor-preview, .editor-tab').removeClass('hide');
-                S('.editor').addClass('hide');
+                iframe.style.display = "none";
+                window.parent.document.body.style.overflow = '';
                 S.editor.visible = false;
             }
 
         },
 
         hide: function () {
+            var iframe = window.parent.document.getElementsByClassName('editor-iframe')[0];
+            iframe.style.display = "block";
+            window.parent.document.body.style.overflow = 'hidden';
             S.editor.visible = true;
-            S('.editor-preview, .editor-tab').addClass('hide');
-            S('.editor').removeClass('hide');
 
             //update Rhino browser window (if applicable)
             if (S.editor.Rhino) {
-                Rhino.bordercolor(34, 34, 34);
-                Rhino.toolbarcolor(34, 34, 34);
-                Rhino.toolbarfontcolor(200, 200, 200);
-                Rhino.toolbarbuttoncolors(
+                window.parent.Rhino.bordercolor(34, 34, 34);
+                window.parent.Rhino.toolbarcolor(34, 34, 34);
+                window.parent.Rhino.toolbarfontcolor(200, 200, 200);
+                window.parent.Rhino.toolbarbuttoncolors(
                     S.util.color.argbToInt(255, 34, 34, 34), //bg
                     S.util.color.argbToInt(255, 40, 40, 40), //bg hover
                     S.util.color.argbToInt(255, 0, 153, 255), //bg mouse down
