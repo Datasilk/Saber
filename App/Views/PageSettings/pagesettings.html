@@ -45,7 +45,7 @@
 
 <div class="textarea-clone"><div></div></div>
 
-<div class="row line margin-top"></div>
+<hr />
 
 <div class="row pad-top"><h5>Page Header & Footer</h5></div>
 <div class="row settings-header-footer">
@@ -64,12 +64,29 @@
     </div>
 </div>
 
-<div class="row line margin-top"></div>
+<hr />
+
+<div class="row pad-top page-styles">
+    <div class="col">
+        <h5>Page Styles</h5>
+        <p>Load Stylesheets onto your web page</p>
+    </div>
+    <div class="col right">
+        <button class="button btn-add-style">+ Add Stylesheet</button>
+    </div>    
+</div>
+<div class="styles-list">
+    <ul class="list">
+        {{styles-list}} 
+    </ul>
+</div>
+
+<hr />
 
 <div class="row pad-top page-scripts">
     <div class="col">
         <h5>Page Scripts</h5>
-        <p>Load JavaScript libraries onto your web page that can be used for user interaction and content manipulation</p>
+        <p>Load JavaScript libraries onto your web page</p>
     </div>
     <div class="col right">
         <button class="button btn-add-script">+ Add Script</button>
@@ -81,7 +98,7 @@
     </ul>
 </div>
 
-<div class="row line margin-top"></div>
+<hr />
 
 <div class="row pad-top page-security">
     <div class="col">
@@ -98,14 +115,14 @@
     </ul>
 </div>
 
-<div class="row line pad-bottom margin-top"></div>
+<hr />
 
 <div class="row pad-top"><h5>Subpage Template</h5></div>
 <p class="template-info">
     <a href="{{page-template}}" target="_blank">Modify</a> the web page that will be used to generate new sub-pages
 </p>
 
-<div class="row line pad-bottom margin-top"></div>
+<hr />
 
 <script language="text/html" id="template_pagetitle_newprefix">
     <form>
@@ -132,6 +149,23 @@
         <div class="row text-center pad-top-sm">
             <div class="col">
                 <input type="submit" class="button apply" value="Create Suffix" />
+            </div>
+        </div>
+    </form>
+</script>
+
+<script language="text/html" id="template_styles_add">
+    <form>
+        <div class="row field">Available Stylesheets</div>
+        <div class="row input">
+            <select id="available_styles"></select>
+        </div>
+        <div class="row pad-top pad-bottom faded">
+            <span>You can add more stylesheets by uploading them into the <b>wwwroot/css</b> folder.</span>
+        </div>
+        <div class="row text-center pad-top-sm">
+            <div class="col">
+                <input type="submit" class="button apply" value="Add Stylesheet To Page" />
             </div>
         </div>
     </form>

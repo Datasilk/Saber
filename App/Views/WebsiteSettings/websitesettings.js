@@ -10,8 +10,8 @@
         { name: 'android', type: 2 },
     ];
     for (var x = 0; x < icons.length; x++) {
-        $('.' + icons[x].name + '-app-icon button').on('click', (a) => {
-            var btn = $(a.target);
+        S('.' + icons[x].name + '-app-icon button').on('click', (a) => {
+            var btn = S(a.target);
             var container = btn.parents('.icon-box').first();
             var img = container.find('.icon-img img');
             var px = btn.attr('px') || '0';
@@ -29,7 +29,7 @@
         });
     }
 
-    $('#upload_app_icon').on("change", (e) => {
+    S('#upload_app_icon').on("change", (e) => {
         S.loader();
         S.upload.file(upload_app_icon.files[0], '/api/WebsiteSettings/UploadPngIcon?type=' + selbtn.type + '&px=' + selbtn.px,
             null, //onprogress
@@ -39,31 +39,33 @@
                     selbtn.img.attr('src', '/images/' + selbtn.path + selbtn.name + selbtn.suffix + '.png?r=' + Math.round(Math.random() * 9999));
                     selbtn.img.parent().removeClass('hide');
                 }, 1000);
-                $('.loader').remove();
+                S('.loader').remove();
             },
             (e) => { //onerror
                 S.editor.error(null, e.responseText);
-                $('.loader').remove();
+                S('.loader').remove();
             }
         );
     });
 
+    //set up stylesheets
+
     //set up email settings
-    $('#emailclients').on('change', () => {
-        var id = $('#emailclients').val();
-        $('.email-client').addClass('hide');
-        $('.email-client.client-' + id).removeClass('hide');
+    S('#emailclients').on('change', () => {
+        var id = S('#emailclients').val();
+        S('.email-client').addClass('hide');
+        S('.email-client.client-' + id).removeClass('hide');
     });
 
-    $('.email-clients button.save').on('click', (e) => {
+    S('.email-clients button.save').on('click', (e) => {
         //save selected email client settings
         e.preventDefault();
-        var section = $('.email-client:not(.hide)').first();
+        var section = S('.email-client:not(.hide)').first();
         var id = section[0].className.replace('email-client client-', '');
         var inputs = section.find('input, select');
         var params = {};
         inputs.each(a => {
-            var b = $(a);
+            var b = S(a);
             var type = b.attr('type') ?? '';
             params[b.attr('id').replace(id + '_', '')] = (
                 type == 'checkbox' ? (a.checked == true ? 'True' : 'False') : b.val()
@@ -81,20 +83,20 @@
         });
     });
 
-    $('.email-actions button.save').on('click', (e) => {
+    S('.email-actions button.save').on('click', (e) => {
         //save email actions
         e.preventDefault();
-        var actions = $('.email-action');
+        var actions = S('.email-action');
         var data = {
             actions: []
         };
         for (var x = 0; x < actions.length; x++) {
-            var action = $(actions[x]);
+            var action = S(actions[x]);
             var key = action.attr('data-key');
             data.actions.push({
                 Type: key,
-                Client: $('#emailaction_' + key).val(),
-                Subject: $('#emailaction_' + key + '_subject').val() ?? ''
+                Client: S('#emailaction_' + key).val(),
+                Subject: S('#emailaction_' + key + '_subject').val() ?? ''
             });
         }
 
@@ -105,18 +107,18 @@
         });
     });
 
-    $('.passwords button.save').on('click', (e) => {
+    S('.passwords button.save').on('click', (e) => {
         //save email actions
         e.preventDefault();
         var data = {
             passwords: {
-                MinChars: parseInt($('#pass_minchars').val()),
-                MaxChars: parseInt($('#pass_maxchars').val()),
-                MinNumbers: parseInt($('#pass_minnumbers').val()),
-                MinUppercase: parseInt($('#pass_minuppercase').val()),
-                MinSpecialChars: parseInt($('#pass_minspecial').val()),
-                MaxConsecutiveChars: parseInt($('#pass_consecutivechars').val()),
-                NoSpaces: $('#pass_nospaces')[0].checked
+                MinChars: parseInt(S('#pass_minchars').val()),
+                MaxChars: parseInt(S('#pass_maxchars').val()),
+                MinNumbers: parseInt(S('#pass_minnumbers').val()),
+                MinUppercase: parseInt(S('#pass_minuppercase').val()),
+                MinSpecialChars: parseInt(S('#pass_minspecial').val()),
+                MaxConsecutiveChars: parseInt(S('#pass_consecutivechars').val()),
+                NoSpaces: S('#pass_nospaces')[0].checked
             }
         };
         S.ajax.post('WebsiteSettings/SavePasswords', data, () => {
@@ -126,9 +128,9 @@
         });
     });
 
-    $('.plugin-info button.delete').on('click', (e) => {
-        var target = $(e.target).parents('.plugin-info').first();
-        var key = $(target).attr('data-key');
+    S('.plugin-info button.delete').on('click', (e) => {
+        var target = S(e.target).parents('.plugin-info').first();
+        var key = S(target).attr('data-key');
         if (confirm('Do you really want to uninstall the ' + key + ' plugin? This cannot be undone and the Saber application service will be terminated as a result. You may have to restart your web server if you cannot access your website afterwards.')) {
             S.ajax.post('WebsiteSettings/UninstallPlugin', { key: key }, () => {
                 S.editor.message('', 'Plugin ' + key + ' was marked for uninstallation. Terminating Saber application service. Please wait...');

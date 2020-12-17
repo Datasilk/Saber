@@ -139,6 +139,7 @@ namespace Saber.Services
             view["page-header-list"] = headerList.ToString();
             view["page-footer-list"] = footerList.ToString();
             view["page-template"] = path.Replace("content/", "/") + "/template";
+            view["styles-list"] = RenderStylesheetsList(config);
             view["scripts-list"] = RenderScriptsList(config);
             view["security-list"] = RenderSecurityGroupsList(config);
 
@@ -266,6 +267,113 @@ namespace Saber.Services
             }
         }
 
+        #region "Page Stylesheets"
+
+        public string RenderStylesheetsList(string path)
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            var config = Core.PageInfo.GetPageConfig(path);
+            return RenderStylesheetsList(config);
+        }
+
+        private string RenderStylesheetsList(Models.Page.Settings config)
+        {
+            var styleItem = new View("/Views/PageSettings/style-item.html");
+            var styles = new StringBuilder();
+            if (config.stylesheets.Count > 0)
+            {
+                foreach (var style in config.stylesheets)
+                {
+                    styleItem["style"] = style;
+                    styles.Append(styleItem.Render());
+                }
+            }
+            return styles.ToString();
+        }
+
+        public string GetAvailableStylesheets ()
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            try
+            {
+                return JsonResponse(RenderAvailableStylesheetsList());
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        private List<string> RenderAvailableStylesheetsList()
+        {
+            var list = new List<string>();
+            RecurseDirectoriesForStylesheets(list, App.MapPath("/wwwroot/css"));
+            RecurseDirectoriesForStylesheets(list, App.MapPath("/wwwroot/content"));
+            var root = App.MapPath("/") + "\\";
+            var rel = new List<string>();
+            foreach (var i in list)
+            {
+                rel.Add("/" + i.Replace(root, "").Replace("\\", "/").Replace("wwwroot/",""));
+            }
+            return rel;
+        }
+
+        private void RecurseDirectoriesForStylesheets(List<string> list, string path)
+        {
+            var dir = new DirectoryInfo(path);
+            var filetypes = new string[] { "css" };
+            var excluded = new string[] { "website.css", "/pages/" };
+            list.AddRange(dir.GetFiles().Select(a => a.FullName)
+                .Where(a => filetypes.Any(b => a.Replace("\\", "/").Split("/")[^1].Split(".")[^1].ToLower() == b) &&
+                !excluded.Any(b => a.Replace("\\", "/").Contains(b))));
+
+            foreach(var d in dir.GetDirectories())
+            {
+                RecurseDirectoriesForStylesheets(list, d.FullName);
+            }
+        }
+
+        public string AddStylesheetToPage(string file, string path)
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            try
+            {
+                if(file == "") { return Error(); }
+                var config = Core.PageInfo.GetPageConfig(path);
+                if (!config.stylesheets.Contains(file))
+                {
+                    config.stylesheets.Add(file);
+                }
+                Core.PageInfo.SavePageConfig(path, config);
+                return RenderStylesheetsList(config);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        public string RemoveStylesheetFromPage(string file, string path)
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            try
+            {
+                var config = Core.PageInfo.GetPageConfig(path);
+                if (config.stylesheets.Contains(file))
+                {
+                    config.stylesheets.Remove(file);
+                }
+                Core.PageInfo.SavePageConfig(path, config);
+                return RenderStylesheetsList(config);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        #endregion
+
         #region "Page Scripts"
 
         public string RenderScriptsList(string path)
@@ -321,10 +429,12 @@ namespace Saber.Services
         {
             var dir = new DirectoryInfo(path);
             var filetypes = new string[] { "js" };
+            var excluded = new string[] { "website.js", "/pages/" };
             list.AddRange(dir.GetFiles().Select(a => a.FullName)
-                .Where(a => filetypes.Any(b => a.Replace("\\", "/").Split("/")[^1].Split(".")[^1].ToLower() == b)));
+                .Where(a => filetypes.Any(b => a.Replace("\\", "/").Split("/")[^1].Split(".")[^1].ToLower() == b) &&
+                !excluded.Any(b => a.Replace("\\", "/").Contains(b))));
 
-            foreach(var d in dir.GetDirectories())
+            foreach (var d in dir.GetDirectories())
             {
                 RecurseDirectoriesForScripts(list, d.FullName);
             }

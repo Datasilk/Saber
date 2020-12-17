@@ -59,8 +59,10 @@ S.editor.settings = {
                 //set up button events
                 S('.page-settings .title-prefix .icon a').on('click', S.editor.settings.title.prefix.show);
                 S('.page-settings .title-suffix .icon a').on('click', S.editor.settings.title.suffix.show);
+                S('.page-styles .btn-add-style').on('click', S.editor.settings.styles.add.show);
                 S('.page-scripts .btn-add-script').on('click', S.editor.settings.scripts.add.show);
                 S('.page-security .btn-add-group').on('click', S.editor.settings.security.add.show);
+                S('.editor .styles-list .close-btn').on('click', S.editor.settings.styles.remove);
                 S('.editor .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
                 S('.editor .security-list .close-btn').on('click', S.editor.settings.security.remove);
             }
@@ -241,6 +243,56 @@ S.editor.settings = {
 
     },
 
+    styles: {
+        add: {
+            show: function () {
+                S.popup.show('Add Stylesheet to Page',
+                    S('#template_styles_add').html()
+                );
+                S('.popup form').on('submit', S.editor.settings.styles.add.submit);
+
+                //get list of available scripts
+                S.ajax.post('PageSettings/GetAvailableStylesheets', {}, (list) => {
+                    var html = [];
+                    list = JSON.parse(list);
+                    for (var x = 0; x < list.length; x++) {
+                        html.push('<option value="' + list[x] + '">' + list[x] + '</option>');
+                    }
+                    S('#available_styles').html(html.join('\n'));
+
+                });
+            },
+
+            submit: function (e) {
+                e.preventDefault();
+                e.cancelBubble = true;
+                var data = { file: S('#available_styles').val(), path: S.editor.path };
+                S.ajax.post('PageSettings/AddStylesheetToPage', data, (list) => {
+                    //add stylesheet to page
+                    var style = document.createElement('link');
+                    style.rel = 'stylesheet';
+                    style.href = data.file;
+                    document.head.appendChild(style);
+                    S.editor.files.less.changed = true;
+                    S('.styles-list > ul').html(list);
+                    S('.editor .styles-list .close-btn').on('click', S.editor.settings.styles.remove);
+                    S.popup.hide();
+                });
+            }
+        },
+
+        remove: function (e) {
+            var target = S(S.target.findByClassName(e, 'close-btn'));
+            var data = { file: target.attr('data-path'), path: S.editor.path };
+            S.ajax.post('PageSettings/RemoveStylesheetFromPage', data, (list) => {
+                //add script to page
+                S.editor.files.less.changed = true;
+                S('.styles-list > ul').html(list);
+                S('.editor .styles-list .close-btn').on('click', S.editor.settings.styles.remove);
+            });
+        }
+    },
+
     scripts: {
         add: {
             show: function () {
@@ -285,6 +337,7 @@ S.editor.settings = {
                 //add script to page
                 S.editor.files.js.changed = true;
                 S('.scripts-list > ul').html(list);
+                S('.editor .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
             });
         }
     },
@@ -328,6 +381,7 @@ S.editor.settings = {
             S.ajax.post('PageSettings/RemoveSecurityGroup', data, (list) => {
                 //update security group list
                 S('.editor .security-list > ul').html(list);
+                S('.editor .security-list .close-btn').on('click', S.editor.settings.security.remove);
             });
         }
     }

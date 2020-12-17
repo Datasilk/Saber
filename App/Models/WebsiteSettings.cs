@@ -8,6 +8,8 @@ namespace Saber.Models.Website
         public Passwords Passwords { get; set; } = new Passwords();
         public List<Language> Languages { get; set; } = new List<Language>();
         public List<PageTitle> PageTitles { get; set; } = new List<PageTitle>();
+        public List<string> Stylesheets { get; set; } = new List<string>();
+        public List<string> Scripts { get; set; } = new List<string>();
     }
 
     public class Email

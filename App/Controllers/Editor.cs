@@ -245,6 +245,14 @@ namespace Saber.Controllers
                     Footer.Append(Cache.LoadFile("/Views/Editor/live-preview-min.html"));
                 }
 
+                //add all custom styles before loading page style
+                var styleIndex = 1;
+                foreach (var style in config.stylesheets)
+                {
+                    AddCSS(style, "custom_css_" + styleIndex);
+                    styleIndex++;
+                }
+
                 //move all editor-related scripts to end
                 var editorScripts = Scripts.ToString();
                 Scripts = new StringBuilder();

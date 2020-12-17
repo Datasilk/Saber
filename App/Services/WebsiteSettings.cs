@@ -17,6 +17,44 @@ namespace Saber.Services
             var view = new View("/Views/WebsiteSettings/websitesettings.html");
             var accordion = new View("/Views/WebsiteSettings/accordion.html");
             var accordions = new StringBuilder();
+            var html = new StringBuilder();
+            
+            //load website config
+            var config = Common.Platform.Website.Settings.Load();
+
+            //load website stylesheets
+            var viewStyles = new View("/Views/WebsiteSettings/stylesheets.html");
+            var viewStyleItem = new View("/Views/WebsiteSettings/style-item.html");
+            html.Clear();
+            foreach (var style in config.Stylesheets)
+            {
+                viewStyleItem["style"] = style;
+                html.Append(viewStyleItem.Render());
+            }
+            viewStyles["styles-list"] = html.ToString();
+
+            //render website stylesheets accordion
+            accordion.Clear();
+            accordion["title"] = "Stylesheets";
+            accordion["contents"] = viewStyles.Render();
+            accordions.Append(accordion.Render());
+
+            //load website scripts
+            var viewScripts = new View("/Views/WebsiteSettings/scripts.html");
+            var viewScriptItem = new View("/Views/WebsiteSettings/script-item.html");
+            html.Clear();
+            foreach (var style in config.Scripts)
+            {
+                viewScriptItem["style"] = style;
+                html.Append(viewScriptItem.Render());
+            }
+            viewScripts["styles-list"] = html.ToString();
+
+            //render website stylesheets accordion
+            accordion.Clear();
+            accordion["title"] = "Scripts";
+            accordion["contents"] = viewScripts.Render();
+            accordions.Append(accordion.Render());
 
             //add icons accordion
             var viewIcons = new View("/Views/WebsiteSettings/icons.html");
@@ -56,9 +94,6 @@ namespace Saber.Services
             accordion["title"] = "Icons";
             accordion["contents"] = viewIcons.Render();
             accordions.Append(accordion.Render());
-
-            //load website config
-            var config = Common.Platform.Website.Settings.Load();
 
             //load email settings
             var viewEmails = new View("/Views/WebsiteSettings/email-settings.html");
@@ -126,7 +161,6 @@ namespace Saber.Services
             var emailActions = new List<Vendor.EmailType>();
             emailActions.AddRange(Common.Platform.Email.Types);
             emailActions.AddRange(Common.Vendors.EmailTypes.Values);
-            var html = new StringBuilder();
 
             foreach(var action in emailActions)
             {

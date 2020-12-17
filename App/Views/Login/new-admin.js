@@ -5,11 +5,11 @@
 
     createAccount: function () {
         //save new password for user
-        var name = $('#name').val();
-        var email = $('#email').val();
-        var pass = $('#password').val();
-        var pass2 = $('#password2').val();
-        var msg = $('.login .message');
+        var name = S('#name').val();
+        var email = S('#email').val();
+        var pass = S('#password').val();
+        var pass2 = S('#password2').val();
+        var msg = S('.login .message');
 
         //validate name
         if (name == '') {
@@ -38,7 +38,7 @@
         }
 
         //disable button
-        $('#btnsavepass').prop("disabled", "disabled");
+        S('#btnsavepass').prop("disabled", "disabled");
 
         //send new account info to server
         S.ajax.post('User/CreateAdminAccount', { name:name, email: email, password: pass, password2: pass2 }, function (data) {
@@ -65,8 +65,8 @@
 }
 
 //add event listeners
-$('#password, #password2').on('input', S.login.watchPass);
-$('.login form').on('submit', function (e) {
+S('#password, #password2').on('input', S.login.watchPass);
+S('.login form').on('submit', function (e) {
     e.preventDefault();
     e.cancelBubble = true;
     S.login.createAccount();
