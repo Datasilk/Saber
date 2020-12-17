@@ -70,10 +70,7 @@
             var data = { file: S('#available_styles').val() };
             S.ajax.post('WebsiteSettings/AddStylesheetToSite', data, (list) => {
                 //add stylesheets to list
-                var style = document.createElement('link');
-                style.rel = 'stylesheet';
-                style.href = data.file;
-                document.head.appendChild(style);
+                S.util.css.load(data.file, 'css_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), window.parent.document);
                 S.editor.files.less.changed = true;
                 S('.website-styles-list > ul').html(list);
                 S('.website-styles-list .close-btn').on('click', removeStyle);
@@ -116,9 +113,7 @@
             var data = { file: S('#available_scripts').val() };
             S.ajax.post('WebsiteSettings/AddScriptToSite', data, (list) => {
                 //add scripts to list
-                var script = document.createElement('script');
-                script.src = data.file;
-                document.head.appendChild(script);
+                S.util.js.load(data.file, 'js_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), null, null, window.parent.document);
                 S.editor.files.js.changed = true;
                 S('.website-scripts-list > ul').html(list);
                 S('.website-scripts-list .close-btn').on('click', removeScript);

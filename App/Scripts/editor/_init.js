@@ -89,7 +89,8 @@ S.editor.init = function () {
     S('.editor-drop-menu .item-new-file').on('click', S.editor.file.create.show);
     S('.editor-drop-menu .item-new-folder').on('click', S.editor.folder.create.show);
     S('.editor-drop-menu .item-new-window').on('click', S.editor.newWindow);
-    S('.editor-drop-menu .item-live-preview').attr('href', path + '?live');
+    S('.editor-drop-menu .item-new-tab a').attr('href', path);
+    S('.editor-drop-menu .item-live-preview a').attr('href', path + '?live');
     S('.tab-components').on('click', S.editor.components.show);
     S('.tab-content-fields').on('click', S.editor.filebar.fields.show);
     S('.tab-file-code').on('click', S.editor.filebar.code.show);

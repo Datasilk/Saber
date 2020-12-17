@@ -2,6 +2,7 @@
 (() => {
     var container = document.getElementsByClassName('editor-iframe')[0];
     var iframe = document.getElementById('editor-iframe');
+    var tab = document.getElementsByClassName('editor-tab')[0];
 
     iframe.addEventListener('load', () => {
         iframe.contentWindow.S.editor.init();
@@ -9,6 +10,10 @@
 
     window.addEventListener('resize', () => {
         resizeIframe();
+    });
+
+    tab.addEventListener('click', () => {
+        iframe.contentWindow.S.editor.filebar.preview.hide();
     });
 
     function resizeIframe(){

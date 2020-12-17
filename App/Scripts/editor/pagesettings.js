@@ -269,10 +269,7 @@ S.editor.settings = {
                 var data = { file: S('#available_styles').val(), path: S.editor.path };
                 S.ajax.post('PageSettings/AddStylesheetToPage', data, (list) => {
                     //add stylesheet to page
-                    var style = document.createElement('link');
-                    style.rel = 'stylesheet';
-                    style.href = data.file;
-                    document.head.appendChild(style);
+                    S.util.css.load(data.file, 'css_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), window.parent.document);
                     S.editor.files.less.changed = true;
                     S('.styles-list > ul').html(list);
                     S('.editor .styles-list .close-btn').on('click', S.editor.settings.styles.remove);
@@ -319,9 +316,7 @@ S.editor.settings = {
                 var data = { file: S('#available_scripts').val(), path: S.editor.path };
                 S.ajax.post('PageSettings/AddScriptToPage', data, (list) => {
                     //add script to page
-                    var script = document.createElement('script');
-                    script.src = data.file;
-                    document.body.appendChild(script);
+                    S.util.js.load(data.file, 'js_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), null, null, window.parent.document);
                     S.editor.files.js.changed = true;
                     S('.scripts-list > ul').html(list);
                     S('.editor .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
