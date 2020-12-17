@@ -9,6 +9,7 @@
                 //load new administrator form
                 var view = new View("/Views/Login/new-admin.html");
                 view["title"] = "Create an administrator account";
+                AddScript("/editor/js/platform.js");
                 AddScript("/editor/js/views/login/new-admin.js");
                 return base.Render(view.Render());
             }

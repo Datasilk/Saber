@@ -49,6 +49,95 @@
     });
 
     //set up stylesheets
+    S('.website-styles .btn-add-style').on('click', () => {
+        S.popup.show('Add Stylesheet to Page',
+            S('#website_styles_add').html()
+        );
+
+        //get list of available stylesheets
+        S.ajax.post('WebsiteSettings/GetAvailableStylesheets', {}, (list) => {
+            var html = [];
+            list = JSON.parse(list);
+            for (var x = 0; x < list.length; x++) {
+                html.push('<option value="' + list[x] + '">' + list[x] + '</option>');
+            }
+            S('#available_styles').html(html.join('\n'));
+        });
+
+        S('.popup form').on('submit', (e) => {
+            e.preventDefault();
+            e.cancelBubble = true;
+            var data = { file: S('#available_styles').val() };
+            S.ajax.post('WebsiteSettings/AddStylesheetToSite', data, (list) => {
+                //add stylesheets to list
+                var style = document.createElement('link');
+                style.rel = 'stylesheet';
+                style.href = data.file;
+                document.head.appendChild(style);
+                S.editor.files.less.changed = true;
+                S('.website-styles-list > ul').html(list);
+                S('.website-styles-list .close-btn').on('click', removeStyle);
+                S.popup.hide();
+            });
+        });
+    });
+
+    function removeStyle(e) {
+        var target = S(S.target.findByClassName(e, 'close-btn'));
+        var data = { file: target.attr('data-path') };
+        S.ajax.post('WebsiteSettings/RemoveStylesheet', data, (list) => {
+            //add stylesheets to list
+            S.editor.files.less.changed = true;
+            S('.website-styles-list > ul').html(list);
+            S('.website-styles-list .close-btn').on('click', removeStyle);
+        });
+    }
+    S('.website-styles-list .close-btn').on('click', removeStyle);
+
+    //set up scripts
+    S('.website-scripts .btn-add-script').on('click', () => {
+        S.popup.show('Add Script to Page',
+            S('#website_scripts_add').html()
+        );
+
+        //get list of available stylesheets
+        S.ajax.post('WebsiteSettings/GetAvailableScripts', {}, (list) => {
+            var html = [];
+            list = JSON.parse(list);
+            for (var x = 0; x < list.length; x++) {
+                html.push('<option value="' + list[x] + '">' + list[x] + '</option>');
+            }
+            S('#available_scripts').html(html.join('\n'));
+        });
+
+        S('.popup form').on('submit', (e) => {
+            e.preventDefault();
+            e.cancelBubble = true;
+            var data = { file: S('#available_scripts').val() };
+            S.ajax.post('WebsiteSettings/AddScriptToSite', data, (list) => {
+                //add scripts to list
+                var script = document.createElement('script');
+                script.src = data.file;
+                document.head.appendChild(script);
+                S.editor.files.js.changed = true;
+                S('.website-scripts-list > ul').html(list);
+                S('.website-scripts-list .close-btn').on('click', removeScript);
+                S.popup.hide();
+            });
+        });
+    });
+
+    function removeScript(e) {
+        var target = S(S.target.findByClassName(e, 'close-btn'));
+        var data = { file: target.attr('data-path') };
+        S.ajax.post('WebsiteSettings/RemoveScript', data, (list) => {
+            //add scripts to list
+            S.editor.files.js.changed = true;
+            S('.website-scripts-list > ul').html(list);
+            S('.website-scripts-list .close-btn').on('click', removeScript);
+        });
+    }
+    S('.website-scripts-list .close-btn').on('click', removeScript);
 
     //set up email settings
     S('#emailclients').on('change', () => {

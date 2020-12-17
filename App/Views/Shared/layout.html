@@ -8,10 +8,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="google" content="notranslate">
     <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,width=device-width,height=device-height,user-scalable=yes" />
-    {{platform-1}}
+    {{platform}}
     <link type="text/css" rel="stylesheet" href="/editor/css/platform.css" />
     <link type="text/css" rel="stylesheet" href="/editor/css/themes/{{theme}}.css" />
-    {{/platform-1}}
+    {{/platform}}
     <link type="text/css" rel="stylesheet" href="/css/website.css" id="website_css" />
     {{head-css}}
     <link rel="icon" type="{{favicon-type}}" href="{{favicon}}" />
@@ -39,11 +39,11 @@
 </head>
 <body>
 
-    {{platform-2}}
+    {{platform}}
     <div class="bg for-popup hide" onclick="S.popup.bg(event)"></div>
-    {{/platform-2}}
+    {{/platform}}
     {{body}}
-    {{platform-3}}
+    {{platform}}
     <div class="svgicons">{{svg-icons}}</div>
     <script type="text/html" id="template_popup">
         <div class="row pad-bottom box">
@@ -58,9 +58,7 @@
         </div>
         #body#
     </script>
-    <script src="/editor/js/platform.js"></script>
-    {{/platform-3}}
-    <script src="/js/website.js" id="website_js"></script>
+    {{/platform}}
     {{scripts}}
     {{footer}}
 </body>

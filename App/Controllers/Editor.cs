@@ -38,6 +38,7 @@ namespace Saber.Controllers
                 uselayout = false;
             }
             var config = PageInfo.GetPageConfig("content/" + pathname);
+            var webconfig = Common.Platform.Website.Settings.Load();
 
             if (uselayout)
             {
@@ -172,7 +173,7 @@ namespace Saber.Controllers
 
                         }
                     }
-
+                    AddScript("/editor/js/platform.js");
                     AddScript("/editor/js/editor.js");
                     AddCSS("/editor/css/views/editor/editor.css");
                     if (EditorUsed != EditorType.Monaco)
@@ -245,20 +246,39 @@ namespace Saber.Controllers
                     Footer.Append(Cache.LoadFile("/Views/Editor/live-preview-min.html"));
                 }
 
-                //add all custom styles before loading page style
+                //move all editor-related scripts & stylesheets to end
+                var editorScripts = Scripts.ToString();
+                var editorStyles = Css.ToString();
+                Scripts = new StringBuilder();
+                Css = new StringBuilder();
+
+                //add all custom website styles
                 var styleIndex = 1;
+                foreach (var style in webconfig.Stylesheets)
+                {
+                    AddCSS(style, "custom_css_" + styleIndex);
+                    styleIndex++;
+                }
+
+                //add all custom page styles before loading page style
                 foreach (var style in config.stylesheets)
                 {
                     AddCSS(style, "custom_css_" + styleIndex);
                     styleIndex++;
                 }
 
-                //move all editor-related scripts to end
-                var editorScripts = Scripts.ToString();
-                Scripts = new StringBuilder();
-
-                //add all custom scripts before loading page script
+                //add all custom website scripts
                 var scriptIndex = 1;
+                foreach (var script in webconfig.Scripts)
+                {
+                    AddScript(script, "custom_js_" + scriptIndex);
+                    scriptIndex++;
+                }
+
+                //add website.js after custom website scripts
+                AddScript("/js/website.js");
+
+                //add all custom page scripts before loading page script
                 foreach (var script in config.scripts)
                 {
                     AddScript(script, "custom_js_" + scriptIndex);
@@ -315,8 +335,9 @@ namespace Saber.Controllers
                 }
 
                 
-                //move editor scripts to end of scripts list
+                //move editor scripts & styles to end
                 Scripts.Append(editorScripts);
+                Css.Append(editorStyles);
                 
 
                 //log page request

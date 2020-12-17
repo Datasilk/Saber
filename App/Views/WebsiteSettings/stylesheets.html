@@ -7,8 +7,25 @@
         <button class="button btn-add-style">+ Add Stylesheet</button>
     </div>    
 </div>
-<div class="styles-list">
+<div class="website-styles-list item-list">
     <ul class="list">
         {{styles-list}} 
     </ul>
 </div>
+
+<script language="text/html" id="website_styles_add">
+    <form>
+        <div class="row field">Available Stylesheets</div>
+        <div class="row input">
+            <select id="available_styles"></select>
+        </div>
+        <div class="row pad-top pad-bottom faded">
+            <span>You can add more stylesheets by uploading them into the <b>wwwroot/css</b> folder.</span>
+        </div>
+        <div class="row text-center pad-top-sm">
+            <div class="col">
+                <input type="submit" class="button apply" value="Add Stylesheet To Website" />
+            </div>
+        </div>
+    </form>
+</script>

@@ -24,14 +24,7 @@ namespace Saber.Services
 
             //load website stylesheets
             var viewStyles = new View("/Views/WebsiteSettings/stylesheets.html");
-            var viewStyleItem = new View("/Views/WebsiteSettings/style-item.html");
-            html.Clear();
-            foreach (var style in config.Stylesheets)
-            {
-                viewStyleItem["style"] = style;
-                html.Append(viewStyleItem.Render());
-            }
-            viewStyles["styles-list"] = html.ToString();
+            viewStyles["styles-list"] = RenderStylesheetsList(config);
 
             //render website stylesheets accordion
             accordion.Clear();
@@ -41,14 +34,7 @@ namespace Saber.Services
 
             //load website scripts
             var viewScripts = new View("/Views/WebsiteSettings/scripts.html");
-            var viewScriptItem = new View("/Views/WebsiteSettings/script-item.html");
-            html.Clear();
-            foreach (var style in config.Scripts)
-            {
-                viewScriptItem["style"] = style;
-                html.Append(viewScriptItem.Render());
-            }
-            viewScripts["styles-list"] = html.ToString();
+            viewScripts["scripts-list"] = RenderScriptsList(config);
 
             //render website stylesheets accordion
             accordion.Clear();
@@ -339,7 +325,7 @@ namespace Saber.Services
             return JsonResponse(
                 new Datasilk.Core.Web.Response()
                 {
-                    selector = ".sections > .web-settings .settings-contents",
+                    selector = ".web-settings .settings-contents",
                     html = Common.Platform.Render.View(this, view),
                     css = Css.ToString(),
                     javascript = Scripts.ToString()
@@ -379,6 +365,220 @@ namespace Saber.Services
             viewIcon["px"] = px.ToString();
             return viewIcon.Render();
         }
+        #endregion
+
+        #region "Page Stylesheets"
+
+        public string RenderStylesheetsList(string path)
+        {
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            var config = Common.Platform.Website.Settings.Load();
+            return RenderStylesheetsList(config);
+        }
+
+        private string RenderStylesheetsList(Models.Website.Settings config)
+        {
+            var styleItem = new View("/Views/WebsiteSettings/style-item.html");
+            var styles = new StringBuilder();
+            if (config.Stylesheets.Count > 0)
+            {
+                foreach (var style in config.Stylesheets)
+                {
+                    styleItem["style"] = style;
+                    styles.Append(styleItem.Render());
+                }
+            }
+            return styles.ToString();
+        }
+
+        public string GetAvailableStylesheets()
+        {
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            try
+            {
+                return JsonResponse(RenderAvailableStylesheetsList());
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        private List<string> RenderAvailableStylesheetsList()
+        {
+            var list = new List<string>();
+            RecurseDirectoriesForStylesheets(list, App.MapPath("/wwwroot/css"));
+            RecurseDirectoriesForStylesheets(list, App.MapPath("/wwwroot/content"));
+            var root = App.MapPath("/") + "\\";
+            var rel = new List<string>();
+            foreach (var i in list)
+            {
+                rel.Add("/" + i.Replace(root, "").Replace("\\", "/").Replace("wwwroot/", ""));
+            }
+            return rel;
+        }
+
+        private void RecurseDirectoriesForStylesheets(List<string> list, string path)
+        {
+            var dir = new DirectoryInfo(path);
+            var filetypes = new string[] { "css" };
+            var excluded = new string[] { "website.css", "/pages/" };
+            list.AddRange(dir.GetFiles().Select(a => a.FullName)
+                .Where(a => filetypes.Any(b => a.Replace("\\", "/").Split("/")[^1].Split(".")[^1].ToLower() == b) &&
+                !excluded.Any(b => a.Replace("\\", "/").Contains(b))));
+
+            foreach (var d in dir.GetDirectories())
+            {
+                RecurseDirectoriesForStylesheets(list, d.FullName);
+            }
+        }
+
+        public string AddStylesheetToSite(string file)
+        {
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            try
+            {
+                if (file == "") { return Error(); }
+                var config = Common.Platform.Website.Settings.Load();
+                if (!config.Stylesheets.Contains(file))
+                {
+                    config.Stylesheets.Add(file);
+                }
+                Common.Platform.Website.Settings.Save(config);
+                return RenderStylesheetsList(config);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        public string RemoveStylesheet(string file)
+        {
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            try
+            {
+                var config = Common.Platform.Website.Settings.Load();
+                if (config.Stylesheets.Contains(file))
+                {
+                    config.Stylesheets.Remove(file);
+                }
+                Common.Platform.Website.Settings.Save(config);
+                return RenderStylesheetsList(config);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        #endregion
+
+        #region "Page Scripts"
+
+        public string RenderScriptsList(string path)
+        {
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            var config = Common.Platform.Website.Settings.Load();
+            return RenderScriptsList(config);
+        }
+
+        private string RenderScriptsList(Models.Website.Settings config)
+        {
+            var scriptItem = new View("/Views/WebsiteSettings/script-item.html");
+            var scripts = new StringBuilder();
+            if (config.Scripts.Count > 0)
+            {
+                foreach (var script in config.Scripts)
+                {
+                    scriptItem["script"] = script;
+                    scripts.Append(scriptItem.Render());
+                }
+            }
+            return scripts.ToString();
+        }
+
+        public string GetAvailableScripts()
+        {
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            try
+            {
+                return JsonResponse(RenderAvailableScriptsList());
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        private List<string> RenderAvailableScriptsList()
+        {
+            var list = new List<string>();
+            RecurseDirectoriesForScripts(list, App.MapPath("/wwwroot/js"));
+            RecurseDirectoriesForScripts(list, App.MapPath("/wwwroot/content"));
+            var root = App.MapPath("/") + "\\";
+            var rel = new List<string>();
+            foreach (var i in list)
+            {
+                rel.Add("/" + i.Replace(root, "").Replace("\\", "/").Replace("wwwroot/", ""));
+            }
+            return rel;
+        }
+
+        private void RecurseDirectoriesForScripts(List<string> list, string path)
+        {
+            var dir = new DirectoryInfo(path);
+            var filetypes = new string[] { "js" };
+            var excluded = new string[] { "website.js", "/pages/" };
+            list.AddRange(dir.GetFiles().Select(a => a.FullName)
+                .Where(a => filetypes.Any(b => a.Replace("\\", "/").Split("/")[^1].Split(".")[^1].ToLower() == b) &&
+                !excluded.Any(b => a.Replace("\\", "/").Contains(b))));
+
+            foreach (var d in dir.GetDirectories())
+            {
+                RecurseDirectoriesForScripts(list, d.FullName);
+            }
+        }
+
+        public string AddScriptToSite(string file)
+        {
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            try
+            {
+                if (file == "") { return Error(); }
+                var config = Common.Platform.Website.Settings.Load();
+                if (!config.Scripts.Contains(file))
+                {
+                    config.Scripts.Add(file);
+                }
+                Common.Platform.Website.Settings.Save(config);
+                return RenderScriptsList(config);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        public string RemoveScript(string file, string path)
+        {
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            try
+            {
+                var config = Common.Platform.Website.Settings.Load();
+                if (config.Scripts.Contains(file))
+                {
+                    config.Scripts.Remove(file);
+                }
+                Common.Platform.Website.Settings.Save(config);
+                return RenderScriptsList(config);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
         #endregion
 
         #region "Save Settings"

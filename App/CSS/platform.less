@@ -1,3 +1,10 @@
+.box{
+    //fixes that override custom website styles
+    .col{flex-basis:unset; flex-grow:unset; flex:unset; flex-wrap:unset; padding-left:unset; padding-right:unset; max-width:unset;}
+    .row{flex-basis:unset; flex-grow:unset; flex:unset; flex-wrap:unset; padding-left:unset; padding-right:unset; max-width:unset; margin-right:unset; margin-left:unset; display:block;}
+    ul{margin:unset; padding:unset; list-style-position:unset;}
+}
+
 @import "tapestry/tapestry.less";
 
 .box{font-size:13px;
@@ -8,9 +15,9 @@
 
 .for-popup{background-color:rgba(0,0,0,0.75); position:absolute; top:0; right:0; bottom:0; left:0; z-index:7777;
     & > .popup{
-        position:relative; min-width:200px; z-index:5000; max-height:100%; overflow-y:auto; overflow-x:hidden; padding:20px;
-        &.center{margin:0 auto;}
-        &.right{right:0;}
+        position:relative; min-width:200px; z-index:5000; max-height:100%; overflow-y:auto; overflow-x:hidden; padding:20px; margin:0 auto;
+        &.pos-center{margin:0 auto;}
+        &.pos-right{right:0;}
         .btn-close{position:absolute; right:0px; z-index:5010; opacity:0.5;
             &:hover{opacity:1;}
         }

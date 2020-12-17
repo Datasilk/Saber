@@ -1,4 +1,4 @@
-﻿<div class="row pad-top page-scripts">
+﻿<div class="row website-scripts">
     <div class="col">
         <h5>Website Scripts</h5>
         <p>Select JavaScript libraries that will load on all pages within your website</p>
@@ -7,8 +7,25 @@
         <button class="button btn-add-script">+ Add Script</button>
     </div>    
 </div>
-<div class="scripts-list">
+<div class="website-scripts-list item-list">
     <ul class="list">
         {{scripts-list}} 
     </ul>
 </div>
+
+<script language="text/html" id="website_scripts_add">
+    <form>
+        <div class="row field">Available Scripts</div>
+        <div class="row input">
+            <select id="available_scripts"></select>
+        </div>
+        <div class="row pad-top pad-bottom faded">
+            <span>You can add more scripts by uploading them into the <b>wwwroot/js</b> folder.</span>
+        </div>
+        <div class="row text-center pad-top-sm">
+            <div class="col">
+                <input type="submit" class="button apply" value="Add Script To Website" />
+            </div>
+        </div>
+    </form>
+</script>

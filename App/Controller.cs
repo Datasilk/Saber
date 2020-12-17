@@ -107,9 +107,7 @@ namespace Saber
             view["body"] = body;
             if (UsePlatform)
             {
-                view.Show("platform-1");
-                view.Show("platform-2");
-                view.Show("platform-3");
+                view.Show("platform");
             }
 
             //add initialization script
