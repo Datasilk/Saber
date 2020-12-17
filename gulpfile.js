@@ -70,7 +70,6 @@ var paths = {
 paths.working = {
     js: {
         platform: [
-            paths.scripts + 'saber.js',
             paths.scripts + 'selector/selector.js',
             paths.scripts + 'utility/velocity.min.js',
             paths.scripts + 'platform/_super.js', // <---- Datasilk Core Js: S object

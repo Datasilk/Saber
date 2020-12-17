@@ -124,7 +124,7 @@
 
 /* file browser */
 @browserWidth: 200px;
-.box .file-browser{float:left; width:@browserWidth; position:relative; top:-46px; margin-bottom:-48px; z-index:10;
+.box .file-browser{float:left; width:@browserWidth; position:relative; top:-46px; margin-bottom:-48px; z-index:10; overflow-x:none; overflow-y:auto;
     .icon-folder-add{padding-top:4px;}
     .label{font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
     .item{cursor:default;
@@ -139,6 +139,21 @@
     ul{list-style:none;}
     ul .icon svg{width:16px; height:16px; position:relative; top:5px;}
     .bread .icon svg{position:relative; top:-2px;}
+
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+    &::-webkit-scrollbar-track {
+        width: 12px;
+        border-left: 0 solid white;
+        border-right: 0 solid white;
+    }
+    &::-webkit-scrollbar-thumb {
+        width: 0;
+        height: 25%;
+        transition: .5s ease;
+        cursor: pointer;
+    }
 }
 .box .browser-path{font-family:monospace; font-size:0.7rem;  overflow:hidden;
               white-space:nowrap; text-overflow:ellipsis; direction:rtl; text-align:left;

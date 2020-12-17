@@ -12,8 +12,8 @@ S.editor.resize = function () {
 
     if (newHeight < 20) { newHeight = 20; }
     newHeight += 30;
-    S('#editor').css({ minHeight: newHeight.toString() + "px" });
-    S('#editor-section').css({ minHeight: newHeight.toString() + "px" });
+    $('#editor').css({ minHeight: newHeight.toString() + "px" });
+    $('#editor-section').css({ minHeight: newHeight.toString() + "px" });
 
 
     //resize code editor
@@ -37,7 +37,7 @@ S.editor.resizeWindow = function () {
     if (pos.top == 0) {
         pos = fields.offset();
     }
-    S('.editor > div > .sections > .tab').css({ height: win.h - pos.top });
-    S('.file-browser').css({ height: win.h - pos2.top });
-    S('.component-configure .scroller').css({ 'max-height': (win.h - 200) + 'px' });
+    $('.editor > div > .sections > .tab').css({ height: win.h - pos.top });
+    $('.file-browser').css({ height: win.h - pos2.top });
+    $('.component-configure .scroller').css({ 'max-height': (win.h - 200) + 'px' });
 };

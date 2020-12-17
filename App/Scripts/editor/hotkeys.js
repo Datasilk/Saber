@@ -15,7 +15,7 @@ S.editor.hotkey = {
             if (!isNaN(key) && !isNaN(parseFloat(key))) {
                 var index = parseInt(key);
                 if (index == 0) { index = 10; } //0 key is last index
-                var tabs = S('.edit-tabs li');
+                var tabs = $('.edit-tabs li');
                 if (tabs.length > index) {
                     S.editor.tabs.select(tabs[index].className.replace('tab-', '').replace(' selected', ''));
                     has = true;
@@ -64,8 +64,8 @@ S.editor.hotkey = {
             switch (e.which) {
                 case 27: //escape key
                     //ignore escape key if Monaco editor is showing a suggestion popup
-                    if (S('.editor-widget.suggest-widget.visible .monaco-list.element-focused').length > 0 ||
-                        S('.editor-widget.find-widget.visible').length > 0
+                    if ($('.editor-widget.suggest-widget.visible .monaco-list.element-focused').length > 0 ||
+                        $('.editor-widget.find-widget.visible').length > 0
                     ) {
                         break;
                     }

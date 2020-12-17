@@ -200,12 +200,6 @@ namespace Saber.Common.Platform
                                 break;
                         }
                         break;
-                }
-            }
-            else if (paths[0].ToLower() == "/css")
-            {
-                switch (paths[1].ToLower())
-                {
                     case "website.less":
                         SaveLessFile(content, "/wwwroot/css/website.css", "/Content/");
                         break;

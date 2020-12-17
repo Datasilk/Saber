@@ -5,53 +5,53 @@ S.editor.explorer = {
 
     show: function () {
         S.editor.dropmenu.hide();
-        if (!S('.editor .file-browser').hasClass('hide')) { S.editor.explorer.hide(); return; }
-        if (S('.file-browser ul.menu').children().length == 0) {
+        if (!$('.editor .file-browser').hasClass('hide')) { S.editor.explorer.hide(); return; }
+        if ($('.file-browser ul.menu').children().length == 0) {
             S.editor.explorer.dir('root');
         }
-        S('.editor .file-browser').removeClass('hide');
-        S('.editor').addClass('show-browser');
+        $('.editor .file-browser').removeClass('hide');
+        $('.editor').addClass('show-browser');
         S.editor.resizeWindow();
     },
 
     hide: function () {
-        S('.editor .file-browser').addClass('hide');
-        S('.editor').removeClass('show-browser');
+        $('.editor .file-browser').addClass('hide');
+        $('.editor').removeClass('show-browser');
     },
 
     dir: function (path) {
         if (path == null) { path = S.editor.explorer.path;}
-        S.ajax.post('Files/Dir', { path: path },
+        S.ajax.post('Files/Dir', { path: path, showDelete:true },
             function (d) {
                 S.editor.explorer.path = path;
-                S('.file-browser ul.menu').html(d);
+                $('.file-browser ul.menu').html(d);
                 //add event listeners to delete buttons
-                S('.file-browser .delete-file').on('click', (e) => {
+                $('.file-browser .delete-file').on('click', (e) => {
                     e.cancelBubble = true;
-                    S.editor.file.delete(S(e.target).parents('.item').first().attr('data-path'));
+                    S.editor.file.delete($(e.target).parents('.item').first().attr('data-path'));
                 });
-                S('.file-browser .delete-folder').on('click', (e) => {
+                $('.file-browser .delete-folder').on('click', (e) => {
                     e.cancelBubble = true;
-                    S.editor.folder.delete(S(e.target).parents('.item').first().attr('data-path'));
+                    S.editor.folder.delete($(e.target).parents('.item').first().attr('data-path'));
                 });
                 var url = path;
                 if (path.indexOf('root') == 0) {
                     url = url.replace('root', '').replace('content/', '');
                 }
                 url += '/';
-                S('.browser-path').html(url);
+                $('.browser-path').html(url);
                 if (path.indexOf('wwwroot') == 0) {
                     //load resources section
                     S.editor.filebar.resources.show(true);
 
                     //hide all filebar icons except resources icon
-                    S('ul.file-tabs > li:not(.tab-page-resources)').hide();
+                    $('ul.file-tabs > li:not(.tab-page-resources)').hide();
 
                     //change filebar path
                     S.editor.filebar.update(path, 'icon-folder');
 
                     //deselect file tab
-                    S('.edit-bar ul.row .selected').removeClass('selected');
+                    $('.edit-bar ul.row .selected').removeClass('selected');
                     S.editor.selected = '';
 
                     S.editor.resources.load(path);
@@ -100,13 +100,13 @@ S.editor.explorer = {
             //update selected session
             S.editor.selected = path;
             //deselect tabs
-            S('.edit-tabs ul.row li, .edit-tabs ul.row > li > div').removeClass('selected');
+            $('.edit-tabs ul.row li, .edit-tabs ul.row > li > div').removeClass('selected');
             //disable save menu
-            S('.item-save').addClass('faded').attr('disabled', 'disabled');
+            $('.item-save').addClass('faded').attr('disabled', 'disabled');
         }
 
         //check for existing tab
-        var tab = S('.edit-tabs ul.row .tab-' + id);
+        var tab = $('.edit-tabs ul.row .tab-' + id);
 
         //find route that matches path (if route exists)
         var route = S.editor.explorer.routes.filter(a => a.path == path);
@@ -117,7 +117,7 @@ S.editor.explorer = {
                 if (typeof a.onblur == 'function') { a.onblur(); }
             });
             tab.find('.row.hover').addClass('selected');
-            S('.editor > div > .sections > div').addClass('hide');
+            $('.editor > div > .sections > div').addClass('hide');
             route.onfocus();
             return;
         }
@@ -137,12 +137,12 @@ S.editor.explorer = {
 
         if (tab.length == 0) {
             //tab doesn't exist yet
-            var temp = S('#template_tab').html().trim();
+            var temp = $('#template_tab').html().trim();
             var title = file;
             //truncate title with ... prefix
             if (fileparts[0].length > 18) { title = '...' + fileparts[0].substr(fileparts[0].length - 15) + '.' + fileparts[1]; }
             //generate tab html
-            S('.edit-tabs ul.row').append(temp
+            $('.edit-tabs ul.row').append(temp
                 .replace(/\#\#id\#\#/g, id)
                 .replace(/\#\#path\#\#/g, path)
                 .replace('##title##', title)
@@ -152,14 +152,14 @@ S.editor.explorer = {
             );
             //add button events for tab
             if (!isPageResource) {
-                S('.tab-' + id + ' .btn-close').on('click', function (e) {
+                $('.tab-' + id + ' .btn-close').on('click', function (e) {
                     S.editor.tabs.close(id, path);
                     e.preventDefault();
                     e.cancelBubble = true;
                 });
             } else {
                 //hide close button, tab is special
-                S('.tab-' + id + ' .btn-close').hide();
+                $('.tab-' + id + ' .btn-close').hide();
             }
 
         } else {
@@ -168,13 +168,13 @@ S.editor.explorer = {
         }
 
         if (isready !== false) {
-            S('.tab-components, .tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
+            $('.tab-components, .tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
             if (isPageResource || (paths.indexOf('partials') >= 0 && file.indexOf('.html') > 0)) {
                 //show file bar icons for page html resource
-                S('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
+                $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
             }
             if (path.indexOf('.html') > 0) {
-                S('.tab-components').show();
+                $('.tab-components').show();
             }
         }
 
@@ -254,23 +254,23 @@ S.editor.explorer = {
 
     select: (title, path, filetypes, callback) => {
         //show a pop up to select a file from the file explorer
-        var html = S('#template_select_file').html();
+        var html = $('#template_select_file').html();
         S.popup.show(title, html);
         //load path via api
         S.ajax.post('Files/Dir', { path: path, fileTypes:filetypes, showDelete:false },
             function (d) {
-                S('.modal-browser ul.menu').html(d);
-                var folders = S('.modal-browser .item[data-type="folder"]');
-                var files = S('.modal-browser .item[data-type="file"]');
+                $('.modal-browser ul.menu').html(d);
+                var folders = $('.modal-browser .item[data-type="folder"]');
+                var files = $('.modal-browser .item[data-type="file"]');
                 folders.attr('onclick', '');
                 files.attr('onclick', '');
                 folders.on('click', (e) => {
-                    var target = S(e.target);
+                    var target = $(e.target);
                     if (!target.hasClass('item')) { target = target.parents('.item').first(); }
                     S.editor.explorer.select(title, target.attr('data-path'), filetypes, callback);
                 });
                 files.on('click', (e) => {
-                    var target = S(e.target);
+                    var target = $(e.target);
                     if (!target.hasClass('item')) { target = target.parents('.item').first(); }
                     callback(target.attr('data-path'));
                     S.popup.hide();
@@ -280,7 +280,7 @@ S.editor.explorer = {
                     url = url.replace('root', '');
                 }
                 url += '/';
-                S('.popup .modal-path').html(url);
+                $('.popup .modal-path').html(url);
             },
             function () {
                 S.editor.error();

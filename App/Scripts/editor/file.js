@@ -5,20 +5,20 @@ S.editor.file = {
             var path = S.editor.explorer.path;
             if (path == 'root') { path == 'wwwroot';}
             S.popup.show('New File',
-                S('#template_newfile').html()
+                $('#template_newfile').html()
                     .replace('##folder-path##', path)
             );
             newfilename.focus();
             //set up button events within popup
-            S('.popup form').on('submit', S.editor.file.create.submit)
+            $('.popup form').on('submit', S.editor.file.create.submit)
         },
 
         submit: function (e) {
             e.preventDefault();
             e.cancelBubble = true;
             var data = {
-                path: S('#newfilepath').val(),
-                filename: S('#newfilename').val().replace(/\s/g, '')
+                path: $('#newfilepath').val(),
+                filename: $('#newfilename').val().replace(/\s/g, '')
             };
             if (data.path == 'root') {
                 S.message.show('.popup .message', 'error', 'You cannot create files in the root folder');

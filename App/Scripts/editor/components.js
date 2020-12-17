@@ -1,8 +1,8 @@
 ﻿S.editor.components = {
 
     load: () => {
-        S('.components-menu .component-item').on('click', (e) => {
-            var target = S(e.target);
+        $('.components-menu .component-item').on('click', (e) => {
+            var target = $(e.target);
             if (!target.hasClass('component-item')) {
                 target = target.parents('.component-item').first();
             }
@@ -14,29 +14,29 @@
     },
 
     show: () => {
-        var menu = S('.components-menu');
+        var menu = $('.components-menu');
         menu.removeClass('hide');
-        S(document.body).off(hideMenu).on('click', hideMenu);
+        $(document.body).off(hideMenu).on('click', hideMenu);
 
         function hideMenu(e) {
-            if (S(e.target).parents('.tab-components').length <= 0 && 
-                S(e.target).parents('.popup').length <= 0) {
+            if ($(e.target).parents('.tab-components').length <= 0 && 
+                $(e.target).parents('.popup').length <= 0) {
                 menu.addClass('hide');
-                S('.component-configure').addClass('hide');
-                S('.components-list').removeClass('hide');
-                S(document.body).off(hideMenu);
+                $('.component-configure').addClass('hide');
+                $('.components-list').removeClass('hide');
+                $(document.body).off(hideMenu);
             }
         }
     },
 
     configure: {
         show: (key, name, params) => {
-            var html = S('#template_component_config').html()
+            var html = $('#template_component_config').html()
                 .replace('##key##', key).replace('##name##', name)
                 .replace('##button-title##', 'Create ' + name);
-            var htmlparam = S('#template_component_param').html();
+            var htmlparam = $('#template_component_param').html();
             var fields = [];
-            var idfield = S('#template_component_id').html();
+            var idfield = $('#template_component_id').html();
 
             if (key == 'partial-view') {
                 html = html.replace('##id-field##', idfield).replace('##optional##', '');
@@ -99,41 +99,41 @@
                     }
                 }
             }
-            S('.component-configure').html(html.replace('##fields##', fields.join(''))).removeClass('hide');
-            S('.components-list').addClass('hide');
+            $('.component-configure').html(html.replace('##fields##', fields.join(''))).removeClass('hide');
+            $('.components-list').addClass('hide');
             S.editor.resizeWindow();
 
             //add event listeners
-            S('.component-configure .button.cancel').on('click', () => {
+            $('.component-configure .button.cancel').on('click', () => {
                 //hide component configuration and show component list
                 hideConfigure();
             });
-            S('.component-configure .select-image').on('click', (e) => {
+            $('.component-configure .select-image').on('click', (e) => {
                 //show page references popup for image selection
             });
-            S('.component-configure .select-page button').on('click', (e) => {
+            $('.component-configure .select-page button').on('click', (e) => {
                 //show file select popup for page selection
                 S.editor.explorer.select('Select Web Page', 'Content/partials', '.html', (file) => {
-                    S(e.target).parents('.select-page').first().find('input').val(file.replace('Content/', '').replace('content/', ''));
+                    $(e.target).parents('.select-page').first().find('input').val(file.replace('Content/', '').replace('content/', ''));
                 });
             });
-            S('.component-configure .button.apply').on('click', () => {
+            $('.component-configure .button.apply').on('click', () => {
                 //generate component instance in selected HTML page
-                var inputs = S('.component-configure').find('input, select');
-                var suffix = S('#component_id').length > 0 ? S('#component_id').val() : '';
-                var componentId = S('#component_key').val();
+                var inputs = $('.component-configure').find('input, select');
+                var suffix = $('#component_id').length > 0 ? $('#component_id').val() : '';
+                var componentId = $('#component_key').val();
                 var mustache = '{{' + componentId +
                     (suffix && suffix != '' ? '-' + suffix : '');
                 if (key == 'partial-view') {
                     //generate partial view
-                    mustache = '{{' + suffix + ' "' + S('#param_page').val() + '"}}';
+                    mustache = '{{' + suffix + ' "' + $('#param_page').val() + '"}}';
                 } else if (key == 'special-vars') {
-                    mustache = S('#param_var').val().replace(/\&qt\;/g, '"');
+                    mustache = $('#param_var').val().replace(/\&qt\;/g, '"');
                 } else {
                     //generate vendor HTML components
                     var paramlen = 0;
                     for (var x = 0; x < inputs.length; x++) {
-                        var input = S(inputs[x]);
+                        var input = $(inputs[x]);
                         var id = input.attr('id');
                         if (!id || id == 'component_key' || id == 'component_id') { continue; }
                         id = id.replace('param_', '');
@@ -157,8 +157,8 @@
             });
 
             function hideConfigure() {
-                S('.component-configure').addClass('hide');
-                S('.components-list').removeClass('hide');
+                $('.component-configure').addClass('hide');
+                $('.components-list').removeClass('hide');
             }
         }
     }

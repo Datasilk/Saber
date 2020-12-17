@@ -96,7 +96,7 @@ namespace Saber.Controllers
                 {
                     if(string.IsNullOrEmpty(component.Icon) || string.IsNullOrEmpty(component.Name)) { continue; }
                     viewComponent.Clear();
-                    viewComponent["icon"] = "/editor/images/" + component.Icon.ToLower();
+                    viewComponent["icon"] = "/editor/" + component.Icon.ToLower();
                     viewComponent["key"] = component.Key;
                     viewComponent["name"] = component.Name;
                     viewComponent["description"] = component.Description;

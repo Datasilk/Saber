@@ -1,11 +1,11 @@
 S.editor.fields = {
-    clone: S('.content-fields .textarea-clone > div'),
+    clone: $('.content-fields .textarea-clone > div'),
     selected: '',
     changed: false,
     load: function () {
-        var lang = S('#lang').val();
+        var lang = $('#lang').val();
         S.editor.fields.changed = false;
-        S('.content-fields form').html('');
+        $('.content-fields form').html('');
         S.ajax.post('ContentFields/Render', { path: S.editor.path, language: lang },
             function (d) {
                 d.selector = '.content-fields form';
@@ -13,20 +13,20 @@ S.editor.fields = {
                 S.editor.fields.selected = S.editor.selected;
 
                 //add language button
-                S('.content-fields .add-lang a').on('click', S.editor.lang.add.show);
+                $('.content-fields .add-lang a').on('click', S.editor.lang.add.show);
 
                 //set up events for fields
-                S('.content-fields form .input-field').on('keyup, keydown, change', S.editor.fields.change).each(
+                $('.content-fields form .input-field').on('keyup, keydown, change', S.editor.fields.change).each(
                     function (field) {
                         S.editor.fields.change({ target: field });
                     }
                 );
 
                 //set up event for image selection buttons
-                S('.content-fields .select-image button').on('click', (e) => {
+                $('.content-fields .select-image button').on('click', (e) => {
                     e.preventDefault();
                     S.editor.resources.select(S.editor.path, '.jpg, .png, .gif', true, "Select An Image", "Select Image", (results) => {
-                        var container = S(e.target).parents('.content-field');
+                        var container = $(e.target).parents('.content-field');
                         var field = container.find('.input-field');
                         var newpath = S.editor.path.replace('content/', 'content/pages/') + '/';
                         var src = newpath + results[0];
@@ -36,8 +36,8 @@ S.editor.fields = {
                     });
                 });
 
-                S('.content-fields .select-image .input-field').on('change', (e) => {
-                    var container = S(e.target).parents('.content-field');
+                $('.content-fields .select-image .input-field').on('change', (e) => {
+                    var container = $(e.target).parents('.content-field');
                     var field = container.find('.input-field');
                     container.find('.img').html('<div><img src="' + field.val() + '"/></div>');
                 });
@@ -50,7 +50,7 @@ S.editor.fields = {
         if (S.editor.visible == false) { return; }
         if (e) {
             //resize field
-            var field = S(e.target);
+            var field = $(e.target);
             if (field.hasClass('text-field')) {
                 var clone = S.editor.fields.clone;
                 clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
@@ -62,17 +62,17 @@ S.editor.fields = {
         if (S.editor.visible == false) { return; }
         if (S.editor.fields.changed == false) {
             //enable save menu
-            S('.item-save').removeClass('faded').removeAttr('disabled');
+            $('.item-save').removeClass('faded').removeAttr('disabled');
             S.editor.fields.changed = true;
         }
         S.editor.fields.resize(e);
     },
     save: function () {
         var fields = {};
-        var texts = S('.content-fields form .input-field');
+        var texts = $('.content-fields form .input-field');
         texts.each(function (txt) {
             if (!txt.id || (txt.id && txt.id.indexOf('field_') < 0)) { return;}
-            var t = S(txt);
+            var t = $(txt);
             var id = txt.id.replace('field_', '');
             switch (txt.tagName.toLowerCase()) {
                 case 'textarea':
@@ -91,7 +91,7 @@ S.editor.fields = {
                     break;
             }
         });
-        S.ajax.post('ContentFields/Save', { path: S.editor.path, fields: fields, language: S('#lang').val() },
+        S.ajax.post('ContentFields/Save', { path: S.editor.path, fields: fields, language: $('#lang').val() },
             function (d) {
                 if (d == 'success') {
                     S.editor.fields.changed = false;

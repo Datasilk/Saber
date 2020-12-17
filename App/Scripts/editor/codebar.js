@@ -17,11 +17,11 @@ S.editor.codebar = {
 
                 break;
         }
-        S('.code-curr-line').html(linenum);
-        S('.code-curr-char').html(charnum);
-        S('.code-total-lines').html(linestotal);
+        $('.code-curr-line').html(linenum);
+        $('.code-curr-char').html(charnum);
+        $('.code-total-lines').html(linestotal);
     },
     status: function (msg) {
-        S('.code-status').html(msg);
+        $('.code-status').html(msg);
     }
 };

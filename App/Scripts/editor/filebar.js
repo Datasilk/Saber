@@ -1,14 +1,14 @@
 S.editor.filebar = {
     update: (text, icon, toolbar) => {
-        S('.file-path').html(text);
-        S('.file-bar .file-icon use').attr('xlink:href', '#' + icon);
+        $('.file-path').html(text);
+        $('.file-bar .file-icon use').attr('xlink:href', '#' + icon);
         if (toolbar == null) { toolbar = ''; }
         S.editor.filebar.toolbar.update(toolbar);
     },
 
     toolbar: {
         update: (html) => {
-            S('.tab-toolbar').html(html);
+            $('.tab-toolbar').html(html);
         }
     },
 
@@ -17,7 +17,7 @@ S.editor.filebar = {
             S.editor.dropmenu.hide();
             S.editor.tabs.create("Page Content", "content-fields-section", { isPageResource: true },
                 () => { //onfocus
-                    S('.tab.content-fields').removeClass('hide');
+                    $('.tab.content-fields').removeClass('hide');
                     var path = S.editor.path.substr(8);
                     S.editor.filebar.update('Page Content for <a href="/' + path + '">' + path + '</a>', 'icon-form-fields');
                     if (S.editor.files.content.changed == true) {
@@ -35,16 +35,16 @@ S.editor.filebar = {
 
 
             //show content fields section & hide other sections
-            S('.editor .sections > .tab').addClass('hide');
-            S('.editor .sections > .content-fields').removeClass('hide');
-            S('ul.file-tabs > li').removeClass('selected');
-            S('ul.file-tabs > li.tab-content-fields').addClass('selected');
+            $('.editor .sections > .tab').addClass('hide');
+            $('.editor .sections > .content-fields').removeClass('hide');
+            $('ul.file-tabs > li').removeClass('selected');
+            $('ul.file-tabs > li.tab-content-fields').addClass('selected');
 
             //disable save menu
-            S('.item-save').addClass('faded').attr('disabled', 'disabled');
-            S('.item-save-as').addClass('faded').attr('disabled', 'disabled');
+            $('.item-save').addClass('faded').attr('disabled', 'disabled');
+            $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
-            if (S('#lang').children().length == 0) {
+            if ($('#lang').children().length == 0) {
                 //load list of languages
                 S.ajax.post('Languages/Get', {},
                     function (d) {
@@ -55,7 +55,7 @@ S.editor.filebar = {
                             var lang = langs[x].split(',');
                             html += '<option value="' + lang[0] + '"' + (lang[0] == userlang ? ' selected' : '') + '>' + lang[1] + '</option>';
                         }
-                        S('#lang').html(html);
+                        $('#lang').html(html);
                         S.editor.fields.load();
                     },
                     function () {
@@ -67,7 +67,7 @@ S.editor.filebar = {
                 S.editor.tabs.select('content-fields-section');
                 if (S.editor.fields.changed == true) {
                     //enable save menu since file was previously changed
-                    S('.item-save').removeClass('faded').removeAttr('disabled');
+                    $('.item-save').removeClass('faded').removeAttr('disabled');
                 }
             }
         }
@@ -75,12 +75,12 @@ S.editor.filebar = {
 
     code: {
         show: function () {
-            S('.editor .sections > .tab').addClass('hide');
-            S('.editor .sections > .code-editor').removeClass('hide');
-            S('ul.file-tabs > li').removeClass('selected');
-            S('ul.file-tabs > li.tab-file-code').addClass('selected');
+            $('.editor .sections > .tab').addClass('hide');
+            $('.editor .sections > .code-editor').removeClass('hide');
+            $('ul.file-tabs > li').removeClass('selected');
+            $('ul.file-tabs > li.tab-file-code').addClass('selected');
             if (S.editor.isChanged(S.editor.selected)) { S.editor.changed(); }
-            S('.item-save-as').removeClass('faded').removeAttr('disabled');
+            $('.item-save-as').removeClass('faded').removeAttr('disabled');
             setTimeout(function () { S.editor.resize(); }, 10);
         }
     },
@@ -88,14 +88,14 @@ S.editor.filebar = {
     settings: {
         show: function () {
             S.editor.dropmenu.hide();
-            S('.editor .sections > .tab').addClass('hide');
-            S('.editor .sections > .page-settings').removeClass('hide');
-            S('ul.file-tabs > li').removeClass('selected');
-            S('ul.file-tabs > li.tab-page-settings').addClass('selected');
+            $('.editor .sections > .tab').addClass('hide');
+            $('.editor .sections > .page-settings').removeClass('hide');
+            $('ul.file-tabs > li').removeClass('selected');
+            $('ul.file-tabs > li.tab-page-settings').addClass('selected');
 
             //disable save menu
-            S('.item-save').addClass('faded').attr('disabled', 'disabled');
-            S('.item-save-as').addClass('faded').attr('disabled', 'disabled');
+            $('.item-save').addClass('faded').attr('disabled', 'disabled');
+            $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
             S.editor.settings.load();
         }
@@ -105,14 +105,14 @@ S.editor.filebar = {
         show: function (noload) {
             if (S.editor.selected == '') { return; }
             S.editor.dropmenu.hide();
-            S('.editor .sections > .tab').addClass('hide');
-            S('.editor .sections > .page-resources').removeClass('hide');
-            S('ul.file-tabs > li').removeClass('selected');
-            S('ul.file-tabs > li.tab-page-resources').addClass('selected');
+            $('.editor .sections > .tab').addClass('hide');
+            $('.editor .sections > .page-resources').removeClass('hide');
+            $('ul.file-tabs > li').removeClass('selected');
+            $('ul.file-tabs > li.tab-page-resources').addClass('selected');
 
             //disable save menu
-            S('.item-save').addClass('faded').attr('disabled', 'disabled');
-            S('.item-save-as').addClass('faded').attr('disabled', 'disabled');
+            $('.item-save').addClass('faded').attr('disabled', 'disabled');
+            $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
             if (noload === true) { return; }
             S.editor.resources.load(S.editor.path);
