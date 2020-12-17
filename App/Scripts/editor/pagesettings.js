@@ -9,7 +9,7 @@ S.editor.settings = {
         var self = S.editor.settings;
         S.editor.tabs.create('Page Settings', 'page-settings-section', { isPageResource: true },
             () => { //onfocus
-                $('.tab.page-settings').removeClass('hide');
+                S('.tab.page-settings').removeClass('hide');
                 var path = S.editor.path.substr(8);
                 S.editor.filebar.update('Page Settings for <a href="/' + path + '">' + path + '</a>', 'icon-settings');
             },
@@ -37,32 +37,32 @@ S.editor.settings = {
                 S.editor.settings.field_template = json.field_template;
 
                 //update settings header & footer events
-                $('#page_header').on('change', S.editor.settings.partials.header.update);
-                $('#page_footer').on('change', S.editor.settings.partials.footer.update);
-                $('.settings-header-footer input[type="text"]').on('keyup', () => {
+                S('#page_header').on('change', S.editor.settings.partials.header.update);
+                S('#page_footer').on('change', S.editor.settings.partials.footer.update);
+                S('.settings-header-footer input[type="text"]').on('keyup', () => {
                     S.editor.settings.partials.changed = true;
                 })
 
                 //set up settings title
                 S.editor.settings._loaded = true;
-                S.editor.settings.clone = $('.page-settings .textarea-clone > div');
+                S.editor.settings.clone = S('.page-settings .textarea-clone > div');
                 var p = path.replace('content/', '');
-                $('.editor .page-name').attr('href', '/' + p).html(p);
+                S('.editor .page-name').attr('href', '/' + p).html(p);
                 S.editor.resizeWindow();
 
                 //set up events to detect changes
-                var description = $('#page_description');
-                $('#page_title_prefix, #page_title_suffix, #page_title').on('change, keyup', self.title.change);
+                var description = S('#page_description');
+                S('#page_title_prefix, #page_title_suffix, #page_title').on('change, keyup', self.title.change);
                 description.on('change, keyup, keydown', self.description.change);
                 self.change(description, true);
 
                 //set up button events
-                $('.page-settings .title-prefix .icon a').on('click', S.editor.settings.title.prefix.show);
-                $('.page-settings .title-suffix .icon a').on('click', S.editor.settings.title.suffix.show);
-                $('.page-scripts .btn-add-script').on('click', S.editor.settings.scripts.add.show);
-                $('.page-security .btn-add-group').on('click', S.editor.settings.security.add.show);
-                $('.editor .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
-                $('.editor .security-list .close-btn').on('click', S.editor.settings.security.remove);
+                S('.page-settings .title-prefix .icon a').on('click', S.editor.settings.title.prefix.show);
+                S('.page-settings .title-suffix .icon a').on('click', S.editor.settings.title.suffix.show);
+                S('.page-scripts .btn-add-script').on('click', S.editor.settings.scripts.add.show);
+                S('.page-security .btn-add-group').on('click', S.editor.settings.security.add.show);
+                S('.editor .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
+                S('.editor .security-list .close-btn').on('click', S.editor.settings.security.remove);
             }
         );
     },
@@ -75,7 +75,7 @@ S.editor.settings = {
             field.css({ height: clone.height() });
             if (changed == false) {
                 //enable save menu
-                $('.editor .item-save').removeClass('faded').removeAttr('disabled');
+                S('.editor .item-save').removeClass('faded').removeAttr('disabled');
             }
         }
     },
@@ -87,18 +87,18 @@ S.editor.settings = {
         prefix: {
             show: function () {
                 S.popup.show('New Page Title Prefix',
-                    $('#template_pagetitle_newprefix').html()
+                    S('#template_pagetitle_newprefix').html()
                 );
-                $('.popup form').on('submit', S.editor.settings.title.prefix.submit);
+                S('.popup form').on('submit', S.editor.settings.title.prefix.submit);
             },
 
             submit: function (e) {
                 e.preventDefault();
                 e.cancelBubble = true;
-                var data = { title: $('#page_title_new_prefix').val(), prefix: true };
+                var data = { title: S('#page_title_new_prefix').val(), prefix: true };
                 S.ajax.post('PageSettings/CreatePageTitlePart', data,
                     function (d) {
-                        $('#page_title_prefix').append('<option value="' + d + '">' + d + '</option>').val(d);
+                        S('#page_title_prefix').append('<option value="' + d + '">' + d + '</option>').val(d);
                         S.editor.settings.title.change();
                     }
                 );
@@ -110,18 +110,18 @@ S.editor.settings = {
         suffix: {
             show: function () {
                 S.popup.show('New Page Title Suffix',
-                    $('#template_pagetitle_newsuffix').html()
+                    S('#template_pagetitle_newsuffix').html()
                 );
-                $('.popup form').on('submit', S.editor.settings.title.suffix.submit);
+                S('.popup form').on('submit', S.editor.settings.title.suffix.submit);
             },
 
             submit: function (e) {
                 e.preventDefault();
                 e.cancelBubble = true;
-                var data = { title: $('#page_title_new_suffix').val(), prefix: false };
+                var data = { title: S('#page_title_new_suffix').val(), prefix: false };
                 S.ajax.post('PageSettings/CreatePageTitlePart', data,
                     function (d) {
-                        $('#page_title_suffix').append('<option value="' + d + '">' + d + '</option>').val(d);
+                        S('#page_title_suffix').append('<option value="' + d + '">' + d + '</option>').val(d);
                         S.editor.settings.title.change();
                     }
                 );
@@ -131,21 +131,21 @@ S.editor.settings = {
         },
 
         change: function () {
-            var prefix = $('#page_title_prefix').val();
-            var suffix = $('#page_title_suffix').val();
+            var prefix = S('#page_title_prefix').val();
+            var suffix = S('#page_title_suffix').val();
             if (prefix != '' && prefix[prefix.length - 1] != ' ') { prefix += ' '; }
             if (suffix != '' && suffix[0] != ' ') { suffix = ' ' + suffix; }
-            window.document.title = prefix + $('#page_title').val() + suffix;
-            $('.item-save').removeClass('faded').removeAttr('disabled');
+            window.document.title = prefix + S('#page_title').val() + suffix;
+            S('.item-save').removeClass('faded').removeAttr('disabled');
             S.editor.settings.title.changed = true;
         },
 
         save: function (callback) {
             var data = {
                 path: S.editor.path,
-                prefix: $('#page_title_prefix').val(),
-                suffix: $('#page_title_suffix').val(),
-                title: $('#page_title').val()
+                prefix: S('#page_title_prefix').val(),
+                suffix: S('#page_title_suffix').val(),
+                title: S('#page_title').val()
             };
             S.ajax.post('PageSettings/UpdatePageTitle', data, callback,
                 function () { S.editor.error(); }
@@ -156,16 +156,16 @@ S.editor.settings = {
     description: {
         changed: false,
         change: function () {
-            var description = $('#page_description');
+            var description = S('#page_description');
             S.editor.settings.change(description, S.editor.settings.description.changed);
             S.editor.settings.description.changed = true;
-            $('.item-save').removeClass('faded').removeAttr('disabled');
+            S('.item-save').removeClass('faded').removeAttr('disabled');
         },
 
         save: function (callback) {
             var data = {
                 path: S.editor.path,
-                description: $('#page_description').val()
+                description: S('#page_description').val()
             };
             S.ajax.post('PageSettings/UpdatePageDescription', data, callback,
                 function () { S.editor.error(); }
@@ -181,7 +181,7 @@ S.editor.settings = {
                 S.editor.settings.partials.changed = true;
                 var template = S.editor.settings.field_template;
                 var headers = S.editor.settings.headers;
-                var header = headers[headers.map(a => a.file).indexOf($('#page_header').val())];
+                var header = headers[headers.map(a => a.file).indexOf(S('#page_header').val())];
                 html = [];
                 for (field in header.fields) {
                     html.push(template
@@ -190,7 +190,7 @@ S.editor.settings = {
                         .replace('{{value}}', header.fields[field])
                     );
                 }
-                $('.header-fields .fields').html(html.join('\n'));
+                S('.header-fields .fields').html(html.join('\n'));
             }
         },
 
@@ -199,7 +199,7 @@ S.editor.settings = {
                 S.editor.settings.partials.changed = true;
                 var template = S.editor.settings.field_template;
                 var footers = S.editor.settings.footers;
-                var footer = footers[footers.map(a => a.file).indexOf($('#page_footer').val())];
+                var footer = footers[footers.map(a => a.file).indexOf(S('#page_footer').val())];
                 html = [];
                 for (field in footer.fields) {
                     html.push(template
@@ -208,7 +208,7 @@ S.editor.settings = {
                         .replace('{{value}}', footer.fields[field])
                     );
                 }
-                $('.footer-fields .fields').html(html.join('\n'));
+                S('.footer-fields .fields').html(html.join('\n'));
             }
         },
 
@@ -216,18 +216,18 @@ S.editor.settings = {
             //get list of field values
             var header_fields = {};
             var footer_fields = {};
-            var elems = $('.header-fields .fields input');
+            var elems = S('.header-fields .fields input');
             elems.each(a => {
-                header_fields[a.name] = $(a).val();
+                header_fields[a.name] = S(a).val();
             });
-            elems = $('.footer-fields .fields input');
+            elems = S('.footer-fields .fields input');
             elems.each(a => {
-                footer_fields[a.name] = $(a).val();
+                footer_fields[a.name] = S(a).val();
             });
             var data = {
                 path: S.editor.path,
-                header: { file: $('#page_header').val(), fields: header_fields },
-                footer: { file: $('#page_footer').val(), fields: footer_fields }
+                header: { file: S('#page_header').val(), fields: header_fields },
+                footer: { file: S('#page_footer').val(), fields: footer_fields }
             };
             S.ajax.post('PageSettings/UpdatePagePartials', data,
                 function (d) {
@@ -245,9 +245,9 @@ S.editor.settings = {
         add: {
             show: function () {
                 S.popup.show('Add Script to Page',
-                    $('#template_scripts_add').html()
+                    S('#template_scripts_add').html()
                 );
-                $('.popup form').on('submit', S.editor.settings.scripts.add.submit);
+                S('.popup form').on('submit', S.editor.settings.scripts.add.submit);
 
                 //get list of available scripts
                 S.ajax.post('PageSettings/GetAvailableScripts', {}, (list) => {
@@ -256,7 +256,7 @@ S.editor.settings = {
                     for (var x = 0; x < list.length; x++) {
                         html.push('<option value="' + list[x] + '">' + list[x] + '</option>');
                     }
-                    $('#available_scripts').html(html.join('\n'));
+                    S('#available_scripts').html(html.join('\n'));
 
                 });
             },
@@ -264,27 +264,27 @@ S.editor.settings = {
             submit: function (e) {
                 e.preventDefault();
                 e.cancelBubble = true;
-                var data = { file: $('#available_scripts').val(), path: S.editor.path };
+                var data = { file: S('#available_scripts').val(), path: S.editor.path };
                 S.ajax.post('PageSettings/AddScriptToPage', data, (list) => {
                     //add script to page
                     var script = document.createElement('script');
                     script.src = data.file;
                     document.body.appendChild(script);
                     S.editor.files.js.changed = true;
-                    $('.scripts-list > ul').html(list);
-                    $('.editor .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
+                    S('.scripts-list > ul').html(list);
+                    S('.editor .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
                     S.popup.hide();
                 });
             }
         },
 
         remove: function (e) {
-            var target = $(S.target.findByClassName(e, 'close-btn'));
+            var target = S(S.target.findByClassName(e, 'close-btn'));
             var data = { file: target.attr('data-path'), path: S.editor.path };
             S.ajax.post('PageSettings/RemoveScriptFromPage', data, (list) => {
                 //add script to page
                 S.editor.files.js.changed = true;
-                $('.scripts-list > ul').html(list);
+                S('.scripts-list > ul').html(list);
             });
         }
     },
@@ -293,9 +293,9 @@ S.editor.settings = {
         add: {
             show: function () {
                 S.popup.show('Add Security Group to Page',
-                    $('#template_security_add').html()
+                    S('#template_security_add').html()
                 );
-                $('.popup form').on('submit', S.editor.settings.security.add.submit);
+                S('.popup form').on('submit', S.editor.settings.security.add.submit);
 
                 //get list of available scripts
                 S.ajax.post('PageSettings/GetAvailableSecurityGroups', {}, (list) => {
@@ -304,7 +304,7 @@ S.editor.settings = {
                     for (var x = 0; x < list.length; x++) {
                         html.push('<option value="' + list[x].id + '">' + list[x].name + '</option>');
                     }
-                    $('#available_groups').html(html.join('\n'));
+                    S('#available_groups').html(html.join('\n'));
 
                 });
             },
@@ -312,22 +312,22 @@ S.editor.settings = {
             submit: function (e) {
                 e.preventDefault();
                 e.cancelBubble = true;
-                var data = { groupId: $('#available_groups').val(), path: S.editor.path };
+                var data = { groupId: S('#available_groups').val(), path: S.editor.path };
                 S.ajax.post('PageSettings/AddSecurityGroup', data, (list) => {
                     //update security group list
-                    $('.editor .security-list > ul').html(list);
-                    $('.editor .security-list .close-btn').on('click', S.editor.settings.security.remove);
+                    S('.editor .security-list > ul').html(list);
+                    S('.editor .security-list .close-btn').on('click', S.editor.settings.security.remove);
                     S.popup.hide();
                 });
             }
         },
 
         remove: function (e) {
-            var target = $(S.target.findByClassName(e, 'close-btn'));
+            var target = S(S.target.findByClassName(e, 'close-btn'));
             var data = { groupId: target.attr('data-id'), path: S.editor.path };
             S.ajax.post('PageSettings/RemoveSecurityGroup', data, (list) => {
                 //update security group list
-                $('.editor .security-list > ul').html(list);
+                S('.editor .security-list > ul').html(list);
             });
         }
     }

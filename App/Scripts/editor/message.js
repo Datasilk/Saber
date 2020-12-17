@@ -1,10 +1,10 @@
 S.editor.message = function (elem, msg, type) {
-    $(elem && elem != '' ? elem : '.editor > div > .messages').append(template_message.innerHTML
+    S(elem && elem != '' ? elem : '.editor > div > .messages').append(template_message.innerHTML
         .replace('##text##', msg)
         .replace('##type##', type ?? '')
     );
-    $('.message .close-btn').off('click').on('click', (e) => {
-        $(e.target).parents('.message').first().remove();
+    S('.message .close-btn').off('click').on('click', (e) => {
+        S(e.target).parents('.message').first().remove();
     });
-    if (elem) { $(elem).removeClass('hide'); }
+    if (elem) { S(elem).removeClass('hide'); }
 };

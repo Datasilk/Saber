@@ -245,6 +245,10 @@ namespace Saber.Controllers
                     Footer.Append(Cache.LoadFile("/Views/Editor/live-preview-min.html"));
                 }
 
+                //move all editor-related scripts to end
+                var editorScripts = Scripts.ToString();
+                Scripts = new StringBuilder();
+
                 //add all custom scripts before loading page script
                 var scriptIndex = 1;
                 foreach (var script in config.scripts)
@@ -301,6 +305,10 @@ namespace Saber.Controllers
                 {
                     view["content"] = Common.Platform.Render.Page("content/error.html", this, config, lang);
                 }
+
+                
+                //move editor scripts to end of scripts list
+                Scripts.Append(editorScripts);
                 
 
                 //log page request

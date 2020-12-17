@@ -1,11 +1,11 @@
 S.editor.changed = function (checkall) {
     var self = S.editor;
     var id = self.fileId(self.selected);
-    var tab = $('.tab-' + id);
+    var tab = S('.tab-' + id);
     if (tab.length == 1) {
         if (tab.attr('data-edited') != "true" || checkall == true) {
             //enable save menu
-            $('.item-save').removeClass('faded').removeAttr('disabled');
+            S('.item-save').removeClass('faded').removeAttr('disabled');
 
             if (tab.attr('data-edited') != "true") {
                 //update tab with *
@@ -22,7 +22,7 @@ S.editor.changed = function (checkall) {
 S.editor.isChanged = function (path) {
     var self = S.editor;
     var id = self.fileId(path);
-    var tab = $('.tab-' + id);
+    var tab = S('.tab-' + id);
     if (tab.length == 1) {
         if (tab.attr('data-edited') == "true") {
             return true;
@@ -34,11 +34,11 @@ S.editor.isChanged = function (path) {
 S.editor.unChanged = function (path) {
     var self = S.editor;
     var id = self.fileId(path);
-    var tab = $('.tab-' + id);
+    var tab = S('.tab-' + id);
     if (tab.length == 1) {
         if (tab.attr('data-edited') == "true") {
             tab.removeAttr('data-edited');
-            $('.item-save').addClass('faded').attr('disabled', 'disabled');
+            S('.item-save').addClass('faded').attr('disabled', 'disabled');
             var col = tab.find('.col');
             col.html(col.html().replace(' *', ''));
         }

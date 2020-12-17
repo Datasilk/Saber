@@ -177,7 +177,7 @@ namespace Saber.Services
             }
             if (title.IndexOf(".") > 0)
             {
-                item["icon"] = "file-" + title.Split('.', 2)[1].ToLower();
+                item["icon"] = "file-" + title.Split('.')[^1].ToLower();
                 if(path.IndexOf("/Content/pages/") == 0)
                 {
                     item["onclick"] = "location.href='" + path.Replace("/Content/pages", "").Replace(".html", "");

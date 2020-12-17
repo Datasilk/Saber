@@ -70,6 +70,7 @@ var paths = {
 paths.working = {
     js: {
         platform: [
+            paths.scripts + 'saber.js',
             paths.scripts + 'selector/selector.js',
             paths.scripts + 'utility/velocity.min.js',
             paths.scripts + 'platform/_super.js', // <---- Datasilk Core Js: S object
@@ -80,8 +81,8 @@ paths.working = {
             paths.scripts + 'platform/message.js',
             //paths.scripts + 'platform/polyfill.js',
             paths.scripts + 'platform/popup.js',
-            //paths.scripts + 'platform/view.js',
-            //paths.scripts + 'platform/svg.js',
+            paths.scripts + 'platform/view.js',
+            paths.scripts + 'platform/svg.js',
             paths.scripts + 'platform/upload.js',
             paths.scripts + 'platform/util.js',
             paths.scripts + 'platform/util.color.js',
@@ -234,7 +235,7 @@ gulp.task('js', gulp.series('js:app', 'js:platform', 'js:editor', 'js:utility'))
 
 //tasks for compiling LESS & CSS /////////////////////////////////////////////////////////////////////
 gulp.task('less:app', function () {
-    var pathlist = [...paths.working.less.app, ...paths.working.exclude.app.map(a => a + '*.less')];
+    var pathlist = [...paths.working.less.app, ...paths.working.exclude.app];
     var p = gulp.src(pathlist)
         .pipe(less())
         .pipe(rename(function (path) {
@@ -279,8 +280,7 @@ gulp.task('css:themes', function () {
 });
 
 gulp.task('css:app', function () {
-    var pathlist = paths.working.exclude.app.slice(0);
-    pathlist.unshift(paths.working.css.app);
+    var pathlist = [...paths.working.css.app, ...paths.working.exclude.app];
     var p = gulp.src(pathlist)
         .pipe(rename(function (path) {
             path.dirname = path.dirname.toLowerCase();

@@ -9,19 +9,19 @@ S.editor.save = function (path, content) {
     var self = S.editor;
     var id = self.fileId(path);
     var ext = S.editor.fileExt(path);
-    var tab = $('.tab-' + id);
+    var tab = S('.tab-' + id);
     self.dropmenu.hide();
     if (tab.length > 0) {
         if (tab.hasClass('selected')) {
             //check if we should save something besides source code
 
-            if ($('.tab-content-fields').hasClass('selected')) {
+            if (S('.tab-content-fields').hasClass('selected')) {
                 //save content fields values ///////////////////////////////////////////////////////////////////////////////
                 S.editor.fields.save();
                 return;
 
             }
-            else if ($('.tab-page-settings').hasClass('selected')) {
+            else if (S('.tab-page-settings').hasClass('selected')) {
                 //save page settings ///////////////////////////////////////////////////////////////////////////////
                 var settings = S.editor.settings;
 
@@ -53,7 +53,7 @@ S.editor.save = function (path, content) {
     }
 
     //last resort, save source code to file ////////////////////////////////////////////////////////////
-    if ($('.editor-drop-menu .item-save.faded').length == 1) { return; }
+    if (S('.editor-drop-menu .item-save.faded').length == 1) { return; }
 
     //show loading progress animation
     tab.find('.tab-title').prepend(S.loader());

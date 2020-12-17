@@ -118,16 +118,17 @@ namespace Saber.Common.Platform
                 throw new ServiceErrorException("No path specified");
             }
             var dir = string.Join("/", paths.Take(paths.Length - 1));  //relative path
+            var absdir = App.MapPath(dir);
             var filepath = string.Join("/", paths); //relative filename & path
             var file = paths[paths.Length - 1]; //filename only
             var ext = file.Split('.', 2)[1].ToLower(); //file extension only
 
             //create folder for file
-            if (!Directory.Exists(App.MapPath(dir)))
+            if (!Directory.Exists(absdir))
             {
                 try
                 {
-                    Directory.CreateDirectory(App.MapPath(dir));
+                    Directory.CreateDirectory(absdir);
                 }
                 catch (Exception)
                 {
@@ -166,7 +167,7 @@ namespace Saber.Common.Platform
 
                     case "less":
                         //compile less file
-                        SaveLessFile(content, pubdir + file.Replace(".less", ".css"));
+                        SaveLessFile(content, pubdir + file.Replace(".less", ".css"), dir);
                         break;
                 }
             }
@@ -179,7 +180,7 @@ namespace Saber.Common.Platform
                         {
                             case "header.less": case "footer.less":
                                 //compile website.less
-                                SaveLessFile(File.ReadAllText(App.MapPath("/Content/website.less")), "/wwwroot/css/website.css");
+                                SaveLessFile(File.ReadAllText(App.MapPath("/Content/website.less")), "/wwwroot/css/website.css", "/Content/");
                                 break;
                             default:
                                 var pubpath = "/wwwroot/content/partials/" + string.Join('/', paths.Skip(2).ToArray()).Replace(paths[paths.Length - 1], "");
@@ -191,7 +192,7 @@ namespace Saber.Common.Platform
                                     {
                                         Directory.CreateDirectory(App.MapPath(pubpath));
                                     }
-                                    SaveLessFile(content, pubpath + paths[paths.Length - 1].Replace(".less", ".css"));
+                                    SaveLessFile(content, pubpath + paths[paths.Length - 1].Replace(".less", ".css"), dir);
                                 }else if (paths[2].Right(3) == ".js")
                                 {
                                     File.Copy(App.MapPath(filepath), App.MapPath(pubpath + paths[paths.Length - 1]), true);
@@ -206,22 +207,28 @@ namespace Saber.Common.Platform
                 switch (paths[1].ToLower())
                 {
                     case "website.less":
-                        SaveLessFile(content, "/wwwroot/css/website.css");
+                        SaveLessFile(content, "/wwwroot/css/website.css", "/Content/");
                         break;
                 }
             }
         }
 
-        public static void SaveLessFile(string content, string outputFile)
+        public static void SaveLessFile(string content, string outputFile, string pathLESS)
         {
             try
             {
+                Directory.SetCurrentDirectory(App.MapPath(pathLESS));
                 var file = App.MapPath(outputFile);
                 var dir = file.Replace(file.GetFilename(), "");
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
                 var css = Less.Parse(content);
                 File.WriteAllText(file, css);
+                Directory.SetCurrentDirectory(App.MapPath("/"));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new ServiceErrorException("Error generating compiled LESS resource");
             }
@@ -267,18 +274,18 @@ namespace Saber.Common.Platform
                 File.Copy(App.MapPath("/Content/temp/app-css/website.less"), App.MapPath("/Content/website.less"), true);
 
                 //compile website.less
-                SaveLessFile(File.ReadAllText(App.MapPath("/Content/website.less")), "/wwwroot/css/website.css");
+                SaveLessFile(File.ReadAllText(App.MapPath("/Content/website.less")), "/wwwroot/css/website.css", "/Content/");
 
                 //compile all LESS files for all pages & partials
                 var contentFolder = App.MapPath("/Content/");
-                var files = Utility.FileSystem.GetAllFiles("/Content/", true, "*.less", new string[] { "/temp/", "/emails/" });
+                var files = Utility.FileSystem.GetAllFiles("/Content/", true, "*.less", new string[] { "/temp/", "/emails/", "website.less" });
                 foreach (var file in files)
                 {
                     var filename = file.GetFilename();
                     var ext = "." + file.GetFileExtension();
                     var cssfile = file.Replace(contentFolder, "").Replace(ext, ".css");
                     var workingDir = file.Replace(App.RootPath, "").Replace(filename, "");
-                    SaveLessFile(File.ReadAllText(file), "/wwwroot/content/" + cssfile);
+                    SaveLessFile(File.ReadAllText(file), "/wwwroot/content/" + cssfile, workingDir);
                 }
 
                 //copy all JavaScript files (and media files) for pages & partials into wwwroot

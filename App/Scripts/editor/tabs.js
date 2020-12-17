@@ -13,15 +13,15 @@ S.editor.tabs = {
 
         //deselect other tabs
         if (opts.selected == true) {
-            $('.edit-tabs ul.row li, .edit-tabs ul.row > li > div').removeClass('selected');
-            $('.tab-toolbar').html('');
+            S('.edit-tabs ul.row li, .edit-tabs ul.row > li > div').removeClass('selected');
+            S('.tab-toolbar').html('');
         }
-        var elem = $('.edit-tabs ul.row .tab-' + id);
+        var elem = S('.edit-tabs ul.row .tab-' + id);
         var routes = S.editor.explorer.routes;
         if (elem.length == 0) {
             //load new tab
-            var temp = $('#template_tab').html().trim();
-            $('.edit-tabs ul.row').append(temp
+            var temp = S('#template_tab').html().trim();
+            S('.edit-tabs ul.row').append(temp
                 .replace(/\#\#id\#\#/g, id)
                 .replace(/\#\#path\#\#/g, path)
                 .replace('##title##', title)
@@ -29,11 +29,11 @@ S.editor.tabs = {
                 .replace(/\#\#selected\#\#/g, opts.selected == true ? 'selected' : '')
                 .replace('##resource-icon##', 'hide')
             );
-            var elems = $('.edit-tabs ul.row').children();
-            elem = $(elems[elems.length - 1]);
+            var elems = S('.edit-tabs ul.row').children();
+            elem = S(elems[elems.length - 1]);
 
             //close button
-            $('.tab-' + id + ' .btn-close').on('click', function (e) {
+            S('.tab-' + id + ' .btn-close').on('click', function (e) {
                 S.editor.tabs.close(id, path);
                 e.preventDefault();
                 e.cancelBubble = true;
@@ -45,20 +45,20 @@ S.editor.tabs = {
                 elem: elem,
                 options: opts,
                 onfocus: () => {
-                    $('.tab-components, .tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
+                    S('.tab-components, .tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
                     if (opts.isPageResource == true) {
-                        $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
+                        S('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
                     }
                     if (path.indexOf('.html') > 0) {
-                        $('.tab-components').show();
+                        S('.tab-components').show();
                     }
                     elem.addClass('selected');
-                    $('.tab-toolbar').html('');
+                    S('.tab-toolbar').html('');
                     S.editor.tabs.changed = true;
                     if (typeof onfocus == 'function') { onfocus(); }
                 },
                 onblur: () => {
-                    $('.tab-components').hide();
+                    S('.tab-components').hide();
                     if (typeof onblur == 'function') { onblur(); }
                 },
                 onsave: onsave
@@ -88,8 +88,8 @@ S.editor.tabs = {
         S.editor.selected = path;
     },
     select: (id) => {
-        $('.edit-tabs li > div').removeClass('selected');
-        var div = $('.tab-' + id + ' > div');
+        S('.edit-tabs li > div').removeClass('selected');
+        var div = S('.tab-' + id + ' > div');
         div.addClass('selected');
         var blur = S.editor.explorer.routes.filter(a => a.id != id)
         for (var x = 0; x < blur.length; x++) {
@@ -98,7 +98,7 @@ S.editor.tabs = {
                 blur[x].onblur();
             }
         }
-        $('.tab-' + id)[0].focus();
+        S('.tab-' + id)[0].focus();
 
         //show content area for tab
         var tabid = div.attr('data-path');
@@ -107,7 +107,7 @@ S.editor.tabs = {
         }
     },
     close: function (id, path, callback) {
-        var tab = $('.tab-' + id);
+        var tab = S('.tab-' + id);
         var sibling = tab.prev().find('.row.hover');
         tab.remove();
         S.editor.sessions.remove(id);
@@ -125,11 +125,11 @@ S.editor.tabs = {
 
     closeFromPath: function (path) {
         //find any tabs that exist in the path
-        var tabs = $('.edit-tabs li > div').filter((i, a) => $(a).attr('data-path') && $(a).attr('data-path').indexOf(path) >= 0);
+        var tabs = S('.edit-tabs li > div').filter((i, a) => S(a).attr('data-path') && S(a).attr('data-path').indexOf(path) >= 0);
         if (tabs.length > 0) {
-            var tab = $(tabs[0]);
+            var tab = S(tabs[0]);
             var id = tab.parent()[0].className.replace('tab-', '');
-            var tpath = $(tab).attr('data-path');
+            var tpath = S(tab).attr('data-path');
             S.editor.tabs.close(id, tpath, () => { S.editor.tabs.closeFromPath(path) });
         }
     }

@@ -2,7 +2,7 @@ S.editor.analytics = {
     show: function () {
         S.editor.tabs.create("Website Analytics", "analytics-section", {},
             () => { //onfocus
-                $('.tab.website-analytics').removeClass('hide');
+                S('.tab.website-analytics').removeClass('hide');
             },
             () => { //onblur
 
@@ -12,12 +12,12 @@ S.editor.analytics = {
             }
         );
         S.editor.dropmenu.hide();
-        $('.editor .sections > .tab').addClass('hide');
-        $('.editor .sections > .website-analytics').removeClass('hide');
+        S('.editor .sections > .tab').addClass('hide');
+        S('.editor .sections > .website-analytics').removeClass('hide');
 
         //disable save menu
-        $('.item-save').addClass('faded').attr('disabled', 'disabled');
-        $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
+        S('.item-save').addClass('faded').attr('disabled', 'disabled');
+        S('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
         S.ajax.post('Analytics/Render', { timeScale: 3 },
             function (d) {

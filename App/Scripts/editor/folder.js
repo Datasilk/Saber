@@ -5,20 +5,20 @@ S.editor.folder = {
             var path = S.editor.explorer.path;
             if (path == 'root') { path == 'wwwroot'; }
             S.popup.show('New Folder',
-                $('#template_newfolder').html()
+                S('#template_newfolder').html()
                     .replace('##folder-path##', path)
             );
             newfolder.focus();
             //set up button events within popup
-            $('.popup form').on('submit', S.editor.folder.create.submit)
+            S('.popup form').on('submit', S.editor.folder.create.submit)
         },
 
         submit: function(e) {
             e.preventDefault();
             e.cancelBubble = true;
             var data = {
-                path: $('#newfolderpath').val().replace(/\s/g, ''),
-                folder: $('#newfolder').val()
+                path: S('#newfolderpath').val().replace(/\s/g, ''),
+                folder: S('#newfolder').val()
             };
             if (data.path == 'root') {
                 S.message.show('.popup .message', 'error', 'You cannot create folders within the root folder');

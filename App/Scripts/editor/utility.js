@@ -2,12 +2,12 @@ S.target = {
     find: (e, tagName) => {
         var elem = e.target;
         if (elem.tagName.toLowerCase() != tagName) {
-            return $(e.target).parents(tagName).first()[0];
+            return S(e.target).parents(tagName).first()[0];
         }
         return elem;
     },
     findByClassName: (e, className) => {
-        var elem = $(e.target);
+        var elem = S(e.target);
         if (!elem.hasClass(className)) {
             return elem.parents('.' + className)[0];
         }
