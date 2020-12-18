@@ -64,6 +64,7 @@ namespace Saber.Controllers
                 {
                     var view = new View("/Views/Editor/editor-iframe.html");
                     view["path"] = pathname;
+                    view["preload"] = "0";
                     html.Append(view.Render());
                 }
                 html.Append("<div class=\"website\">");

@@ -372,6 +372,22 @@ namespace Saber.Services
             }
         }
 
+        public string SortStylesheets(List<string> stylesheets, string path)
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            try
+            {
+                var config = Core.PageInfo.GetPageConfig(path);
+                config.stylesheets = stylesheets;
+                Core.PageInfo.SavePageConfig(path, config);
+                return RenderStylesheetsList(config);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
         #endregion
 
         #region "Page Scripts"
@@ -470,6 +486,22 @@ namespace Saber.Services
                 {
                     config.scripts.Remove(file);
                 }
+                Core.PageInfo.SavePageConfig(path, config);
+                return RenderScriptsList(config);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+        }
+
+        public string SortScripts(List<string> scripts, string path)
+        {
+            if (!CheckSecurity("page-settings")) { return AccessDenied(); }
+            try
+            {
+                var config = Core.PageInfo.GetPageConfig(path);
+                config.scripts = scripts;
                 Core.PageInfo.SavePageConfig(path, config);
                 return RenderScriptsList(config);
             }

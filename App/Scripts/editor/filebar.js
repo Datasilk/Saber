@@ -204,10 +204,12 @@ S.editor.filebar = {
         },
 
         hide: function () {
-            var iframe = window.parent.document.getElementsByClassName('editor-iframe')[0];
-            iframe.style.display = "block";
+            var container = window.parent.document.getElementsByClassName('editor-iframe')[0];
+            container.style.display = "block";
             window.parent.document.body.style.overflow = 'hidden';
             S.editor.visible = true;
+            var iframe = window.parent.document.getElementById('editor-iframe');
+            iframe.contentWindow.focus();
 
             //update Rhino browser window (if applicable)
             if (S.editor.Rhino) {

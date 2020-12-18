@@ -62,9 +62,9 @@ S.editor.settings = {
                 $('.page-styles .btn-add-style').on('click', S.editor.settings.styles.add.show);
                 $('.page-scripts .btn-add-script').on('click', S.editor.settings.scripts.add.show);
                 $('.page-security .btn-add-group').on('click', S.editor.settings.security.add.show);
-                $('.editor .styles-list .close-btn').on('click', S.editor.settings.styles.remove);
-                $('.editor .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
                 $('.editor .security-list .close-btn').on('click', S.editor.settings.security.remove);
+                S.editor.settings.styles.init();
+                S.editor.settings.scripts.init();
             }
         );
     },
@@ -271,8 +271,8 @@ S.editor.settings = {
                     //add stylesheet to page
                     S.util.css.load(data.file, 'css_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), window.parent.document);
                     S.editor.files.less.changed = true;
-                    $('.styles-list > ul').html(list);
-                    $('.editor .styles-list .close-btn').on('click', S.editor.settings.styles.remove);
+                    $('.page-settings .styles-list > ul').html(list);
+                    S.editor.settings.styles.init();
                     S.popup.hide();
                 });
             }
@@ -284,8 +284,22 @@ S.editor.settings = {
             S.ajax.post('PageSettings/RemoveStylesheetFromPage', data, (list) => {
                 //add script to page
                 S.editor.files.less.changed = true;
-                $('.styles-list > ul').html(list);
-                $('.editor .styles-list .close-btn').on('click', S.editor.settings.styles.remove);
+                $('.page-settings .styles-list > ul').html(list);
+                S.editor.settings.styles.init();
+            });
+        },
+
+        init: function () {
+            $('.page-settings .styles-list .close-btn').on('click', S.editor.settings.styles.remove);
+            S.drag.sort.add('.page-settings .styles-list ul', '.page-settings .styles-list li', () => {
+                //update website.config with new stylesheet sort order
+                S.ajax.post('PageSettings/SortStylesheets', {
+                    stylesheets: $('.page-settings .styles-list li div[data-path]').map((i, a) => $(a).attr('data-path')),
+                    path: S.editor.path
+                }, () => { },
+                    (err) => {
+                        S.editor.message('', err.responseText, 'error');
+                    });
             });
         }
     },
@@ -318,8 +332,8 @@ S.editor.settings = {
                     //add script to page
                     S.util.js.load(data.file, 'js_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), null, null, window.parent.document);
                     S.editor.files.js.changed = true;
-                    $('.scripts-list > ul').html(list);
-                    $('.editor .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
+                    $('.page-settings .scripts-list > ul').html(list);
+                    S.editor.settings.scripts.init();
                     S.popup.hide();
                 });
             }
@@ -331,8 +345,22 @@ S.editor.settings = {
             S.ajax.post('PageSettings/RemoveScriptFromPage', data, (list) => {
                 //add script to page
                 S.editor.files.js.changed = true;
-                $('.scripts-list > ul').html(list);
-                $('.editor .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
+                $('.page-settings .scripts-list > ul').html(list);
+                S.editor.settings.scripts.init();
+            });
+        },
+
+        init: function () {
+            $('.page-settings .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
+            S.drag.sort.add('.page-settings .scripts-list ul', '.page-settings .scripts-list li', () => {
+                //update page json with new stylesheet sort order
+                S.ajax.post('PageSettings/SortScripts', {
+                    scripts: $('.page-settings .scripts-list li div[data-path]').map((i, a) => $(a).attr('data-path')),
+                    path: S.editor.path
+                }, () => { },
+                    (err) => {
+                        S.editor.message('', err.responseText, 'error');
+                    });
             });
         }
     },

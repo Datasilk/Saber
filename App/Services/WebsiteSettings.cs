@@ -367,7 +367,7 @@ namespace Saber.Services
         }
         #endregion
 
-        #region "Page Stylesheets"
+        #region "Website Stylesheets"
 
         public string RenderStylesheetsList(string path)
         {
@@ -472,9 +472,25 @@ namespace Saber.Services
             }
         }
 
+        public string SortStylesheets(List<string> stylesheets)
+        {
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            try
+            {
+                var config = Common.Platform.Website.Settings.Load();
+                config.Stylesheets = stylesheets;
+                Common.Platform.Website.Settings.Save(config);
+                return Success();
+            }
+            catch (Exception)
+            {
+                return Error("Error sorting stylesheets");
+            }
+        }
+
         #endregion
 
-        #region "Page Scripts"
+        #region "Website Scripts"
 
         public string RenderScriptsList(string path)
         {
@@ -576,6 +592,22 @@ namespace Saber.Services
             catch (Exception)
             {
                 return Error();
+            }
+        }
+
+        public string SortScripts(List<string> scripts)
+        {
+            if (!CheckSecurity("website-settings")) { return AccessDenied(); }
+            try
+            {
+                var config = Common.Platform.Website.Settings.Load();
+                config.Scripts = scripts;
+                Common.Platform.Website.Settings.Save(config);
+                return Success();
+            }
+            catch (Exception)
+            {
+                return Error("Error sorting scripts");
             }
         }
 

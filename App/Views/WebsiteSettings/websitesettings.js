@@ -73,7 +73,7 @@
                 S.util.css.load(data.file, 'css_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), window.parent.document);
                 S.editor.files.less.changed = true;
                 S('.website-styles-list > ul').html(list);
-                S('.website-styles-list .close-btn').on('click', removeStyle);
+                initStyles();
                 S.popup.hide();
             });
         });
@@ -86,10 +86,23 @@
             //add stylesheets to list
             S.editor.files.less.changed = true;
             S('.website-styles-list > ul').html(list);
-            S('.website-styles-list .close-btn').on('click', removeStyle);
+            initStyles();
         });
     }
-    S('.website-styles-list .close-btn').on('click', removeStyle);
+
+    function initStyles() {
+        S('.website-styles-list .close-btn').on('click', removeStyle);
+        S.drag.sort.add('.website-styles-list ul', '.website-styles-list li', () => {
+            //update website.config with new stylesheet sort order
+            S.ajax.post('WebsiteSettings/SortStylesheets', {
+                stylesheets: $('.website-styles-list li div[data-path]').map((i, a) => $(a).attr('data-path'))
+            }, () => { },
+            (err) => {
+                S.editor.message('', err.responseText, 'error');
+            });
+        });
+    }
+    initStyles();
 
     //set up scripts
     S('.website-scripts .btn-add-script').on('click', () => {
@@ -116,7 +129,7 @@
                 S.util.js.load(data.file, 'js_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), null, null, window.parent.document);
                 S.editor.files.js.changed = true;
                 S('.website-scripts-list > ul').html(list);
-                S('.website-scripts-list .close-btn').on('click', removeScript);
+                initScripts();
                 S.popup.hide();
             });
         });
@@ -129,10 +142,23 @@
             //add scripts to list
             S.editor.files.js.changed = true;
             S('.website-scripts-list > ul').html(list);
-            S('.website-scripts-list .close-btn').on('click', removeScript);
+            initScripts();
         });
     }
-    S('.website-scripts-list .close-btn').on('click', removeScript);
+
+    function initScripts() {
+        S('.website-scripts-list .close-btn').on('click', removeScript);
+        S.drag.sort.add('.website-scripts-list ul', '.website-scripts-list li', () => {
+            //update website.config with new script sort order
+            S.ajax.post('WebsiteSettings/SortScripts', {
+                scripts: $('.website-scripts-list li div[data-path]').map((i, a) => $(a).attr('data-path'))
+            }, () => { },
+            (err) => {
+                S.editor.message('', err.responseText, 'error');
+            });
+        });
+    }
+    initScripts();
 
     //set up email settings
     S('#emailclients').on('change', () => {

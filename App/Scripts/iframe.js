@@ -24,6 +24,15 @@
     }
     resizeIframe();
 
+    function loadEditor() {
+        if (iframe.getAttribute('src') == 'about:blank') {
+            iframe.setAttribute('src', '/Editor?path=' + iframe.getAttribute('data-path'));
+        }
+    }
+    if (preloadEditor == '1') {
+        loadEditor();
+    }
+
     window.addEventListener('keydown', (e) => {
         if (e.ctrlKey == false && e.altKey == false && e.shiftKey == false) {
             switch (e.key) {
@@ -32,9 +41,12 @@
                         container.style.display = 'none';
                         iframe.contentWindow.S.editor.filebar.preview.show();
                     } else {
+                        loadEditor();
                         container.style.display = 'block';
                         resizeIframe();
-                        iframe.contentWindow.S.editor.filebar.preview.hide();
+                        if (iframe.contentWindow.S) {
+                            iframe.contentWindow.S.editor.filebar.preview.hide();
+                        }
                     }
                     break;
             }
