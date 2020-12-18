@@ -161,6 +161,8 @@ S.editor.init = function () {
             S.editor.filebar.preview.hide();
         })();
     }
+
+    S.editor.filebar.preview.hide();
 };
 
 
