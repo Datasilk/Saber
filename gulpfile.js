@@ -70,8 +70,8 @@ var paths = {
 paths.working = {
     js: {
         platform: [
-            paths.scripts + 'selector/selector.js',
             paths.scripts + 'utility/velocity.min.js',
+            paths.scripts + 'selector/selector.js',
             paths.scripts + 'platform/_super.js', // <---- Datasilk Core Js: S object
             paths.scripts + 'platform/ajax.js', //   <---- Optional platform features
             paths.scripts + 'platform/accordion.js',
@@ -94,11 +94,14 @@ paths.working = {
         ],
         app: [
             paths.app + '**/*.js',
-            '!' + paths.app + 'Vendors/**/*.js'
+            '!' + paths.app + 'Vendors/**/*.js',
+            '!' + paths.app + '**/node_modules/*.js'
         ],
         utility: [
             paths.scripts + 'utility/*.*',
-            paths.scripts + 'utility/**/*.*'
+            paths.scripts + 'utility/**/*.*',
+            '!' + paths.scripts + 'utility/**/node_modules/*',
+            '!' + paths.app + 'utility/**/*.less'
         ],
         editor: [
             paths.scripts + 'editor/_super.js',
@@ -138,6 +141,7 @@ paths.working = {
         ],
         app: [
             paths.app + '**/*.less',
+            '!' + paths.app + '**/node_modules/*',
             '!' + paths.app + 'Vendors/**/*.less'
         ],
         themes: paths.css + 'themes/*.less',
@@ -146,18 +150,18 @@ paths.working = {
             paths.css + 'tapestry/less/theme.less',
             paths.css + 'tapestry/less/util.less'
         ],
-        utility: paths.css + 'utility/*.less'
+        utility: [
+            paths.css + 'utility/*.less',
+            '!' + paths.css + 'utility/**/node_modules/*.less'
+        ]
     },
 
     css: {
-        utility: [
-            paths.css + 'utility/**/*.css',
-            paths.scripts + 'utility/**/*.css'
-        ],
         themes: paths.themes + '**/*.css',
         app: [
             paths.app + '**/*.css',
-            '!' + paths.app + 'Vendors/**/*.js'
+            '!' + paths.app + 'Vendors/**/*.css',
+            '!' + paths.app + '**/node_modules/*.css'
         ],
         iframe:paths.app + 'CSS/iframe.css'
     },
@@ -170,10 +174,12 @@ paths.working = {
             paths.app + 'vendors/**/icon.svg',
             paths.app + 'vendors/**/*.jpg',
             paths.app + 'vendors/**/*.png',
-            paths.app + 'vendors/**/*.gif'
+            paths.app + 'vendors/**/*.gif',
+            '!' + paths.app + 'vendors/**/node_modules/**/*.*'
         ],
         less: [
-            paths.app + 'vendors/**/*.less'
+            paths.app + 'vendors/**/*.less',
+            '!' + paths.app + 'vendors/**/node_modules/**/*.less'
         ]
     },
 
@@ -185,7 +191,8 @@ paths.working = {
             '!' + paths.app + 'CSS/*',
             '!' + paths.app + 'Scripts/**/*',
             '!' + paths.app + 'obj/**/*',
-            '!' + paths.app + 'bin/**/*'
+            '!' + paths.app + 'bin/**/*',
+            '!' + paths.app + '**/node_modules/*'
         ]
     }
 };
@@ -299,17 +306,6 @@ gulp.task('css:app', function () {
     return p.pipe(gulp.dest(paths.compiled.app, { overwrite: true }));
 });
 
-gulp.task('css:utility', function () {
-    var p = gulp.src(paths.working.css.utility)
-        .pipe(rename(function (path) {
-            path.dirname = path.dirname.toLowerCase();
-            path.basename = path.basename.toLowerCase();
-            path.extname = path.extname.toLowerCase();
-        }));
-    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
-    return p.pipe(gulp.dest(paths.compiled.css + 'utility', { overwrite: true }));
-});
-
 gulp.task('css:iframe', function () {
     var p = gulp.src(paths.working.css.iframe);
     if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
@@ -318,7 +314,7 @@ gulp.task('css:iframe', function () {
 
 gulp.task('less', gulp.series('less:platform', 'less:app', 'less:themes', 'less:utility'));
 
-gulp.task('css', gulp.series('css:themes', 'css:app', 'css:utility', 'css:iframe'));
+gulp.task('css', gulp.series('css:themes', 'css:app', 'css:iframe'));
 
 //tasks for compiling default website content ////////////////////////////////////////////
 gulp.task('website:less', function () {
@@ -370,8 +366,7 @@ gulp.task('vendors:resources', function () {
 });
 
 gulp.task('vendors:less', function () {
-    var pathlist = paths.working.vendors.less;
-    var p = gulp.src(pathlist)
+    var p = gulp.src(paths.working.vendors.less)
         .pipe(less())
         .pipe(rename(function (path) {
             path.dirname = path.dirname.toLowerCase();

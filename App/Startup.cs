@@ -216,6 +216,7 @@ namespace Saber
             //Run any services required after initializing all vendor plugins but before configuring vendor startup services
             Core.Delegates.Email.Send = Email.Send;
             Core.Delegates.Website.SaveLessFile = Website.SaveLessFile;
+            Core.Delegates.Website.CopyTempWebsite = Website.CopyTempWebsite;
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface

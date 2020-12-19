@@ -11,44 +11,43 @@ S.editor.save = function (path, content) {
     var ext = S.editor.fileExt(path);
     var tab = $('.tab-' + id);
     self.dropmenu.hide();
-    if (tab.length > 0) {
-        if (tab.hasClass('selected')) {
-            //check if we should save something besides source code
+    if (tab.length > 0 && tab.hasClass('selected')) {
+        //check if we should save something besides source code
 
-            if ($('.tab-content-fields').hasClass('selected')) {
-                //save content fields values ///////////////////////////////////////////////////////////////////////////////
-                S.editor.fields.save();
-                return;
+        if ($('.tab-content-fields').hasClass('selected')) {
+            //save content fields values ///////////////////////////////////////////////////////////////////////////////
+            console.log('save fields');
+            S.editor.fields.save();
+            return;
 
-            }
-            else if ($('.tab-page-settings').hasClass('selected')) {
-                //save page settings ///////////////////////////////////////////////////////////////////////////////
-                var settings = S.editor.settings;
+        }
+        else if ($('.tab-page-settings').hasClass('selected')) {
+            //save page settings ///////////////////////////////////////////////////////////////////////////////
+            var settings = S.editor.settings;
 
-                //save title
-                if (settings.title.changed == true) {
-                    settings.title.save(showmsg);
-                    return;
-                }
-
-                //save description
-                if (settings.description.changed == true) {
-                    settings.description.save(showmsg);
-                    return;
-                }
-
-                //save header & footer with fields
-                if (settings.partials.changed == true) {
-                    settings.partials.save(showmsg);
-                    return;
-                }
-
-                function showmsg() {
-                    S.message.show('.page-settings .message', 'confirm', 'Page settings have been updated successfully');
-                }
-
+            //save title
+            if (settings.title.changed == true) {
+                settings.title.save(showmsg);
                 return;
             }
+
+            //save description
+            if (settings.description.changed == true) {
+                settings.description.save(showmsg);
+                return;
+            }
+
+            //save header & footer with fields
+            if (settings.partials.changed == true) {
+                settings.partials.save(showmsg);
+                return;
+            }
+
+            function showmsg() {
+                S.message.show('.page-settings .message', 'confirm', 'Page settings have been updated successfully');
+            }
+
+            return;
         }
     }
 

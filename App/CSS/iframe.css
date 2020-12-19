@@ -5,3 +5,4 @@
 .editor-tab svg{width:25px; height:25px; opacity:0.5;}
 .editor-tab:hover svg{opacity:1;}
 .editor-iframe{position:fixed; z-index:99999; width:100%; border:none; margin:0; padding:0; display:none;}
+.editor-iframe iframe{width:100%;}

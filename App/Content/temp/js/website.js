@@ -1,9 +1,7 @@
 (function () {
     //log out function
     window.logout = function () {
-        window.logout = function () {
-            location.href = "/Logout";
-        }
+        location.href = "/Logout";
     }
 
     //simple ajax method
