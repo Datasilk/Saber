@@ -8,7 +8,7 @@ S.editor.save = function (path, content) {
     }
     var self = S.editor;
     var id = self.fileId(path);
-    var ext = S.editor.fileExt(path);
+    var ext = self.fileExt(path);
     var tab = $('.tab-' + id);
     self.dropmenu.hide();
     if (tab.length > 0 && tab.hasClass('selected')) {
@@ -16,14 +16,13 @@ S.editor.save = function (path, content) {
 
         if ($('.tab-for-content-fields').hasClass('selected')) {
             //save content fields values ///////////////////////////////////////////////////////////////////////////////
-            console.log('save fields');
-            S.editor.fields.save();
+            self.fields.save();
             return;
 
         }
         else if ($('.tab-page-settings').hasClass('selected')) {
             //save page settings ///////////////////////////////////////////////////////////////////////////////
-            var settings = S.editor.settings;
+            var settings = self.settings;
 
             //save title
             if (settings.title.changed == true) {
@@ -59,17 +58,24 @@ S.editor.save = function (path, content) {
     S.ajax.post('Files/SaveFile', { path: path, content: content },
         function (d) {
             //check whether or not file was a required page resource for this page
-            if (S.editor.isResource(path) || S.editor.isResource(path, 'partial')) {
+            if (self.isResource(path)) {
                 S.editor.files[ext].changed = true;
                 if (ext == 'html') {
                     //also mark content as changed so content fields can reload
                     S.editor.files.content.changed = true;
                 }
-            } else if (S.editor.isResource(path, 'website.css')) {
+            } else if (self.isResource(path, 'website.css')) {
                 S.editor.files.website.css.changed = true;
-            } else if (S.editor.isResource(path, 'website.js')) {
+            } else if (self.isResource(path, 'website.js')) {
                 S.editor.files.website.js.changed = true;
                 S.editor.files.js.changed = true;
+            } else if(path.indexOf('/partials/' >= 0)) {
+                //check if file is a partial and if partial content fields tab is loaded
+                var fieldstab = $('.tab-' + self.fileId(path.replace('content/partials/', 'content-fields-')));
+                if (fieldstab.length > 0) {
+                    S.editor.fields.load(path);
+                }
+                S.editor.files.content.changed = true;
             }
             tab.find('.loader').remove();
             self.unChanged(path);

@@ -2,7 +2,6 @@ S.editor.fields = {
     clone: $('.editor .textarea-clone > div'),
     selected: '',
     changed: false,
-    file: {},
     load: function (file) {
         if (typeof file == 'object') { file = null;}
         let lang = $('.content-fields-section #lang').val();
@@ -17,7 +16,6 @@ S.editor.fields = {
             filepath = file.replace('content/partials/', '');
             fileid = filepath.replace(/\./g, '_').replace(/\//g, '_');
             contentfields = '.sections .content-fields-' + fileid;
-            lang = $(contentfields + ' #lang').val();
 
             if ($('.content-fields-' + fileid).length == 0) {
                 //generate content fields section
@@ -25,10 +23,10 @@ S.editor.fields = {
                 div.className = 'tab content-fields-' + fileid;
                 div.innerHTML = $('#template_contentfields').html();
                 $('.editor .sections').append(div);
-                S.editor.fields.file[file] = true;
                 S.editor.resizeWindow();
                 $('.editor .sections > .tab').addClass('hide');
                 $('.editor .sections > .content-fields-' + fileid).removeClass('hide');
+                lang = window.language;
 
                 //get list of languages
                 S.ajax.post('Languages/Get', {},
@@ -47,7 +45,7 @@ S.editor.fields = {
                 );
 
                 //render new tab
-                S.editor.tabs.create('Content: ' + filepath, 'content-fields-' + fileid, { removeOnClose:true },
+                S.editor.tabs.create('Content: ' + filepath, 'content-fields-' + fileid, { removeOnClose: true },
                     () => { //onfocus
                         $('.tab.content-fields-' + fileid).removeClass('hide');
                         $('ul.file-tabs > li').removeClass('selected');
@@ -65,9 +63,10 @@ S.editor.fields = {
 
                 $('.tab-content-fields-' + fileid).addClass('tab-for-content-fields');
                 $('.tab-content-fields-' + fileid + ' > div').attr('data-path-url', file);
+            } else {
+                lang = $(contentfields + ' #lang').val();
             }
         }
-        console.log(contentfields);
 
         S.ajax.post('ContentFields/Render', { path: file || S.editor.path, language: lang },
             function (d) {
@@ -124,9 +123,7 @@ S.editor.fields = {
         if (S.editor.fields.changed == false || file != null) {
             //enable save menu
             $('.item-save').removeClass('faded').removeAttr('disabled');
-            if (file) {
-                S.editor.fields.file[file]= true;
-            } else {
+            if (!file) {
                 S.editor.fields.changed = true;
             }
         }
@@ -171,6 +168,7 @@ S.editor.fields = {
                     } else {
                         S.editor.files.partials[path] = true;
                     }
+                    S.editor.files.content.changed = true;
                     S.message.show('.' + pathid + ' .message', 'confirm', 'Content fields were saved.', false, 4000, true);
                 } else { S.editor.error(); }
             },
