@@ -4,16 +4,14 @@
     var iframe = document.getElementById('editor-iframe');
     var tab = document.getElementsByClassName('editor-tab')[0];
 
-    iframe.addEventListener('load', () => {
-        iframe.contentWindow.S.editor.init();
-    });
-
     window.addEventListener('resize', () => {
         resizeIframe();
     });
 
     tab.addEventListener('click', () => {
-        iframe.contentWindow.S.editor.filebar.preview.hide();
+        loadEditor();
+        container.style.display = 'block';
+        resizeIframe();
     });
 
     function resizeIframe(){
@@ -44,9 +42,6 @@
                         loadEditor();
                         container.style.display = 'block';
                         resizeIframe();
-                        if (iframe.contentWindow.S) {
-                            iframe.contentWindow.S.editor.filebar.preview.hide();
-                        }
                     }
                     break;
             }

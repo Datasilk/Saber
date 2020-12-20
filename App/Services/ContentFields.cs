@@ -19,8 +19,8 @@ namespace Saber.Services
             var config = PageInfo.GetPageConfig(path);
             var htmlVars = Common.Vendors.HtmlComponentKeys;
             var view = new View(string.Join("/", paths) + ".html");
-            var viewHeader = new View("/Content/partials/" + config.header.file);
-            var viewFooter = new View("/Content/partials/" + config.footer.file);
+            var viewHeader = new View("/Content/partials/" + config.header);
+            var viewFooter = new View("/Content/partials/" + config.footer);
             var section = new View("/Views/ContentFields/section.html");
             var fieldText = new View("/Views/ContentFields/text.html");
             var fieldBlock = new View("/Views/ContentFields/block.html");
@@ -28,8 +28,8 @@ namespace Saber.Services
             var fieldVendor = new View("/Views/ContentFields/vendor.html");
 
             var result = processView("Body", view, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
-            var resultHead = processView(PageInfo.NameFromFile(config.header.file), viewHeader, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
-            var resultFoot = processView(PageInfo.NameFromFile(config.footer.file), viewFooter, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
+            var resultHead = processView(PageInfo.NameFromFile(config.header), viewHeader, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
+            var resultFoot = processView(PageInfo.NameFromFile(config.footer), viewFooter, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
 
             if (string.IsNullOrWhiteSpace(result) &&
                 string.IsNullOrWhiteSpace(resultHead) &&
@@ -158,25 +158,35 @@ namespace Saber.Services
                                                 var tagParts = htmElem.Split(" ");
                                                 var tagName = tagParts[0].ToLower();
                                                 var attrName = tagParts[^1].Split("=")[0];
-
+                                                var isPhoto = false;
                                                 switch (attrName)
                                                 {
                                                     case "style":
                                                         //TODO: style parsing support to check if field exists in
                                                         //background or background-image CSS property
+                                                        if(htmElem.IndexOf("background-image:url(") == htmElem.Length - 21 ||
+                                                            htmElem.IndexOf("background-image: url(") == htmElem.Length - 22)
+                                                        {
+                                                            isPhoto = true;
+                                                        }
+
                                                         break;
                                                     case "src":
                                                         if (tagName == "img")
                                                         {
-                                                            found = true;
-                                                            //load image selection field
-                                                            fieldImage.Clear();
-                                                            fieldImage["title"] = fieldTitle;
-                                                            fieldImage["id"] = fieldId;
-                                                            fieldImage["value"] = fieldValue;
-                                                            html.Append(fieldImage.Render());
+                                                            isPhoto = true;
                                                         }
                                                         break;
+                                                }
+                                                if (isPhoto)
+                                                {
+                                                    found = true;
+                                                    //load image selection field
+                                                    fieldImage.Clear();
+                                                    fieldImage["title"] = fieldTitle;
+                                                    fieldImage["id"] = fieldId;
+                                                    fieldImage["value"] = fieldValue;
+                                                    html.Append(fieldImage.Render());
                                                 }
                                             }
                                             catch (Exception) {}
@@ -214,8 +224,8 @@ namespace Saber.Services
             var config = PageInfo.GetPageConfig(path);
             var validated = new Dictionary<string, string>();
             ValidateField(string.Join("/", paths) + ".html", fields, validated);
-            ValidateField("/Content/partials/" + config.header.file, fields, validated);
-            ValidateField("/Content/partials/" + config.footer.file, fields, validated);
+            ValidateField("/Content/partials/" + config.header, fields, validated);
+            ValidateField("/Content/partials/" + config.footer, fields, validated);
             try
             {
                 //save fields as json

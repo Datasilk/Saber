@@ -48,8 +48,8 @@ namespace Saber.Services
             var htmlVars = Common.Vendors.HtmlComponentKeys;
 
             //generate list of page headers & footers
-            var headers = new List<Models.Page.Template>();
-            var footers = new List<Models.Page.Template>();
+            var headers = new List<string>();
+            var footers = new List<string>();
             var files = Directory.GetFiles(App.MapPath("/Content/partials/"), "*.html", SearchOption.AllDirectories);
             foreach (var file in files)
             {
@@ -71,17 +71,13 @@ namespace Saber.Services
                 }
                 if (filetype > 0)
                 {
-                    var details = new Models.Page.Template()
-                    {
-                        file = filepath.Replace("/Content/partials/", "")
-                    };
                     switch (filetype)
                     {
                         case TemplateFileType.header:
-                            headers.Add(details);
+                            headers.Add(filepath.Replace("/Content/partials/", ""));
                             break;
                         case TemplateFileType.footer:
-                            footers.Add(details);
+                            footers.Add(filepath.Replace("/Content/partials/", ""));
                             break;
                     }
                 }
@@ -96,39 +92,16 @@ namespace Saber.Services
 
             foreach (var header in headers)
             {
-                headerList.Append("<option value=\"" + header.file + "\"" +
-                    (config.header.file == header.file || config.header.file == "" ? " selected" : "") +
-                    ">" + header.file + "</option>\n");
-                if (config.header.file == header.file)
-                {
-                    foreach (var field in header.fields)
-                    {
-                        if(htmlVars.Any(a => a == field.Key)) { continue; }
-                        fieldView["label"] = field.Key.Replace("-", " ").Capitalize();
-                        fieldView["name"] = field.Key;
-                        fieldView["value"] = field.Value;
-                        headerFields.Append(fieldView.Render() + "\n");
-                    }
-                }
-
+                headerList.Append("<option value=\"" + header + "\"" +
+                    (config.header == header || config.header == "" ? " selected" : "") +
+                    ">" + header + "</option>\n");
             }
 
             foreach (var footer in footers)
             {
-                footerList.Append("<option value=\"" + footer.file + "\"" +
-                    (config.footer.file == footer.file || config.footer.file == "" ? " selected" : "") +
-                    ">" + footer.file + "</option>\n");
-                if (config.footer.file == footer.file)
-                {
-                    foreach (var field in footer.fields)
-                    {
-                        if (htmlVars.Any(a => a == field.Key)) { continue; }
-                        fieldView["label"] = field.Key.Replace("-", " ").Capitalize();
-                        fieldView["name"] = field.Key;
-                        fieldView["value"] = field.Value;
-                        footerFields.Append(fieldView.Render() + "\n");
-                    }
-                }
+                footerList.Append("<option value=\"" + footer + "\"" +
+                    (config.footer == footer || config.footer == "" ? " selected" : "") +
+                    ">" + footer + "</option>\n");
             }
 
             //render various elements
@@ -250,7 +223,7 @@ namespace Saber.Services
             }
         }
 
-        public string UpdatePagePartials(string path, Models.Page.Template header, Models.Page.Template footer)
+        public string UpdatePagePartials(string path, string header, string footer)
         {
             if (!CheckSecurity("page-settings")) { return AccessDenied(); }
             try

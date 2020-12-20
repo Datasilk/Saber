@@ -1,6 +1,6 @@
 ﻿.editor-tab{
     position:fixed; z-index:999; left:20px; bottom:20px; background-color:#222; color:#eee; fill:#eee; 
-    border-radius:50%; box-sizing:border-box; padding:8px 10px 9px 10px; cursor:pointer;
+    border-radius:50%; box-sizing:border-box; padding:8px 8px 5px 8px; cursor:pointer;
 }
 .editor-tab svg{width:25px; height:25px; opacity:0.5;}
 .editor-tab:hover svg{opacity:1;}

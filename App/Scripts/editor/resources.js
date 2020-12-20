@@ -91,7 +91,6 @@ S.editor.resources = {
                         selectedResources = $('.popup .resources-list li')
                             .filter((i, a) => $(a).find('.selected:not(.hide)').length > 0)
                             .map((i, a) => $(a).find('.title').html().trim());
-                        console.log(selectedResources);
                     }
                 })
                 resizeResources();

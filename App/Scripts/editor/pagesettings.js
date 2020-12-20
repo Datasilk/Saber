@@ -3,7 +3,6 @@ S.editor.settings = {
     clone: null,
     headers: [],
     footers: [],
-    field_template: '',
 
     load: function () {
         var self = S.editor.settings;
@@ -34,7 +33,6 @@ S.editor.settings = {
                 //load settings header & footer fields
                 S.editor.settings.headers = json.headers;
                 S.editor.settings.footers = json.footers;
-                S.editor.settings.field_template = json.field_template;
 
                 //update settings header & footer events
                 $('#page_header').on('change', S.editor.settings.partials.header.update);
@@ -63,6 +61,11 @@ S.editor.settings = {
                 $('.page-scripts .btn-add-script').on('click', S.editor.settings.scripts.add.show);
                 $('.page-security .btn-add-group').on('click', S.editor.settings.security.add.show);
                 $('.editor .security-list .close-btn').on('click', S.editor.settings.security.remove);
+
+                //execute init scripts
+                S.editor.settings.partials.header.update();
+                S.editor.settings.partials.footer.update();
+                S.editor.settings.partials.changed = false;
                 S.editor.settings.styles.init();
                 S.editor.settings.scripts.init();
             }
@@ -181,55 +184,27 @@ S.editor.settings = {
         header: {
             update: function () {
                 S.editor.settings.partials.changed = true;
-                var template = S.editor.settings.field_template;
-                var headers = S.editor.settings.headers;
-                var header = headers[headers.map(a => a.file).indexOf($('#page_header').val())];
-                html = [];
-                for (field in header.fields) {
-                    html.push(template
-                        .replace('{{label}}', S.util.str.Capitalize(field.replace('-', ' ')))
-                        .replace('{{name}}', field)
-                        .replace('{{value}}', header.fields[field])
-                    );
-                }
-                $('.header-fields .fields').html(html.join('\n'));
+                var file = 'content/partials/' + $('#page_header').val();
+                $('.edit-header-file a').attr('href', 'javascript:S.editor.explorer.open(\'' + file + '\')');
+                $('.edit-header-content a').attr('href', 'javascript:S.editor.fields.load(\'' + file + '\')');
             }
         },
 
         footer: {
             update: function () {
                 S.editor.settings.partials.changed = true;
-                var template = S.editor.settings.field_template;
-                var footers = S.editor.settings.footers;
-                var footer = footers[footers.map(a => a.file).indexOf($('#page_footer').val())];
-                html = [];
-                for (field in footer.fields) {
-                    html.push(template
-                        .replace('{{label}}', S.util.str.Capitalize(field.replace('-', ' ')))
-                        .replace('{{name}}', field)
-                        .replace('{{value}}', footer.fields[field])
-                    );
-                }
-                $('.footer-fields .fields').html(html.join('\n'));
+                var file = 'content/partials/' + $('#page_footer').val();
+                $('.edit-footer-file a').attr('href', 'javascript:S.editor.explorer.open(\'' + file + '\')');
+                $('.edit-footer-content a').attr('href', 'javascript:S.editor.fields.load(\'' + file + '\')');
             }
         },
 
         save: function (callback) {
             //get list of field values
-            var header_fields = {};
-            var footer_fields = {};
-            var elems = $('.header-fields .fields input');
-            elems.each(a => {
-                header_fields[a.name] = $(a).val();
-            });
-            elems = $('.footer-fields .fields input');
-            elems.each(a => {
-                footer_fields[a.name] = $(a).val();
-            });
             var data = {
                 path: S.editor.path,
-                header: { file: $('#page_header').val(), fields: header_fields },
-                footer: { file: $('#page_footer').val(), fields: footer_fields }
+                header: $('#page_header').val(),
+                footer: $('#page_footer').val()
             };
             S.ajax.post('PageSettings/UpdatePagePartials', data,
                 function (d) {

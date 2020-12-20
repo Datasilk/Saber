@@ -75,7 +75,7 @@ paths.working = {
             paths.scripts + 'platform/_super.js', // <---- Datasilk Core Js: S object
             paths.scripts + 'platform/ajax.js', //   <---- Optional platform features
             paths.scripts + 'platform/accordion.js',
-            //paths.scripts + 'platform/clipboard.js',
+            paths.scripts + 'platform/clipboard.js',
             //paths.scripts + 'platform/drag.js',
             paths.scripts + 'platform/drag.sort.js',
             paths.scripts + 'platform/loader.js',

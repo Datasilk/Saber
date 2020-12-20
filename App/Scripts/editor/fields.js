@@ -2,11 +2,39 @@ S.editor.fields = {
     clone: $('.content-fields .textarea-clone > div'),
     selected: '',
     changed: false,
-    load: function () {
+    file: {},
+    load: function (file) {
         var lang = $('#lang').val();
-        S.editor.fields.changed = false;
-        $('.content-fields form').html('');
-        S.ajax.post('ContentFields/Render', { path: S.editor.path, language: lang },
+        var filepath = '';
+        var fileid = '';
+        if (!file) {
+            S.editor.fields.changed = false;
+            $('.content-fields form').html('');
+        } else {
+            //create new tab for partial content fields
+            filepath = file.replace('content/partials/', '');
+            fileid = filepath.replace(/\./g, '_').replace(/\//g, '_');
+            var div = document.createElement('div');
+            div.className('tab content-fields-' + fileid);
+            $('.editor .sections').append(div);
+            S.editor.tabs.create("Content: " + filepath, "content-fields-" + fileid, {},
+                () => { //onfocus
+                    $('.tab.content-fields-' + fileid).removeClass('hide');
+                    $('ul.file-tabs > li').removeClass('selected');
+                    $('ul.file-tabs > li.tab-content-fields').addClass('selected');
+                    S.editor.filebar.update('Page Content for <a href="/' + filepath + '">' + filepath + '</a>', 'icon-form-fields');
+                    //TODO: check if associated HTML partial has changed, then reload content fields
+                },
+                () => { //onblur
+
+                },
+                () => { //onsave
+
+                }
+            );
+        }
+        
+        S.ajax.post('ContentFields/Render', { path: file || S.editor.path, language: lang },
             function (d) {
                 d.selector = '.content-fields form';
                 S.ajax.inject(d);

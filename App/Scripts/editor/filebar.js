@@ -18,6 +18,8 @@ S.editor.filebar = {
             S.editor.tabs.create("Page Content", "content-fields-section", { isPageResource: true },
                 () => { //onfocus
                     $('.tab.content-fields').removeClass('hide');
+                    $('ul.file-tabs > li').removeClass('selected');
+                    $('ul.file-tabs > li.tab-content-fields').addClass('selected');
                     var path = S.editor.path.substr(8);
                     S.editor.filebar.update('Page Content for <a href="/' + path + '">' + path + '</a>', 'icon-form-fields');
                     if (S.editor.files.content.changed == true) {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using Saber.Core;
 using Markdig;
 
@@ -23,8 +22,8 @@ namespace Saber.Common.Platform
             //translate root path to relative path
             if (App.Environment == Environment.development) { ViewCache.Clear(); }
             var content = new View("/Views/Editor/content.html");
-            var header = new View("/Content/partials/" + (config.header.file != "" ? config.header.file : "header.html"));
-            var footer = new View("/Content/partials/" + (config.footer.file != "" ? config.footer.file : "footer.html"));
+            var header = new View("/Content/partials/" + (config.header != "" ? config.header : "header.html"));
+            var footer = new View("/Content/partials/" + (config.footer != "" ? config.footer : "footer.html"));
             var paths = PageInfo.GetRelativePath(path);
             var relpath = string.Join("/", paths);
             if (paths.Length == 0)
@@ -76,37 +75,30 @@ namespace Saber.Common.Platform
             }
 
             //load user content from json file, depending on selected language
-            var contentfile = ContentFields.ContentFile(path, language);
-            var contents = Cache.LoadFile(contentfile);
-            var data = new Dictionary<string, string>();
-            
-            if (contents != "")
+            var data = ContentFields.GetPageContent(path, language);
+
+            if (data.Count > 0)
             {
-                data = JsonSerializer.Deserialize<Dictionary<string, string>>(contents);
-                if (data != null)
+                //get view blocks
+                var blocks = view.Elements.Where(a => a.Name.StartsWith("/")).Select(a => a.Name.Substring(1));
+                foreach (var item in data)
                 {
-                    
-                    //get view blocks
-                    var blocks = view.Elements.Where(a => a.Name.StartsWith("/")).Select(a => a.Name.Substring(1));
-                    foreach (var item in data)
+                    if (blocks.Contains(item.Key))
                     {
-                        if (blocks.Contains(item.Key))
+                        if (item.Value == "1")
                         {
-                            if (item.Value == "1")
-                            {
-                                view.Show(item.Key);
-                            }
+                            view.Show(item.Key);
+                        }
+                    }
+                    else
+                    {
+                        if (item.Value.Contains('\n'))
+                        {
+                            view[item.Key] = Markdown.ToHtml(item.Value, markdownPipeline);
                         }
                         else
                         {
-                            if (item.Value.Contains('\n'))
-                            {
-                                view[item.Key] = Markdown.ToHtml(item.Value, markdownPipeline);
-                            }
-                            else
-                            {
-                                view[item.Key] = item.Value;
-                            }
+                            view[item.Key] = item.Value;
                         }
                     }
                 }
@@ -128,7 +120,6 @@ namespace Saber.Common.Platform
                 //render all content
                 results = HtmlComponents(header, request, data);
 
-                //results.AddRange(config.header.fields);
                 foreach (var item in results)
                 {
                     header[item.Key] = item.Value;
@@ -138,7 +129,6 @@ namespace Saber.Common.Platform
                     header[item.Key] = item.Value;
                 }
                 results = HtmlComponents(footer, request, data);
-                //results.AddRange(config.footer.fields);
                 foreach (var item in results)
                 {
                     footer[item.Key] = item.Value;

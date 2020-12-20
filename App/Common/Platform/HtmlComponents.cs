@@ -147,7 +147,6 @@ namespace Saber.Common.Platform
                         var selected = request.Parameters.ContainsKey("lang") ? request.Parameters["lang"] : request.User.Language;
                         var results = new List<KeyValuePair<string, string>>();
                         results.Add(new KeyValuePair<string, string>(prefix + "languages.options",
-                            "<option value=\"en\">English</option>" +
                             string.Join("\n", App.Languages.Select(a => "<option value=\"" + a.Key + "\"" +
                                 (selected == a.Key ? " selected" : "") + ">" + a.Value + "</option>").ToArray())
                             ));

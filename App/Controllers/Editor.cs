@@ -190,6 +190,7 @@ namespace Saber.Controllers
             Scripts.Append(
                 "<script language=\"javascript\">" +
                     "window.language = '" + User.Language + "';" +
+                    "S.editor.init();" +
                 "</script>\n"
             );
 
