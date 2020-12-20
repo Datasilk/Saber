@@ -15,7 +15,7 @@ S.editor.filebar = {
     fields: {
         show: function () {
             S.editor.dropmenu.hide();
-            S.editor.tabs.create("Page Content", "content-fields-section", { isPageResource: true },
+            S.editor.tabs.create("Page Content", "content-fields", { isPageResource: true },
                 () => { //onfocus
                     $('.tab.content-fields').removeClass('hide');
                     $('ul.file-tabs > li').removeClass('selected');
@@ -34,6 +34,8 @@ S.editor.filebar = {
 
                 }
             );
+
+            $('.tab-content-fields').addClass('tab-for-content-fields');
 
 
             //show content fields section & hide other sections
@@ -66,7 +68,7 @@ S.editor.filebar = {
                 );
             } else {
                 //tab already loaded
-                S.editor.tabs.select('content-fields-section');
+                S.editor.tabs.select('content-fields');
                 if (S.editor.fields.changed == true) {
                     //enable save menu since file was previously changed
                     $('.item-save').removeClass('faded').removeAttr('disabled');

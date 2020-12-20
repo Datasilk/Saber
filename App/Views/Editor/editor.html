@@ -318,7 +318,7 @@
             {{/code-editor}}
             {{page-content}}
             <div class="tab content-fields hide" data-simplebar>
-                <div class="scroller">
+                <div class="scroller has-content-fields">
                     <div class="row">
                         <div class="col">
                             <div class="row hover lang">
@@ -342,7 +342,6 @@
                     <div class="row line pad-bottom"></div>
                     <div class="row">&nbsp;</div>
                     <form></form>
-                    <div class="textarea-clone"><div></div></div>
                 </div>
             </div>
             {{/page-content}}
@@ -389,7 +388,7 @@
             <div class="tab page-resources hide"></div>
         </div>
     </div>
-
+    <div class="textarea-clone"><div></div></div>
 </div>
 
 <div class="editor-preview website">{{content}}</div>
@@ -532,4 +531,31 @@
 <script language="text/html" id="template_select_file">
     <div class="row modal-path"></div>
     <div class="row modal-browser"><ul class="menu"></ul></div>
+</script>
+<script language="text/html" id="template_contentfields">
+    <div class="scroller has-content-fields">
+        <div class="row">
+            <div class="col">
+                <div class="row hover lang">
+                    <div class="col field pad-right">Selected Language: </div>
+                    <div class="col input right">
+                        <select id="lang"></select>
+                    </div>
+                </div>
+            </div>            
+            <div class="col pad-left icon small add-lang faded">
+                <a href="javascript:">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-add-sm" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </a>
+            </div>
+            <div class="col pad-left">
+                <div class="row message hide"><span></span></div>
+            </div>
+        </div>
+        <div class="row line pad-bottom"></div>
+        <div class="row">&nbsp;</div>
+        <form></form>
+    </div>
 </script>

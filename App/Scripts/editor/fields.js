@@ -1,57 +1,91 @@
 S.editor.fields = {
-    clone: $('.content-fields .textarea-clone > div'),
+    clone: $('.editor .textarea-clone > div'),
     selected: '',
     changed: false,
     file: {},
     load: function (file) {
-        var lang = $('#lang').val();
-        var filepath = '';
-        var fileid = '';
+        let lang = $('.content-fields #lang').val();
+        let filepath = '';
+        let fileid = '.sections .content-fields';
+        var contentfields = '';
         if (!file) {
             S.editor.fields.changed = false;
             $('.content-fields form').html('');
         } else {
-            //create new tab for partial content fields
+            //load content for partial view content fields
             filepath = file.replace('content/partials/', '');
             fileid = filepath.replace(/\./g, '_').replace(/\//g, '_');
-            var div = document.createElement('div');
-            div.className('tab content-fields-' + fileid);
-            $('.editor .sections').append(div);
-            S.editor.tabs.create("Content: " + filepath, "content-fields-" + fileid, {},
-                () => { //onfocus
-                    $('.tab.content-fields-' + fileid).removeClass('hide');
-                    $('ul.file-tabs > li').removeClass('selected');
-                    $('ul.file-tabs > li.tab-content-fields').addClass('selected');
-                    S.editor.filebar.update('Page Content for <a href="/' + filepath + '">' + filepath + '</a>', 'icon-form-fields');
-                    //TODO: check if associated HTML partial has changed, then reload content fields
-                },
-                () => { //onblur
+            contentfields = '.sections .content-fields-' + fileid;
+            lang = $(contentfields + ' #lang').val();
 
-                },
-                () => { //onsave
+            if ($('.content-fields-' + fileid).length == 0) {
+                //generate content fields section
+                var div = document.createElement('div');
+                div.className = 'tab content-fields-' + fileid;
+                div.innerHTML = $('#template_contentfields').html();
+                $('.editor .sections').append(div);
+                S.editor.fields.file[file] = true;
+                S.editor.resizeWindow();
+                $('.editor .sections > .tab').addClass('hide');
+                $('.editor .sections > .content-fields-' + fileid).removeClass('hide');
 
-                }
-            );
-        }
-        
-        S.ajax.post('ContentFields/Render', { path: file || S.editor.path, language: lang },
-            function (d) {
-                d.selector = '.content-fields form';
-                S.ajax.inject(d);
-                S.editor.fields.selected = S.editor.selected;
-
-                //add language button
-                $('.content-fields .add-lang a').on('click', S.editor.lang.add.show);
-
-                //set up events for fields
-                $('.content-fields form .input-field').on('keyup, keydown, change', S.editor.fields.change).each(
-                    function (field) {
-                        S.editor.fields.change({ target: field });
+                //get list of languages
+                S.ajax.post('Languages/Get', {},
+                    function (d) {
+                        var langs = d.split('|');
+                        var sel = $(contentfields + ' #lang');
+                        console.log(contentfields + ' #lang');
+                        console.log(sel);
+                        for (var x = 0; x < langs.length; x++) {
+                            var l = langs[x].split(',');
+                            sel.append('<option value="' + l[0] + '"' + (l[0] == lang ? ' selected="selected"' : '') + '>' + l[1] + '</option>');
+                        }
+                        sel.on('change', (e) => {
+                            //changed selected language
+                            S.editor.fields.load(file);
+                        });
                     }
                 );
 
+                //render new tab
+                S.editor.tabs.create('Content: ' + filepath, 'content-fields-' + fileid, {},
+                    () => { //onfocus
+                        $('.tab.content-fields-' + fileid).removeClass('hide');
+                        $('ul.file-tabs > li').removeClass('selected');
+                        $('ul.file-tabs > li.tab-content-fields').addClass('selected');
+                        S.editor.filebar.update('Page Content for <a href="/' + filepath + '">' + filepath + '</a>', 'icon-form-fields');
+                        //TODO: check if associated HTML partial has changed, then reload content fields
+                    },
+                    () => { //onblur
+
+                    },
+                    () => { //onsave
+
+                    }
+                );
+
+                $('.tab-content-fields-' + fileid).addClass('tab-for-content-fields');
+                $('.tab-content-fields-' + fileid + ' > div').attr('data-path-url', file);
+            }
+        }
+
+        console.log('ContentFields/Render for ' + file || S.editor.path);
+        S.ajax.post('ContentFields/Render', { path: file || S.editor.path, language: lang },
+            function (d) {
+                d.selector = contentfields + ' form';
+                S.ajax.inject(d);
+
+                //add language button
+                $(contentfields + ' .add-lang a').on('click', S.editor.lang.add.show);
+
+                //set up events for fields
+                $(contentfields + ' form .input-field').on('keyup, keydown, change', (e) => { S.editor.fields.change(e, file) })
+                    .each(function (field) {
+                        S.editor.fields.change({ target: field }, file);
+                    });
+
                 //set up event for image selection buttons
-                $('.content-fields .select-image button').on('click', (e) => {
+                $(contentfields + ' .select-image button').on('click', (e) => {
                     e.preventDefault();
                     S.editor.resources.select(S.editor.path, '.jpg, .png, .gif', true, "Select An Image", "Select Image", (results) => {
                         var container = $(e.target).parents('.content-field');
@@ -60,11 +94,11 @@ S.editor.fields = {
                         var src = newpath + results[0];
                         container.find('.img').html('<div><img src="' + src + '"/></div>');
                         field.val(src);
-                        S.editor.fields.save();
+                        S.editor.fields.save(file);
                     });
                 });
 
-                $('.content-fields .select-image .input-field').on('change', (e) => {
+                $(contentfields + ' .select-image .input-field').on('change', (e) => {
                     var container = $(e.target).parents('.content-field');
                     var field = container.find('.input-field');
                     container.find('.img').html('<div><img src="' + field.val() + '"/></div>');
@@ -86,18 +120,25 @@ S.editor.fields = {
             }
         }
     },
-    change: function (e) {
+    change: function (e, file) {
         if (S.editor.visible == false) { return; }
-        if (S.editor.fields.changed == false) {
+        if (S.editor.fields.changed == false || file != null) {
             //enable save menu
             $('.item-save').removeClass('faded').removeAttr('disabled');
-            S.editor.fields.changed = true;
+            if (file) {
+                S.editor.fields.file[file]= true;
+            } else {
+                S.editor.fields.changed = true;
+            }
         }
         S.editor.fields.resize(e);
     },
     save: function () {
         var fields = {};
-        var texts = $('.content-fields form .input-field');
+        var seltab = $('.tab-for-content-fields.selected > div');
+        var section = seltab.attr('data-path');
+        var path = seltab.attr('data-path-url') || S.editor.path;
+        var texts = $('.' + section + ' form .input-field');
         texts.each(function (txt) {
             if (!txt.id || (txt.id && txt.id.indexOf('field_') < 0)) { return;}
             var t = $(txt);
@@ -119,7 +160,7 @@ S.editor.fields = {
                     break;
             }
         });
-        S.ajax.post('ContentFields/Save', { path: S.editor.path, fields: fields, language: $('#lang').val() },
+        S.ajax.post('ContentFields/Save', { path: path, fields: fields, language: $('#lang').val() },
             function (d) {
                 if (d == 'success') {
                     S.editor.fields.changed = false;

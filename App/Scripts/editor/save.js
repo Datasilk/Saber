@@ -14,7 +14,7 @@ S.editor.save = function (path, content) {
     if (tab.length > 0 && tab.hasClass('selected')) {
         //check if we should save something besides source code
 
-        if ($('.tab-content-fields-section').hasClass('selected')) {
+        if ($('.tab-for-content-fields').hasClass('selected')) {
             //save content fields values ///////////////////////////////////////////////////////////////////////////////
             console.log('save fields');
             S.editor.fields.save();

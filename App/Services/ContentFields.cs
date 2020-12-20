@@ -221,22 +221,42 @@ namespace Saber.Services
 
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
-            var config = PageInfo.GetPageConfig(path);
-            var validated = new Dictionary<string, string>();
-            ValidateField(string.Join("/", paths) + ".html", fields, validated);
-            ValidateField("/Content/partials/" + config.header, fields, validated);
-            ValidateField("/Content/partials/" + config.footer, fields, validated);
-            try
+            if (paths[1] == "partials")
             {
-                //save fields as json
-                var json = JsonSerializer.Serialize(validated);
-                File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
-                //reset view cache for page
-                Website.ResetCache(path, language);
+                var validated = new Dictionary<string, string>();
+                ValidateField(string.Join("/", paths), fields, validated);
+                try
+                {
+                    //save fields as json
+                    var json = JsonSerializer.Serialize(validated);
+                    File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
+                    //reset view cache for page
+                    Website.ResetCache(path, language);
+                }
+                catch (Exception)
+                {
+                    return Error();
+                }
             }
-            catch (Exception)
+            else
             {
-                return Error();
+                var config = PageInfo.GetPageConfig(path);
+                var validated = new Dictionary<string, string>();
+                ValidateField(string.Join("/", paths) + ".html", fields, validated);
+                ValidateField("/Content/partials/" + config.header, fields, validated);
+                ValidateField("/Content/partials/" + config.footer, fields, validated);
+                try
+                {
+                    //save fields as json
+                    var json = JsonSerializer.Serialize(validated);
+                    File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
+                    //reset view cache for page
+                    Website.ResetCache(path, language);
+                }
+                catch (Exception)
+                {
+                    return Error();
+                }
             }
 
             return Success();
