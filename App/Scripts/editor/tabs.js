@@ -19,6 +19,7 @@ S.editor.tabs = {
         }
         var elem = $('.edit-tabs ul.row .tab-' + id);
         var routes = S.editor.explorer.routes;
+        console.log(elem);
         if (elem.length == 0) {
             //load new tab
             var temp = $('#template_tab').html().trim();
@@ -122,6 +123,8 @@ S.editor.tabs = {
         if (S.editor.selected == path && sibling.length == 1) {
             sibling[0].click();
         }
+        var route = S.editor.explorer.routes.filter(a => a.path == path)[0];
+        route.onclose();
 
         //update user session
         if (path.indexOf('/') >= 0) {

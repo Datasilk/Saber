@@ -16,6 +16,7 @@ S.editor.fields = {
             filepath = file.replace('content/partials/', '');
             fileid = filepath.replace(/\./g, '_').replace(/\//g, '_');
             contentfields = '.sections .content-fields-' + fileid;
+            $('.editor .sections > .tab').addClass('hide');
 
             if ($('.content-fields-' + fileid).length == 0) {
                 //generate content fields section
@@ -24,7 +25,6 @@ S.editor.fields = {
                 div.innerHTML = $('#template_contentfields').html();
                 $('.editor .sections').append(div);
                 S.editor.resizeWindow();
-                $('.editor .sections > .tab').addClass('hide');
                 $('.editor .sections > .content-fields-' + fileid).removeClass('hide');
                 lang = window.language;
 
@@ -65,6 +65,9 @@ S.editor.fields = {
                 $('.tab-content-fields-' + fileid + ' > div').attr('data-path-url', file);
             } else {
                 lang = $(contentfields + ' #lang').val();
+                $('.edit-tabs li > div').removeClass('selected');
+                $('.tab-content-fields-' + fileid + ' > div').addClass('selected');
+                $('.editor .sections > .content-fields-' + fileid).removeClass('hide');
             }
         }
 

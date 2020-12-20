@@ -15,7 +15,7 @@ S.editor.filebar = {
     fields: {
         show: function () {
             if (S.editor.selected.indexOf('/partials/') >= 0) {
-                S.editor.fields.load(S.editor.selected);;
+                S.editor.fields.load(S.editor.selected);
                 return;
             }
             S.editor.dropmenu.hide();
