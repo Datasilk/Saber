@@ -124,7 +124,8 @@ namespace Saber.Common.Platform
                 {
                     header[item.Key] = item.Value;
                 }
-                foreach (var item in data)
+                var data2 = ContentFields.GetPageContent("/Content/partials/" + config.header, language);
+                foreach (var item in data2)
                 {
                     header[item.Key] = item.Value;
                 }
@@ -133,7 +134,8 @@ namespace Saber.Common.Platform
                 {
                     footer[item.Key] = item.Value;
                 }
-                foreach (var item in data)
+                data2 = ContentFields.GetPageContent("/Content/partials/" + config.footer, language);
+                foreach (var item in data2)
                 {
                     footer[item.Key] = item.Value;
                 }

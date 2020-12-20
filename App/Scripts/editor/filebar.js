@@ -15,11 +15,11 @@ S.editor.filebar = {
     fields: {
         show: function () {
             S.editor.dropmenu.hide();
-            S.editor.tabs.create("Page Content", "content-fields", { isPageResource: true },
+            S.editor.tabs.create("Page Content", "content-fields-section", { isPageResource: true },
                 () => { //onfocus
-                    $('.tab.content-fields').removeClass('hide');
+                    $('.tab.content-fields-section').removeClass('hide');
                     $('ul.file-tabs > li').removeClass('selected');
-                    $('ul.file-tabs > li.tab-content-fields').addClass('selected');
+                    $('ul.file-tabs > li.tab-content-fields-section').addClass('selected');
                     var path = S.editor.path.substr(8);
                     S.editor.filebar.update('Page Content for <a href="/' + path + '">' + path + '</a>', 'icon-form-fields');
                     if (S.editor.files.content.changed == true) {
@@ -35,12 +35,12 @@ S.editor.filebar = {
                 }
             );
 
-            $('.tab-content-fields').addClass('tab-for-content-fields');
+            $('.tab-content-fields-section').addClass('tab-for-content-fields');
 
 
             //show content fields section & hide other sections
             $('.editor .sections > .tab').addClass('hide');
-            $('.editor .sections > .content-fields').removeClass('hide');
+            $('.editor .sections > .content-fields-section').removeClass('hide');
             $('ul.file-tabs > li').removeClass('selected');
             $('ul.file-tabs > li.tab-content-fields').addClass('selected');
 
@@ -48,7 +48,7 @@ S.editor.filebar = {
             $('.item-save').addClass('faded').attr('disabled', 'disabled');
             $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
-            if ($('#lang').children().length == 0) {
+            if ($('.content-fields-section #lang').children().length == 0) {
                 //load list of languages
                 S.ajax.post('Languages/Get', {},
                     function (d) {
@@ -59,7 +59,7 @@ S.editor.filebar = {
                             var lang = langs[x].split(',');
                             html += '<option value="' + lang[0] + '"' + (lang[0] == userlang ? ' selected' : '') + '>' + lang[1] + '</option>';
                         }
-                        $('#lang').html(html);
+                        $('.content-fields-section #lang').html(html);
                         S.editor.fields.load();
                     },
                     function () {
@@ -68,7 +68,7 @@ S.editor.filebar = {
                 );
             } else {
                 //tab already loaded
-                S.editor.tabs.select('content-fields');
+                S.editor.tabs.select('content-fields-section');
                 if (S.editor.fields.changed == true) {
                     //enable save menu since file was previously changed
                     $('.item-save').removeClass('faded').removeAttr('disabled');

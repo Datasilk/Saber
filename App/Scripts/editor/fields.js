@@ -4,13 +4,14 @@ S.editor.fields = {
     changed: false,
     file: {},
     load: function (file) {
-        let lang = $('.content-fields #lang').val();
+        if (typeof file == 'object') { file = null;}
+        let lang = $('.content-fields-section #lang').val();
         let filepath = '';
-        let fileid = '.sections .content-fields';
-        var contentfields = '';
+        let fileid = '';
+        var contentfields = '.sections .content-fields-section';
         if (!file) {
             S.editor.fields.changed = false;
-            $('.content-fields form').html('');
+            $('.content-fields-section form').html('');
         } else {
             //load content for partial view content fields
             filepath = file.replace('content/partials/', '');
@@ -34,8 +35,6 @@ S.editor.fields = {
                     function (d) {
                         var langs = d.split('|');
                         var sel = $(contentfields + ' #lang');
-                        console.log(contentfields + ' #lang');
-                        console.log(sel);
                         for (var x = 0; x < langs.length; x++) {
                             var l = langs[x].split(',');
                             sel.append('<option value="' + l[0] + '"' + (l[0] == lang ? ' selected="selected"' : '') + '>' + l[1] + '</option>');
@@ -48,12 +47,12 @@ S.editor.fields = {
                 );
 
                 //render new tab
-                S.editor.tabs.create('Content: ' + filepath, 'content-fields-' + fileid, {},
+                S.editor.tabs.create('Content: ' + filepath, 'content-fields-' + fileid, { removeOnClose:true },
                     () => { //onfocus
                         $('.tab.content-fields-' + fileid).removeClass('hide');
                         $('ul.file-tabs > li').removeClass('selected');
                         $('ul.file-tabs > li.tab-content-fields').addClass('selected');
-                        S.editor.filebar.update('Page Content for <a href="/' + filepath + '">' + filepath + '</a>', 'icon-form-fields');
+                        S.editor.filebar.update('Page Content for <a href="javascript:S.editor.explorer.open(\'' + file + '\')">' + file.replace('content/', '') + '</a>', 'icon-form-fields');
                         //TODO: check if associated HTML partial has changed, then reload content fields
                     },
                     () => { //onblur
@@ -68,8 +67,8 @@ S.editor.fields = {
                 $('.tab-content-fields-' + fileid + ' > div').attr('data-path-url', file);
             }
         }
+        console.log(contentfields);
 
-        console.log('ContentFields/Render for ' + file || S.editor.path);
         S.ajax.post('ContentFields/Render', { path: file || S.editor.path, language: lang },
             function (d) {
                 d.selector = contentfields + ' form';
@@ -137,6 +136,7 @@ S.editor.fields = {
         var fields = {};
         var seltab = $('.tab-for-content-fields.selected > div');
         var section = seltab.attr('data-path');
+        var pathid = seltab.attr('data-path');
         var path = seltab.attr('data-path-url') || S.editor.path;
         var texts = $('.' + section + ' form .input-field');
         texts.each(function (txt) {
@@ -160,13 +160,18 @@ S.editor.fields = {
                     break;
             }
         });
-        S.ajax.post('ContentFields/Save', { path: path, fields: fields, language: $('#lang').val() },
+        S.ajax.post('ContentFields/Save', {
+            path: path, fields: fields, language: $('.' + pathid + ' #lang').val() },
             function (d) {
                 if (d == 'success') {
                     S.editor.fields.changed = false;
                     //html resource has changed because content fields have changed
-                    S.editor.files.html.changed = true;
-                    S.message.show('.content-fields .message', 'confirm', 'Content fields were saved.', false, 4000, true);
+                    if (pathid == S.editor.path) {
+                        S.editor.files.html.changed = true;
+                    } else {
+                        S.editor.files.partials[path] = true;
+                    }
+                    S.message.show('.' + pathid + ' .message', 'confirm', 'Content fields were saved.', false, 4000, true);
                 } else { S.editor.error(); }
             },
             function () {

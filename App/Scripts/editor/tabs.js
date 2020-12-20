@@ -7,6 +7,7 @@ S.editor.tabs = {
             canSave: options ? (options.canSave != null ? options.canSave : false) : false,
             changed: options ? (options.changed != null ? options.changed : false) : false,
             isPageResource: options ? (options.isPageResource !== null ? options.isPageResource : false) : false,
+            removeOnClose: options ? (options.removeOnClose !== null ? options.removeOnClose : false) : false,
         };
         var id = path.replace('/', '_');
         var route = {};
@@ -61,7 +62,12 @@ S.editor.tabs = {
                     $('.tab-components').hide();
                     if (typeof onblur == 'function') { onblur(); }
                 },
-                onsave: onsave
+                onsave: onsave,
+                onclose: () => {
+                    if (opts.removeOnClose == true) {
+                        $('.sections .tab.' + id).remove();
+                    }
+                }
             };
             if (opts.selected == true) {
                 for (var x = 0; x < routes.length; x++) {

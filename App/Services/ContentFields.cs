@@ -16,30 +16,23 @@ namespace Saber.Services
             if (!CheckSecurity("edit-content")) { return AccessDenied(); }
             var paths = PageInfo.GetRelativePath(path);
             var fields = Core.ContentFields.GetPageContent(path, language);
-            var config = PageInfo.GetPageConfig(path);
             var htmlVars = Common.Vendors.HtmlComponentKeys;
-            var view = new View(string.Join("/", paths) + ".html");
-            var viewHeader = new View("/Content/partials/" + config.header);
-            var viewFooter = new View("/Content/partials/" + config.footer);
+            var view = new View(string.Join("/", paths) + (path.Contains(".html") ? "" : ".html"));
             var section = new View("/Views/ContentFields/section.html");
             var fieldText = new View("/Views/ContentFields/text.html");
             var fieldBlock = new View("/Views/ContentFields/block.html");
             var fieldImage = new View("/Views/ContentFields/image.html");
             var fieldVendor = new View("/Views/ContentFields/vendor.html");
 
-            var result = processView("Body", view, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
-            var resultHead = processView(PageInfo.NameFromFile(config.header), viewHeader, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
-            var resultFoot = processView(PageInfo.NameFromFile(config.footer), viewFooter, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
+            var result = processView("", view, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
 
-            if (string.IsNullOrWhiteSpace(result) &&
-                string.IsNullOrWhiteSpace(resultHead) &&
-                string.IsNullOrWhiteSpace(resultFoot))
+            if (string.IsNullOrWhiteSpace(result))
             {
                 var nofields = new View("/Views/ContentFields/nofields.html");
                 nofields["filename"] = paths[paths.Length - 1];
                 return Response(nofields.Render());
             }
-            return Response(resultHead + result + resultFoot);
+            return Response( result);
         }
 
         private string processView(string title, View view, Dictionary<string, string> fields, View section, View fieldBlock, View fieldText, View fieldImage, View fieldVendor, string[] vars)
@@ -221,6 +214,7 @@ namespace Saber.Services
 
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
+            if(language == "") { language = "en"; }
             if (paths[1] == "partials")
             {
                 var validated = new Dictionary<string, string>();
