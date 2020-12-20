@@ -14,6 +14,10 @@ S.editor.filebar = {
 
     fields: {
         show: function () {
+            if (S.editor.selected.indexOf('/partials/') >= 0) {
+                S.editor.fields.load(S.editor.selected);;
+                return;
+            }
             S.editor.dropmenu.hide();
             S.editor.tabs.create("Page Content", "content-fields-section", { isPageResource: true },
                 () => { //onfocus
@@ -163,6 +167,7 @@ S.editor.filebar = {
             //next, reload rendered HTML
             if (S.editor.files.html.changed == true || S.editor.files.content.changed == true) {
                 S.editor.files.html.changed = false;
+                S.editor.files.content.changed = false;
                 S.ajax.post('Page/Render', { path: S.editor.path + '.html', language: window.language || 'en' },
                     function (d) {
                         var website = doc.getElementsByClassName('website')[0];

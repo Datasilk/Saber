@@ -41,6 +41,9 @@
                     } else {
                         loadEditor();
                         container.style.display = 'block';
+                        if (iframe.contentWindow.S) {
+                            iframe.contentWindow.S.editor.filebar.preview.hide();
+                        }
                         resizeIframe();
                     }
                     break;
