@@ -180,7 +180,7 @@ namespace Saber.Services
                 item["icon"] = "file-" + title.Split('.')[^1].ToLower();
                 if(path.IndexOf("/Content/pages/") == 0)
                 {
-                    item["onclick"] = "location.href='" + path.Replace("/Content/pages", "").Replace(".html", "");
+                    item["onclick"] = "window.parent.location.href='" + path.Replace("/Content/pages", "").Replace(".html", "");
                 }
                 else
                 {

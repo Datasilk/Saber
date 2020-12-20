@@ -131,7 +131,7 @@ S.editor.explorer = {
             if (S.editor.files.html.changed == true) {
                 //TODO:confirm if user wants to save changes to html page
             }
-            location.href = path.replace('content/pages', '').replace('.html', '');
+            window.parent.location.href = path.replace('content/pages', '').replace('.html', '');
             return;
         }
 
