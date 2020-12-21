@@ -216,7 +216,7 @@ S.editor.fields = {
                     '</form></div>';
 
                 S.popup.show("Add List Item for " + title.substr(5), html);
-                $('.popup').css({ width: '90%' });
+                $('.popup').css({ width: '90%', 'max-width':'1200px' });
 
                 //add event listeners
                 $('.popup textarea').on('keyup, keydown, change', S.editor.fields.resize)

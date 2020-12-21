@@ -95,9 +95,7 @@ namespace Saber.Common.Platform
                             }
                             results.Add(new KeyValuePair<string, string>(prefix + key, html.ToString()));
                         }
-                        catch(Exception ex)
-                        {
-                        }
+                        catch(Exception) { }
                         return results;
                     })
                 },

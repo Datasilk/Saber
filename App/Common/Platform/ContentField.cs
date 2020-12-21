@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using Saber.Core.Extensions.Strings;
 using Saber.Core;
 using Saber.Vendor;
@@ -26,14 +27,34 @@ namespace Saber.Common.Platform.ContentField
             if (!args.ContainsKey("partial")) { return "You must provide the \"partial\" property for your mustache \"list\" component"; }
             //load provided partial view
             var partial = new View("/Content/" + args["partial"]);
-            var html = new StringBuilder();
-            var listitems = new View("/Views/ContentFields/list.html");
-            listitems["list-items"] = html.ToString();
-            listitems["title"] = key.Replace("-", " ").Replace("_", " ").Capitalize();
-            listitems["key"] = args.ContainsKey("key") ? args["key"] : "";
-            listitems["params"] = string.Join('|', partial.Elements.Where(a => a.Name != "" && a.Name.Substring(0, 1) != "/")
+            var viewlist = new View("/Views/ContentFields/list.html");
+            var viewitem = new View("/Views/ContentFields/list-item.html");
+            var fieldKey = args.ContainsKey("key") ? args["key"] : ""; ;
+            //get list items
+            if (!string.IsNullOrEmpty(data))
+            {
+                try
+                {
+                    var html = new StringBuilder();
+                    var items = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(data);
+                    var i = 1;
+                    foreach (var item in items)
+                    {
+                        viewitem["title"] = fieldKey != "" ? item[fieldKey] : "List Item #" + i;
+                        viewitem["index"] = i.ToString();
+                        html.Append(viewitem.Render());
+                        viewitem.Clear();
+                        i++;
+                    }
+                    viewlist["list-items"] = html.ToString();
+                }
+                catch (Exception) { }
+            }
+            viewlist["title"] = key.Replace("-", " ").Replace("_", " ").Capitalize();
+            viewlist["key"] = fieldKey;
+            viewlist["params"] = string.Join('|', partial.Elements.Where(a => a.Name != "" && a.Name.Substring(0, 1) != "/")
                 .Select(a => a.Name + "," + (a.isBlock ? '1' : '0')));
-            return listitems.Render();
+            return viewlist.Render();
         }
     }
 }
