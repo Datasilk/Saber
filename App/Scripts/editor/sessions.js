@@ -1,4 +1,6 @@
 S.editor.sessions = {
+    selected: '',
+
     add: function (id, mode, code, select) {
         var editor = S.editor.instance;
         switch (S.editor.type) {

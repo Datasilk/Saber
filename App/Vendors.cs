@@ -17,7 +17,7 @@ namespace Saber.Common
         private static List<string> Uninstalled { get; set; } = new List<string>();
         public static List<VendorInfo> Details { get; set; } = new List<VendorInfo>();
         public static Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<IVendorViewRenderer>>();
-        public static Dictionary<string, IVendorContentField> ContentFields { get; set; } = new Dictionary<string, IVendorContentField>();
+        public static Dictionary<string, Models.VendorContentFieldInfo> ContentFields { get; set; } = new Dictionary<string, Models.VendorContentFieldInfo>();
         public static Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
         public static Dictionary<string, Type> Services { get; set; } = new Dictionary<string, Type>();
         public static Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
@@ -39,7 +39,7 @@ namespace Saber.Common
             public string Assembly { get; set; }
             public string Path { get; set; }
             public Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<IVendorViewRenderer>>();
-            public Dictionary<string, IVendorContentField> ContentFields { get; set; } = new Dictionary<string, IVendorContentField>();
+            public Dictionary<string, Models.VendorContentFieldInfo> ContentFields { get; set; } = new Dictionary<string, Models.VendorContentFieldInfo>();
             public Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
             public Dictionary<string, Type> Services { get; set; } = new Dictionary<string, Type>();
             public Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
@@ -358,8 +358,14 @@ namespace Saber.Common
             foreach (var attr in attributes)
             {
                 var instance = (IVendorContentField)Activator.CreateInstance(type);
-                details.ContentFields.Add(attr.FieldName, instance);
-                ContentFields.Add(attr.FieldName, instance);
+                var info = new Models.VendorContentFieldInfo()
+                {
+                    ContentField = instance,
+                    ReplaceRow = type.GetCustomAttributes<ReplaceRowAttribute>().Count() > 0
+                };
+
+                details.ContentFields.Add(attr.FieldName, info);
+                ContentFields.Add(attr.FieldName, info);
             }
         }
         #endregion

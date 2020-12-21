@@ -38,6 +38,7 @@ namespace Saber.Services
         private string processView(string title, View view, Dictionary<string, string> fields, View section, View fieldBlock, View fieldText, View fieldImage, View fieldVendor, string[] vars)
         {
             var html = new StringBuilder();
+            var sectionTitle = "";
             for (var x = 0; x < view.Elements.Count; x++)
             {
                 var elem = view.Elements[x];
@@ -103,7 +104,7 @@ namespace Saber.Services
                     {
                         //load block field
                         fieldBlock.Clear();
-                        fieldBlock["title"] = fieldTitle;
+                        fieldBlock["title"] = fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize();
                         fieldBlock["id"] = fieldId;
                         if (fieldValue == "1") { fieldBlock.Show("checked"); }
                         html.Append(fieldBlock.Render());
@@ -116,14 +117,27 @@ namespace Saber.Services
                         if(vendor.Value != null)
                         {
                             found = true;
-                            fieldVendor.Clear();
-                            var fieldTitleId = fieldTitle.Replace(vendor.Key.Capitalize().Replace("-", " ").Replace("_", " "), "");
-                            var fieldTitleKey = fieldTitle.Replace(fieldTitleId, "");
-                            fieldVendor["title"] = fieldTitleKey + ": " + fieldTitleId.Capitalize();
-                            fieldVendor["id"] = fieldId;
-                            fieldVendor["value"] = fieldValueHtml;
-                            fieldVendor["content"] = vendor.Value.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName);
-                            html.Append(fieldVendor.Render());
+                            //hard-code line break component
+                            if(elem.Name == "-" && elem.Vars.ContainsKey("title"))
+                            {
+                                sectionTitle = elem.Vars["title"].ToLower();
+                            }
+
+                            if(vendor.Value.ReplaceRow == true)
+                            {
+                                html.Append(vendor.Value.ContentField.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName));
+                            }
+                            else
+                            {
+                                fieldVendor.Clear();
+                                string fieldTitleId = fieldTitle.Length > 1 ? fieldTitle.Replace(vendor.Key.Capitalize().Replace("-", " ").Replace("_", " "), "") : fieldTitle;
+                                var fieldTitleKey = fieldTitle.ToLower().Replace(fieldTitleId, "").Capitalize();
+                                fieldVendor["title"] = (fieldTitleKey != "" ? fieldTitleKey + ": " : "") + fieldTitleId.Trim().Capitalize();
+                                fieldVendor["id"] = fieldId;
+                                fieldVendor["value"] = fieldValueHtml;
+                                fieldVendor["content"] = vendor.Value.ContentField.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName);
+                                html.Append(fieldVendor.Render());
+                            }
                         }
 
                         if (found == false)
@@ -176,7 +190,7 @@ namespace Saber.Services
                                                     found = true;
                                                     //load image selection field
                                                     fieldImage.Clear();
-                                                    fieldImage["title"] = fieldTitle;
+                                                    fieldImage["title"] = fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize();
                                                     fieldImage["id"] = fieldId;
                                                     fieldImage["value"] = fieldValue;
                                                     html.Append(fieldImage.Render());
@@ -194,7 +208,7 @@ namespace Saber.Services
                         if (found == false && !vars.Any(a => a == elemName))
                         {
                             fieldText.Clear();
-                            fieldText["title"] = fieldTitle;
+                            fieldText["title"] = sectionTitle != "" ? fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize() : fieldTitle.Capitalize();
                             fieldText["id"] = fieldId;
                             fieldText["value"] = fieldValue;
                             html.Append(fieldText.Render());

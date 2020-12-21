@@ -88,12 +88,8 @@ S.editor.explorer = {
 
     open: function (path, code, isready, callback) {
         //opens a resource that exists on the server
-        var paths = path.split('/');
-        var id = S.editor.fileId(path);
-        var prevId = '';
-        if (S.editor.selected != '') {
-            prevId = S.editor.fileId(S.editor.selected);
-        }
+        let paths = path.split('/');
+        let id = S.editor.fileId(path);
         S.editor.tabs.changed = false;
 
         if (isready !== false) {
@@ -104,9 +100,10 @@ S.editor.explorer = {
             //disable save menu
             $('.item-save').addClass('faded').attr('disabled', 'disabled');
         }
+        console.log(S.editor.selected);
 
         //check for existing tab
-        var tab = $('.edit-tabs ul.row .tab-' + id);
+        let tab = $('.edit-tabs ul.row .tab-' + id);
 
         //find route that matches path (if route exists)
         var route = S.editor.explorer.routes.filter(a => a.path == path);
@@ -123,9 +120,9 @@ S.editor.explorer = {
         }
 
         //get file info
-        var file = paths[paths.length - 1];
+        let file = paths[paths.length - 1];
         var fileparts = paths[paths.length - 1].split('.', 2);
-        var isPageResource = S.editor.isResource(path);
+        let isPageResource = S.editor.isResource(path);
         if (path.indexOf('content/pages/') >= 0 && path.indexOf('.html') > 0 && isready == true) {
             //redirect to page instead of opening tab
             if (S.editor.files.html.changed == true) {
@@ -137,119 +134,100 @@ S.editor.explorer = {
 
         if (tab.length == 0) {
             //tab doesn't exist yet
-            var temp = $('#template_tab').html().trim();
             var title = file;
-            //truncate title with ... prefix
             if (fileparts[0].length > 18) { title = '...' + fileparts[0].substr(fileparts[0].length - 15) + '.' + fileparts[1]; }
-            //generate tab html
-            $('.edit-tabs ul.row').append(temp
-                .replace(/\#\#id\#\#/g, id)
-                .replace(/\#\#path\#\#/g, path)
-                .replace('##title##', title)
-                .replace(/\#\#selected\#\#/g, isready !== false ? 'selected' : '')
-                .replace('##tab-type##', isPageResource ? 'page-level' : '')
-                .replace('##resource-icon##', isPageResource ? '' : 'hide')
-            );
-            //add button events for tab
-            if (!isPageResource) {
-                $('.tab-' + id + ' .btn-close').on('click', function (e) {
-                    S.editor.tabs.close(id, path);
-                    e.preventDefault();
-                    e.cancelBubble = true;
-                });
-            } else {
-                //hide close button, tab is special
-                $('.tab-' + id + ' .btn-close').hide();
-            }
-
+            S.editor.tabs.create(title, path, { isPageResource: isPageResource, selected: isready !== false, canClose: !isPageResource }, loadCode);
         } else {
             //tab exists
             tab.find('.row.hover').addClass('selected');
         }
 
-        if (isready !== false) {
-            $('.tab-components, .tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
-            if (isPageResource || (paths.indexOf('partials') >= 0 && file.indexOf('.html') > 0)) {
-                //show file bar icons for page html resource
-                $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
-            }
-            if (path.indexOf('.html') > 0) {
-                $('.tab-components').show();
-            }
-        }
+        function loadCode() {
 
-
-        //check for existing source code
-        var nocode = (code == null || typeof code == 'undefined');
-        var session = S.editor.sessions[id];
-        var editor = S.editor.instance;
-        var paths = path.split('/');
-        var ext = paths[paths.length - 1].split('.')[1];
-        var mode = 'html';
-        switch (ext) {
-            case 'css': case 'less': mode = ext; break;
-            case 'js': mode = 'javascript'; break;
-        }
-
-        //change file path
-        var cleanPath = path;
-        if (cleanPath.indexOf('content/partials/') == 0) {
-            cleanPath = cleanPath.replace('content/', '');
-        } else if (cleanPath.indexOf('content/') == 0) {
-            cleanPath = cleanPath.replace('content/' , '');
-        }
-        if (cleanPath.indexOf('root/') == 0) { cleanPath = cleanPath.replace('root/', ''); }
-        if (isready !== false) {
-            //set file bar path text & icon
-            S.editor.filebar.update(cleanPath, 'icon-file-' + ext);
-        }
-
-        if (session == null && nocode == true) {
-            //load new session from ajax POST, loading code from server
-            S.ajax.post("Files/Open", { path: path, pageResource: isPageResource === true },
-                function (d) {
-                    S.editor.sessions.add(id, mode, S.editor.decodeHtml(d), isready !== false && S.editor.tabs.changed == false);
-                    if (typeof callback == 'function') { callback(); }
-                },
-                function () {
-                    S.editor.error();
+            if (isready !== false) {
+                $('.tab-components, .tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
+                if (isPageResource || (paths.indexOf('partials') >= 0 && file.indexOf('.html') > 0)) {
+                    //show file bar icons for page html resource
+                    $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
                 }
-            );
-        } else if (nocode == false) {
-            //load new session from provided code argument
-            S.editor.sessions.add(id, mode, S.editor.decodeHtml(code), isready !== false && S.editor.tabs.changed == false);
-            if (typeof callback == 'function') { callback(); }
-
-        } else {
-            //load existing session
-            S.editor.filebar.code.show();
-            switch (S.editor.type) {
-                case 0: //monaco
-                    //save viewstate for currently viewed session
-                    S.editor.sessions.saveViewState(prevId);
-
-                    //load selected session
-                    editor.setModel(session);
-
-                    //restore viewstate for selected session
-                    S.editor.sessions.restoreViewState(id);
-                    editor.focus();
-                    break;
-                case 1: //ace
-                    editor.setSession(session);
-                    editor.focus();
-                    break;
+                if (path.indexOf('.html') > 0) {
+                    $('.tab-components').show();
+                }
             }
-            if (S.editor.isChanged(path) == true) {
-                S.editor.changed(true);
+
+            //check for existing source code
+            var nocode = (code == null || typeof code == 'undefined');
+            var session = S.editor.sessions[id];
+            var editor = S.editor.instance;
+            var ext = paths[paths.length - 1].split('.')[1];
+            var mode = 'html';
+            switch (ext) {
+                case 'css': case 'less': mode = ext; break;
+                case 'js': mode = 'javascript'; break;
             }
-            S.editor.codebar.update();
-            S.editor.resize();
-            setTimeout(function () {
+
+            //change file path
+            var cleanPath = path;
+            if (cleanPath.indexOf('content/partials/') == 0) {
+                cleanPath = cleanPath.replace('content/', '');
+            } else if (cleanPath.indexOf('content/') == 0) {
+                cleanPath = cleanPath.replace('content/', '');
+            }
+            if (cleanPath.indexOf('root/') == 0) { cleanPath = cleanPath.replace('root/', ''); }
+            if (isready !== false) {
+                //set file bar path text & icon
+                S.editor.filebar.update(cleanPath, 'icon-file-' + ext);
+            }
+            if (session == null && nocode == true) {
+                //load new session from ajax POST, loading code from server
+                S.ajax.post("Files/Open", { path: path, pageResource: isPageResource === true },
+                    function (d) {
+                        S.editor.sessions.add(id, mode, S.editor.decodeHtml(d), isready !== false);
+                        isready = true;
+                        if (typeof callback == 'function') { callback(); }
+                    },
+                    function () {
+                        S.editor.error();
+                    }
+                );
+            } else if (nocode == false) {
+                //load new session from provided code argument
+                S.editor.sessions.add(id, mode, S.editor.decodeHtml(code), isready !== false);
+                if (typeof callback == 'function') { callback(); }
+
+            } else {
+                //load existing session
+                S.editor.filebar.code.show();
+                switch (S.editor.type) {
+                    case 0: //monaco
+                        //save viewstate for currently viewed session
+                        S.editor.sessions.saveViewState(S.editor.fileId(S.editor.sessions.selected));
+
+                        //load selected session
+                        editor.setModel(session);
+
+                        //restore viewstate for selected session
+                        S.editor.sessions.restoreViewState(id);
+                        editor.focus();
+                        break;
+                    case 1: //ace
+                        editor.setSession(session);
+                        editor.focus();
+                        break;
+                }
+                if (S.editor.isChanged(path) == true) {
+                    S.editor.changed(true);
+                }
+                S.editor.codebar.update();
                 S.editor.resize();
-            }, 200);
-            if (typeof callback == 'function') { callback(); }
+                setTimeout(function () {
+                    S.editor.resize();
+                }, 200);
+                if (typeof callback == 'function') { callback(); }
+            }
+            if (isready !== false) { S.editor.sessions.selected = path; }
         }
+        loadCode();
     },
 
     select: (title, path, filetypes, callback) => {

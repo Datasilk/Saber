@@ -35,6 +35,7 @@
     <Content Remove="config.docker.json" />
     <Content Remove="config.json" />
     <Content Remove="web.Release.config" />
+    <Content Remove="wwwroot\editor\components\list.svg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -131,6 +132,7 @@
     <None Include="config.docker.json" />
     <None Include="config.json" />
     <None Include="web.Release.config" />
+    <None Include="wwwroot\editor\components\list.svg" />
   </ItemGroup>
 
   <ItemGroup>

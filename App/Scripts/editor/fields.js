@@ -104,6 +104,9 @@ S.editor.fields = {
                     var field = container.find('.input-field');
                     container.find('.img').html('<div><img src="' + field.val() + '"/></div>');
                 });
+
+                //initialize any accordions
+                S.accordion.load({}, () => { S.editor.resizeWindow(); }); 
             },
             function () { S.editor.error(); },
             true
@@ -135,10 +138,9 @@ S.editor.fields = {
     save: function () {
         var fields = {};
         var seltab = $('.tab-for-content-fields.selected > div');
-        var section = seltab.attr('data-path');
         var pathid = seltab.attr('data-path');
         var path = seltab.attr('data-path-url') || S.editor.path;
-        var texts = $('.' + section + ' form .input-field');
+        var texts = $('.' + pathid + ' form .input-field');
         texts.each(function (txt) {
             if (!txt.id || (txt.id && txt.id.indexOf('field_') < 0)) { return;}
             var t = $(txt);
@@ -179,5 +181,102 @@ S.editor.fields = {
                 S.editor.error();
             }
         );
+    },
+    custom: {
+        list: {
+            add: function (e, title, key, params) {
+                e.preventDefault();
+                var field = $(e.target).parents('.content-field').first();
+                var hidden = field.find('input.input-field');
+
+                //show popup modal to add new list item
+                var params = params.split('|').map(a => {
+                    var b = a.split(',')
+                    return {key:b[0], title:b[0].replace(/\-/g, ' ').replace(/\_/g, ''), type:b[1]}
+                });
+                console.log(params);
+                var param = $('#template_content_field').html();
+                var html = '<div class="has-content-fields"><form>' +
+                    params.map(a => {
+                        var input = '';
+                        var id = ' id="field_' + a.key + '"';
+                        //determine which input to render
+                        switch (a.type) {
+                            case '0': //text
+                                input = '<textarea' + id + ' class="input-field text-field"></textarea>';
+                                break;
+                            case '1': //block
+                                input = '<input type="checkbox"' + id + ' class="input-field"></input>';
+                                break;
+                        }
+                        return param.replace('##name##', a.title)
+                            .replace('##input##', input);
+                    }).join('') +
+                    '<div class="row pad-top"><button class="apply">Add List Item</button></div>' +
+                    '</form></div>';
+
+                S.popup.show("Add List Item for " + title.substr(5), html);
+                $('.popup').css({ width: '90%' });
+
+                //add event listeners
+                $('.popup textarea').on('keyup, keydown, change', S.editor.fields.resize)
+                    .each(function (e) {
+                        S.editor.fields.resize({ target: e });
+                    });
+
+                $('.popup form').on('submit', (e) => {
+                    //save custom list item
+                    e.preventDefault();
+                    var fields = {};
+                    var texts = $('.popup form .input-field');
+                    texts.each(function (txt) {
+                        if (!txt.id || (txt.id && txt.id.indexOf('field_') < 0)) { return; }
+                        var t = $(txt);
+                        var id = txt.id.replace('field_', '');
+                        switch (txt.tagName.toLowerCase()) {
+                            case 'textarea':
+                                fields[id] = t.val();
+                                break;
+                            case 'input':
+                                var type = t.attr('type');
+                                switch (type) {
+                                    case 'checkbox':
+                                        fields[id] = txt.checked == true ? '1' : '0';
+                                        break;
+                                    default:
+                                        fields[id] = t.val();
+                                        break;
+                                }
+                                break;
+                        }
+                    });
+                    var data = hidden.val();
+                    if (data && data != '') {
+                        data = JSON.parse(data);
+                    } else {
+                        data = [];
+                    }
+                    data.push(fields);
+                    console.log(fields);
+                    console.log(data);
+                    hidden.val(JSON.stringify(data));
+                    console.log(JSON.stringify(data));
+
+                    //add item to list in content fields tab
+                    var i = field.find('.list-items li').length + 1;
+                    var index = 'List Item #' + i;
+                    field.find('.list-items ul').append($('#custom_field_list_item').html()
+                        .replace('##title##', key != '' ? fields[key] : index)
+                        .replace('##index##', i)
+                    );
+                    field.find('.accordion').addClass('expanded');
+                    S.editor.fields.save();
+                    S.popup.hide();
+                    return false;
+                });
+
+                return false;
+            },
+        }
     }
 };

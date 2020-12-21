@@ -49,7 +49,7 @@ namespace Saber.Controllers
                 var htmlVars = Common.Vendors.HtmlComponentKeys;
 
                 //add custom component for generating Partial Views
-                viewComponent["icon"] = "/editor/partial-view.svg";
+                viewComponent["icon"] = "/editor/components/partial-view.svg";
                 viewComponent["key"] = "partial-view";
                 viewComponent["name"] = "Partial View";
                 viewComponent["description"] = "Render a partial HTML file inside of your web page.";
@@ -125,6 +125,12 @@ namespace Saber.Controllers
                     view["components-list"] = html.ToString();
 
                 }
+
+                //add custom content field List item view
+                var listitem = new View("/Views/ContentFields/list-item.html");
+                listitem["title"] = "##title##";
+                listitem["index"] = "##index##";
+                view["custom-field-list-item"] = listitem.Render();
             }
             AddScript("/editor/js/platform.js");
             AddScript("/editor/js/editor.js");

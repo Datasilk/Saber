@@ -79,7 +79,7 @@ S.editor.save = function (path, content) {
             }
             tab.find('.loader').remove();
             self.unChanged(path);
-            S.editor.explorer.open(path);
+            //S.editor.explorer.open(path);
         },
         function () {
             S.editor.error();

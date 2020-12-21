@@ -96,6 +96,12 @@
                                 '<div class="pad-top-sm"><button>Select Web Page...</button></div>' +
                                 '</div>'));
                             break;
+                        case 9: //partial view
+                            fields.push(field.replace('##input##', '<div class="select-partial">' +
+                                '<div class="pad-right"><input type="text"' + id + '/></div>' +
+                                '<div class="pad-top-sm"><button>Select Partial View...</button></div>' +
+                                '</div>'));
+                            break;
                     }
                 }
             }
@@ -115,6 +121,12 @@
                 //show file select popup for page selection
                 S.editor.explorer.select('Select Web Page', 'Content/partials', '.html', (file) => {
                     $(e.target).parents('.select-page').first().find('input').val(file.replace('Content/', '').replace('content/', ''));
+                });
+            });
+            $('.component-configure .select-partial button').on('click', (e) => {
+                //show file select popup for partial view selection
+                S.editor.explorer.select('Select Partial View', 'Content/partials', '.html', (file) => {
+                    $(e.target).parents('.select-partial').first().find('input').val(file.replace('Content/', '').replace('content/', ''));
                 });
             });
             $('.component-configure .button.apply').on('click', () => {

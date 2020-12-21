@@ -73,11 +73,12 @@ namespace Saber.Common.Platform
         public static void NewFolder(string path, string folder)
         {
             //check for root & content folders
+            var paths = PageInfo.GetRelativePath(path.ToLower());
             if (path == "root")
             {
                 throw new ServiceErrorException("You cannot create a file in the root folder");
             }
-            if (path.IndexOf("content") == 0)
+            if (paths[0] == "/Content" && paths.Length == 0)
             {
                 throw new ServiceErrorException("You cannot create a file in the content folder");
             }
@@ -88,7 +89,6 @@ namespace Saber.Common.Platform
                 throw new ServiceErrorException("Folder must be alpha-numeric and may contain dashes - and underscores _");
             }
 
-            var paths = PageInfo.GetRelativePath(path.ToLower());
             if (paths.Length == 0)
             {
                 throw new ServiceErrorException("No path specified");

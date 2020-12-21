@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
 using Saber.Core;
 using Saber.Vendor;
 
@@ -15,6 +17,91 @@ namespace Saber.Common.Platform
         {
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             return new List<HtmlComponentModel>(){
+                new HtmlComponentModel()
+                {
+                    Key = "-",
+                    Name = "Line Break",
+                    Block = false,
+                    Description = "Used to separate groups of content fields by creating a line break within the Content Fields form.",
+                    Parameters = new Dictionary<string, HtmlComponentParameter>()
+                    {
+                        {"title", 
+                            new HtmlComponentParameter()
+                            {
+                                Name = "Title",
+                                DataType = HtmlComponentParameterDataType.Text,
+                                Description = "Display a title above your line break",
+                                Required = false
+                            } 
+                        }
+                    },
+                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    {
+                        var results = new List<KeyValuePair<string, string>>();
+                        results.Add(new KeyValuePair<string, string>(prefix + "-", ""));
+                        return results;
+                    })
+                },
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                new HtmlComponentModel()
+                {
+                    Key = "list",
+                    Name = "List",
+                    Block = false,
+                    Icon = "components/list.svg",
+                    Description = "Generate a list of partial views",
+                    Parameters = new Dictionary<string, HtmlComponentParameter>()
+                    {
+                        {"partial",
+                            new HtmlComponentParameter()
+                            {
+                                Name = "Partial View",
+                                DataType = HtmlComponentParameterDataType.PartialView,
+                                Description = "The HTML file to use as a partial view",
+                                Required = true
+                            }
+                        },
+                        {"key",
+                            new HtmlComponentParameter()
+                            {
+                                Name = "Key Mustache Variable",
+                                DataType = HtmlComponentParameterDataType.Text,
+                                Description = "The mustache variable located within your partial view to use as a title for each list item",
+                                Required = false
+                            }
+                        }
+                    },
+                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    {
+                        var results = new List<KeyValuePair<string, string>>();
+                        if(!args.ContainsKey("partial") || string.IsNullOrEmpty(data))
+                        {
+                            return new List<KeyValuePair<string, string>>(); 
+                        }
+                        var partial = new View("/Content/" + args["partial"]);
+                        //deserialize the list data
+                        try
+                        {
+                            var items = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(data);
+                            var html = new StringBuilder();
+                            foreach(var item in items)
+                            {
+                                foreach(var kv in item)
+                                {
+                                    partial[kv.Key] = kv.Value;
+                                }
+                                html.Append(partial.Render());
+                                partial.Clear();
+                            }
+                            results.Add(new KeyValuePair<string, string>(prefix + key, html.ToString()));
+                        }
+                        catch(Exception ex)
+                        {
+                        }
+                        return results;
+                    })
+                },
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 new HtmlComponentModel()
                 {
                     Key = "user",

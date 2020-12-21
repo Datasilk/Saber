@@ -6,10 +6,11 @@ S.editor.tabs = {
             selected: options ? (options.selected != null ? options.selected : true) : true,
             canSave: options ? (options.canSave != null ? options.canSave : false) : false,
             changed: options ? (options.changed != null ? options.changed : false) : false,
+            canClose: options ? (options.canClose != null ? options.canClose : true) : true,
             isPageResource: options ? (options.isPageResource !== null ? options.isPageResource : false) : false,
             removeOnClose: options ? (options.removeOnClose !== null ? options.removeOnClose : false) : false,
         };
-        var id = path.replace('/', '_');
+        var id = S.editor.fileId(path);
         var route = {};
 
         //deselect other tabs
@@ -19,7 +20,6 @@ S.editor.tabs = {
         }
         var elem = $('.edit-tabs ul.row .tab-' + id);
         var routes = S.editor.explorer.routes;
-        console.log(elem);
         if (elem.length == 0) {
             //load new tab
             var temp = $('#template_tab').html().trim();
@@ -27,19 +27,23 @@ S.editor.tabs = {
                 .replace(/\#\#id\#\#/g, id)
                 .replace(/\#\#path\#\#/g, path)
                 .replace('##title##', title)
-                .replace('##tab-type##', '')
+                .replace('##tab-type##', opts.isPageResource ? 'page-level' : '')
                 .replace(/\#\#selected\#\#/g, opts.selected == true ? 'selected' : '')
-                .replace('##resource-icon##', 'hide')
+                .replace('##resource-icon##', opts.isPageResource ? '' : 'hide')
             );
             var elems = $('.edit-tabs ul.row').children();
             elem = $(elems[elems.length - 1]);
 
             //close button
-            $('.tab-' + id + ' .btn-close').on('click', function (e) {
-                S.editor.tabs.close(id, path);
-                e.preventDefault();
-                e.cancelBubble = true;
-            });
+            if (opts.canClose) {
+                $('.tab-' + id + ' .btn-close').on('click', function (e) {
+                    S.editor.tabs.close(id, path);
+                    e.preventDefault();
+                    e.cancelBubble = true;
+                });
+            } else {
+                $('.tab-' + id + ' .btn-close').hide();
+            }
 
             route = {
                 id: id,
@@ -92,7 +96,7 @@ S.editor.tabs = {
             route = routes.filter(a => a.path == path)[0];
             route.onfocus();
         }
-        S.editor.selected = path;
+        if (opts.selected == true) { S.editor.selected = path; }
     },
     select: (id) => {
         $('.edit-tabs li > div').removeClass('selected');
@@ -123,8 +127,10 @@ S.editor.tabs = {
         if (S.editor.selected == path && sibling.length == 1) {
             sibling[0].click();
         }
-        var route = S.editor.explorer.routes.filter(a => a.path == path)[0];
+        var routes = S.editor.explorer.routes;
+        var route = routes.filter(a => a.path == path)[0];
         route.onclose();
+        S.editor.explorer.routes.splice(routes.indexOf(route), 1);
 
         //update user session
         if (path.indexOf('/') >= 0) {
