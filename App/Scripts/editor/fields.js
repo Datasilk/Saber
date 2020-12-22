@@ -105,6 +105,9 @@ S.editor.fields = {
                     container.find('.img').html('<div><img src="' + field.val() + '"/></div>');
                 });
 
+                //initialize all custom fields
+                S.editor.fields.custom.list.init();
+
                 //initialize any accordions
                 S.accordion.load({}, () => { S.editor.resizeWindow(); }); 
             },
@@ -184,6 +187,70 @@ S.editor.fields = {
     },
     custom: {
         list: {
+            init: function () {
+                let seltab = $('.tab-for-content-fields.selected > div');
+                let pathid = seltab.attr('data-path');
+                let section = $('.' + pathid + ' form');
+                //event listener for close button
+                section.find('.list-items li .close-btn').off('click').on('click', S.editor.fields.custom.list.close);
+
+                //drag & sort event listeners
+                S.drag.sort.add('.' + pathid + ' .list-items ul', '.' + pathid + ' .list-items li', (e) => {
+                    //update list
+                    var target = $(e.target);
+                    var field = target.parents('.content-field').first();
+                    var items = field.find('.list-items li');
+                    let hidden = field.find('input.input-field');
+                    var data = S.editor.fields.custom.list.parse(hidden);
+                    var newdata = [];
+                    for (var x = 0; x < items.length; x++) {
+                        var item = $(items[x]);
+                        var i = parseInt(item.attr('data-index')) - 1;
+                        newdata[x] = data[i];
+                        item.attr('data-index', x + 1);
+                    }
+                    hidden.val(JSON.stringify(newdata));
+                    S.editor.fields.save();
+                });
+
+                //reset indexes
+                var lists = section.find('.list-items');
+                for (var x = 0; x < lists.length; x++) {
+                    var items =$(lists[x]).find('li');
+                    for (var y = 0; y < items.length; y++) {
+                        $(items[y]).attr('data-index', y + 1);
+                    }
+                }
+            },
+            parse: function (hidden) {
+                var data = hidden.val();
+                if (data && data != '') {
+                    data = JSON.parse(data);
+                } else {
+                    data = [];
+                }
+                return data;
+            },
+            close: function (e) {
+                var target = $(e.target);
+                var field = target.parents('.content-field').first();
+                var li = target.parents('li').first();
+                var index = li.attr('data-index') - 1;
+                var hidden = field.find('input.input-field');
+                var data = S.editor.fields.custom.list.parse(hidden);
+                if (data.length >= index) {
+                    data.splice(index, 1);
+                    hidden.val(JSON.stringify(data));
+                    li.remove();
+                    S.editor.fields.save();
+                }
+
+                //reset indexes
+                var items = field.find('.list-items li');
+                for (var y = 0; y < items.length; y++) {
+                    $(items[y]).attr('data-index', y + 1);
+                }
+            }, 
             add: function (e, title, key, params) {
                 e.preventDefault();
                 var field = $(e.target).parents('.content-field').first();
@@ -194,7 +261,6 @@ S.editor.fields = {
                     var b = a.split(',')
                     return {key:b[0], title:b[0].replace(/\-/g, ' ').replace(/\_/g, ''), type:b[1]}
                 });
-                console.log(params);
                 var param = $('#template_content_field').html();
                 var html = '<div class="has-content-fields"><form>' +
                     params.map(a => {
@@ -250,17 +316,9 @@ S.editor.fields = {
                                 break;
                         }
                     });
-                    var data = hidden.val();
-                    if (data && data != '') {
-                        data = JSON.parse(data);
-                    } else {
-                        data = [];
-                    }
+                    var data = S.editor.fields.custom.list.parse(hidden);
                     data.push(fields);
-                    console.log(fields);
-                    console.log(data);
                     hidden.val(JSON.stringify(data));
-                    console.log(JSON.stringify(data));
 
                     //add item to list in content fields tab
                     var i = field.find('.list-items li').length + 1;
@@ -272,6 +330,7 @@ S.editor.fields = {
                     field.find('.accordion').addClass('expanded');
                     S.editor.fields.save();
                     S.popup.hide();
+                    S.editor.fields.custom.list.init();
                     return false;
                 });
 

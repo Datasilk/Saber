@@ -217,6 +217,7 @@ namespace Saber
             Core.Delegates.Email.Send = Email.Send;
             Core.Delegates.Website.SaveLessFile = Website.SaveLessFile;
             Core.Delegates.Website.CopyTempWebsite = Website.CopyTempWebsite;
+            Core.Delegates.Log.Error = Query.Logs.LogError;
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
