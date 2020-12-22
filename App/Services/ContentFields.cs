@@ -190,7 +190,7 @@ namespace Saber.Services
                                                     found = true;
                                                     //load image selection field
                                                     fieldImage.Clear();
-                                                    fieldImage["title"] = fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize();
+                                                    fieldImage["title"] = sectionTitle != "" ? fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize() : fieldTitle.Capitalize();
                                                     fieldImage["id"] = fieldId;
                                                     fieldImage["value"] = fieldValue;
                                                     html.Append(fieldImage.Render());

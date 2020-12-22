@@ -2,21 +2,28 @@ S.editor.fields = {
     clone: $('.editor .textarea-clone > div'),
     selected: '',
     changed: false,
-    load: function (file) {
+    load: function (file, show) {
         if (typeof file == 'object') { file = null;}
         let lang = $('.content-fields-section #lang').val();
         let filepath = '';
         let fileid = '';
+        let tabid = '';
+        //let folder = '';
         var contentfields = '.sections .content-fields-section';
         if (!file) {
             S.editor.fields.changed = false;
             $('.content-fields-section form').html('');
+            tabid = 'content-fields-section';
         } else {
             //load content for partial view content fields
             filepath = file.replace('content/partials/', '');
             fileid = filepath.replace(/\./g, '_').replace(/\//g, '_');
+            tabid = 'content-fields-' + fileid;
+            //folder = file.split('/').splice(-1, 1).join('/');
             contentfields = '.sections .content-fields-' + fileid;
-            $('.editor .sections > .tab').addClass('hide');
+            if (show !== false) {
+                $('.editor .sections > .tab').addClass('hide');
+            }
 
             if ($('.content-fields-' + fileid).length == 0) {
                 //generate content fields section
@@ -25,7 +32,9 @@ S.editor.fields = {
                 div.innerHTML = $('#template_contentfields').html();
                 $('.editor .sections').append(div);
                 S.editor.resizeWindow();
-                $('.editor .sections > .content-fields-' + fileid).removeClass('hide');
+                if (show !== false) {
+                    $('.editor .sections > .content-fields-' + fileid).removeClass('hide');
+                }
                 lang = window.language;
 
                 //get list of languages
@@ -45,7 +54,7 @@ S.editor.fields = {
                 );
 
                 //render new tab
-                S.editor.tabs.create('Content: ' + filepath, 'content-fields-' + fileid, { removeOnClose: true },
+                S.editor.tabs.create('Content: ' + filepath, 'content-fields-' + fileid, { removeOnClose: true, selected:show !== false },
                     () => { //onfocus
                         $('.tab.content-fields-' + fileid).removeClass('hide');
                         $('ul.file-tabs > li').removeClass('selected');
@@ -65,9 +74,11 @@ S.editor.fields = {
                 $('.tab-content-fields-' + fileid + ' > div').attr('data-path-url', file);
             } else {
                 lang = $(contentfields + ' #lang').val();
-                $('.edit-tabs li > div').removeClass('selected');
-                $('.tab-content-fields-' + fileid + ' > div').addClass('selected');
-                $('.editor .sections > .content-fields-' + fileid).removeClass('hide');
+                if (show !== false) {
+                    $('.edit-tabs li > div').removeClass('selected');
+                    $('.tab-content-fields-' + fileid + ' > div').addClass('selected');
+                    $('.editor .sections > .content-fields-' + fileid).removeClass('hide');
+                }
             }
         }
 
@@ -88,11 +99,12 @@ S.editor.fields = {
                 //set up event for image selection buttons
                 $(contentfields + ' .select-image button').on('click', (e) => {
                     e.preventDefault();
-                    S.editor.resources.select(S.editor.path, '.jpg, .png, .gif', true, "Select An Image", "Select Image", (results) => {
+                    S.editor.resources.select(file ? 'wwwroot/images' : S.editor.path, '.jpg, .png, .gif', true, "Select An Image", "Select Image", (results) => {
                         var container = $(e.target).parents('.content-field');
                         var field = container.find('.input-field');
-                        var newpath = S.editor.path.replace('content/', 'content/pages/') + '/';
+                        var newpath = file ? 'images/' : S.editor.path.replace('content/', 'content/pages/') + '/';
                         var src = newpath + results[0];
+                        console.log(src);
                         container.find('.img').html('<div><img src="' + src + '"/></div>');
                         field.val(src);
                         S.editor.fields.save(file);
@@ -106,7 +118,8 @@ S.editor.fields = {
                 });
 
                 //initialize all custom fields
-                S.editor.fields.custom.list.init();
+                console.log('tabid = ' + tabid);
+                S.editor.fields.custom.list.init($('.' + tabid + ' > div'));
 
                 //initialize any accordions
                 S.accordion.load({}, () => { S.editor.resizeWindow(); }); 
@@ -187,8 +200,8 @@ S.editor.fields = {
     },
     custom: {
         list: {
-            init: function () {
-                let seltab = $('.tab-for-content-fields.selected > div');
+            init: function (seltab) {
+                //let seltab = $('.tab-for-content-fields.selected > div');
                 let pathid = seltab.attr('data-path');
                 let section = $('.' + pathid + ' form');
                 //event listener for close button
@@ -278,7 +291,7 @@ S.editor.fields = {
                         return param.replace('##name##', a.title)
                             .replace('##input##', input);
                     }).join('') +
-                    '<div class="row pad-top"><button class="apply">Add List Item</button></div>' +
+                    '<div class="row text-center pad-top"><button class="apply">Add List Item</button></div>' +
                     '</form></div>';
 
                 S.popup.show("Add List Item for " + title.substr(5), html);

@@ -3,7 +3,7 @@ S.editor.folder = {
         show: function () {
             S.editor.dropmenu.hide();
             var path = S.editor.explorer.path;
-            if (path == 'root') { path == 'wwwroot'; }
+            if (path == 'root') { path = 'wwwroot'; }
             S.popup.show('New Folder',
                 $('#template_newfolder').html()
                     .replace('##folder-path##', path)

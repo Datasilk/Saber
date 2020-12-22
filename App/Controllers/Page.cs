@@ -11,6 +11,8 @@ namespace Saber.Controllers
     {
         public override string Render(string body = "")
         {
+            if (!Server.HasAdmin) { return Redirect("/login"); }
+
             //get selected language
             var lang = User.Language ?? "en";
             if (Parameters.ContainsKey("lang"))
