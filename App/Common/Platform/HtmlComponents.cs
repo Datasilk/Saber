@@ -23,18 +23,18 @@ namespace Saber.Common.Platform
                     Name = "Line Break",
                     Block = false,
                     Description = "Used to separate groups of content fields by creating a line break within the Content Fields form.",
-                    Parameters = new Dictionary<string, HtmlComponentParameter>()
-                    {
-                        {"title", 
-                            new HtmlComponentParameter()
-                            {
-                                Name = "Title",
-                                DataType = HtmlComponentParameterDataType.Text,
-                                Description = "Display a title above your line break",
-                                Required = false
-                            } 
-                        }
-                    },
+                    //Parameters = new Dictionary<string, HtmlComponentParameter>()
+                    //{
+                    //    {"title", 
+                    //        new HtmlComponentParameter()
+                    //        {
+                    //            Name = "Title",
+                    //            DataType = HtmlComponentParameterDataType.Text,
+                    //            Description = "Display a title above your line break",
+                    //            Required = false
+                    //        } 
+                    //    }
+                    //},
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
@@ -201,8 +201,20 @@ namespace Saber.Common.Platform
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
-                        var paths = request.Path.Split('/');
-                        results.Add(new KeyValuePair<string, string>(prefix + "page-id", string.Join('_', paths)));
+                        if(request.Path == "")
+                        {
+                            results.Add(new KeyValuePair<string, string>(prefix + "page-id", "home"));
+                        }
+                        else if (request.Path.Contains("api/") && request.Parameters.ContainsKey("path"))
+                        {
+                            var paths = request.Parameters["path"].Replace("content/", "").Replace(".html", "").Split("/");
+                            results.Add(new KeyValuePair<string, string>(prefix + "page-id", string.Join('_', paths)));
+                        }
+                        else
+                        {
+                            var paths = request.Path.Split('/');
+                            results.Add(new KeyValuePair<string, string>(prefix + "page-id", string.Join('_', paths)));
+                        }
                         return results;
                     })
                 },

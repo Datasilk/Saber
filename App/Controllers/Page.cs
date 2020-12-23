@@ -83,9 +83,6 @@ namespace Saber.Controllers
                     Footer.Append(Cache.LoadFile("/Views/Editor/live-preview-min.html"));
                 }
 
-                //add website css
-                AddCSS("/css/website.css", "website_css");
-
                 //add all custom website styles
                 var styleIndex = 1;
                 foreach (var style in webconfig.Stylesheets)
@@ -93,6 +90,9 @@ namespace Saber.Controllers
                     AddCSS(style, "custom_css_" + styleIndex);
                     styleIndex++;
                 }
+
+                //add website css
+                AddCSS("/css/website.css", "website_css");
 
                 //add all custom page styles before loading page style
                 foreach (var style in config.stylesheets)

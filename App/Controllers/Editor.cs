@@ -80,7 +80,7 @@ namespace Saber.Controllers
                         Key = "var",
                         Name = "Select a special variable to use",
                         DataType = (int)Vendor.HtmlComponentParameterDataType.List,
-                        ListOptions = Common.Vendors.SpecialVars.OrderBy(a => a.Key).Select(a => ("<option value=\"" +
+                        ListOptions = Common.Vendors.SpecialVars.OrderBy(a => a.Value.Name).Select(a => ("<option value=\"" +
                                 a.Value.HtmlHead.Replace("\"", "&qt;") + "{{" + a.Value.Key + "}}" + (a.Value.Block ? "{{/" + a.Value.Key + "}}" : "") + a.Value.HtmlFoot.Replace("\"", "&qt;") +
                                 "\" title=\"" + a.Value.Description.Replace("\"", "&qt;") + "\">" +
                             a.Value.Name + (a.Value.Block == true ? " (block)" : "") + "</option>").Replace("\"", "&q;")).ToArray(),
