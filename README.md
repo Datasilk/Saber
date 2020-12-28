@@ -9,7 +9,7 @@ Saber gives software engineers the ability to focus on traditional web developme
 ## Requirements
 
 * Visual Studio 2019
-* ASP.NET Core 3.1
+* ASP.NET Core 5.0
 * SQL Server 2017 (or greater)
 * Node.js
 * Gulp
@@ -55,17 +55,17 @@ You will need to make a simple code change in `Program.cs` to support IIS integr
 *Screenshot of Saber's Editor UI*
 
 ## Features
-Build web pages from within your web browser using a built-in IDE for editing HTML, CSS, LESS, & Javascript files.
+Build web pages from within your web browser using a built-in IDE for editing HTML, CSS, LESS, & JavaScript files.
 
 #### Navigate to any URL 
-Convert any URL within your website to a valid web page simply by navigating to the URL and writing some HTML, CSS, & JavaScrpit within the built-in IDE. The editor initially opens 3 files (HTML, LESS, & JS) that are resources for the web page being viewed.
+Convert any URL within your website to a valid web page simply by navigating to the URL and writing some HTML, CSS, & JavaScript within the built-in IDE. The editor initially opens 3 files (HTML, LESS, & JS) that are associated with the web page being viewed.
 
 #### Create & Modify Website Resources
 Use the **file browser** within the built-in IDE to open website resources (HTML, CSS, LESS, & JS files) in new tabs. Use the *File* drop down menu to open the file browser or create new files & folders. The initial folder structure is described below: 
 
-* **wwwroot** is a public folder where you can upload files & images to utilize within your website
-* **pages** is a server-side folder used to store all pages belonging to your website. Clicking on an HTML page in the file browser will navigate to that page within your website for editing.
-* **partials** is a server-side folder used to store HTML files that can be included within web pages throughout your website (such as *header.html* & *footer.html* files)
+* **wwwroot** is a public-facing folder where you can upload files & images to utilize within your website
+* **pages** is a protected folder used to store all pages belonging to your website. Clicking on an HTML page in the file browser will navigate to that page within your website for editing.
+* **partials** is a protected folder used to store HTML files that can be included within web pages throughout your website (such as *header.html* & *footer.html* files)
 * **website.less** is compiled into a CSS file and loaded on every page within your website
 
 #### Upload Files & Photos
@@ -110,7 +110,7 @@ The above example will display a list of blog pages that exists within your webs
 Before this can be achieved, though, you must install the [PageList](https://github.com/Datasilk/Saber-PageList/) plugin into the `/App/Vendors` folder.
 
 ##### Develop Vendor Plugins
-You can learn how to develop Vendor plugins and find a list of supported Vendor plugins and links to their repositories online at [/Vendor/README.md](Vendor/README.md).
+You can learn how to develop Vendor plugins and find a list of supported Vendor plugins and links to their repositories online at [saber.datasilk.io](https://saber.datasilk.io/developers.html) and [/Vendor/README.md](Vendor/README.md).
 
 ##### Installing a Vendor Plugin
 All vendor plugins **must** be installed within the `/App/Vendors` folder. For example:
@@ -130,9 +130,18 @@ Saber uses [Monaco](https://microsoft.github.io/monaco-editor/) as its code edit
 * Ctrl + S (save)
 * Escape (toggle editor / website preview)
 * F1 (Text Editor Command window)
+* F2 Page Content tab
+* F3 Page Settings tab
+* F4 Page Resouces tab
+* F6 Website Settings tab
+* F7 User Management tab
+* F8 Security Groups tab
+* F9 toggle File Browser
 
 #### User Security
 Saber includes a robust security system so administrators can give users permissions to specific features & web pages.
+Create Security Groups to manage permissions to features within Saber, then assign users to your Security Groups. 
+Assign one or more Security Groups to a web page to make the page secure. All secure pages that are accessed by users without proper permissions will be shown `pages/access-denied.html` instead of the desired page.
 
 ---
 
