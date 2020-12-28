@@ -119,7 +119,7 @@ S.editor.fields = {
 
                 //initialize all custom fields
                 console.log('tabid = ' + tabid);
-                S.editor.fields.custom.list.init($('.' + tabid + ' > div'));
+                S.editor.fields.custom.list.init($('.tab-' + tabid + ' > div'));
 
                 //initialize any accordions
                 S.accordion.load({}, () => { S.editor.resizeWindow(); }); 
@@ -264,89 +264,96 @@ S.editor.fields = {
                     $(items[y]).attr('data-index', y + 1);
                 }
             }, 
-            add: function (e, title, key, params) {
+            add: function (e, title, key, partial, ispage) {
                 e.preventDefault();
                 var field = $(e.target).parents('.content-field').first();
                 var hidden = field.find('input.input-field');
+                S.popup.show("Add List Item for " + title.substr(5), '<div class="has-content-fields"><form></form></div>');
+                $('.box.popup').css({ width: '90%', 'max-width': '1200px' });
 
-                //show popup modal to add new list item
-                var params = params.split('|').map(a => {
-                    var b = a.split(',')
-                    return {key:b[0], title:b[0].replace(/\-/g, ' ').replace(/\_/g, ''), type:b[1]}
-                });
-                var param = $('#template_content_field').html();
-                var html = '<div class="has-content-fields"><form>' +
-                    params.map(a => {
-                        var input = '';
-                        var id = ' id="field_' + a.key + '"';
-                        //determine which input to render
-                        switch (a.type) {
-                            case '0': //text
-                                input = '<textarea' + id + ' class="input-field text-field"></textarea>';
-                                break;
-                            case '1': //block
-                                input = '<input type="checkbox"' + id + ' class="input-field"></input>';
-                                break;
-                        }
-                        return param.replace('##name##', a.title)
-                            .replace('##input##', input);
-                    }).join('') +
-                    '<div class="row text-center pad-top"><button class="apply">Add List Item</button></div>' +
-                    '</form></div>';
+                //load content fields into popup modal
+                S.ajax.post('ContentFields/Render', {path:'content/' + partial, language:lang},
+                    function (d) {
+                        d.selector = '.box.popup form';
+                        S.ajax.inject(d);
 
-                S.popup.show("Add List Item for " + title.substr(5), html);
-                $('.popup').css({ width: '90%', 'max-width':'1200px' });
+                        //add event listeners
+                        $('.box.popup textarea.input-field').on('keyup, keydown, change', S.editor.fields.resize)
+                            .each(function (e) {
+                                S.editor.fields.resize({ target: e });
+                            });
 
-                //add event listeners
-                $('.popup textarea').on('keyup, keydown, change', S.editor.fields.resize)
-                    .each(function (e) {
-                        S.editor.fields.resize({ target: e });
-                    });
+                        //set up event for image selection buttons
+                        $('.box.popup .select-image button').on('click', (e) => {
+                            e.preventDefault();
+                            S.editor.resources.select(!ispage ? 'wwwroot/images' : S.editor.path, '.jpg, .png, .gif', true, "Select An Image", "Select Image", (results) => {
+                                var container = $(e.target).parents('.content-field');
+                                var field = container.find('.input-field');
+                                var newpath = !ispage ? 'wwwroot/images/' : S.editor.path.replace('content/', 'content/pages/') + '/';
+                                var src = newpath + results[0];
+                                console.log(src);
+                                container.find('.img').html('<div><img src="' + src + '"/></div>');
+                                field.val(src);
+                            });
+                        });
 
-                $('.popup form').on('submit', (e) => {
-                    //save custom list item
-                    e.preventDefault();
-                    var fields = {};
-                    var texts = $('.popup form .input-field');
-                    texts.each(function (txt) {
-                        if (!txt.id || (txt.id && txt.id.indexOf('field_') < 0)) { return; }
-                        var t = $(txt);
-                        var id = txt.id.replace('field_', '');
-                        switch (txt.tagName.toLowerCase()) {
-                            case 'textarea':
-                                fields[id] = t.val();
-                                break;
-                            case 'input':
-                                var type = t.attr('type');
-                                switch (type) {
-                                    case 'checkbox':
-                                        fields[id] = txt.checked == true ? '1' : '0';
-                                        break;
-                                    default:
+                        $('.box.popup .select-image .input-field').on('change', (e) => {
+                            var container = $(e.target).parents('.content-field');
+                            var field = container.find('.input-field');
+                            container.find('.img').html('<div><img src="' + field.val() + '"/></div>');
+                        });
+
+                        //initialize all custom fields
+                        S.editor.fields.custom.list.init($('.box.popup'));
+
+                        //initialize any accordions
+                        S.accordion.load({}, () => { S.editor.resizeWindow(); }); 
+
+                        $('.popup form').on('submit', (e) => {
+                            //save custom list item
+                            e.preventDefault();
+                            var fields = {};
+                            var texts = $('.popup form .input-field');
+                            texts.each(function (txt) {
+                                if (!txt.id || (txt.id && txt.id.indexOf('field_') < 0)) { return; }
+                                var t = $(txt);
+                                var id = txt.id.replace('field_', '');
+                                switch (txt.tagName.toLowerCase()) {
+                                    case 'textarea':
                                         fields[id] = t.val();
                                         break;
+                                    case 'input':
+                                        var type = t.attr('type');
+                                        switch (type) {
+                                            case 'checkbox':
+                                                fields[id] = txt.checked == true ? '1' : '0';
+                                                break;
+                                            default:
+                                                fields[id] = t.val();
+                                                break;
+                                        }
+                                        break;
                                 }
-                                break;
-                        }
-                    });
-                    var data = S.editor.fields.custom.list.parse(hidden);
-                    data.push(fields);
-                    hidden.val(JSON.stringify(data));
+                            });
+                            var data = S.editor.fields.custom.list.parse(hidden);
+                            data.push(fields);
+                            hidden.val(JSON.stringify(data));
 
-                    //add item to list in content fields tab
-                    var i = field.find('.list-items li').length + 1;
-                    var index = 'List Item #' + i;
-                    field.find('.list-items ul').append($('#custom_field_list_item').html()
-                        .replace('##title##', key != '' ? fields[key] : index)
-                        .replace('##index##', i)
-                    );
-                    field.find('.accordion').addClass('expanded');
-                    S.editor.fields.save();
-                    S.popup.hide();
-                    S.editor.fields.custom.list.init();
-                    return false;
-                });
-
+                            //add item to list in content fields tab
+                            var i = field.find('.list-items li').length + 1;
+                            var index = 'List Item #' + i;
+                            field.find('.list-items ul').append($('#custom_field_list_item').html()
+                                .replace('##title##', key != '' ? fields[key] : index)
+                                .replace('##index##', i)
+                            );
+                            field.find('.accordion').addClass('expanded');
+                            S.editor.fields.save();
+                            S.popup.hide();
+                            S.editor.fields.custom.list.init();
+                            return false;
+                        });
+                    }, null, true
+                );
                 return false;
             },
         }

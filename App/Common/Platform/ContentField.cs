@@ -52,8 +52,7 @@ namespace Saber.Common.Platform.ContentField
             }
             viewlist["title"] = key.Replace("-", " ").Replace("_", " ").Capitalize();
             viewlist["key"] = fieldKey;
-            viewlist["params"] = string.Join('|', partial.Elements.Where(a => a.Name != "" && a.Name.Substring(0, 1) != "/")
-                .Select(a => a.Name + "," + (a.isBlock ? '1' : '0')));
+            viewlist["partial"] = args["partial"];
             return viewlist.Render();
         }
     }
