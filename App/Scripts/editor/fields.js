@@ -106,7 +106,6 @@ S.editor.fields = {
                         var field = container.find('.input-field');
                         var newpath = file ? 'images/' : S.editor.path.replace('content/', 'content/pages/') + '/';
                         var src = newpath + results[0];
-                        console.log(src);
                         container.find('.img').html('<div><img src="' + src + '"/></div>');
                         field.val(src);
                         S.editor.fields.save(file);
@@ -286,11 +285,9 @@ S.editor.fields = {
                     S.popup.resize();
                     popup.find('form').on('submit', (e) => {
                         //save custom list item
-                        console.log('submit form');
                         e.preventDefault();
                         var fields = {};
                         var texts = $('.popup form .input-field');
-                        console.log(texts);
                         texts.each(function (txt) {
                             if (!txt.id || (txt.id && txt.id.indexOf('field_') < 0)) { return; }
                             var t = $(txt);
@@ -313,8 +310,6 @@ S.editor.fields = {
                             }
                         });
                         var data = S.editor.fields.custom.list.parse(hidden);
-                        console.log(data);
-                        console.log(fields);
                         data.push(fields);
                         hidden.val(JSON.stringify(data));
 
