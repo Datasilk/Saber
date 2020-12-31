@@ -11,11 +11,11 @@ namespace Saber.Services
 {
     public class ContentFields : Service
     {
-        public string Render(string path, string language)
+        public string Render(string path, string language, string container, Dictionary<string, string> data = null)
         {
             if (!CheckSecurity("edit-content")) { return AccessDenied(); }
             var paths = PageInfo.GetRelativePath(path);
-            var fields = Core.ContentFields.GetPageContent(path, language);
+            var fields = data != null && data.Keys.Count > 0 ? data : Core.ContentFields.GetPageContent(path, language);
             var htmlVars = Common.Vendors.HtmlComponentKeys;
             var view = new View(string.Join("/", paths) + (path.Contains(".html") ? "" : ".html"));
             var section = new View("/Views/ContentFields/section.html");
@@ -24,7 +24,7 @@ namespace Saber.Services
             var fieldImage = new View("/Views/ContentFields/image.html");
             var fieldVendor = new View("/Views/ContentFields/vendor.html");
 
-            var result = processView("", view, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
+            var result = processView("", view, language, container, fields, section, fieldBlock, fieldText, fieldImage, fieldVendor, htmlVars);
 
             if (string.IsNullOrWhiteSpace(result))
             {
@@ -35,7 +35,7 @@ namespace Saber.Services
             return Response( result);
         }
 
-        private string processView(string title, View view, Dictionary<string, string> fields, View section, View fieldBlock, View fieldText, View fieldImage, View fieldVendor, string[] vars)
+        private string processView(string title, View view, string language, string container, Dictionary<string, string> fields, View section, View fieldBlock, View fieldText, View fieldImage, View fieldVendor, string[] vars)
         {
             var html = new StringBuilder();
             var sectionTitle = "";
@@ -125,7 +125,7 @@ namespace Saber.Services
 
                             if(vendor.Value.ReplaceRow == true)
                             {
-                                html.Append(vendor.Value.ContentField.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName));
+                                html.Append(vendor.Value.ContentField.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName, language, container));
                             }
                             else
                             {
@@ -135,7 +135,7 @@ namespace Saber.Services
                                 fieldVendor["title"] = (fieldTitleKey != "" ? fieldTitleKey + ": " : "") + fieldTitleId.Trim().Capitalize();
                                 fieldVendor["id"] = fieldId;
                                 fieldVendor["value"] = fieldValueHtml;
-                                fieldVendor["content"] = vendor.Value.ContentField.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName);
+                                fieldVendor["content"] = vendor.Value.ContentField.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName, language, container);
                                 html.Append(fieldVendor.Render());
                             }
                         }

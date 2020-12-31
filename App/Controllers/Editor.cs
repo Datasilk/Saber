@@ -128,8 +128,13 @@ namespace Saber.Controllers
 
                 //add custom content field List item view
                 var listitem = new View("/Views/ContentFields/list-item.html");
-                listitem["title"] = "##title##";
+                listitem["label"] = "##label##";
                 listitem["index"] = "##index##";
+                listitem["title"] = "##title##";
+                listitem["key"] = "##key##";
+                listitem["partial"] = "##partial##";
+                listitem["lang"] = "##lang##";
+                listitem["container"] = "##container##";
                 view["custom-field-list-item"] = listitem.Render();
             }
             AddScript("/editor/js/platform.js");

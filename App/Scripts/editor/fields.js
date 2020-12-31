@@ -9,7 +9,7 @@ S.editor.fields = {
         let fileid = '';
         let tabid = '';
         //let folder = '';
-        var contentfields = '.sections .content-fields-section';
+        var container = '.sections .content-fields-section';
         if (!file) {
             S.editor.fields.changed = false;
             $('.content-fields-section form').html('');
@@ -20,7 +20,7 @@ S.editor.fields = {
             fileid = filepath.replace(/\./g, '_').replace(/\//g, '_');
             tabid = 'content-fields-' + fileid;
             //folder = file.split('/').splice(-1, 1).join('/');
-            contentfields = '.sections .content-fields-' + fileid;
+            container = '.sections .content-fields-' + fileid;
             if (show !== false) {
                 $('.editor .sections > .tab').addClass('hide');
             }
@@ -41,7 +41,7 @@ S.editor.fields = {
                 S.ajax.post('Languages/Get', {},
                     function (d) {
                         var langs = d.split('|');
-                        var sel = $(contentfields + ' #lang');
+                        var sel = $(container + ' #lang');
                         for (var x = 0; x < langs.length; x++) {
                             var l = langs[x].split(',');
                             sel.append('<option value="' + l[0] + '"' + (l[0] == lang ? ' selected="selected"' : '') + '>' + l[1] + '</option>');
@@ -73,7 +73,7 @@ S.editor.fields = {
                 $('.tab-content-fields-' + fileid).addClass('tab-for-content-fields');
                 $('.tab-content-fields-' + fileid + ' > div').attr('data-path-url', file);
             } else {
-                lang = $(contentfields + ' #lang').val();
+                lang = $(container + ' #lang').val();
                 if (show !== false) {
                     $('.edit-tabs li > div').removeClass('selected');
                     $('.tab-content-fields-' + fileid + ' > div').addClass('selected');
@@ -81,47 +81,51 @@ S.editor.fields = {
                 }
             }
         }
-        S.editor.fields.render(file, lang, contentfields, tabid, () => {});
+        S.editor.fields.render(file, lang, container, null, () => {});
     },
-    render: function (file, lang, contentfields, tabid, callback) {
-        S.ajax.post('ContentFields/Render', { path: file || S.editor.path, language: lang },
+    render: function (file, lang, container, fields, callback) {
+        var data = {
+            path: file || S.editor.path,
+            language: lang,
+            container: container,
+            data: fields ?? {}
+        };
+        S.ajax.post('ContentFields/Render', data,
             function (d) {
-                d.selector = contentfields + ' form';
+                d.selector = container + ' form';
                 S.ajax.inject(d);
 
                 //add language button
-                $(contentfields + ' .add-lang a').on('click', S.editor.lang.add.show);
+                $(container + ' .add-lang a').on('click', S.editor.lang.add.show);
 
                 //set up events for fields
-                $(contentfields + ' form .input-field').on('keyup, keydown, change', (e) => { S.editor.fields.change(e, file) })
+                $(container + ' form .input-field').on('keyup, keydown, change', (e) => { S.editor.fields.change(e, file) })
                     .each(function (field) {
                         S.editor.fields.change({ target: field }, file);
                     });
 
                 //set up event for image selection buttons
-                $(contentfields + ' .select-image button').on('click', (e) => {
+                $(container + ' .select-image button').on('click', (e) => {
                     e.preventDefault();
                     S.editor.resources.select(file ? 'wwwroot/images' : S.editor.path, '.jpg, .png, .gif', true, "Select An Image", "Select Image", (results) => {
-                        var container = $(e.target).parents('.content-field');
-                        var field = container.find('.input-field');
+                        var parent = $(e.target).parents('.content-field');
+                        var field = parent.find('.input-field');
                         var newpath = file ? 'images/' : S.editor.path.replace('content/', 'content/pages/') + '/';
                         var src = newpath + results[0];
-                        container.find('.img').html('<div><img src="' + src + '"/></div>');
+                        parent.find('.img').html('<div><img src="' + src + '"/></div>');
                         field.val(src);
                         S.editor.fields.save(file);
                     });
                 });
 
-                $(contentfields + ' .select-image .input-field').on('change', (e) => {
-                    var container = $(e.target).parents('.content-field');
-                    var field = container.find('.input-field');
-                    container.find('.img').html('<div><img src="' + field.val() + '"/></div>');
+                $(container + ' .select-image .input-field').on('change', (e) => {
+                    var parent = $(e.target).parents('.content-field');
+                    var field = parent.find('.input-field');
+                    parent.find('.img').html('<div><img src="' + field.val() + '"/></div>');
                 });
 
                 //initialize all custom fields
-                if (tabid) {
-                    S.editor.fields.custom.list.init($('.tab-' + tabid + ' > div'));
-                }
+                S.editor.fields.custom.list.init(container);
                 
 
                 //initialize any accordions
@@ -205,15 +209,14 @@ S.editor.fields = {
     },
     custom: {
         list: {
-            init: function (seltab) {
+            init: function (container) {
                 //let seltab = $('.tab-for-content-fields.selected > div');
-                let pathid = seltab.attr('data-path');
-                let section = $('.' + pathid + ' form');
+                let section = $(container + ' form');
                 //event listener for close button
                 section.find('.list-items li .close-btn').off('click').on('click', S.editor.fields.custom.list.close);
 
                 //drag & sort event listeners
-                S.drag.sort.add('.' + pathid + ' .list-items ul', '.' + pathid + ' .list-items li', (e) => {
+                S.drag.sort.add(container + ' .list-items ul', container + ' .list-items li', (e) => {
                     //update list
                     var target = $(e.target);
                     var field = target.parents('.content-field').first();
@@ -269,20 +272,38 @@ S.editor.fields = {
                     $(items[y]).attr('data-index', y + 1);
                 }
             }, 
-            add: function (e, title, key, partial, ispage) {
+            add: function (e, title, key, partial, lang, container) {
+                return S.editor.fields.custom.list.update(e, title, key, partial, lang, container);
+            },
+            edit: function (e, title, key, partial, lang, container) {
+                //get data for field
+                var li = $(e.target);
+                if (e.target.tagName.toLowerCase() != 'li') {
+                    li = li.parents('li').first();
+                }
+                var index = 0;
+                var ul = li.parent();
+                var lis = ul.children();
+                for (var x = 0; x < lis.length; x++) {
+                    if (lis[x] == li[0]) {
+                        index = x; break;
+                    }
+                }
+                var data = JSON.parse(li.parents('.content-field').find('input.input-field').val()) ?? [];
+                S.editor.fields.custom.list.update(e, title, key, partial, lang, container, data[index], index);
+            },
+            update: function (e, title, key, partial, lang, container, fieldsdata, index) {
                 e.preventDefault();
-                var seltab = $('.tab-for-content-fields.selected > div');
-                var pathid = seltab.attr('data-path');
-                lang = $('.' + pathid + ' #lang').val();
                 var field = $(e.target).parents('.content-field').first();
                 var hidden = field.find('input.input-field');
-                var popup = $(S.popup.show("Add List Item for " + title.substr(5), '<div class="has-content-fields"><form></form></div>'));
+                var popup = $(S.popup.show((fieldsdata ? 'Update' : 'Add') + ' List Item for ' + title.substr(5), '<div class="has-content-fields"><form></form></div>'));
                 popup.css({ width: '90%', 'max-width': '1200px' });
 
                 //load content fields into popup modal
-                S.editor.fields.render('content/' + partial, lang, '.box.popup', null, () => {
-                    popup.find('form').append('<div class="row pad-top text-center"><div class="col"><button class="apply">Add List Item</button></div>');
+                S.editor.fields.render('content/' + partial, lang, '.box.popup', fieldsdata, () => {
+                    popup.find('form').append('<div class="row pad-top text-center"><div class="col"><button class="apply">' + (fieldsdata ? 'Update' : 'Add') + ' List Item</button></div>');
                     S.popup.resize();
+
                     popup.find('form').on('submit', (e) => {
                         //save custom list item
                         e.preventDefault();
@@ -310,27 +331,41 @@ S.editor.fields = {
                             }
                         });
                         var data = S.editor.fields.custom.list.parse(hidden);
-                        data.push(fields);
-                        hidden.val(JSON.stringify(data));
 
                         //add item to list in content fields tab
-                        var i = field.find('.list-items li').length + 1;
-                        var index = 'List Item #' + i;
-                        field.find('.list-items ul').append($('#custom_field_list_item').html()
-                            .replace('##title##', key != '' ? fields[key] : index)
-                            .replace('##index##', i)
-                        );
+                        var i = (index != null ? parseInt(index) : field.find('.list-items li').length) + 1;
+                        var ul = field.find('.list-items ul');
+                        var children = field.find('.list-items ul > li').map((i, a) => a.outerHTML);
+                        var child = $('#custom_field_list_item').html()
+                            .replace(/\#\#label\#\#/g, key != '' ? fields[key] : 'List Item #' + i)
+                            .replace(/\#\#index\#\#/g, i)
+                            .replace(/\#\#title\#\#/g, title)
+                            .replace(/\#\#key\#\#/g, key)
+                            .replace(/\#\#partial\#\#/g, partial)
+                            .replace(/\#\#lang\#\#/g, lang)
+                            .replace(/\#\#container\#\#/g, container);
+                        ul.html('');
+                        if (fieldsdata != null && index != null) {
+                            //update existing element in data list
+                            data[index] = fields;
+                            children[index] = child;
+                        } else {
+                            data.push(fields);
+                            children.push(child);
+                        }
+                        for (var x = 0; x < children.length; x++) {
+                            ul.append(children[x]);
+                        }
+                        hidden.val(JSON.stringify(data));
                         field.find('.accordion').addClass('expanded');
                         S.editor.fields.save();
                         S.popup.hide();
-                        S.editor.fields.custom.list.init(seltab);
+                        S.editor.fields.custom.list.init(container);
                         return false;
                     });
                 });
-
-                
                 return false;
-            },
+            }
         }
     }
 };

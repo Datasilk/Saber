@@ -103,6 +103,7 @@ S.editor.resources = {
                     },
 
                     onQueueComplete: function () {
+                        S.popup.hide(popup);
                         S.editor.resources.select(path, filetypes, multiselect, title, buttonTitle, callback);
                     }
                 });

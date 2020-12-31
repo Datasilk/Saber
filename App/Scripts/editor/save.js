@@ -1,4 +1,5 @@
 S.editor.save = function (path, content) {
+    console.log(path);
     if (path == null || typeof path != 'string') {
         switch (S.editor.type) {
             case 0: case 1: //monaco & ace (apparently share the same code)
@@ -74,8 +75,6 @@ S.editor.save = function (path, content) {
                 //check if file is a partial and if partial content fields tab is loaded
                 console.log('save partial view');
                 var fieldstab = $('.tab-' + self.fileId(path.replace('content/partials/', 'content-fields-')));
-                console.log('.tab-' + self.fileId(path.replace('content/partials/', 'content-fields-')));
-                console.log(fieldstab);
                 if (fieldstab.length > 0) {
                     S.editor.fields.load(path, false);
                 }
