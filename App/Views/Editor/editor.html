@@ -495,9 +495,9 @@
 
 <script language="text/html" id="template_resource_selected">
     <div class="selected hide">
-    <svg viewBox="0 0 32 32">
-        <use xlink:href="#icon-check" x="0" y="0" width="32" height="32"></use>
-    </svg>
+        <svg viewBox="0 0 32 32">
+            <use xlink:href="#icon-check" x="0" y="0" width="32" height="32"></use>
+        </svg>
     </div>
 </script>
 {{components}}
@@ -524,8 +524,47 @@
     </div>
 </script>
 <script language="text/html" id="template_component_param">
-    <div class="row field">##name##</div>
-    <div class="row input">##input##</div>
+    <div class="component-param">
+        <div class="row field">##name## ##required##</div>
+        <div class="row input">##input##</div>
+    </div>
+</script>
+<script language="text/html" id="template_component_param_list">
+    <div class="component-param">
+        <div class="accordion">
+            <div class="title">
+                <h6>##name## ##required##</h6>
+                <div class="expander">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </div>
+                <div class="button add-list-item">
+                    <a href="javascript:">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-add-sm" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </a>
+                </div>
+                <div class="button accept-item hide">
+                    <a href="javascript:">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-check" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </a>
+                </div>
+                <div class="button cancel-item hide">
+                    <a href="javascript:">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="contents pad"><span class="faded">no items created yet</span></div>
+        </div>
+        <div class="row input field-form hide">##input##</div>
+    </div>
 </script>
 {{/components}}
 <script language="text/html" id="template_select_file">

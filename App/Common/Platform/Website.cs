@@ -36,6 +36,7 @@ namespace Saber.Common.Platform
             }
             var fileparts = filename.Split('.', 2);
             var dir = string.Join("/", paths) + "/";
+            if(fileparts.Length < 2) { throw new ServiceErrorException("Your file must include a file extension"); }
 
             if (!Directory.Exists(App.MapPath(dir)))
             {

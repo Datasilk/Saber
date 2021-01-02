@@ -35,6 +35,8 @@
                 .replace('##key##', key).replace('##name##', name)
                 .replace('##button-title##', 'Create ' + name);
             var htmlparam = $('#template_component_param').html();
+            var htmlparamadd = $('#template_component_param_add').html();
+            var htmlparamlist = $('#template_component_param_list').html();
             var fields = [];
             var idfield = $('#template_component_id').html();
 
@@ -53,7 +55,8 @@
                     var defaultVal = param.DefaultValue ?? '';
                     var required = param.Required ?? false;
                     var title = ' title="' + param.Description + '"';
-                    var field = htmlparam.replace('##name##', param.Name)
+                    var field = param.List == true ? htmlparamlist : htmlparam;
+                    field = field.replace('##name##', param.Name)
                         .replace('##required##', !required ? '<span class="faded">optional</span>' : '');
                     switch (param.DataType) {
                         case 0: //text
@@ -70,7 +73,7 @@
                             break;
                         case 3: //list
                             console.log(param.ListOptions ? param.ListOptions.join('').replace(/\&q\;/g, '"') : '');
-                            fields.push(field.replace('##input##', '<select' + id + '>' +
+                            fields.push(field.replace('##input##', '<select' + id + title + '>' +
                                 (param.ListOptions ? param.ListOptions.join('').replace(/\&q\;/g, '"') : '') +
                                 '</select>'));
                             break;
@@ -91,15 +94,15 @@
                                 '<input type="hidden"' + id + "/>"));
                             break;
                         case 8: //web page
-                            fields.push(field.replace('##input##', '<div class="select-page">' +
-                                '<div class="pad-right"><input type="text"' + id + '/></div>' +
-                                '<div class="pad-top-sm"><button>Select Web Page...</button></div>' +
+                            fields.push(field.replace('##input##', '<div class="row select-page">' +
+                                '<div class="col"><input type="text"' + id + '/></div>' +
+                                '<div class="col right pad-top-sm"><button>Select Web Page...</button></div>' +
                                 '</div>'));
                             break;
                         case 9: //partial view
-                            fields.push(field.replace('##input##', '<div class="select-partial">' +
-                                '<div class="pad-right"><input type="text"' + id + '/></div>' +
-                                '<div class="pad-top-sm"><button>Select Partial View...</button></div>' +
+                            fields.push(field.replace('##input##', '<div class="row select-partial">' +
+                                '<div class="row"><input type="text"' + id + '/></div>' +
+                                '<div class="row text-right pad-top-sm"><button>Select Partial View...</button></div>' +
                                 '</div>'));
                             break;
                     }
@@ -107,7 +110,29 @@
             }
             $('.component-configure').html(html.replace('##fields##', fields.join(''))).removeClass('hide');
             $('.components-list').addClass('hide');
-            S.editor.resizeWindow();
+            S.accordion.load({}, () => { S.editor.resizeWindow(); });
+            $('.component-configure .accordion .title .add-list-item').on('click', (e) => {
+                //show new param form
+                e.cancelBubble = true;
+                var parent = $(e.target).parents('.component-param').first();
+                parent.find('.accordion').first().removeClass('expanded');
+                parent.find('.add-list-item, .expander').addClass('hide');
+                parent.find('.field-form, .accept-item, .cancel-item').removeClass('hide');
+            });
+            $('.component-configure .accordion .title .accept-item').on('click', (e) => {
+                //create param value item and add to list of param values
+                e.cancelBubble = true;
+                var parent = $(e.target).parents('.component-param').first();
+                parent.find('.add-list-item, .expander').removeClass('hide');
+                parent.find('.field-form, .accept-item, .cancel-item').addClass('hide');
+            });
+            $('.component-configure .accordion .title .cancel-item').on('click', (e) => {
+                //cancel creating param value item
+                e.cancelBubble = true;
+                var parent = $(e.target).parents('.component-param').first();
+                parent.find('.add-list-item, .expander').removeClass('hide');
+                parent.find('.field-form, .accept-item, .cancel-item').addClass('hide');
+            });
 
             //add event listeners
             $('.component-configure .button.cancel').on('click', () => {

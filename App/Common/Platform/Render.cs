@@ -118,26 +118,33 @@ namespace Saber.Common.Platform
             if(uselayout)
             {
                 //render all content
-                results = HtmlComponents(header, request, data);
+                var data2 = ContentFields.GetPageContent("/Content/partials/" + config.header, language);
+                results = HtmlComponents(header, request, data2);
 
                 foreach (var item in results)
                 {
                     header[item.Key] = item.Value;
                 }
-                var data2 = ContentFields.GetPageContent("/Content/partials/" + config.header, language);
                 foreach (var item in data2)
                 {
-                    header[item.Key] = item.Value;
+                    if (!header.ContainsKey(item.Key))
+                    {
+                        header[item.Key] = item.Value;
+                    }
                 }
-                results = HtmlComponents(footer, request, data);
+                data2 = ContentFields.GetPageContent("/Content/partials/" + config.footer, language);
+                results = HtmlComponents(footer, request, data2);
                 foreach (var item in results)
                 {
                     footer[item.Key] = item.Value;
                 }
-                data2 = ContentFields.GetPageContent("/Content/partials/" + config.footer, language);
                 foreach (var item in data2)
                 {
-                    footer[item.Key] = item.Value;
+                    if (!footer.ContainsKey(item.Key))
+                    {
+                        footer[item.Key] = item.Value;
+                    }
+                    
                 }
                 content["content"] = view.Render();
                 return header.Render() + content.Render() + footer.Render();
