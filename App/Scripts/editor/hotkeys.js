@@ -63,6 +63,7 @@ S.editor.hotkey = {
         if (e.ctrlKey == false && e.altKey == false && e.shiftKey == false) {
             switch (e.which) {
                 case 27: //escape key
+                    console.log('toggle preview');
                     //ignore escape key if Monaco editor is showing a suggestion popup
                     if ($('.editor-widget.suggest-widget.visible .monaco-list.element-focused').length > 0 ||
                         $('.editor-widget.find-widget.visible').length > 0

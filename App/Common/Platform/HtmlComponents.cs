@@ -63,7 +63,7 @@ namespace Saber.Common.Platform
                                 AddItemJs = "S.editor.components.partials.show(event, S.editor.components.accordion.accept)"
                             }
                         },
-                        {"load order",
+                        {"loadorder",
                             new HtmlComponentParameter()
                             {
                                 Name = "Load Order",
@@ -72,11 +72,11 @@ namespace Saber.Common.Platform
                                 Required = false,
                                 ListOptions = new KeyValuePair<string, string>[]
                                 {
-                                    new KeyValuePair<string, string>("Loop", "0"),
-                                    new KeyValuePair<string, string>("Reverse", "1"),
-                                    new KeyValuePair<string, string>("Bounce", "2"),
-                                    new KeyValuePair<string, string>("Random", "3"),
-                                    new KeyValuePair<string, string>("Random First", "4"),
+                                    new KeyValuePair<string, string>("Loop", "loop"),
+                                    new KeyValuePair<string, string>("Reverse", "reverse"),
+                                    new KeyValuePair<string, string>("Bounce", "bounce"),
+                                    new KeyValuePair<string, string>("Random", "random"),
+                                    new KeyValuePair<string, string>("Random First", "random-first"),
                                 },
                                 DefaultValue = "0"
                             }
@@ -96,16 +96,75 @@ namespace Saber.Common.Platform
                         var results = new List<KeyValuePair<string, string>>();
                         if(!args.ContainsKey("partial") || string.IsNullOrEmpty(data))
                         {
-                            return new List<KeyValuePair<string, string>>(); 
+                            return new List<KeyValuePair<string, string>>();
                         }
-                        var partial = new View("/Content/" + args["partial"]);
+                        var partialFiles = args["partial"].Split("|");
+                        var partials = new List<View>();
+                        foreach(var file in partialFiles)
+                        {
+                            partials.Add(new View("/Content/" + file));
+                        }
+                        View partial = partials[0];
+
+                        //determine load order
+                        var order = args.ContainsKey("loadorder") ? args["loadorder"] : "loop";
+
                         //deserialize the list data
                         try
                         {
                             var items = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(data);
                             var html = new StringBuilder();
+                            var i = -1;
+                            var forward = true;
                             foreach(var item in items)
                             {
+                                switch (order)
+                                {
+                                    case "loop":
+                                        i++;
+                                        if(i >= partials.Count)
+                                        {
+                                            i = 0;
+                                        }
+                                        break;
+                                    case "reverse":
+                                        i--;
+                                        if(i < 0)
+                                        {
+                                            i = partials.Count - 1;
+                                        }
+                                        break;
+                                    case "bounce":
+                                        i = i + (forward ? 1 : -1);
+                                        if(i < 0){ i = 1; forward = true; }
+                                        if(i >= partials.Count)
+                                        {
+                                            i = partials.Count - 2;
+                                            forward = false;
+                                        }
+                                        break;
+                                    case "random":
+                                        var rnd = new Random();
+                                        i = rnd.Next(0, partials.Count);
+                                        break;
+                                    case "random-first":
+                                        if(forward == true)
+                                        {
+                                            var rnd2 = new Random();
+                                            i = rnd2.Next(0, partials.Count);
+                                            forward = false;
+                                        }
+                                        else
+                                        {
+                                            i++;
+                                            if(i >= partials.Count)
+                                            {
+                                                i = 0;
+                                            }
+                                        }
+                                        break;
+                                }
+                                partial = partials[i];
                                 foreach(var kv in item)
                                 {
                                     partial[kv.Key] = kv.Value;

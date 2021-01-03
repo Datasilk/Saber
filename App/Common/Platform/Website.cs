@@ -13,31 +13,17 @@ namespace Saber.Common.Platform
     {
         public static void NewFile(string path, string filename)
         {
-            //check for root & content folders
-            if (path == "root" || path == "")
-            {
-                throw new ServiceErrorException("You cannot create a file in the root folder");
-            }
+            //check for valid path & filename
+            CheckFilename(path, filename);
             if (path.IndexOf("content") == 0 && path.IndexOf("content/pages/") == 0)
             {
                 throw new ServiceErrorException("You cannot create a file in the content/pages folder");
             }
-
-            //check filename characters
-            if (!filename.OnlyLettersAndNumbers(new string[] { "-", "_", "." }))
-            {
-                throw new ServiceErrorException("Filename must be alpha-numeric and may contain dashes - and underscores _");
-            }
-
             var paths = PageInfo.GetRelativePath(path.ToLower());
-            if (paths.Length == 0)
-            {
-                throw new ServiceErrorException("No path specified");
-            }
-            var fileparts = filename.Split('.', 2);
             var dir = string.Join("/", paths) + "/";
-            if(fileparts.Length < 2) { throw new ServiceErrorException("Your file must include a file extension"); }
+            var fileparts = filename.Split('.', 2);
 
+            //create directory for file if none exist
             if (!Directory.Exists(App.MapPath(dir)))
             {
                 Directory.CreateDirectory(App.MapPath(dir));
@@ -108,6 +94,46 @@ namespace Saber.Common.Platform
                     throw new ServiceErrorException("Error creating new folder");
                 }
             }
+        }
+
+        public static void RenameFile(string path, string newname)
+        {
+            var filename = path.GetFilename();
+            CheckFilename(path, filename);
+            var paths = PageInfo.GetRelativePath(path.ToLower());
+            var dir = string.Join("/", paths.SkipLast(1)) + "/";
+            if(paths[1] == "website.less")
+            {
+                throw new ServiceErrorException("Cannot rename website.less");
+            }
+            File.Move(App.MapPath(dir + filename), App.MapPath(dir + newname));
+        }
+
+        public static bool CheckFilename(string path, string filename)
+        {
+            if (path == "root" || path == "")
+            {
+                throw new ServiceErrorException("You cannot create a file in the root folder");
+            }
+
+            var paths = PageInfo.GetRelativePath(path.ToLower());
+            if (paths.Length == 0)
+            {
+                throw new ServiceErrorException("No path specified");
+            }
+            if(paths[0].ToLower().Replace("/", "") != "content" && paths[0].ToLower() != "wwwroot" && !Core.Website.AllRootFolders().Any(a => a.Split("/")[0] == paths[1]))
+            {
+                throw new ServiceErrorException("Invalid path specified");
+            }
+            //check for extension
+            var fileparts = filename.Split('.', 2);
+            if (fileparts.Length < 2) { throw new ServiceErrorException("Your file must include a file extension"); }
+            //check filename characters
+            if (!filename.OnlyLettersAndNumbers(new string[] { "-", "_", "." }))
+            {
+                throw new ServiceErrorException("Filename must be alpha-numeric and may contain dashes - and underscores _");
+            }
+            return true;
         }
 
         public static void SaveFile(string path, string content)

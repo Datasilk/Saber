@@ -26,13 +26,13 @@ namespace Saber.Common.Platform.ContentField
         {
             if (!args.ContainsKey("partial")) { return "You must provide the \"partial\" property for your mustache \"list\" component"; }
             //load provided partial view
-            var partial = new View("/Content/" + args["partial"]);
+            var partials = args["partial"].Split("|");
             var viewlist = new View("/Views/ContentFields/list.html");
             var viewitem = new View("/Views/ContentFields/list-item.html");
             var fieldKey = args.ContainsKey("key") ? args["key"] : ""; ;
             viewlist["title"] = key.Replace("-", " ").Replace("_", " ").Capitalize();
             viewlist["key"] = fieldKey;
-            viewlist["partial"] = args["partial"];
+            viewlist["partial"] = partials[0];
             viewlist["lang"] = lang;
             viewlist["container"] = container;
 

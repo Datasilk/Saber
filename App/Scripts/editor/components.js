@@ -53,6 +53,7 @@
                     var param = params[x];
                     var id = ' id="param_' + param.Key + '"';
                     var clss = ' class="param' + (!param.List == true ? ' input-field' : '') + '"';
+                    var spellchk = ' spellcheck="false"';
                     var defaultVal = param.DefaultValue ?? '';
                     var required = param.Required ?? false;
                     var title = ' title="' + param.Description + '"';
@@ -62,11 +63,11 @@
                         .replace('##required##', !required ? '<span class="faded">optional</span>' : '');
                     switch (param.DataType) {
                         case 0: //text
-                            fields.push(field.replace('##input##', '<input type="text"' + id + clss + ' ' +
+                            fields.push(field.replace('##input##', '<input type="text"' + id + clss + spellchk + ' ' +
                                 (defaultVal != '' ? 'value="' + defaultVal + '"' : '') + title + '/>'));
                             break;
                         case 1: //number
-                            fields.push(field.replace('##input##', '<input type="number"' + id + clss + ' ' +
+                            fields.push(field.replace('##input##', '<input type="number"' + id + clss + spellchk + ' ' +
                                 (defaultVal != '' ? 'value="' + defaultVal + '"' : '') + title + '/>'));
                             break;
                         case 2: //boolean
@@ -87,7 +88,7 @@
                                 (defaultVal != '' ? 'value="' + defaultVal + '"' : '') + title + '/>'));
                             break;
                         case 6: //currency
-                            fields.push(field.replace('##input##', '<input type="text"' + id + clss + ' ' +
+                            fields.push(field.replace('##input##', '<input type="text"' + id + clss + spellchk + ' ' +
                                 (defaultVal != '' ? 'value="' + defaultVal + '"' : '') + title + '/>'));
                             break;
                         case 7: //image
@@ -96,20 +97,20 @@
                             break;
                         case 8: //web page
                             fields.push(field.replace('##input##', '<div class="row select-page">' +
-                                '<div class="col"><input type="text"' + id + clss + '/></div>' +
+                                '<div class="col"><input type="text"' + id + clss + spellchk + '/></div>' +
                                 '<div class="col right pad-top-sm"><button>Select Web Page...</button></div>' +
                                 '</div>'));
                             break;
                         case 9: //partial view
                             fields.push(field.replace('##input##', '<div class="row select-partial">' +
-                                '<div class="row"><input type="text"' + id + clss + '/></div>' +
+                                '<div class="row"><input type="text"' + id + clss + spellchk + '/></div>' +
                                 '<div class="row text-right pad-top-sm"><button>Select Partial View...</button></div>' +
                                 '</div>'));
                             break;
                     }
                 }
             }
-            $('.component-configure').html(html.replace('##fields##', fields.join(''))).removeClass('hide');
+            $('.component-configure').html(html.replace('##fields##', fields.join('<hr/>') + '<hr/>')).removeClass('hide');
             $('.components-list').addClass('hide');
 
             //set up accordion functionality (add/sort/remove list items)

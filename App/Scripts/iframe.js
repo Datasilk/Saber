@@ -31,7 +31,9 @@
         loadEditor();
     }
 
-    window.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', showEditor, false);
+
+    function showEditor(e) {
         if (e.ctrlKey == false && e.altKey == false && e.shiftKey == false) {
             switch (e.key) {
                 case 'Escape': //escape key
@@ -46,10 +48,11 @@
                         }
                         resizeIframe();
                     }
+                    console.log('toggle from main window');
                     break;
             }
         }
-    }, false);
+    }
 
     window.addScript = function (script) {
         var js = new Function(script);

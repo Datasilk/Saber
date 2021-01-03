@@ -34,6 +34,81 @@ S.editor.explorer = {
                     e.cancelBubble = true;
                     S.editor.folder.delete($(e.target).parents('.item').first().attr('data-path'));
                 });
+                //add event listener for renaming files
+                $('.file-browser .type-file .label, .file-browser .type-file .label').on('click', (e) => {
+                    var parent = $(e.target).parents('.item').first();
+                    var path = parent.attr('data-path');
+                    var tab = $('.tab-' + S.editor.fileId(path) + '.selected');
+                    if (tab.length == 1 && ['/pages/', 'website.less'].filter(a => path.indexOf(a) >= 0).length == 0) {
+                        e.cancelBubble = true;
+                        e.stopPropagation();
+                    }
+                });
+                $('.file-browser .type-file .label, .file-browser .type-file .label').on('mousedown', (e) => {
+                    let parent = $(e.target).parents('.item').first();
+                    let path = parent.attr('data-path');
+                    var tab = $('.tab-' + S.editor.fileId(path) + '.selected');
+                    if (tab.length == 1 && ['/pages/', 'website.less'].filter(a => path.indexOf(a) >= 0).length == 0) {
+                        //show textbox to rename file with
+                        e.cancelBubble = true;
+                        e.stopPropagation();
+                        let label = parent.find('.label');
+                        if (label.find('input').length == 1) { return;}
+                        let labelName = label.html();
+                        label.html('<input type="text" class="rename-file" spellcheck="false" value="' + labelName + '"/>');
+                        label.find('input').on('click', (e) => {
+                            e.cancelBubble();
+                        });
+                        label.find('input').on('keydown', (e) => {
+                            //detect key press for text box
+                            var found = false;
+                            switch (e.key.toLowerCase()) {
+                                case "enter":
+                                    //rename file
+                                    var val = label.find('input').val();
+                                    S.ajax.post('Files/RenameFile',
+                                        { path: path, newname: val },
+                                        (e) => {
+                                            label.html(val);
+                                            //change file browser item
+                                            parent.attr('data-path', parent.attr('data-path').replace(labelName, val));
+                                            parent.attr('onclick', parent.attr('onclick').replace(labelName, val));
+                                            parent.find('.label').attr('title', val);
+                                            //change tab associated with file
+                                            var tab = $('.tab-' + S.editor.fileId(path));
+                                            var isselected = tab.hasClass('selected');
+                                            path = path.replace(labelName, val);
+                                            tab[0].className = 'tab-' + S.editor.fileId(S.editor.fileId(path)) + (isselected ? ' selected' : '');
+                                            tab.find('.tab-title').html(val);
+                                            var div = tab.children().first();
+                                            div.attr('data-path', div.attr('data-path').replace(labelName, val))
+                                                .attr('onclick', div.attr('onclick').replace(labelName, val));
+                                            if (isselected) {
+                                                var filebar = $('.file-bar .file-path');
+                                                filebar.html(filebar.html().replace(labelName, val));
+                                                S.editor.selected = S.editor.selected.replace(labelName, val);
+                                                S.editor.sessions.selected = S.editor.sessions.selected.replace(labelName, val);
+                                            }
+                                        }, (err) => {
+                                            S.editor.message('', err.responseText, 'error');
+                                        });
+                                    found = true;
+                                    break;
+                                case 'escape':
+                                    //cancel rename
+                                    label.html(labelName);
+
+                                    found = true;
+                                    S.editor.filebar.preview.toggle();
+                                    break;
+                            }
+                            if (found) {
+                                e.cancelBubble = true;
+                                e.stopPropagation();
+                            }
+                        });
+                    }
+                });
                 var url = path;
                 if (path.indexOf('root') == 0) {
                     url = url.replace('root', '').replace('content/', '');
@@ -100,7 +175,6 @@ S.editor.explorer = {
             //disable save menu
             $('.item-save').addClass('faded').attr('disabled', 'disabled');
         }
-        console.log(S.editor.selected);
 
         //check for existing tab
         let tab = $('.edit-tabs ul.row .tab-' + id);
@@ -135,7 +209,7 @@ S.editor.explorer = {
         if (tab.length == 0) {
             //tab doesn't exist yet
             var title = file;
-            if (fileparts[0].length > 18) { title = '...' + fileparts[0].substr(fileparts[0].length - 15) + '.' + fileparts[1]; }
+            if (fileparts[0].length > 25) { title = '...' + fileparts[0].substr(fileparts[0].length - 25) + '.' + fileparts[1]; }
             S.editor.tabs.create(title, path, { isPageResource: isPageResource, selected: isready !== false, canClose: !isPageResource }, loadCode);
         } else {
             //tab exists

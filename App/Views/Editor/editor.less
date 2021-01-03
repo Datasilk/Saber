@@ -131,6 +131,7 @@
             span{display:inline-block; width:~"calc(100% - 20px)"; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;}
         }
     }
+    hr{margin:5px 0;}
     ul.list li{float:none;}
 }
 
@@ -138,7 +139,11 @@
 @browserWidth: 200px;
 .box .file-browser{float:left; width:@browserWidth; position:relative; top:-46px; margin-bottom:-48px; z-index:10; overflow-x:none; overflow-y:auto;
     .icon-folder-add{padding-top:4px;}
-    .label{font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+    .label{font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+        input:not([type=button]):not([type=submit]):not([type=radio]){padding: 0 !important; margin:0; border:none; outline:none; height:auto; line-height:0 !important; background:transparent !important;
+            &:focus{background:transparent !important;}
+        }
+    }
     .item{cursor:default;
         & > div{padding:0 0 0 5px;}
     }

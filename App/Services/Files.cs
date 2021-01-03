@@ -301,6 +301,36 @@ namespace Saber.Services
             return Success();
         }
 
+        public string RenameFile(string path, string newname)
+        {
+            if (!CheckSecurity("code-editor")) { return AccessDenied(); }
+
+            try
+            {
+                Website.RenameFile(path, newname);
+                //rename opened tab (if neccessary)
+                var tabs = User.GetOpenTabs();
+                for (var x = 0; x < tabs.Length; x++)
+                {
+                    if (tabs[x] == path)
+                    {
+                        tabs[x] = path.Replace(path.GetFilename(), newname);
+                        break;
+                    }
+                }
+                User.SaveOpenTabs(tabs);
+            }
+            catch (ServiceErrorException ex)
+            {
+                return Error(ex.Message);
+            }
+            catch (ServiceDeniedException)
+            {
+                return AccessDenied();
+            }
+            return Success();
+        }
+
         public string DeleteFile(string path)
         {
             
