@@ -59,7 +59,8 @@ namespace Saber.Common.Platform
                                 DataType = HtmlComponentParameterDataType.PartialView,
                                 Description = "The HTML file to use as a partial view",
                                 Required = true,
-                                List = true
+                                List = true,
+                                AddItemJs = "S.editor.components.partials.show(event, S.editor.components.accordion.accept)"
                             }
                         },
                         {"load order",

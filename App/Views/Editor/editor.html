@@ -223,7 +223,7 @@
                 <ul class="row file-tabs">
                     {{components}}
                     <li class="tab-components selected">
-                        <div class="row hover" title="Available HTML Components">
+                        <div class="row hover tab-button" title="Available HTML Components">
                             <div class="col">
                                 <svg viewBox="0 0 32 32">
                                     <use xlink:href="#icon-plugin" x="0" y="0" width="32" height="32"></use>
@@ -540,7 +540,7 @@
                     </svg>
                 </div>
                 <div class="button add-list-item">
-                    <a href="javascript:">
+                    <a href="javascript:" ##add-list-item##>
                         <svg viewBox="0 0 32 32">
                             <use xlink:href="#icon-add-sm" x="0" y="0" width="32" height="32"></use>
                         </svg>
@@ -563,7 +563,7 @@
             </div>
             <div class="contents pad"><span class="faded">no items created yet</span></div>
         </div>
-        <div class="row input field-form hide">##input##</div>
+        <div class="row input field-form hide">##input##<hr /><input type="hidden" class="input-field"/></div>
     </div>
 </script>
 {{/components}}

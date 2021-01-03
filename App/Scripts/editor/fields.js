@@ -253,6 +253,7 @@ S.editor.fields = {
                 return data;
             },
             close: function (e) {
+                e.cancelBubble = true;
                 var target = $(e.target);
                 var field = target.parents('.content-field').first();
                 var li = target.parents('li').first();
@@ -337,6 +338,7 @@ S.editor.fields = {
                         var ul = field.find('.list-items ul');
                         var children = field.find('.list-items ul > li').map((i, a) => a.outerHTML);
                         var child = $('#custom_field_list_item').html()
+                            .replace('##onclick##', "S.editor.fields.custom.list.edit(event, '##title##', '##key##', '##partial##', '##lang##', '##container##')")
                             .replace(/\#\#label\#\#/g, key != '' ? fields[key] : 'List Item #' + i)
                             .replace(/\#\#index\#\#/g, i)
                             .replace(/\#\#title\#\#/g, title)

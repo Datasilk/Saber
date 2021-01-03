@@ -48,11 +48,9 @@ namespace Saber.Common.Platform.ContentField
                     {
                         viewitem["label"] = fieldKey != "" ? item[fieldKey] : "List Item #" + i;
                         viewitem["index"] = i.ToString();
-                        viewitem["title"] = viewlist["title"];
-                        viewitem["key"] = viewlist["key"];
-                        viewitem["partial"] = viewlist["partial"];
-                        viewitem["lang"] = lang;
-                        viewitem["container"] = container;
+                        viewitem["onclick"] = "S.editor.fields.custom.list.edit(event, '" + viewlist["title"] +
+                            "', '" + viewlist["key"] +
+                            "', '" + viewlist["partial"] + "', '" + lang + "', '" + container + "')";
                         html.Append(viewitem.Render());
                         viewitem.Clear();
                         i++;

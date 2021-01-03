@@ -233,7 +233,7 @@ S.editor.explorer = {
     select: (title, path, filetypes, callback) => {
         //show a pop up to select a file from the file explorer
         var html = $('#template_select_file').html();
-        S.popup.show(title, html);
+        let popup = S.popup.show(title, html);
         //load path via api
         S.ajax.post('Files/Dir', { path: path, fileTypes:filetypes, showDelete:false },
             function (d) {
@@ -246,12 +246,13 @@ S.editor.explorer = {
                     var target = $(e.target);
                     if (!target.hasClass('item')) { target = target.parents('.item').first(); }
                     S.editor.explorer.select(title, target.attr('data-path'), filetypes, callback);
+                    S.popup.hide(popup);
                 });
                 files.on('click', (e) => {
                     var target = $(e.target);
                     if (!target.hasClass('item')) { target = target.parents('.item').first(); }
                     callback(target.attr('data-path'));
-                    S.popup.hide();
+                    S.popup.hide(popup);
                 });
                 var url = path;
                 if (path.indexOf('root') == 0) {

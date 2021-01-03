@@ -10,6 +10,7 @@
         public bool Required { get; set; }
         public string DefaultValue { get; set; }
         public string[] ListOptions { get; set; }
+        public string AddItemJs { get; set; }
         public string Description { get; set; }
     }
 }

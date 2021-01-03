@@ -112,8 +112,9 @@ namespace Saber.Controllers
                             DefaultValue = param.Value.DefaultValue,
                             ListOptions = param.Value.ListOptions?.Select(a => "<option value=\"" + a.Value + "\">" + a.Key.Replace("\"", "&quot;") + "</option>").ToArray(),
                             Description = param.Value.Description.Replace("\"", "&quot;"),
-                            Required = param.Value.Required
-                        }); ;
+                            Required = param.Value.Required,
+                            AddItemJs = param.Value.AddItemJs
+                        });
                     }
                     viewComponent["data-params"] = JsonSerializer.Serialize(parameters, new JsonSerializerOptions()
                     {
@@ -132,11 +133,7 @@ namespace Saber.Controllers
                 var listitem = new View("/Views/ContentFields/list-item.html");
                 listitem["label"] = "##label##";
                 listitem["index"] = "##index##";
-                listitem["title"] = "##title##";
-                listitem["key"] = "##key##";
-                listitem["partial"] = "##partial##";
-                listitem["lang"] = "##lang##";
-                listitem["container"] = "##container##";
+                listitem["onclick"] = "##onclick##";
                 view["custom-field-list-item"] = listitem.Render();
             }
             AddScript("/editor/js/platform.js");
