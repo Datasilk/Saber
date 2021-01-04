@@ -177,7 +177,8 @@ Generate form fields by writing HTML variables (e.g. `<h2>{{hero-title}}</h2>`) 
 * Manage a list of acceptable meta title prefixes and suffixes to make sure your website has consistentpage titles
     * Select which prefix or suffix to add to individual web page titles & descriptions via the page settings
 * Create multiple headers & footers for your website and select which ones to use within each individual page's settings
-* Include custom Javascript files on specific pages within your website
+* Include custom Javascript & Stylesheet files on specific pages within your website or on every page within your website
+* Create lists of content on your web pages by using the List Component to select one or more partial views to render for your list items.
 
 ## Under The Hood
 Saber uses many technologies developed by [Mark Entingh](http://www.github.com/markentingh), including [Datasilk Core MVC](http://www.github.com/datasilk/core) as the MVC middleware for ASP.NET Core, [Tapestry](http://www.github.com/websilk/tapestry) for frontend CSS UI design, [Datasilk Core JS](http://www.github.com/datasilk/corejs) as a frontend JavaScript framework, and [Selector](http://www.github.com/websilk/selector) as a replacement for jQuery at only 5kb in size.
