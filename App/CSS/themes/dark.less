@@ -83,10 +83,11 @@
 }
 
 .box.bg{background:#1d1d1d;}
-.editor-drop-menu .box.bg, .file-browser, .code-bar, .box .tooltip{
+.menu-bar .box.bg, .file-browser, .code-bar, .box .tooltip{
     background:#2a2a2a;
     .line(#444); 
 }
+.box .toolbar, .box .menu-bar, .box .drop-menu{background:#222;}
 .box .code-bar{color:#999;}
 .box .content-fields .code{background:#353535; }
 .box .section, .popup{
@@ -114,23 +115,25 @@
         }
     }
 }
-.box .editor-drop-menu{
+.box .menu-bar .drop-menu{
+    @menu-color:#eee;
     .row, .row:hover {
-        a:link, a:hover, a:visited, a:active{color:#fff; text-decoration:none;}
+        a:link, a:hover, a:visited, a:active{color:@menu-color; text-decoration:none;}
     }
     li{
-        .row.hover:hover{background:#0082ff; color:#fff; fill:#fff;}
-        use{color:#fff; fill:#fff;}
+        .row.hover:hover{background:#0082ff; color:@menu-color; fill:@menu-color;}
+        use{color:@menu-color; fill:@menu-color;}
     }
+    .shortcut-key{border-bottom-color:@menu-color;}
 }
-.box .edit-bar, .box .accordion > .title{background:#2a2a2a}
+.box .file-bar, .box .accordion > .title{background:#2a2a2a}
 .box{
     p{color:#777;}
     .edit-bar li {
         & > div{ background:#363636;
             &:not(.selected):hover{background:#0082ff; color:#fff; fill:#fff;}
-            &.selected{background:#1d1d1d;
-                &:hover{background:#1d1d1d;}
+            &.selected{background:#2a2a2a;
+                &:hover{background:#2a2a2a;}
             }
         }
         .icons(#fff, #fff, #fff, #fff);
