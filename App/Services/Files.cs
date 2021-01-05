@@ -38,6 +38,8 @@ namespace Saber.Services
             var items = new List<DirItem>();
             var exclude = new List<string>();
             var editable = new string[] { ".js", ".less", ".css" };
+            var exclude_wwwroot = new string[] { "images", "css", "js" };
+            var exclude_wwwroot_js = new string[] { "website.js" };
             var canEdit = CheckSecurity("code-editor");
             var canDeleteFiles = showDelete == false ? false : CheckSecurity("delete-files");
             var canDeletePages = showDelete == false ? false : CheckSecurity("delete-pages");
@@ -68,7 +70,7 @@ namespace Saber.Services
                         else
                         {
                             exclude = new List<string>() { Settings.ThumbDir.Replace("/", "") };
-                            if(paths.Length == 2 && paths[1] == "images")
+                            if (paths.Length == 2 && paths[1] == "images")
                             {
                                 exclude.Add("mobile");
                             }
@@ -92,10 +94,10 @@ namespace Saber.Services
                     }
                     foreach (var file in info.GetFiles())
                     {
-                        if (!exclude.Contains(file.Name.ToLower()) && (extensions.Length == 0 || extensions.Contains(file.Extension))) 
+                        if (!exclude.Contains(file.Name.ToLower()) && (extensions.Length == 0 || extensions.Contains(file.Extension)))
                         {
                             var f = file.Name.GetFileExtension().ToLower();
-                            if(paths.Length > 1 && paths[1] == "pages" && f != "html") { continue; }
+                            if (paths.Length > 1 && paths[1] == "pages" && f != "html") { continue; }
                             switch (f)
                             {
                                 case "html":
@@ -103,7 +105,7 @@ namespace Saber.Services
                                 case "less":
                                 case "js":
                                 case "zip":
-                                    if(canEdit == false && editable.Any(a => f == a)) { break; }
+                                    if (canEdit == false && editable.Any(a => f == a)) { break; }
                                     items.Add(new DirItem() { Label = file.Name, Path = file.Name, Filename = file.Name, Extension = f }); break;
                             }
                         }
@@ -154,9 +156,16 @@ namespace Saber.Services
                     icon = "file-" + i.Extension;
                 }
                 var canDelete = false;
-                if(paths.Length > 1 && (paths[1] == "pages" || paths[1] == "partials"))
+                if (paths.Length > 1 && (paths[1] == "pages" || paths[1] == "partials"))
                 {
                     canDelete = canDeletePages;
+                }
+                else if (
+                    (paths.Length == 1 && paths[0] == "/wwwroot" && exclude_wwwroot.Any(a => a == i.Label)) ||
+                    (paths.Length > 1 && paths[0] == "/wwwroot" && paths[1] == "js" && exclude_wwwroot_js.Any(a => a == i.Label))
+                    )
+                {
+                    canDelete = false;
                 }
                 else
                 {
@@ -170,6 +179,7 @@ namespace Saber.Services
 
         private string RenderBrowserItem(View item, string id, string title, string icon, string path, bool isDir = false, bool canDelete = false)
         {
+            item.Clear();
             item["id"] = id;
             item["title"] = title;
             item["icon"] = "folder";
