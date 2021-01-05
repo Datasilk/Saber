@@ -13,8 +13,8 @@ S.editor.hotkey = {
             }
         } else if (e.altKey == true) {
             if (!isNaN(key) && !isNaN(parseFloat(key))) {
-                var index = parseInt(key);
-                if (index == 0) { index = 10; } //0 key is last index
+                var index = parseInt(key) - 1;
+                if (index == -1) { index = 9; } //0 key is last index
                 var tabs = $('.edit-tabs li');
                 if (tabs.length > index) {
                     S.editor.tabs.select(tabs[index].className.replace('tab-', '').replace(' selected', ''));

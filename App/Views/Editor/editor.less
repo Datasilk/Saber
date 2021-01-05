@@ -35,6 +35,16 @@
     }
 }
 
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}
+
 /* editor header */
 @import "header.less";
 .editor .header{display:none;}
@@ -70,8 +80,15 @@
 /* preview mode */
 .editor-preview:not(.hide){display:flex; min-height:100vh; flex-direction:column;}
 
+/* toolbar */
+.toolbar{
+    .logo{padding:10px 5px 0 5px; display:none;
+        svg{width:50px; height:50px;}
+    }
+}
+
 /* drop down menu */
-.box .menu-bar{width:100%; margin-left:55px;
+.box .menu-bar{width:100%;
    & > ul{list-style:none;
         & > li{float:left; cursor:default;
             & > div.hover{padding:5px 20px; }
@@ -96,10 +113,6 @@
 
 /* file tabs */
 .box .edit-bar{padding:5px 0 0 5px;
-    li.logo{
-        position:relative; top:-24px; margin-bottom:-24px;
-        svg{width:50px; height:50px;}
-    }
 }
 .box .edit-tabs{float:left;
     ul{list-style:none;}
