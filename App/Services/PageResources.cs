@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
@@ -78,7 +79,7 @@ namespace Saber.Services
                 if (files.Count() > 0)
                 {
                     var html = new StringBuilder();
-                    var exclude = new string[] { "web.config", "web-icon.png"};
+                    var exclude = new List<string>() { "web.config", "web-icon.png"};
                     foreach (var f in files)
                     {
                         if (exclude.Contains(f.Name.ToLower())) { continue; }

@@ -93,10 +93,16 @@ S.editor.tabs = {
                     blur[x].onblur();
                 }
             }
+            if (opts.selected == true) {
+                console.log($('.tab-' + id));
+                $('.tab-' + id + ' > div').addClass('selected');
+            }
             route = routes.filter(a => a.path == path)[0];
             route.onfocus();
         }
-        if (opts.selected == true) { S.editor.selected = path; }
+        if (opts.selected == true) {
+            S.editor.selected = path;
+        }
     },
     select: (id) => {
         $('.edit-tabs li > div').removeClass('selected');

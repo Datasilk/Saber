@@ -9,7 +9,7 @@ S.editor.resources = {
         var pagename = '';
         if (path.indexOf('wwwroot') >= 0) { isRoot = true; }
         var id = isRoot ? 'resources' : 'page-resources';
-        S.editor.tabs.create(isRoot ? 'Resources' : 'Page Resources', id + '-section', { isPageResource: !isRoot },
+        S.editor.tabs.create(isRoot ? 'Resources' : 'Page Resources', id + '-section', { isPageResource: !isRoot, selected:true },
             () => { //onfocus
                 $('.tab.' + id).removeClass('hide');
                 updateFilebar();

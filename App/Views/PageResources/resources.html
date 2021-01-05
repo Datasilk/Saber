@@ -1,14 +1,14 @@
-﻿<div class="row toolbar pad-height">
-</div>
-<div class="row resources-list">{{resources}}</div>
+﻿<div class="row resources-list">{{resources}}</div>
 
 <script id="page_resources_toolbar" type="text/html">
     {{can-upload}}
-    <button class="uploader button">
-        <svg viewBox="0 0 32 32">
-            <use xlink:href="#icon-upload-arrow" x="0" y="0" width="32" height="32"></use>
-        </svg>
-        Upload
-    </button>
+    <div class="pad-right">
+        <button class="uploader button">
+            <svg viewBox="0 0 32 32">
+                <use xlink:href="#icon-upload-arrow" x="0" y="0" width="32" height="32"></use>
+            </svg>
+            Upload
+        </button>
+    </div>
     {{/can-upload}}
 </script>

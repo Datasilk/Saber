@@ -36,7 +36,7 @@ namespace Saber.Services
 
             var item = new View("/Views/FileBrowser/file.html");
             var items = new List<DirItem>();
-            var exclude = new string[] { };
+            var exclude = new List<string>();
             var editable = new string[] { ".js", ".less", ".css" };
             var canEdit = CheckSecurity("code-editor");
             var canDeleteFiles = showDelete == false ? false : CheckSecurity("delete-files");
@@ -63,11 +63,15 @@ namespace Saber.Services
                         if (paths.Length == 1)
                         {
                             //exclude internal folders
-                            exclude = new string[] { "content", "editor", Settings.ThumbDir.Replace("/", "") };
+                            exclude = new List<string>() { "content", "editor", Settings.ThumbDir.Replace("/", "") };
                         }
                         else
                         {
-                            exclude = new string[] { Settings.ThumbDir.Replace("/", "") };
+                            exclude = new List<string>() { Settings.ThumbDir.Replace("/", "") };
+                            if(paths.Length == 2 && paths[1] == "images")
+                            {
+                                exclude.Add("mobile");
+                            }
                         }
                     }
 
@@ -81,10 +85,10 @@ namespace Saber.Services
                     }
 
                     //get list of files
-                    exclude = new string[] { "gulpfile.js" };
+                    exclude = new List<string>() { "gulpfile.js" };
                     if (paths[0] == "/wwwroot" && paths.Length > 1 && paths[1] == "css")
                     {
-                        exclude = new string[] { "website.css" };
+                        exclude = new List<string>() { "website.css" };
                     }
                     foreach (var file in info.GetFiles())
                     {
