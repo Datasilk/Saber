@@ -10,6 +10,11 @@ S.editor.hotkey = {
                     S.editor.save();
                     has = true;
                     break;
+                case 'b':
+                    S.editor.explorer.show();
+                    has = true;
+                    break;
+
             }
         } else if (e.altKey == true) {
             if (!isNaN(key) && !isNaN(parseFloat(key))) {
