@@ -31,7 +31,7 @@ S.editor.fields = {
                 div.className = 'tab content-fields-' + fileid;
                 div.innerHTML = $('#template_contentfields').html();
                 $('.editor .sections').append(div);
-                S.editor.resizeWindow();
+                S.editor.resize.window();
                 if (show !== false) {
                     $('.editor .sections > .content-fields-' + fileid).removeClass('hide');
                 }
@@ -99,10 +99,8 @@ S.editor.fields = {
                 $(container + ' .add-lang a').on('click', S.editor.lang.add.show);
 
                 //set up events for fields
-                $(container + ' form .input-field').on('keyup, keydown, change', (e) => { S.editor.fields.change(e, file) })
-                    .each(function (field) {
-                        S.editor.fields.change({ target: field }, file);
-                    });
+                $(container + ' form .input-field').on('keyup, keydown, change', (e) => { S.editor.fields.change(e, file) });
+                S.editor.fields.resizeAll();
 
                 //set up event for image selection buttons
                 $(container + ' .select-image button').on('click', (e) => {
@@ -129,7 +127,7 @@ S.editor.fields = {
                 
 
                 //initialize any accordions
-                S.accordion.load({}, () => { S.editor.resizeWindow(); });
+                S.accordion.load({}, () => { S.editor.resize.window(); });
 
                 if (callback) { callback();}
             },
@@ -148,6 +146,12 @@ S.editor.fields = {
                 field.css({ height: clone.height() });
             }
         }
+    },
+    resizeAll: function () {
+        $('.has-content-fields form .input-field')
+            .each(function (field) {
+                S.editor.fields.resize({ target: field });
+            });
     },
     change: function (e, file) {
         if (S.editor.visible == false) { return; }
@@ -210,7 +214,6 @@ S.editor.fields = {
     custom: {
         list: {
             init: function (container) {
-                //let seltab = $('.tab-for-content-fields.selected > div');
                 let section = $(container + ' form');
                 //event listener for close button
                 section.find('.list-items li .close-btn').off('click').on('click', S.editor.fields.custom.list.close);
@@ -371,3 +374,6 @@ S.editor.fields = {
         }
     }
 };
+
+//add event listener for window resize stop to change height of all content field textarea inputs
+S.editor.resize.stop.add('content-fields', S.editor.fields.resizeAll);

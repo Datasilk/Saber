@@ -46,7 +46,7 @@ S.editor.settings = {
                 S.editor.settings.clone = $('.page-settings .textarea-clone > div');
                 var p = path.replace('content/', '');
                 $('.editor .page-name').attr('href', '/' + p).html(p);
-                S.editor.resizeWindow();
+                S.editor.resize.window();
 
                 //set up events to detect changes
                 var description = $('#page_description');

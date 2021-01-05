@@ -1,6 +1,6 @@
 ﻿(function () {
     //load accordion functionality 
-    S.accordion.load({}, () => { S.editor.resizeWindow(); }); 
+    S.accordion.load({}, () => { S.editor.resize.window(); }); 
 
     //set up icon buttons
     var selbtn = {};

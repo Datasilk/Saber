@@ -23,7 +23,7 @@ S.editor.analytics = {
             function (d) {
                 var data = JSON.parse(d);
                 S.ajax.inject(data);
-                S.editor.resizeWindow();
+                S.editor.resize.window();
             }
         );
     }

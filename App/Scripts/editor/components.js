@@ -114,7 +114,7 @@
             $('.components-list').addClass('hide');
 
             //set up accordion functionality (add/sort/remove list items)
-            S.accordion.load({}, () => { S.editor.resizeWindow(); });
+            S.accordion.load({}, () => { S.editor.resize.window(); });
             $('.component-configure .accordion .title .add-list-item').filter((i, a) => $(a).attr('onclick') == '').on('click', (e) => {
                 //show new param form
                 e.cancelBubble = true;

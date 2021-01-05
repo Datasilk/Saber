@@ -89,7 +89,7 @@ S.editor.filebar = {
             $('ul.file-tabs > li.tab-file-code').addClass('selected');
             if (S.editor.isChanged(S.editor.selected)) { S.editor.changed(); }
             $('.item-save-as').removeClass('faded').removeAttr('disabled');
-            setTimeout(function () { S.editor.resize(); }, 10);
+            setTimeout(S.editor.resize.window, 10);
         }
     },
 
@@ -239,9 +239,9 @@ S.editor.filebar = {
                 S.editor.init();
                 return;
             }
-            S.editor.resize();
+            S.editor.resize.window();
             setTimeout(function () {
-                S.editor.resize();
+                S.editor.resize.window();
             }, 10);
         }
     }

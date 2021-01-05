@@ -106,7 +106,7 @@
                 $('.tab.user-' + id).remove();
                 $('.editor .sections > .tab').addClass('hide');
                 $('.sections').append('<div class="tab user-' + id + '"><div class="scroller"></div></div>');
-                S.editor.resizeWindow();
+                S.editor.resize.window();
 
                 S.editor.tabs.create('User: ' + email, 'user-' + id, { isPageResource: false },
                     () => { //onfocus

@@ -94,7 +94,7 @@
                 $('.tab.security-group-' + id).remove();
                 $('.editor .sections > .tab').addClass('hide');
                 $('.sections').append('<div class="tab security-group-' + id + '"><div class="scroller"></div></div>');
-                S.editor.resizeWindow();
+                S.editor.resize.window();
 
                 S.editor.tabs.create('Security Group: ' + name, 'security-group-' + id, null,
                     () => { //onfocus

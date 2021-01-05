@@ -32,9 +32,9 @@ S.editor.sessions = {
                     editor.setSession(session);
                     editor.clearSelection();
                     S.editor.codebar.update();
-                    S.editor.resize();
+                    S.editor.resize.window();
                     setTimeout(function () {
-                        S.editor.resize();
+                        S.editor.resize.window();
                     }, 200);
                     editor.focus();
                 }

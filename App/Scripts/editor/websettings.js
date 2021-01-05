@@ -27,7 +27,7 @@ S.editor.websettings = {
                 function (d) {
                     var data = JSON.parse(d);
                     S.ajax.inject(data);
-                    S.editor.resizeWindow();
+                    S.editor.resize.window();
                     S.editor.websettings._loaded = true;
                 }
             );

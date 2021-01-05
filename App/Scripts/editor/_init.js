@@ -71,7 +71,7 @@ S.editor.init = function () {
     }
 
     //resize code editor
-    this.resize();
+    this.resize.window();
 
     //add button events
     $('.menu-bar li').on('click', S.editor.dropmenu.show);
@@ -108,7 +108,7 @@ S.editor.init = function () {
     $('.editor #lang').on('change', S.editor.fields.load);
 
     //add window resize event
-    $(window).on('resize', S.editor.resizeWindow);
+    $(window).on('resize', S.editor.resize.window);
 
     //register hotkeys
     $(window).on('keydown', S.editor.hotkey.pressed);
@@ -164,7 +164,6 @@ S.editor.init = function () {
 
     S.editor.filebar.preview.hide();
 };
-
 
 //set up editor tab
 $('.editor-tab').on('click', S.editor.filebar.preview.hide);

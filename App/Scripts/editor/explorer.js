@@ -11,7 +11,7 @@ S.editor.explorer = {
         }
         $('.editor .file-browser').removeClass('hide');
         $('.editor').addClass('show-browser');
-        S.editor.resizeWindow();
+        S.editor.resize.window();
     },
 
     hide: function () {
@@ -293,9 +293,9 @@ S.editor.explorer = {
                     S.editor.changed(true);
                 }
                 S.editor.codebar.update();
-                S.editor.resize();
+                S.editor.resize.window();
                 setTimeout(function () {
-                    S.editor.resize();
+                    S.editor.resize.window();
                 }, 200);
                 if (typeof callback == 'function') { callback(); }
             }
