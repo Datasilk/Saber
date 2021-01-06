@@ -16,7 +16,7 @@ S.editor.changed = function (checkall) {
         }
     }
     S.editor.codebar.update();
-    self.resize();
+    self.resize.window();
 };
 
 S.editor.isChanged = function (path) {

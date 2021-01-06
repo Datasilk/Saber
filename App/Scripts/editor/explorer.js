@@ -234,7 +234,7 @@ S.editor.explorer = {
             var session = S.editor.sessions[id];
             var editor = S.editor.instance;
             var ext = paths[paths.length - 1].split('.')[1];
-            var mode = 'html';
+            var mode = 'html-mustache';
             switch (ext) {
                 case 'css': case 'less': mode = ext; break;
                 case 'js': mode = 'javascript'; break;
