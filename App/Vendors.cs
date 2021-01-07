@@ -34,6 +34,7 @@ namespace Saber.Common
             public string Key { get; set; }
             public string Name { get; set; }
             public string Description { get; set; }
+            public string Icon { get; set; }
             public Vendor.Version Version { get; set; }
             public string DLL { get; set; }
             public string Assembly { get; set; }
@@ -658,6 +659,7 @@ namespace Saber.Common
             details.Key = instance.Key;
             details.Name = instance.Name;
             details.Description = instance.Description;
+            details.Icon = instance.Icon;
             details.Version = instance.Version;
             details.Path = "/Vendors/" + instance.Key + "/";
         }

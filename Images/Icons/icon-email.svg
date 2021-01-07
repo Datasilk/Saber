@@ -1,0 +1,36 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="none" x="0px" y="0px" width="64px" height="64px" viewBox="0 0 64 64">
+<defs>
+<g id="iconEmail_0_Layer0_0_FILL">
+<path fill="#FFFFFF" stroke="none" d="
+M 0.3 2.55
+Q 0 3.45 0 4.65
+L 0 37.35
+Q 0 38.9 0.5 39.95
+L 23.9 21.25 0.3 2.55
+M 61.35 0.2
+Q 60.75 0 60 0
+L 4 0
+Q 3.25 0 2.65 0.2
+L 31.55 23 61.35 0.2
+M 64 37.35
+L 64 4.65
+Q 64 3.45 63.75 2.5
+L 39.35 21.2 63.55 39.95
+Q 64 38.9 64 37.35
+M 60 42
+Q 61.95 42 62.95 40.9
+L 38.45 21.9 32.35 26.55
+Q 31.95 26.85 31.5 26.85 31 26.85 30.65 26.55
+L 24.75 21.9 1.05 40.9
+Q 2.05 42 4 42
+L 60 42 Z"/>
+</g>
+</defs>
+
+<g transform="matrix( 1, 0, 0, 1, 0,9) ">
+<g transform="matrix( 1, 0, 0, 1, 0,0) ">
+<use xlink:href="#iconEmail_0_Layer0_0_FILL"/>
+</g>
+</g>
+</svg>
