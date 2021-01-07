@@ -19,7 +19,7 @@ S.editor.filebar = {
                 return;
             }
             S.editor.dropmenu.hide();
-            S.editor.tabs.create("Page Content", "content-fields-section", { isPageResource: true },
+            S.editor.tabs.create("Page Content", "content-fields-section", {},
                 () => { //onfocus
                     $('.tab.content-fields-section').removeClass('hide');
                     $('ul.file-tabs > li').removeClass('selected');

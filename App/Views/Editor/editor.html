@@ -145,6 +145,41 @@
                                     <li>
                                         <div class="row line">&nbsp;</div>
                                     </li>
+                                    {{website-settings}}
+                                    <!--
+                                    <li>
+                                        <div class="row hover item item-web-settings">
+                                            <div class="col icon">
+                                                <svg viewBox="0 0 32 32">
+                                                    <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="col text">Website Settings</div>
+                                        </div>
+                                    </li>-->
+                                    {{/website-settings}}
+                                    <li>
+                                        <div class="row line">&nbsp;</div>
+                                    </li>
+                                    <li>
+                                        <div class="row hover item item-live-preview">
+                                            <a href="about:blank" target="_parent" title="Inspect a live preview of this web page which will not contain any Saber editor resources">
+                                                <div class="col icon">
+                                                    <svg viewBox="0 0 32 32">
+                                                        <use xlink:href="#icon-preview" x="0" y="0" width="32" height="32"></use>
+                                                    </svg>
+                                                </div>
+                                                <div class="col text">Live Preview</div>
+                                            </a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="row hover"><span>Website</span></div>
+                            <div class="drop-menu hide">
+                                <ul class="menu">
                                     {{manage-users}}
                                     <li>
                                         <div class="row hover item item-user-management">
@@ -177,44 +212,15 @@
                                                     <use xlink:href="#icon-analytics" x="0" y="0" width="32" height="32"></use>
                                                 </svg>
                                             </div>
-                                            <div class="col text">Website Analytics</div>
+                                            <div class="col text">Analytics</div>
                                         </div>
                                     </li>
                                     {{/website-analytics}}
+                                    
                                     {{website-settings}}
-                                    <li>
-                                        <div class="row hover item item-web-settings">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Website Settings</div>
-                                        </div>
-                                    </li>
-                                    {{/website-settings}}
                                     <li>
                                         <div class="row line">&nbsp;</div>
                                     </li>
-                                    <li>
-                                        <div class="row hover item item-live-preview">
-                                            <a href="about:blank" target="_parent" title="Inspect a live preview of this web page which will not contain any Saber editor resources">
-                                                <div class="col icon">
-                                                    <svg viewBox="0 0 32 32">
-                                                        <use xlink:href="#icon-preview" x="0" y="0" width="32" height="32"></use>
-                                                    </svg>
-                                                </div>
-                                                <div class="col text">Live Preview</div>
-                                            </a>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="row hover"><span>Website</span></div>
-                            <div class="drop-menu hide">
-                                <ul class="menu">
                                     <li>
                                         <div class="row hover item item-web-stylesheets">
                                             <div class="col icon">
@@ -265,6 +271,7 @@
                                             <div class="col text">Password Settings</div>
                                         </div>
                                     </li> 
+                                    {{/website-settings}}
                                     {{plugin-menu}}
                                 </ul>
                             </div>
