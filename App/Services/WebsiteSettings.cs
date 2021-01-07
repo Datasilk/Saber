@@ -28,6 +28,7 @@ namespace Saber.Services
 
             //render website stylesheets accordion
             accordion.Clear();
+            accordion["id"] = "stylesheets";
             accordion["title"] = "Stylesheets";
             accordion["contents"] = viewStyles.Render();
             accordions.Append(accordion.Render());
@@ -38,6 +39,7 @@ namespace Saber.Services
 
             //render website stylesheets accordion
             accordion.Clear();
+            accordion["id"] = "scripts";
             accordion["title"] = "Scripts";
             accordion["contents"] = viewScripts.Render();
             accordions.Append(accordion.Render());
@@ -77,6 +79,7 @@ namespace Saber.Services
 
             //render icons accordion
             accordion.Clear();
+            accordion["id"] = "icons";
             accordion["title"] = "Icons";
             accordion["contents"] = viewIcons.Render();
             accordions.Append(accordion.Render());
@@ -176,6 +179,7 @@ namespace Saber.Services
 
             //render email settings accordion
             accordion.Clear();
+            accordion["id"] = "email-settings";
             accordion["title"] = "Email Settings";
             accordion["contents"] = viewEmails.Render();
             accordions.Append(accordion.Render());
@@ -190,6 +194,7 @@ namespace Saber.Services
 
             //render passwords accordion
             accordion.Clear();
+            accordion["id"] = "password-settings";
             accordion["title"] = "Password Settings";
             accordion["contents"] = viewPasswords.Render();
             accordions.Append(accordion.Render());
@@ -299,6 +304,7 @@ namespace Saber.Services
 
             //render plugins management accordion
             accordion.Clear();
+            accordion["id"] = "plugins";
             accordion["title"] = "Plugins";
             accordion["contents"] = html.ToString();
             accordions.Append(accordion.Render());
@@ -312,6 +318,7 @@ namespace Saber.Services
             foreach(var vendor in Common.Vendors.WebsiteSettings)
             {
                 accordion.Clear();
+                accordion["id"] = "plugin-" + vendor.Name.Replace(" ", "-");
                 accordion["title"] = vendor.Name;
                 accordion["contents"] = vendor.Render(this);
                 if (accordion["contents"] != "") { html.Append(accordion.Render()); }
