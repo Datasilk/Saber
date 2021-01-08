@@ -19,8 +19,8 @@
             var menu = $('.components-menu');
             menu.removeClass('hide');
             $(document.body).off(hideMenu).on('click', hideMenu);
-            $('.component-configure').addClass('hide');
-            $('.components-list').removeClass('hide');
+            //$('.component-configure').addClass('hide');
+            //$('.components-list').removeClass('hide');
             function hideMenu(e) {
                 if ($(e.target).parents('.tab-components').length <= 0 &&
                     $(e.target).parents('.popup').length <= 0 &&

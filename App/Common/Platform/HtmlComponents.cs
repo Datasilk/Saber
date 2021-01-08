@@ -49,7 +49,7 @@ namespace Saber.Common.Platform
                     Name = "List",
                     Block = false,
                     Icon = "components/list.svg",
-                    Description = "Generate a list of partial views",
+                    Description = "Generate a list of content using one or more partial views",
                     Parameters = new Dictionary<string, HtmlComponentParameter>()
                     {
                         {"partial",

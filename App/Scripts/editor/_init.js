@@ -248,6 +248,7 @@ S.editor.init = function () {
 
     //add button events
     $('.menu-bar li').on('click', S.editor.dropmenu.show);
+    $('.menu-bar li').hover('', {}, S.editor.dropmenu.hover, () => { });
     $('.bg-overlay').on('click', S.editor.dropmenu.hide);
     $('.menu-bar .item-browse').on('click', S.editor.explorer.show);
     $('.menu-bar .item-save').on('click', S.editor.save);

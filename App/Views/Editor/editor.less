@@ -135,6 +135,7 @@
 }
 
 /* html component menu */
+
 .box .component-configure{
     .scroller{overflow-x:hidden; overflow-y:auto; scrollbar-color: #333 #555;
         &::-webkit-scrollbar-track{background:#555;}
@@ -229,13 +230,14 @@
 	    bottom: 100%; left: 50%; border: solid transparent; content: ""; height: 0; width: 0; position: absolute;
 	    pointer-events: none; border-color: transparent; border-width: 15px; margin-left: -15px;
     }
-    .component-item{border-bottom-width:1px; border-bottom-style:solid; height:75px; padding-top:7px;}
+    .component-item{border-bottom-width:1px; border-bottom-style:solid; padding:7px 0;}
     .col{padding:0 !important;}
     .img{padding:5px 15px 0 5px !important;}
     img{width:32px; height:32px;}
     .info{width:~"calc(100% - 55px)";}
-    h4{font-size:18px !important; padding-bottom:2px !important;}
-    p{opacity:0.5; padding-bottom:5px;}
+    h4{font-size:15px !important; padding-bottom:2px !important;}
+    p{opacity:0.5; padding-bottom:0; font-size:12px;}
+    .row.hover:hover p{opacity:0.75;}
 }
 
 /* when file browser is visible */

@@ -125,7 +125,7 @@ namespace Saber.Services
 
                             if(vendor.Value.ReplaceRow == true)
                             {
-                                html.Append(vendor.Value.ContentField.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName, language, container));
+                                html.Append(vendor.Value.ContentField.Render(this, elem.Vars ?? new Dictionary<string, string>(), fieldValue, fieldId, prefix, elemName, language, container));
                             }
                             else
                             {
@@ -135,7 +135,7 @@ namespace Saber.Services
                                 fieldVendor["title"] = (fieldTitleKey != "" ? fieldTitleKey + ": " : "") + fieldTitleId.Trim().Capitalize();
                                 fieldVendor["id"] = fieldId;
                                 fieldVendor["value"] = fieldValueHtml;
-                                fieldVendor["content"] = vendor.Value.ContentField.Render(this, elem.Vars, fieldValue, fieldId, prefix, elemName, language, container);
+                                fieldVendor["content"] = vendor.Value.ContentField.Render(this, elem.Vars ?? new Dictionary<string, string>(), fieldValue, fieldId, prefix, elemName, language, container);
                                 html.Append(fieldVendor.Render());
                             }
                         }

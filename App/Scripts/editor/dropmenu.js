@@ -15,5 +15,18 @@ S.editor.dropmenu = {
             $('.menu-bar .drop-menu').addClass('hide');
             $(document.body).off('click', S.editor.dropmenu.hide);
         }
+    },
+
+    hover: function (e) {
+        if ($('.menu-bar .drop-menu:not(.hide)').length == 0) { return;}
+        var target = $(e.target);
+        if (e.target.tagName.toLowerCase() != 'li') {
+            target = target.parents('li').first();
+        }
+        var menu = target.find('.drop-menu');
+        if (menu.hasClass('hide')) {
+            $('.menu-bar .drop-menu').addClass('hide');
+            menu.removeClass('hide');
+        }
     }
 };
