@@ -87,7 +87,7 @@
     background:#2a2a2a;
     .line(#444); 
 }
-.box .toolbar, .box .menu-bar, .box .drop-menu{background:#222;}
+.box .toolbar, .box .menu-bar, .box .drop-menu{background:#2a2a2a;}
 .box .code-bar{color:#999;}
 .box .content-fields .code{background:#353535; }
 .box .section, .popup{
@@ -129,14 +129,15 @@
         .shortcut-key{border-bottom-color:@menu-color;}
     }
 }
-.box .file-bar, .box .accordion > .title{background:#2a2a2a}
+.box .file-bar{background:#1d1d1d;}
+.box .accordion > .title{background:#2a2a2a}
 .box{
     p{color:#777;}
     .edit-bar li {
         & > div{ background:#363636;
             &:not(.selected):hover{background:#0082ff; color:#fff; fill:#fff;}
-            &.selected{background:#2a2a2a;
-                &:hover{background:#2a2a2a;}
+            &.selected{background:#1d1d1d;
+                &:hover{background:#1d1d1d;}
             }
         }
         .icons(#fff, #fff, #fff, #fff);
