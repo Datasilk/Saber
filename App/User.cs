@@ -53,7 +53,7 @@ namespace Saber
             //check for persistant cookie
             if (UserId <= 0 && context.Request.Cookies.ContainsKey("authId"))
             {
-                var user = Query.Users.AuthenticateUser(context.Request.Cookies["authId"]);
+                var user = Query.Users.Authenticate(context.Request.Cookies["authId"]);
                 if (user != null)
                 {
                     //persistant cookie was valid, log in

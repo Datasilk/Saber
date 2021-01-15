@@ -15,7 +15,7 @@ namespace Saber.Services
             if (!DecryptPassword(email, password, encrypted)) { return Error(); }
             {
                 //password verified by Bcrypt
-                var user = Query.Users.AuthenticateUser(email, encrypted);
+                var user = Query.Users.Authenticate(email, encrypted);
                 if (user != null)
                 {
                     User.LogIn(user.userId, user.email, user.name, user.datecreated, user.photo);

@@ -16,14 +16,14 @@ namespace Query
             );
         }
 
-        public static Models.User AuthenticateUser(string email, string password)
+        public static Models.User Authenticate(string email, string password)
         {
             var list = Sql.Populate<Models.User>("User_Authenticate", new { email, password });
             if (list.Count > 0) { return list[0]; }
             return null;
         }
 
-        public static Models.User AuthenticateUser(string token)
+        public static Models.User Authenticate(string token)
         {
             var list = Sql.Populate<Models.User>("User_AuthenticateByToken", new { token });
             if (list.Count > 0) { return list[0]; }
