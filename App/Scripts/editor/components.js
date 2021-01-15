@@ -57,7 +57,7 @@
                     var defaultVal = param.DefaultValue ?? '';
                     var required = param.Required ?? false;
                     var title = ' title="' + param.Description + '"';
-                    var field = param.List == true ? htmlparamlist.replace('##add-list-item##', param.AddItemJs != '' ? ' onclick="' + param.AddItemJs + '"' : '') 
+                    var field = param.List == true ? htmlparamlist.replace('##add-list-item##', param.AddItemJs != '' ? ' onclick="' + param.AddItemJs + '"' : '').replace('##id##', id)
                         : htmlparam;
                     field = field.replace('##name##', param.Name)
                         .replace('##required##', !required ? '<span class="faded">optional</span>' : '');
@@ -269,8 +269,6 @@
             S.editor.explorer.select('Select Partial View', 'Content/partials', '.html', (file) => {
                 $(e.target).parents('.component-param').find('.select-partial input').val(file.replace('Content/', '').replace('content/', ''));
                 if (callback) {
-                    console.log('file = ' + file);
-                    console.log('value = ' + $(e.target).parents('.select-partial').first().find('input').val());
                     callback(e);
                 }
             });

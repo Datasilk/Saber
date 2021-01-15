@@ -131,7 +131,14 @@ namespace Saber.Services
                             {
                                 fieldVendor.Clear();
                                 string fieldTitleId = fieldTitle.Length > 1 ? fieldTitle.Replace(vendor.Key.Capitalize().Replace("-", " ").Replace("_", " "), "") : fieldTitle;
-                                var fieldTitleKey = fieldTitle.ToLower().Replace(fieldTitleId, "").Capitalize();
+
+                                var fieldTitleKey = fieldTitle.ToLower();
+                                if (!string.IsNullOrEmpty(fieldTitleId))
+                                {
+                                    fieldTitleKey = fieldTitleKey.Replace(fieldTitleId, "");
+                                }
+                                fieldTitleKey = fieldTitleKey.Capitalize();
+
                                 fieldVendor["title"] = (fieldTitleKey != "" ? fieldTitleKey + ": " : "") + fieldTitleId.Trim().Capitalize();
                                 fieldVendor["id"] = fieldId;
                                 fieldVendor["value"] = fieldValueHtml;
