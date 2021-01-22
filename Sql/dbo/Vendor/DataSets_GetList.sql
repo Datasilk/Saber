@@ -1,3 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[DataSets_GetList]
 AS
-	SELECT * FROM DataSets ORDER BY tableName ASC
+	SELECT * FROM DataSets 
+	WHERE deleted = 0
+	ORDER BY tableName ASC

@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[DataSets]
 (
-	[datasetId] INT NOT NULL PRIMARY KEY, 
+	[datasetId] INT IDENTITY(1,1) PRIMARY KEY, 
     [label] NVARCHAR(64) NOT NULL, 
     [tableName] NVARCHAR(64) NOT NULL, 
     [datecreated] DATETIME2 NOT NULL, 

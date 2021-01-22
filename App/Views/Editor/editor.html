@@ -534,7 +534,7 @@
     </li>
 </script>
 
-<script language="text/html" id="template_newfile">
+<script type="text/html" id="template_newfile">
     <form>
         <div class="row message hide"><span></span></div>
         <div class="row field">File Name</div>
@@ -553,7 +553,7 @@
     </form>
 </script>
 
-<script language="text/html" id="template_newfolder">
+<script type="text/html" id="template_newfolder">
     <form>
         <div class="row message hide"><span></span></div>
         <div class="row field">Folder Name <span class="faded">(no spaces)</span></div>
@@ -572,7 +572,7 @@
     </form>
 </script>
 
-<script language="text/html" id="template_lang_add">
+<script type="text/html" id="template_lang_add">
     <form>
         <div class="row message hide"><span></span></div>
         <div class="row field">Language</div>
@@ -591,7 +591,7 @@
     </form>
 </script>
 
-<script language="text/html" id="template_resources_popup">
+<script type="text/html" id="template_resources_popup">
         <div class="resources-list"></div>
         <div class="row text-center pad-top">
             <div class="col">
@@ -603,7 +603,7 @@
         </div>
 </script>
 
-<script language="text/html" id="template_resource_selected">
+<script type="text/html" id="template_resource_selected">
     <div class="selected hide">
         <svg viewBox="0 0 32 32">
             <use xlink:href="#icon-check" x="0" y="0" width="32" height="32"></use>
@@ -611,14 +611,14 @@
     </div>
 </script>
 {{components}}
-<script language="text/html" id="template_component_id">
+<script type="text/html" id="template_component_id">
     <div class="row field">ID ##optional##</div>
     <div class="row input">
         <input type="text" spellcheck="false" id="component_id"/>
     </div>
     <hr/>
 </script>
-<script language="text/html" id="template_component_config">
+<script type="text/html" id="template_component_config">
     <div class="row"><h4>##name##</h4></div>
     <div class="scroller">
         <input type="hidden" id="component_key" value="##key##"/>
@@ -634,13 +634,13 @@
         </div>
     </div>
 </script>
-<script language="text/html" id="template_component_param">
+<script type="text/html" id="template_component_param">
     <div class="component-param">
         <div class="row field">##name## ##required##</div>
         <div class="row input">##input##</div>
     </div>
 </script>
-<script language="text/html" id="template_component_param_list">
+<script type="text/html" id="template_component_param_list">
     <div class="component-param">
         <div class="accordion">
             <div class="title">
@@ -678,12 +678,12 @@
     </div>
 </script>
 {{/components}}
-<script language="text/html" id="template_select_file">
+<script type="text/html" id="template_select_file">
     <div class="row message hide"><span></span></div>
     <div class="row"><div class="col modal-path"></div></div>
     <div class="row modal-browser"><ul class="menu"></ul></div>
 </script>
-<script language="text/html" id="template_contentfields">
+<script type="text/html" id="template_contentfields">
     <div class="scroller has-content-fields">
         <div class="row">
             <div class="col">
@@ -710,11 +710,11 @@
         <form></form>
     </div>
 </script>
-<script language="text/html" id="template_content_field">
+<script type="text/html" id="template_content_field">
     <div class="row">
         <div class="col field">##name##</div>
         <div class="col input">##input##</div>
     </div>
 </script>
-<script language="text/html" id="custom_field_list_item">{{custom-field-list-item}}</script>
+<script type="text/html" id="custom_field_list_item">{{custom-field-list-item}}</script>
 {{vendor-templates}}
