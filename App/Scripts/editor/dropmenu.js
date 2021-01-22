@@ -28,5 +28,36 @@ S.editor.dropmenu = {
             $('.menu-bar .drop-menu').addClass('hide');
             menu.removeClass('hide');
         }
+    },
+
+    add: function (ul, id, label, icon, separator, onclick) {
+        //ul = css selector for the ul element that contains the menu items (e.g. .menu-item-website)
+        //icon can be either a file or the name of an SVG object (e.g. #icon-analytics)
+        //separator = if True, then put a separator above the menu item
+        var html = $('#template_menuitem').html()
+            .replace('##id##', id)
+            .replace('##label##', label)
+            .replace('##icon##', icon && icon != '' ? (
+                    icon.indexOf('.png') > 0 ? '<img src="' + icon + '"/>' :
+                    $('#template_svgicon').html().replace('##icon##', icon)
+                ) : '')
+            .replace('##separator##', separator == true ? $('#template_separator').html() : '');
+        $(ul).append(html);
+        if (onclick) {
+            var c = $(ul).children();
+            $(c[c.length - 1]).on('click', onclick);
+        }
     }
 };
+
+S.editor.topmenu = {
+    add: function (id, label) {
+        //ul = css selector for the ul element that contains the menu items (e.g. .menu-item-website)
+        //icon can be either a file or the name of an SVG object (e.g. #icon-analytics)
+        //separator = if True, then put a separator above the menu item
+        var html = $('#template_topmenuitem').html()
+            .replace('##id##', id)
+            .replace('##label##', label);
+        $('.menu-bar > ul').append(html);
+    }
+}

@@ -112,4 +112,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="logId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="0f2aa819-7ede-4033-adad-616af2ceff41" ChangeDateTime="01/18/2021 09:39:52">
+    <Property Name="ElementName" Value="[dbo].[DataSets].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DataSets]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="datasetId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5ac83f20-12c3-4ade-bc97-a49d075b49fd" ChangeDateTime="01/18/2021 09:47:44">
+    <Property Name="ElementName" Value="[dbo].[DataSets].[tableId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DataSets]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="tableName" />
+  </Operation>
 </Operations>

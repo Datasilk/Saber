@@ -12,7 +12,7 @@
             <div class="col bars">
                 <div class="menu-bar">
                     <ul>
-                        <li>
+                        <li class="menu-item-file">
                             <div class="row hover"><span>File</span></div>
                             <div class="drop-menu hide">
                                 <ul class="menu">
@@ -89,7 +89,7 @@
                                 </ul>
                             </div>
                         </li>
-                        <li>
+                        <li class="menu-item-view">
                             <div class="row hover"><span>View</span></div>
                             <div class="drop-menu hide">
                                 <ul class="menu">
@@ -177,7 +177,7 @@
                                 </ul>
                             </div>
                         </li>
-                        <li>
+                        <li class="menu-item-website">
                             <div class="row hover"><span>Website</span></div>
                             <div class="drop-menu hide">
                                 <ul class="menu">
@@ -471,6 +471,38 @@
 
 <div class="editor-preview website">{{content}}</div>
 
+<script type="text/html" id="template_topmenuitem">
+    <li class="menu-item-##id##">
+        <div class="row hover"><span>##label##</span></div>
+        <div class="drop-menu hide">
+            <ul class="menu"></ul>
+        </div>
+    </li>
+</script>
+<script type="text/html" id="template_menuitem">
+    ##separator##
+    <li>
+        <div class="row hover item item-##id##">
+            <div class="col icon">
+                ##icon##
+            </div>
+            <div class="col text">##label##</div>
+        </div>
+    </li>
+</script>
+
+<script type="text/html" id="template_svgicon">
+    <svg viewBox="0 0 32 32">
+        <use xlink:href="##icon##" x="0" y="0" width="32" height="32"></use>
+    </svg>
+</script>
+
+<script type="text/html" id="template_separator">
+    <li>
+        <div class="row line">&nbsp;</div>
+    </li>
+</script>
+
 <script type="text/html" id="template_message">
     <div class="message ##type##">
         <div class="close-btn">
@@ -647,7 +679,8 @@
 </script>
 {{/components}}
 <script language="text/html" id="template_select_file">
-    <div class="row modal-path"></div>
+    <div class="row message hide"><span></span></div>
+    <div class="row"><div class="col modal-path"></div></div>
     <div class="row modal-browser"><ul class="menu"></ul></div>
 </script>
 <script language="text/html" id="template_contentfields">
@@ -684,3 +717,4 @@
     </div>
 </script>
 <script language="text/html" id="custom_field_list_item">{{custom-field-list-item}}</script>
+{{vendor-templates}}

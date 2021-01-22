@@ -67,21 +67,17 @@
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="dbo\Views" />
     <Folder Include="dbo\Stored Procedures\Users" />
-    <Folder Include="dbo\Stored Procedures\Languages" />
-    <Folder Include="dbo\Stored Procedures\PageTitles" />
     <Folder Include="dbo\Stored Procedures\Utility" />
     <Folder Include="dbo\Stored Procedures\Logs" />
     <Folder Include="dbo\Stored Procedures\Secuirty" />
+    <Folder Include="dbo\Vendor" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Sequences\SequenceUsers.sql" />
-    <Build Include="dbo\Sequences\SequencePageTitles.sql" />
     <Build Include="dbo\Sequences\SequenceLogUrls.sql" />
     <Build Include="dbo\Tables\Users.sql" />
     <Build Include="dbo\Tables\Log_Urls.sql" />
     <Build Include="dbo\Tables\Log_UrlRequests.sql" />
-    <Build Include="dbo\Tables\Languages.sql" />
-    <Build Include="dbo\Tables\Page_Titles.sql" />
     <Build Include="dbo\Tables\User_AuthTokens.sql" />
     <Build Include="dbo\Tables\Log_Errors.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_Create.sql" />
@@ -93,13 +89,6 @@
     <Build Include="dbo\Stored Procedures\Users\Users_HasPasswords.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_Authenticate.sql" />
     <Build Include="dbo\Stored Procedures\Users\Users_HasAdmin.sql" />
-    <Build Include="dbo\Stored Procedures\Languages\Language_Create.sql" />
-    <Build Include="dbo\Stored Procedures\Languages\Languages_GetList.sql" />
-    <Build Include="dbo\Stored Procedures\Languages\Language_Delete.sql" />
-    <Build Include="dbo\Stored Procedures\PageTitles\Page_Title_Create.sql" />
-    <Build Include="dbo\Stored Procedures\PageTitles\Page_Title_Delete.sql" />
-    <Build Include="dbo\Stored Procedures\PageTitles\Page_Titles_GetList.sql" />
-    <Build Include="dbo\Stored Procedures\PageTitles\Page_Title_Get.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_CreateAuthToken.sql" />
     <Build Include="dbo\Stored Procedures\Utility\GetCustomId.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_AuthenticateByToken.sql" />
@@ -132,6 +121,12 @@
     <Build Include="dbo\Stored Procedures\Users\User_ResetPassword.sql" />
     <Build Include="dbo\Tables\Log_ForgotPasswords.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_GetEmailFromResetKey.sql" />
+    <Build Include="dbo\Vendor\DataSet_Create.sql" />
+    <Build Include="dbo\Vendor\DataSets.sql" />
+    <Build Include="dbo\Vendor\SequenceDataSets.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityGroups_GetListByIds.sql" />
+    <Build Include="dbo\Vendor\DataSet_GetRecords.sql" />
+    <Build Include="dbo\Vendor\DataSets_GetList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

@@ -1,4 +1,4 @@
-﻿CREATE SEQUENCE [dbo].[SequencePageTitles]
+﻿CREATE SEQUENCE [dbo].[SequenceDataSets]
     AS BIGINT
     START WITH 1
     INCREMENT BY 1

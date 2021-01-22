@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using Saber.Vendor;
 using System.Reflection;
@@ -288,7 +289,22 @@ namespace Saber.Common
             {
                 //save versions to JSON
                 File.WriteAllText(App.MapPath("/Vendors/versions.json"), JsonSerializer.Serialize(versions, new JsonSerializerOptions() { WriteIndented = true }));
+
+                //concat all editor.js files into "/wwwroot/editor/js/vendors-editor.js"
+                ConcatVendorsEditorJs();
             }
+        }
+
+        public static void ConcatVendorsEditorJs()
+        {
+            var vendorsPath = new DirectoryInfo(App.MapPath("/Vendors/"));
+            var files = vendorsPath.GetFiles("editor.js", SearchOption.AllDirectories);
+            var jsparts = new StringBuilder();
+            foreach (var f in files)
+            {
+                jsparts.Append(File.ReadAllText(f.FullName));
+            }
+            File.WriteAllText(App.MapPath("/wwwroot/editor/js/vendors-editor.js"), string.Join("\n", jsparts));
         }
         #endregion
 

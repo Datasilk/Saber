@@ -63,7 +63,8 @@ var paths = {
     publishapp: 'App/bin/Release/Saber/App/',
     sql: {
         release: 'Sql/bin/Release/'
-    }
+    },
+    vendors: 'App/Vendors/'
 };
 
 //working paths
@@ -132,7 +133,10 @@ paths.working = {
             paths.scripts + 'editor/utility.js',
             paths.scripts + 'editor/_init.js'
         ],
-        iframe: paths.scripts + 'iframe.js'
+        iframe: paths.scripts + 'iframe.js',
+        plugins: {
+            editor: paths.vendors + '**/editor.js'
+        }
     },
 
     less: {
@@ -171,7 +175,7 @@ paths.working = {
             paths.app + 'vendors/**/*.js',
             '!' + paths.app + 'vendors/**/gulpfile.js',
             paths.app + 'vendors/**/*.css',
-            paths.app + 'vendors/**/icon.svg',
+            paths.app + 'vendors/**/*.svg',
             paths.app + 'vendors/**/*.jpg',
             paths.app + 'vendors/**/*.png',
             paths.app + 'vendors/**/*.gif',
@@ -377,7 +381,14 @@ gulp.task('vendors:less', function () {
     return p.pipe(gulp.dest(paths.compiled.vendors, { overwrite: true }));
 });
 
-gulp.task('vendors', gulp.series('vendors:resources', 'vendors:less'));
+gulp.task('vendors:editor.js', function () {
+    var p = gulp.src(paths.working.js.plugins.editor, { base: '.' })
+        .pipe(concat(paths.compiled.js + 'vendors-editor.js'));
+    if (prod == true) { p = p.pipe(uglify()); }
+    return p.pipe(gulp.dest('.', { overwrite: true }));
+});
+
+gulp.task('vendors', gulp.series('vendors:resources', 'vendors:less', 'vendors:editor.js'));
 
 //default task ////////////////////////////////////////////////////////////////////////////
 gulp.task('default', gulp.series('js', 'less', 'css', 'icons', 'vendors'));
@@ -420,6 +431,9 @@ gulp.task('watch', function () {
 
     //watch iframe JS
     gulp.watch(paths.working.js.iframe, gulp.series('js:iframe'));
+
+    //watch vendors/**/editor.js
+    gulp.watch(paths.working.js.plugins.editor, gulp.series('vendors:editor.js'))
 
     //watch app LESS
     var pathless = [...paths.working.less.app, ...paths.working.exclude.app.map(a => a + '*.less')];
