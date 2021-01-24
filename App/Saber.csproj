@@ -36,6 +36,7 @@
     <Content Remove="config.json" />
     <Content Remove="web.Release.config" />
     <Content Remove="wwwroot\editor\components\list.svg" />
+    <Content Remove="wwwroot\js\website.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -133,9 +134,30 @@
     <None Include="config.json" />
     <None Include="web.Release.config" />
     <None Include="wwwroot\editor\components\list.svg" />
+    <None Include="wwwroot\js\website.js" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Content\pages\forgotpass.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Content\pages\home.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Content\pages\home_en.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Content\pages\passwordreset.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="Content\temp\pages\forgotpass.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
