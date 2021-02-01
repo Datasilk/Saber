@@ -37,7 +37,9 @@ AS
 		DEALLOCATE @cursor1
 
 		-- include orderby clause
-		SET @sql = @sql + ' ORDERBY ' + @orderby
+		IF @orderby IS NOT NULL AND @orderby != '' BEGIN
+			SET @sql = @sql + ' ORDERBY ' + @orderby
+		END
 
 		--execute generated SQL code
 		EXECUTE sp_executesql @sql

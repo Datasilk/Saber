@@ -75,7 +75,7 @@ namespace Saber.Common.Platform
             }
 
             //load user content from json file, depending on selected language
-            var data = ContentFields.GetPageContent(path, language);
+            var data = Core.ContentFields.GetPageContent(path, language);
 
             if (data.Count > 0)
             {
@@ -118,7 +118,7 @@ namespace Saber.Common.Platform
             if(uselayout)
             {
                 //render all content
-                var data2 = ContentFields.GetPageContent("/Content/partials/" + config.header, language);
+                var data2 = Core.ContentFields.GetPageContent("/Content/partials/" + config.header, language);
                 results = HtmlComponents(header, request, data2);
 
                 foreach (var item in results)
@@ -132,7 +132,7 @@ namespace Saber.Common.Platform
                         header[item.Key] = item.Value;
                     }
                 }
-                data2 = ContentFields.GetPageContent("/Content/partials/" + config.footer, language);
+                data2 = Core.ContentFields.GetPageContent("/Content/partials/" + config.footer, language);
                 results = HtmlComponents(footer, request, data2);
                 foreach (var item in results)
                 {

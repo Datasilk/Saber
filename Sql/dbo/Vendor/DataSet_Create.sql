@@ -56,6 +56,9 @@ AS
 					SET @indexes = @indexes + 'CREATE INDEX [IX_DataSet_' + @tableName + '_' + @name + '] ON [dbo].[DataSet_' + @tableName + '] ([' + @name + '])'
 				END
 			END
+			IF @datatype = 'image' BEGIN
+				SET @sql = @sql + '[' + @name + '] NVARCHAR(MAX) NOT NULL DEFAULT '''''
+			END
 			IF @datatype = 'number' BEGIN
 				SET @sql = @sql + '[' + @name + '] INT NULL ' + CASE WHEN @default IS NOT NULL AND @default != '' THEN 'DEFAULT ' + @default END
 				SET @indexes = @indexes + 'CREATE INDEX [IX_DataSet_' + @tableName + '_' + @name + '] ON [dbo].[DataSet_' + @tableName + '] ([' + @name + '])'
@@ -90,4 +93,6 @@ AS
 		--finally, record dataset info
 		INSERT INTO DataSets ([label], tableName, [description], datecreated, deleted)
 		VALUES (@label, @tablename, @description, GETUTCDATE(), 0)
+
+		SELECT datasetId FROM DataSets WHERE tableName=@tablename
 	END

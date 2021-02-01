@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Text;
 using System.Text.Json;
 using Saber.Core;
 using Saber.Core.Extensions.Strings;
-using System.Linq;
 
 namespace Saber.Services
 {
@@ -98,32 +98,45 @@ namespace Saber.Services
                         fieldValue = fields[elem.Name];
                     }
                     var fieldValueHtml = fieldValue.Replace("\"", "&quot;");
+                    var fieldType = Common.Platform.ContentFields.GetFieldType(view, x);
 
-                    //determine which content field layout to load
-                    if (view.Elements.Any(a => a.Name == "/" + elem.Name) && !vars.Any(a => a == elemName))
+                    switch (fieldType)
                     {
-                        //load block field
-                        fieldBlock.Clear();
-                        fieldBlock["title"] = fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize();
-                        fieldBlock["id"] = fieldId;
-                        if (fieldValue == "1") { fieldBlock.Show("checked"); }
-                        html.Append(fieldBlock.Render());
-                    }
-                    else
-                    {
-                        var found = false;
-                        //find vendor content field
-                        var vendor = Common.Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0).FirstOrDefault();
-                        if(vendor.Value != null)
-                        {
-                            found = true;
-                            //hard-code line break component
-                            if(elem.Name == "-" && elem.Vars.ContainsKey("title"))
+                        case Core.ContentFields.FieldType.block:
+                            //load block field
+                            fieldBlock.Clear();
+                            fieldBlock["title"] = fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize();
+                            fieldBlock["id"] = fieldId;
+                            if (fieldValue == "1") { fieldBlock.Show("checked"); }
+                            html.Append(fieldBlock.Render());
+                            break;
+                        case Core.ContentFields.FieldType.image:
+                            //image field
+                            fieldImage.Clear();
+                            fieldImage["title"] = sectionTitle != "" ? fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize() : fieldTitle.Capitalize();
+                            fieldImage["id"] = fieldId;
+                            fieldImage["value"] = fieldValue;
+                            html.Append(fieldImage.Render());
+                            break;
+                        case Core.ContentFields.FieldType.text:
+                            //text field
+                            fieldText.Clear();
+                            fieldText["title"] = sectionTitle != "" ? fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize() : fieldTitle.Capitalize();
+                            fieldText["id"] = fieldId;
+                            fieldText["value"] = fieldValue;
+                            html.Append(fieldText.Render());
+                            break;
+                        case Core.ContentFields.FieldType.vendor:
+                        case Core.ContentFields.FieldType.linebreak:
+                        case Core.ContentFields.FieldType.list:
+                            //vendor HTML component
+                            var vendor = Common.Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0).FirstOrDefault();
+                            if (fieldType == Core.ContentFields.FieldType.linebreak && elem.Vars.ContainsKey("title"))
                             {
                                 sectionTitle = elem.Vars["title"].ToLower();
                             }
 
-                            if(vendor.Value.ReplaceRow == true)
+                            if (vendor.Value.ReplaceRow == true)
                             {
                                 html.Append(vendor.Value.ContentField.Render(this, elem.Vars ?? new Dictionary<string, string>(), fieldValue, fieldId, prefix, elemName, language, container));
                             }
@@ -145,81 +158,7 @@ namespace Saber.Services
                                 fieldVendor["content"] = vendor.Value.ContentField.Render(this, elem.Vars ?? new Dictionary<string, string>(), fieldValue, fieldId, prefix, elemName, language, container);
                                 html.Append(fieldVendor.Render());
                             }
-                        }
-
-                        if (found == false)
-                        {
-                            //check to see if content field is inside an HTML element
-                            if (x > 0)
-                            {
-                                var prev = view.Elements[x - 1];
-                                var inQuotes = false;
-                                var quotes = 0;
-                                for (var i = prev.Htm.Length - 1; i >= 0; i--)
-                                {
-                                    if (prev.Htm[i] == '"') { quotes++; }
-                                    if (prev.Htm[i] == '=' && quotes == 1) { inQuotes = true; }
-                                    if (prev.Htm[i] == '>') { break; }
-                                    if (prev.Htm[i] == '<')
-                                    {
-                                        //found html element
-                                        if (inQuotes == true)
-                                        {
-                                            //content field exists inside an HTML element attribute value
-                                            try
-                                            {
-                                                var htmElem = prev.Htm.Substring(i + 1);
-                                                var tagParts = htmElem.Split(" ");
-                                                var tagName = tagParts[0].ToLower();
-                                                var attrName = tagParts[^1].Split("=")[0];
-                                                var isPhoto = false;
-                                                switch (attrName)
-                                                {
-                                                    case "style":
-                                                        //TODO: style parsing support to check if field exists in
-                                                        //background or background-image CSS property
-                                                        if(htmElem.IndexOf("background-image:url(") == htmElem.Length - 21 ||
-                                                            htmElem.IndexOf("background-image: url(") == htmElem.Length - 22)
-                                                        {
-                                                            isPhoto = true;
-                                                        }
-
-                                                        break;
-                                                    case "src":
-                                                        if (tagName == "img")
-                                                        {
-                                                            isPhoto = true;
-                                                        }
-                                                        break;
-                                                }
-                                                if (isPhoto)
-                                                {
-                                                    found = true;
-                                                    //load image selection field
-                                                    fieldImage.Clear();
-                                                    fieldImage["title"] = sectionTitle != "" ? fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize() : fieldTitle.Capitalize();
-                                                    fieldImage["id"] = fieldId;
-                                                    fieldImage["value"] = fieldValue;
-                                                    html.Append(fieldImage.Render());
-                                                }
-                                            }
-                                            catch (Exception) {}
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-
-                        //load text field
-                        if (found == false && !vars.Any(a => a == elemName))
-                        {
-                            fieldText.Clear();
-                            fieldText["title"] = sectionTitle != "" ? fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize() : fieldTitle.Capitalize();
-                            fieldText["id"] = fieldId;
-                            fieldText["value"] = fieldValue;
-                            html.Append(fieldText.Render());
-                        }
+                            break;
                     }
                 }
             }

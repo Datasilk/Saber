@@ -218,6 +218,7 @@ namespace Saber
             Core.Delegates.Website.SaveLessFile = Website.SaveLessFile;
             Core.Delegates.Website.CopyTempWebsite = Website.CopyTempWebsite;
             Core.Delegates.Log.Error = Query.Logs.LogError;
+            Core.Delegates.ContentFields.GetFieldType = ContentFields.GetFieldType;
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
