@@ -219,6 +219,7 @@ namespace Saber
             Core.Delegates.Website.CopyTempWebsite = Website.CopyTempWebsite;
             Core.Delegates.Log.Error = Query.Logs.LogError;
             Core.Delegates.ContentFields.GetFieldType = ContentFields.GetFieldType;
+            Core.Delegates.ContentFields.RenderForm = ContentFields.RenderForm;
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface

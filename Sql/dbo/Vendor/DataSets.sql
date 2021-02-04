@@ -5,7 +5,8 @@
     [tableName] NVARCHAR(64) NOT NULL, 
     [datecreated] DATETIME2 NOT NULL, 
     [description] NVARCHAR(MAX) NOT NULL, 
-    [deleted] BIT NOT NULL DEFAULT 0
+    [deleted] BIT NOT NULL DEFAULT 0, 
+    [partialview] NVARCHAR(255) NOT NULL DEFAULT ''
 )
 
 GO

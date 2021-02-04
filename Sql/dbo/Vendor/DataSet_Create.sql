@@ -50,6 +50,7 @@ AS
 		FETCH NEXT FROM @cursor INTO @name, @datatype, @maxlength, @default
 		WHILE @@FETCH_STATUS = 0 BEGIN
 			SET @maxlength = ISNULL(@maxlength, '64')
+			IF @maxlength = '0' SET @maxlength = 'MAX'
 			IF @datatype = 'text' BEGIN
 				SET @sql = @sql + '[' + @name + '] NVARCHAR(' + @maxlength + ') NOT NULL DEFAULT '''''
 				IF @maxlength != 'max' BEGIN
