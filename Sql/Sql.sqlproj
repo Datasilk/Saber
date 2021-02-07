@@ -127,6 +127,8 @@
     <Build Include="dbo\Stored Procedures\Secuirty\SecurityGroups_GetListByIds.sql" />
     <Build Include="dbo\Vendor\DataSet_GetRecords.sql" />
     <Build Include="dbo\Vendor\DataSets_GetList.sql" />
+    <Build Include="dbo\Vendor\DataSet_GetColumns.sql" />
+    <Build Include="dbo\Vendor\DataSet_GetInfo.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[DataSet_Create]
 	@label nvarchar(64),
 	@description nvarchar(MAX),
+	@partialview nvarchar(255),
 	@columns XML 
 	/* example:	
 		<columns>
@@ -92,8 +93,8 @@ AS
 		EXECUTE sp_executesql @indexes
 
 		--finally, record dataset info
-		INSERT INTO DataSets ([label], tableName, [description], datecreated, deleted)
-		VALUES (@label, @tablename, @description, GETUTCDATE(), 0)
+		INSERT INTO DataSets ([label], tableName, partialview, [description], datecreated, deleted)
+		VALUES (@label, @tablename, @partialview, @description, GETUTCDATE(), 0)
 
 		SELECT datasetId FROM DataSets WHERE tableName=@tablename
 	END

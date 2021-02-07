@@ -45,7 +45,11 @@ S.editor.dropmenu = {
         $(ul).append(html);
         if (onclick) {
             var c = $(ul).children();
-            $(c[c.length - 1]).on('click', onclick);
+            $(c[c.length - 1]).on('click', (e) => {
+                onclick(e);
+                $('.menu-bar .drop-menu').addClass('hide');
+                $(document.body).off('click', S.editor.dropmenu.hide);
+            });
         }
     }
 };
