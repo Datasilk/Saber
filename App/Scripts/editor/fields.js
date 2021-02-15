@@ -83,7 +83,7 @@ S.editor.fields = {
         }
         S.editor.fields.render(file, lang, container, null, () => {});
     },
-    render: function (file, lang, container, fields, callback) {
+    render: function (file, lang, container, fields, callback, ispopup) {
         var data = {
             path: file || S.editor.path,
             language: lang,
@@ -108,11 +108,12 @@ S.editor.fields = {
                     S.editor.resources.select(file ? 'wwwroot/images' : S.editor.path, '.jpg, .png, .gif', true, "Select An Image", "Select Image", (results) => {
                         var parent = $(e.target).parents('.content-field');
                         var field = parent.find('.input-field');
-                        var newpath = file ? 'images/' : S.editor.path.replace('content/', 'content/pages/') + '/';
+                        var newpath = file ? '/images/' : S.editor.path.replace('content/', 'content/pages/') + '/';
                         var src = newpath + results[0];
                         parent.find('.img').html('<div><img src="' + src + '"/></div>');
+                        parent.find('.img').css({ 'background-image': 'url(' + src + ')' });
                         field.val(src);
-                        S.editor.fields.save(file);
+                        if (!ispopup) { S.editor.fields.save(file); }
                     });
                 });
 
@@ -134,6 +135,43 @@ S.editor.fields = {
             function () { S.editor.error(); },
             true
         );
+    },
+    popup: function (partial, lang, title, fieldsdata, buttonTitle, submit) {
+        //load content fields into popup modal
+        var popup = $(S.popup.show(title, '<div class="has-content-fields"><form></form></div>'));
+        popup.css({ width: '90%', 'max-width': '1200px' });
+        S.editor.fields.render('content/' + partial, lang, '.box.popup', fieldsdata, () => {
+            popup.find('form').append('<div class="row text-center"><div class="col"><button class="apply">' + buttonTitle + '</button></div>');
+            S.popup.resize();
+            popup.find('form').on('submit', (e) => {
+                e.preventDefault();
+                var fields = {};
+                var texts = popup.find('form .input-field');
+                texts.each(function (txt) {
+                    if (!txt.id || (txt.id && txt.id.indexOf('field_') < 0)) { return; }
+                    var t = $(txt);
+                    var id = txt.id.replace('field_', '');
+                    switch (txt.tagName.toLowerCase()) {
+                        case 'textarea':
+                            fields[id] = t.val();
+                            break;
+                        case 'input':
+                            var type = t.attr('type');
+                            switch (type) {
+                                case 'checkbox':
+                                    fields[id] = txt.checked == true ? '1' : '0';
+                                    break;
+                                default:
+                                    fields[id] = t.val();
+                                    break;
+                            }
+                            break;
+                    }
+                });
+                submit(e, fields);
+            });
+        }, true);
+        return popup;
     },
     resize: function (e) {
         if (S.editor.visible == false) { return; }
@@ -300,74 +338,41 @@ S.editor.fields = {
                 e.preventDefault();
                 var field = $(e.target).parents('.content-field').first();
                 var hidden = field.find('input.input-field');
-                var popup = $(S.popup.show((fieldsdata ? 'Update' : 'Add') + ' List Item for ' + title.substr(5), '<div class="has-content-fields"><form></form></div>'));
-                popup.css({ width: '90%', 'max-width': '1200px' });
+                var popup = S.editor.fields.popup(partial, lang, (fieldsdata ? 'Update' : 'Add') + ' List Item for ' + title.substr(5), fieldsdata, (fieldsdata ? 'Update' : 'Add') + ' List Item', (e, fields) => {
+                    //save custom list item
+                    var data = S.editor.fields.custom.list.parse(hidden);
 
-                //load content fields into popup modal
-                S.editor.fields.render('content/' + partial, lang, '.box.popup', fieldsdata, () => {
-                    popup.find('form').append('<div class="row pad-top text-center"><div class="col"><button class="apply">' + (fieldsdata ? 'Update' : 'Add') + ' List Item</button></div>');
-                    S.popup.resize();
-
-                    popup.find('form').on('submit', (e) => {
-                        //save custom list item
-                        e.preventDefault();
-                        var fields = {};
-                        var texts = $('.popup form .input-field');
-                        texts.each(function (txt) {
-                            if (!txt.id || (txt.id && txt.id.indexOf('field_') < 0)) { return; }
-                            var t = $(txt);
-                            var id = txt.id.replace('field_', '');
-                            switch (txt.tagName.toLowerCase()) {
-                                case 'textarea':
-                                    fields[id] = t.val();
-                                    break;
-                                case 'input':
-                                    var type = t.attr('type');
-                                    switch (type) {
-                                        case 'checkbox':
-                                            fields[id] = txt.checked == true ? '1' : '0';
-                                            break;
-                                        default:
-                                            fields[id] = t.val();
-                                            break;
-                                    }
-                                    break;
-                            }
-                        });
-                        var data = S.editor.fields.custom.list.parse(hidden);
-
-                        //add item to list in content fields tab
-                        var i = (index != null ? parseInt(index) : field.find('.list-items li').length) + 1;
-                        var ul = field.find('.list-items ul');
-                        var children = field.find('.list-items ul > li').map((i, a) => a.outerHTML);
-                        var child = $('#custom_field_list_item').html()
-                            .replace('##onclick##', "S.editor.fields.custom.list.edit(event, '##title##', '##key##', '##partial##', '##lang##', '##container##')")
-                            .replace(/\#\#label\#\#/g, key != '' ? fields[key] : 'List Item #' + i)
-                            .replace(/\#\#index\#\#/g, i)
-                            .replace(/\#\#title\#\#/g, title)
-                            .replace(/\#\#key\#\#/g, key)
-                            .replace(/\#\#partial\#\#/g, partial)
-                            .replace(/\#\#lang\#\#/g, lang)
-                            .replace(/\#\#container\#\#/g, container);
-                        ul.html('');
-                        if (fieldsdata != null && index != null) {
-                            //update existing element in data list
-                            data[index] = fields;
-                            children[index] = child;
-                        } else {
-                            data.push(fields);
-                            children.push(child);
-                        }
-                        for (var x = 0; x < children.length; x++) {
-                            ul.append(children[x]);
-                        }
-                        hidden.val(JSON.stringify(data));
-                        field.find('.accordion').addClass('expanded');
-                        S.editor.fields.save();
-                        S.popup.hide();
-                        S.editor.fields.custom.list.init(container);
-                        return false;
-                    });
+                    //add item to list in content fields tab
+                    var i = (index != null ? parseInt(index) : field.find('.list-items li').length) + 1;
+                    var ul = field.find('.list-items ul');
+                    var children = field.find('.list-items ul > li').map((i, a) => a.outerHTML);
+                    var child = $('#custom_field_list_item').html()
+                        .replace('##onclick##', "S.editor.fields.custom.list.edit(event, '##title##', '##key##', '##partial##', '##lang##', '##container##')")
+                        .replace(/\#\#label\#\#/g, key != '' ? fields[key] : 'List Item #' + i)
+                        .replace(/\#\#index\#\#/g, i)
+                        .replace(/\#\#title\#\#/g, title)
+                        .replace(/\#\#key\#\#/g, key)
+                        .replace(/\#\#partial\#\#/g, partial)
+                        .replace(/\#\#lang\#\#/g, lang)
+                        .replace(/\#\#container\#\#/g, container);
+                    ul.html('');
+                    if (fieldsdata != null && index != null) {
+                        //update existing element in data list
+                        data[index] = fields;
+                        children[index] = child;
+                    } else {
+                        data.push(fields);
+                        children.push(child);
+                    }
+                    for (var x = 0; x < children.length; x++) {
+                        ul.append(children[x]);
+                    }
+                    hidden.val(JSON.stringify(data));
+                    field.find('.accordion').addClass('expanded');
+                    S.editor.fields.save();
+                    S.popup.hide();
+                    S.editor.fields.custom.list.init(container);
+                    return false;
                 });
                 return false;
             }
