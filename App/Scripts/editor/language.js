@@ -1,4 +1,17 @@
 S.editor.lang = {
+    load: function (selector, lang, onchange) {
+        S.ajax.post('Languages/Get', {},
+            function (d) {
+                var langs = d.split('|');
+                var sel = $(selector);
+                for (var x = 0; x < langs.length; x++) {
+                    var l = langs[x].split(',');
+                    sel.append('<option value="' + l[0] + '"' + (l[0] == lang ? ' selected="selected"' : '') + '>' + l[1] + '</option>');
+                }
+                sel.on('change', onchange);
+            }
+        );
+    },
     add: {
         show: function () {
             S.popup.show('New Language',

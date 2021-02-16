@@ -2,32 +2,22 @@
 
 // fetch command line arguments
 const arg = (argList => {
-
     let arg = {}, a, opt, thisOpt, curOpt;
     for (a = 0; a < argList.length; a++) {
-
         thisOpt = argList[a].trim();
         opt = thisOpt.replace(/^\-+/, '');
-
         if (opt === thisOpt) {
-
             // argument value
             if (curOpt) arg[curOpt] = opt;
             curOpt = null;
-
         }
         else {
-
             // argument name
             curOpt = opt;
             arg[curOpt] = true;
-
         }
-
     }
-
     return arg;
-
 })(process.argv);
 
 //includes
@@ -134,7 +124,7 @@ paths.working = {
             paths.scripts + 'editor/_init.js'
         ],
         iframe: paths.scripts + 'iframe.js',
-        plugins: {
+        vendors: {
             editor: paths.vendors + '**/editor.js'
         }
     },
@@ -157,7 +147,10 @@ paths.working = {
         utility: [
             paths.css + 'utility/*.less',
             '!' + paths.css + 'utility/**/node_modules/*.less'
-        ]
+        ],
+        vendors: {
+            editor: paths.vendors + '**/editor.less'
+        }
     },
 
     css: {
@@ -174,6 +167,7 @@ paths.working = {
         resources: [
             paths.app + 'vendors/**/*.js',
             '!' + paths.app + 'vendors/**/gulpfile.js',
+            '!' + paths.app + 'vendors/**/editor.js',
             paths.app + 'vendors/**/*.css',
             paths.app + 'vendors/**/*.svg',
             paths.app + 'vendors/**/*.jpg',
@@ -183,6 +177,7 @@ paths.working = {
         ],
         less: [
             paths.app + 'vendors/**/*.less',
+            '!' + paths.app + 'vendors/**/editor.less',
             '!' + paths.app + 'vendors/**/node_modules/**/*.less'
         ]
     },
@@ -382,13 +377,20 @@ gulp.task('vendors:less', function () {
 });
 
 gulp.task('vendors:editor.js', function () {
-    var p = gulp.src(paths.working.js.plugins.editor, { base: '.' })
+    var p = gulp.src(paths.working.js.vendors.editor, { base: '.' })
         .pipe(concat(paths.compiled.js + 'vendors-editor.js'));
     if (prod == true) { p = p.pipe(uglify()); }
     return p.pipe(gulp.dest('.', { overwrite: true }));
 });
 
-gulp.task('vendors', gulp.series('vendors:resources', 'vendors:less', 'vendors:editor.js'));
+gulp.task('vendors:editor.less', function () {
+    var p = gulp.src(paths.working.less.vendors.editor, { base: '.' })
+        .pipe(less())
+        .pipe(concat(paths.compiled.css + 'vendors-editor.css'));
+    return p.pipe(gulp.dest('.', { overwrite: true }));
+});
+
+gulp.task('vendors', gulp.series('vendors:resources', 'vendors:less', 'vendors:editor.js', 'vendors:editor.less'));
 
 //default task ////////////////////////////////////////////////////////////////////////////
 gulp.task('default', gulp.series('js', 'less', 'css', 'icons', 'vendors'));
@@ -433,7 +435,10 @@ gulp.task('watch', function () {
     gulp.watch(paths.working.js.iframe, gulp.series('js:iframe'));
 
     //watch vendors/**/editor.js
-    gulp.watch(paths.working.js.plugins.editor, gulp.series('vendors:editor.js'))
+    gulp.watch(paths.working.js.vendors.editor, gulp.series('vendors:editor.js'))
+
+    //watch vendors/**/editor.less
+    gulp.watch(paths.working.less.vendors.editor, gulp.series('vendors:editor.less'))
 
     //watch app LESS
     var pathless = [...paths.working.less.app, ...paths.working.exclude.app.map(a => a + '*.less')];

@@ -140,6 +140,7 @@ namespace Saber.Controllers
             AddScript("/editor/js/editor.js");
             AddScript("/editor/js/vendors-editor.js");
             AddCSS("/editor/css/views/editor/editor.css");
+            AddCSS("/editor/css/vendors-editor.css");
             if (EditorUsed != EditorType.Monaco)
             {
                 Scripts.Append(

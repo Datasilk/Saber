@@ -1,5 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[DataSet_AddRecord]
 	@datasetId int,
+	@recordId int = 0,
+	@lang nvarchar(16),
 	@fields XML 
 	/* example:	
 		<fields>
@@ -38,8 +40,8 @@ AS
 	) AS x
 
 	--build SQL string from XML fields
-	DECLARE @sql nvarchar(MAX) = 'INSERT INTO DataSet_' + @tableName + ' (',
-	@values nvarchar(MAX) = 'VALUES (',
+	DECLARE @sql nvarchar(MAX) = 'INSERT INTO DataSet_' + @tableName + ' (' + @tableName + 'Id, lang, ',
+	@values nvarchar(MAX) = 'VALUES (' + (CASE WHEN @recordId > 0 THEN @recordId ELSE '(SELECT NEXT VALUE FOR Sequence_DataSet_' + @tableName + ')' END) + ', ''' + @lang + ''', ',
 	@name nvarchar(64), @value nvarchar(MAX), 
 	@cursor CURSOR, @datatype varchar(16)
 

@@ -7,19 +7,14 @@ S.editor.fields = {
         let lang = $('.content-fields-section #lang').val();
         let filepath = '';
         let fileid = '';
-        let tabid = '';
-        //let folder = '';
         var container = '.sections .content-fields-section';
         if (!file) {
             S.editor.fields.changed = false;
             $('.content-fields-section form').html('');
-            tabid = 'content-fields-section';
         } else {
             //load content for partial view content fields
             filepath = file.replace('content/partials/', '');
             fileid = filepath.replace(/\./g, '_').replace(/\//g, '_');
-            tabid = 'content-fields-' + fileid;
-            //folder = file.split('/').splice(-1, 1).join('/');
             container = '.sections .content-fields-' + fileid;
             if (show !== false) {
                 $('.editor .sections > .tab').addClass('hide');
@@ -38,20 +33,10 @@ S.editor.fields = {
                 lang = window.language;
 
                 //get list of languages
-                S.ajax.post('Languages/Get', {},
-                    function (d) {
-                        var langs = d.split('|');
-                        var sel = $(container + ' #lang');
-                        for (var x = 0; x < langs.length; x++) {
-                            var l = langs[x].split(',');
-                            sel.append('<option value="' + l[0] + '"' + (l[0] == lang ? ' selected="selected"' : '') + '>' + l[1] + '</option>');
-                        }
-                        sel.on('change', (e) => {
-                            //changed selected language
-                            S.editor.fields.load(file);
-                        });
-                    }
-                );
+                S.editor.lang.load(container + ' #lang', lang, (e) => {
+                    //changed selected language
+                    S.editor.fields.load(file);
+                });
 
                 //render new tab
                 S.editor.tabs.create('Content: ' + filepath, 'content-fields-' + fileid, { removeOnClose: true, selected:show !== false },

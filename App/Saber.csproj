@@ -126,10 +126,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\editor\images\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="config.docker.json" />
     <None Include="config.json" />
     <None Include="web.Release.config" />

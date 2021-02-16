@@ -14,9 +14,14 @@ AS
 	IF NOT EXISTS(SELECT * FROM DataSets WHERE [label]=@label) BEGIN
 		DECLARE @tablename nvarchar(64) = REPLACE(@label, ' ', '_');
 
+		--first, create a new sequence for the dataset
+		DECLARE @sql nvarchar(MAX) = 'CREATE SEQUENCE [dbo].[Sequence_DataSet_' + @tableName + '] AS BIGINT START WITH 1 INCREMENT BY 1 NO CACHE'
+		EXECUTE sp_executesql @sql
+
+
 		--create a new table for this dataset
-		DECLARE @sql nvarchar(MAX) = 'CREATE TABLE [dbo].[DataSet_' + @tablename + '] (' + 
-			@tablename + 'Id INT IDENTITY(1,1) PRIMARY KEY, '
+		SET @sql = 'CREATE TABLE [dbo].[DataSet_' + @tablename + '] (' + 
+			@tablename + 'Id INT PRIMARY KEY, lang NVARCHAR(16), '
 		DECLARE @sqlVars nvarchar(MAX) = ''
 		DECLARE @sqlVals nvarchar(MAX) = ''
 		DECLARE @indexes nvarchar(MAX) = ''
@@ -77,14 +82,14 @@ AS
 				SET @indexes = @indexes + 'CREATE INDEX [IX_DataSet_' + @tableName + '_' + @name + '] ON [dbo].[DataSet_' + @tableName + '] ([' + @name + '])'
 			END
 			FETCH NEXT FROM @cursor INTO @name, @datatype, @maxlength, @default
-			IF @@FETCH_STATUS = 0 BEGIN
-				SET @sql = @sql + ', '
-			END
+			--IF @@FETCH_STATUS = 0 BEGIN
+				--SET @sql = @sql + ', '
+			--END
 		END
 		CLOSE @cursor
 		DEALLOCATE @cursor
 
-		SET @sql = @sql + ')'
+		SET @sql = @sql + 'PRIMARY KEY (' + @tablename + 'Id, lang))'
 		PRINT @sql
 		PRINT @indexes
 

@@ -1,6 +1,6 @@
 S.editor.tabs = {
     changed: false,
-    create: function (title, path, options, onfocus, onblur, onsave) {
+    create: function (title, path, options, onfocus, onblur, onsave, onclose) {
         //build options
         var opts = {
             selected: options ? (options.selected != null ? options.selected : true) : true,
@@ -69,6 +69,7 @@ S.editor.tabs = {
                 },
                 onsave: onsave,
                 onclose: () => {
+                    if (typeof onclose == 'function') { onclose();}
                     if (opts.removeOnClose == true) {
                         $('.sections .tab.' + id).remove();
                     }

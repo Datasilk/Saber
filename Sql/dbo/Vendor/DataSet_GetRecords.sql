@@ -1,9 +1,9 @@
-﻿ALTER PROCEDURE [dbo].[DataSet_GetRecords]
+﻿CREATE PROCEDURE [dbo].[DataSet_GetRecords]
 	@datasetId int,
 	@start int = 1,
 	@length int = 50,
+	@lang nvarchar(MAX) = '',
 	@search nvarchar(MAX) = '',
-	@columns nvarchar(MAX) = '',
 	@searchtype int = 0, -- 0 = LIKE %x%, 1 = LIKE x% (starts with), 2 = LIKE %x (ends with), -1 = exact match
 	@orderby nvarchar(MAX) = ''
 AS
@@ -11,15 +11,19 @@ AS
 	SELECT @tableName=tableName FROM DataSets WHERE datasetId=@datasetId
 
 	DECLARE @sql nvarchar(MAX) = 'SELECT * FROM DataSet_' + @tableName
-	IF @search IS NOT NULL AND @search != '' 
-	AND CHARINDEX(@columns, ']') = 0 --prevent sql injection
-	BEGIN
-		--separate columns into array
-		SELECT * INTO #columns FROM dbo.SplitArray(@columns, ',')
+	IF @search IS NOT NULL AND @search != '' BEGIN
+		--get table columns
+		SELECT c.[name] AS col
+		INTO #cols 
+		FROM sys.columns c
+		INNER JOIN sys.types t ON c.user_type_id = t.user_type_id
+		WHERE c.object_id = OBJECT_ID('DataSet_' + @tableName)
+		AND t.[Name] LIKE '%varchar%'
+
 		SET @sql = @sql + ' WHERE '
 		DECLARE @cursor1 CURSOR, @column nvarchar(32)
 		SET @cursor1 = CURSOR FOR 
-		SELECT * FROM #columns
+		SELECT * FROM #cols
 		FETCH FROM @cursor1 INTO @column
 		WHILE @@FETCH_STATUS = 0 BEGIN
 			SET @sql = @sql + '[' + @column + '] ' + 
