@@ -5,6 +5,7 @@
 	@lang nvarchar(MAX) = '',
 	@search nvarchar(MAX) = '',
 	@searchtype int = 0, -- 0 = LIKE %x%, 1 = LIKE x% (starts with), 2 = LIKE %x (ends with), -1 = exact match
+	@recordId int = 0,
 	@orderby nvarchar(MAX) = ''
 AS
 	DECLARE @tableName nvarchar(64)
@@ -42,8 +43,12 @@ AS
 		SET @sql += ')'
 	END
 
+	IF @recordId > 0 BEGIN
+		SET @sql += ' AND Id=' + CONVERT(nvarchar(16), @recordId)
+	END
+
 	-- include orderby clause
-	IF @orderby IS NOT NULL AND @orderby != '' BEGIN
+	IF @recordId <= 0 AND @orderby IS NOT NULL AND @orderby != '' BEGIN
 		SET @sql = @sql + ' ORDERBY ' + @orderby
 	END
 
