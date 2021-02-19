@@ -75,11 +75,12 @@
     @perc2:1%;
     .table(
         #2f2f2f, #949494, #949494, #949494, #949494, #949494, //table header
-        #272727, #113454, #003b73, #fff, #fff, #fff, #0099FF, #006bff, #006bff, #0099FF, #0099FF, #006bff, #006bff, #0099FF, //row
+        #272727, #113454, #003b73, #fff, #fff, #fff, #0099FF, #006bff, #006bff, #0099FF, #fff, #fff, #fff, #fff, //row
         darken(#2b2b2b, @perc), darken(#113454, @perc2), darken(#003b73, @perc2), darken(#fff, @perc), darken(#fff, @perc), //alt row
         darken(#fff, @perc), darken(#0099FF, @perc), darken(#006bff, @perc), darken(#006bff, @perc), darken(#0099FF, @perc), //alt row
-        darken(#0099FF, @perc), darken(#006bff, @perc), darken(#006bff, @perc), darken(#0099FF, @perc)//alt row
+        #fff, #fff, #fff, #fff//alt row
     );
+    .spreadsheet .row.hover:hover{background-color:#0082ff;}
 }
 
 .box.bg{background:#1d1d1d;}
@@ -118,17 +119,17 @@
 .box .menu-bar {
     .line{border-top-color:#3e3e3e;}
     & > ul > li > .row.hover:hover{background:#0082ff; color:#fff;}
-    .drop-menu{
-        @menu-color:#eee;
-        .row, .row:hover {
-            a:link, a:hover, a:visited, a:active{color:@menu-color; text-decoration:none;}
-        }
-        li{
-            .row.hover:hover{background:#0082ff; color:@menu-color; fill:@menu-color;}
-            use{color:@menu-color; fill:@menu-color;}
-        }
-        .shortcut-key{border-bottom-color:@menu-color;}
+}
+.box .drop-menu{
+    @menu-color:#eee;
+    .row, .row:hover {
+        a:link, a:hover, a:visited, a:active{color:@menu-color; text-decoration:none;}
     }
+    li{
+        .row.hover:hover{background:#0082ff; color:@menu-color; fill:@menu-color;}
+        use{color:@menu-color; fill:@menu-color;}
+    }
+    .shortcut-key{border-bottom-color:@menu-color;}
 }
 .box .file-bar{background:#1d1d1d;}
 .box .accordion > .title{background:#2a2a2a}

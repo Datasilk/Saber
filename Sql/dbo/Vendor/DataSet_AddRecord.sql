@@ -11,6 +11,7 @@
 		</fields>
 	*/
 AS
+SET NOCOUNT ON
 	--first, get a list of column names & data types from our target data set table
 	DECLARE @tableName nvarchar(64)
 	SELECT @tableName=tableName FROM DataSets WHERE datasetId=@datasetId
@@ -40,8 +41,9 @@ AS
 	) AS x
 
 	--build SQL string from XML fields
-	DECLARE @sql nvarchar(MAX) = 'INSERT INTO DataSet_' + @tableName + ' (' + @tableName + 'Id, lang, ',
-	@values nvarchar(MAX) = 'VALUES (' + (CASE WHEN @recordId > 0 THEN @recordId ELSE '(SELECT NEXT VALUE FOR Sequence_DataSet_' + @tableName + ')' END) + ', ''' + @lang + ''', ',
+	DECLARE @newId nvarchar(MAX) ='DECLARE @newId int = ' + (CASE WHEN @recordId > 0 THEN CONVERT(nvarchar(16), @recordId) ELSE '0; SET @newId = NEXT VALUE FOR Sequence_DataSet_' + @tableName END) + ';'
+	DECLARE @sql nvarchar(MAX) = @newId + 'INSERT INTO DataSet_' + @tableName + ' (Id, lang, ',
+	@values nvarchar(MAX) = 'VALUES (@newId, ''' + @lang + ''', ',
 	@name nvarchar(64), @value nvarchar(MAX), 
 	@cursor CURSOR, @datatype varchar(16)
 
@@ -64,8 +66,10 @@ AS
 
 		FETCH NEXT FROM @cursor INTO @name, @value
 		IF @@FETCH_STATUS = 0 BEGIN
-			IF @datatype != '' SET @sql += ', '
-			IF @datatype != '' SET @values += ', '
+			IF @datatype != '' BEGIN
+				SET @sql += ', '
+				SET @values += ', '
+			END
 		END ELSE BEGIN
 			SET @sql += ') '
 			SET @values += ')'

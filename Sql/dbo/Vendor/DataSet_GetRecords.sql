@@ -10,7 +10,7 @@ AS
 	DECLARE @tableName nvarchar(64)
 	SELECT @tableName=tableName FROM DataSets WHERE datasetId=@datasetId
 
-	DECLARE @sql nvarchar(MAX) = 'SELECT * FROM DataSet_' + @tableName
+	DECLARE @sql nvarchar(MAX) = 'SELECT * FROM DataSet_' + @tableName + ' WHERE lang=''' + @lang + ''''
 	IF @search IS NOT NULL AND @search != '' BEGIN
 		--get table columns
 		SELECT c.[name] AS col
@@ -20,13 +20,13 @@ AS
 		WHERE c.object_id = OBJECT_ID('DataSet_' + @tableName)
 		AND t.[Name] LIKE '%varchar%'
 
-		SET @sql = @sql + ' WHERE '
+		SET @sql += ' AND ('
 		DECLARE @cursor1 CURSOR, @column nvarchar(32)
 		SET @cursor1 = CURSOR FOR 
 		SELECT * FROM #cols
 		FETCH FROM @cursor1 INTO @column
 		WHILE @@FETCH_STATUS = 0 BEGIN
-			SET @sql = @sql + '[' + @column + '] ' + 
+			SET @sql += '[' + @column + '] ' + 
 				CASE WHEN @searchtype >= 0 THEN 'LIKE ''' ELSE @search END +
 				CASE WHEN @searchtype = 0 THEN '%' + @search + '%' END +
 				CASE WHEN @searchtype = 1 THEN @search + '%' END +
@@ -39,6 +39,7 @@ AS
 		END
 		CLOSE @cursor1
 		DEALLOCATE @cursor1
+		SET @sql += ')'
 	END
 
 	-- include orderby clause
@@ -47,6 +48,5 @@ AS
 	END
 
 	--execute generated SQL code
-	PRINT @sql
 	EXECUTE sp_executesql @sql
 	

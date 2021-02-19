@@ -20,8 +20,7 @@ AS
 
 
 		--create a new table for this dataset
-		SET @sql = 'CREATE TABLE [dbo].[DataSet_' + @tablename + '] (' + 
-			@tablename + 'Id INT PRIMARY KEY, lang NVARCHAR(16), '
+		SET @sql = 'CREATE TABLE [dbo].[DataSet_' + @tablename + '] (Id INT, lang NVARCHAR(16), '
 		DECLARE @sqlVars nvarchar(MAX) = ''
 		DECLARE @sqlVals nvarchar(MAX) = ''
 		DECLARE @indexes nvarchar(MAX) = ''
@@ -82,14 +81,12 @@ AS
 				SET @indexes = @indexes + 'CREATE INDEX [IX_DataSet_' + @tableName + '_' + @name + '] ON [dbo].[DataSet_' + @tableName + '] ([' + @name + '])'
 			END
 			FETCH NEXT FROM @cursor INTO @name, @datatype, @maxlength, @default
-			--IF @@FETCH_STATUS = 0 BEGIN
-				--SET @sql = @sql + ', '
-			--END
+			SET @sql = @sql + ', '
 		END
 		CLOSE @cursor
 		DEALLOCATE @cursor
 
-		SET @sql = @sql + 'PRIMARY KEY (' + @tablename + 'Id, lang))'
+		SET @sql = @sql + 'PRIMARY KEY (Id, lang))'
 		PRINT @sql
 		PRINT @indexes
 

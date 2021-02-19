@@ -10,19 +10,25 @@ namespace Saber.Services
 {
     public class ContentFields : Service
     {
-        public string Render(string path, string language, string container, Dictionary<string, string> data = null)
+        public string Render(string path, string language, string container, bool showlang = false, Dictionary<string, string> data = null)
         {
             if (!CheckSecurity("edit-content")) { return AccessDenied(); }
             var paths = PageInfo.GetRelativePath(path);
             var fields = data != null && data.Keys.Count > 0 ? data : Core.ContentFields.GetPageContent(path, language);
             var view = new View(string.Join("/", paths) + (path.Contains(".html") ? "" : ".html"));
             var result = Common.Platform.ContentFields.RenderForm(this, "", view, language, container, fields);
-
+            
             if (string.IsNullOrWhiteSpace(result))
             {
                 var nofields = new View("/Views/ContentFields/nofields.html");
                 nofields["filename"] = paths[paths.Length - 1];
                 return Response(nofields.Render());
+            }
+            if (showlang == true)
+            {
+                var viewlang = new View("/Views/ContentFields/showlang.html");
+                viewlang["language"] = App.Languages.Where(a => a.Key == language).First().Value;
+                result = viewlang.Render() + result;
             }
             return Response(result);
         }

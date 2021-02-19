@@ -68,11 +68,12 @@ S.editor.fields = {
         }
         S.editor.fields.render(file, lang, container, null, () => {});
     },
-    render: function (file, lang, container, fields, callback, ispopup) {
+    render: function (file, lang, container, fields, callback, ispopup, showlang) {
         var data = {
             path: file || S.editor.path,
             language: lang,
             container: container,
+            showlang: showlang || false,
             data: fields ?? {}
         };
         S.ajax.post('ContentFields/Render', data,
@@ -155,7 +156,7 @@ S.editor.fields = {
                 });
                 submit(e, fields);
             });
-        }, true);
+        }, true, true);
         return popup;
     },
     resize: function (e) {

@@ -1,11 +1,14 @@
 S.editor.lang = {
+    supported:[],
     load: function (selector, lang, onchange) {
         S.ajax.post('Languages/Get', {},
             function (d) {
                 var langs = d.split('|');
                 var sel = $(selector);
+                S.editor.lang.supported = [];
                 for (var x = 0; x < langs.length; x++) {
                     var l = langs[x].split(',');
+                    S.editor.lang.supported[l[0]] = l[1];
                     sel.append('<option value="' + l[0] + '"' + (l[0] == lang ? ' selected="selected"' : '') + '>' + l[1] + '</option>');
                 }
                 sel.on('change', onchange);
