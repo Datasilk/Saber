@@ -41,36 +41,47 @@ SET NOCOUNT ON
 	) AS x
 
 	--build SQL string from XML fields
-	DECLARE @sql nvarchar(MAX) = 'UPDATE DataSet_' + @tableName + ' SET ',
+	DECLARE @sql nvarchar(MAX) = 'SELECT CASE WHEN EXISTS(SELECT * FROM DataSet_' + @tableName + ' WHERE Id=' + CONVERT(nvarchar(16), @recordId) + ' AND lang=''' + @lang + ''') THEN 1 ELSE 0 END AS [value]',
 	@name nvarchar(64), @value nvarchar(MAX), 
 	@cursor CURSOR, @datatype varchar(16)
 
-	SET @cursor = CURSOR FOR
-	SELECT [name], [value] FROM @fieldlist
-	OPEN @cursor
-	FETCH NEXT FROM @cursor INTO @name, @value
-	WHILE @@FETCH_STATUS = 0 BEGIN
-		--get data type for column
-		SET @datatype = ''
-		SELECT @datatype = datatype FROM #cols WHERE col=@name
-		IF @datatype != '' BEGIN
-			IF @datatype = 'varchar' OR @datatype = 'nvarchar' OR @datatype = 'datetime2' BEGIN
-				SET @sql += '[' + @name + '] = ''' + REPLACE(@value, '''', '''''') + ''''
-			END ELSE BEGIN
-				SET @sql += '[' + @name + '] = ' + @value
-			END 
-		END
-
+	--first, check if record already exists
+	DECLARE @exists TABLE (value bit)
+	INSERT INTO @exists EXEC sp_executesql @sql
+	IF EXISTS(SELECT * FROM @exists WHERE [value]=1) BEGIN
+		--record already exists
+		SET @sql = 'UPDATE DataSet_' + @tableName + ' SET '
+		SET @cursor = CURSOR FOR
+		SELECT [name], [value] FROM @fieldlist
+		OPEN @cursor
 		FETCH NEXT FROM @cursor INTO @name, @value
-		IF @@FETCH_STATUS = 0 AND @datatype != '' BEGIN
-			SET @sql += ', '
-		END
-	END
-	CLOSE @cursor
-	DEALLOCATE @cursor
+		WHILE @@FETCH_STATUS = 0 BEGIN
+			--get data type for column
+			SET @datatype = ''
+			SELECT @datatype = datatype FROM #cols WHERE col=@name
+			IF @datatype != '' BEGIN
+				IF @datatype = 'varchar' OR @datatype = 'nvarchar' OR @datatype = 'datetime2' BEGIN
+					SET @sql += '[' + @name + '] = ''' + REPLACE(@value, '''', '''''') + ''''
+				END ELSE BEGIN
+					SET @sql += '[' + @name + '] = ' + @value
+				END 
+			END
 
-	--finally, execute SQL string
-	SET @sql += ' WHERE Id=' + CONVERT(nvarchar(16), @recordId) + ' AND lang=''' + @lang + ''''
-	EXECUTE sp_executesql @sql
+			FETCH NEXT FROM @cursor INTO @name, @value
+			IF @@FETCH_STATUS = 0 AND @datatype != '' BEGIN
+				SET @sql += ', '
+			END
+		END
+		CLOSE @cursor
+		DEALLOCATE @cursor
+
+		--finally, execute SQL string
+		SET @sql += ' WHERE Id=' + CONVERT(nvarchar(16), @recordId) + ' AND lang=''' + @lang + ''''
+		EXEC sp_executesql @sql
+		
+	END ELSE BEGIN
+		--create new record
+		EXEC DataSet_AddRecord @datasetId=@datasetId, @recordId=@recordId, @lang=@lang, @fields=@fields
+	END
 
 
