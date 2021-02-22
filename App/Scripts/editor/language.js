@@ -1,6 +1,7 @@
 S.editor.lang = {
     supported:[],
     load: function (selector, lang, onchange) {
+        if (S.editor.lang.supported.length > 0) { return;}
         S.ajax.post('Languages/Get', {},
             function (d) {
                 var langs = d.split('|');
@@ -31,6 +32,7 @@ S.editor.lang = {
                 function (d) {
                     var abbr = data.abbr.toLowerCase();
                     $('.content-fields #lang').append('<option value="' + abbr + '">' + data.name + '</option>').val(abbr);
+                    S.editor.lang.supported[abbr] = data.name;
                     S.editor.fields.load();
                 }
             );

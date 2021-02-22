@@ -301,7 +301,7 @@ S.editor.explorer = {
             }
             if (isready !== false) { S.editor.sessions.selected = path; }
         }
-        loadCode();
+        if (tab.length > 0) { loadCode(); }
     },
 
     select: (title, path, filetypes, callback) => {
