@@ -8,6 +8,7 @@ S.editor.tabs = {
             changed: options ? (options.changed != null ? options.changed : false) : false,
             canClose: options ? (options.canClose != null ? options.canClose : true) : true,
             isPageResource: options ? (options.isPageResource !== null ? options.isPageResource : false) : false,
+            showPageButtons: options ? (options.showPageButtons !== null ? options.showPageButtons : false) : false,
             removeOnClose: options ? (options.removeOnClose !== null ? options.removeOnClose : false) : false,
         };
         var id = S.editor.fileId(path);
@@ -51,12 +52,15 @@ S.editor.tabs = {
                 elem: elem,
                 options: opts,
                 onfocus: () => {
-                    $('.tab-components, .tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
-                    if (opts.isPageResource == true) {
+                    if (opts.showPageButtons == true) {
                         $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
+                    } else {
+                        $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
                     }
                     if (path.indexOf('.html') > 0) {
                         $('.tab-components').show();
+                    } else {
+                        $('.tab-components').hide();
                     }
                     elem.addClass('selected');
                     $('.tab-toolbar').html('');
@@ -95,7 +99,6 @@ S.editor.tabs = {
                 }
             }
             if (opts.selected == true) {
-                console.log($('.tab-' + id));
                 $('.tab-' + id + ' > div').addClass('selected');
             }
             route = routes.filter(a => a.path == path)[0];

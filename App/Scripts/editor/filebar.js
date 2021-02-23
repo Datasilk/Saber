@@ -19,7 +19,7 @@ S.editor.filebar = {
                 return;
             }
             S.editor.dropmenu.hide();
-            S.editor.tabs.create("Page Content", "content-fields-section", { isPageResource:true },
+            S.editor.tabs.create("Page Content", "content-fields-section", { showPageButtons:true },
                 () => { //onfocus
                     $('.tab.content-fields-section').removeClass('hide');
                     $('ul.file-tabs > li').removeClass('selected');
@@ -83,8 +83,9 @@ S.editor.filebar = {
 
     code: {
         show: function () {
-            $('.editor .sections > .tab').addClass('hide');
+            $('.editor .sections > .tab:not(.code-editor)').addClass('hide');
             $('.editor .sections > .code-editor').removeClass('hide');
+            S.editor.resize.window();
             $('ul.file-tabs > li').removeClass('selected');
             $('ul.file-tabs > li.tab-file-code').addClass('selected');
             if (S.editor.isChanged(S.editor.selected)) { S.editor.changed(); }

@@ -108,7 +108,7 @@
                 $('.sections').append('<div class="tab user-' + id + '"><div class="scroller"></div></div>');
                 S.editor.resize.window();
 
-                S.editor.tabs.create('User: ' + email, 'user-' + id, { isPageResource: false },
+                S.editor.tabs.create('User: ' + email, 'user-' + id, { },
                     () => { //onfocus
                         $('.tab.user-' + id).removeClass('hide');
                         self.details.updateFilebar(id, email);

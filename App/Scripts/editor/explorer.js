@@ -211,24 +211,25 @@ S.editor.explorer = {
             var title = file;
             if (fileparts[0].length > 25) { title = '...' + fileparts[0].substr(fileparts[0].length - 25) + '.' + fileparts[1]; }
             S.editor.tabs.create(title, path, { isPageResource: isPageResource, selected: isready !== false, canClose: !isPageResource }, loadCode);
+            if (isready == false && typeof callback == 'function') { callback(); }
         } else {
             //tab exists
             tab.find('.row.hover').addClass('selected');
         }
 
         function loadCode() {
-
-            if (isready !== false) {
-                $('.tab-components, .tab-content-fields, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
-                if (isPageResource || (paths.indexOf('partials') >= 0 && file.indexOf('.html') > 0)) {
-                    //show file bar icons for page html resource
-                    $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
-                }
-                if (path.indexOf('.html') > 0) {
-                    $('.tab-components').show();
-                }
+            S.editor.filebar.code.show();
+            if (isPageResource || (paths.indexOf('partials') >= 0 && file.indexOf('.html') > 0)) {
+                //show file bar icons for page html resource
+                $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
+            } else {
+                $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
             }
-
+            if (path.indexOf('.html') > 0) {
+                $('.tab-components').show();
+            } else {
+                $('.tab-components').hide();
+            }
             //check for existing source code
             var nocode = (code == null || typeof code == 'undefined');
             var session = S.editor.sessions[id];
@@ -248,16 +249,15 @@ S.editor.explorer = {
                 cleanPath = cleanPath.replace('content/', '');
             }
             if (cleanPath.indexOf('root/') == 0) { cleanPath = cleanPath.replace('root/', ''); }
-            if (isready !== false) {
-                //set file bar path text & icon
-                S.editor.filebar.update(cleanPath, 'icon-file-' + ext);
-            }
+
+            //set file bar path text & icon
+            S.editor.filebar.update(cleanPath, 'icon-file-' + ext);
             if (session == null && nocode == true) {
                 //load new session from ajax POST, loading code from server
                 S.ajax.post("Files/Open", { path: path, pageResource: isPageResource === true },
                     function (d) {
-                        S.editor.sessions.add(id, mode, S.editor.decodeHtml(d), isready !== false);
-                        isready = true;
+                        S.editor.sessions.add(id, mode, S.editor.decodeHtml(d));
+                        S.editor.resize.window();
                         if (typeof callback == 'function') { callback(); }
                     },
                     function () {
@@ -266,12 +266,11 @@ S.editor.explorer = {
                 );
             } else if (nocode == false) {
                 //load new session from provided code argument
-                S.editor.sessions.add(id, mode, S.editor.decodeHtml(code), isready !== false);
+                S.editor.sessions.add(id, mode, S.editor.decodeHtml(code));
                 if (typeof callback == 'function') { callback(); }
 
             } else {
                 //load existing session
-                S.editor.filebar.code.show();
                 switch (S.editor.type) {
                     case 0: //monaco
                         //save viewstate for currently viewed session
@@ -299,7 +298,7 @@ S.editor.explorer = {
                 }, 200);
                 if (typeof callback == 'function') { callback(); }
             }
-            if (isready !== false) { S.editor.sessions.selected = path; }
+            S.editor.sessions.selected = path;
         }
         if (tab.length > 0) { loadCode(); }
     },
