@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Text.RegularExpressions;
 using Saber.Vendor;
@@ -181,7 +182,7 @@ namespace Saber.Common
                     var path = App.MapPath(detail.Path);
                     var relpath = detail.Key + "/";
                     var dir = new DirectoryInfo(path);
-                    var files = dir.GetFiles().Where(Current => Regex.IsMatch(Current.Extension, "\\.(js|css)", RegexOptions.IgnoreCase));
+                    var files = dir.GetFiles().Where(Current => Regex.IsMatch(Current.Extension, "\\.(js|css|less|" + string.Join("|", Core.Image.Extensions).Replace(".", "") + ")", RegexOptions.IgnoreCase));
                     var jsPath = "/wwwroot/editor/vendors/" + relpath.ToLower();
                     var cssPath = "/wwwroot/editor/vendors/" + relpath.ToLower();
                     var imagesPath = "/wwwroot/editor/vendors/" + relpath.ToLower();
@@ -207,10 +208,13 @@ namespace Saber.Common
                         switch (f.Extension)
                         {
                             case ".js":
-                                File.Copy(f.FullName, App.MapPath(jsPath + Path.GetFileName(f.FullName)), true);
+                                Utility.Compression.GzipCompress(f.OpenText().ReadToEnd(), jsPath + Path.GetFileName(f.FullName));
                                 break;
                             case ".css":
                                 File.Copy(f.FullName, App.MapPath(cssPath + Path.GetFileName(f.FullName)), true);
+                                break;
+                            case ".less":
+                                Platform.Website.SaveLessFile(f.OpenText().ReadToEnd(), cssPath + Path.GetFileName(f.FullName), f.FullName.Replace(f.Name, ""));
                                 break;
                             default:
                                 if (Core.Image.Extensions.Any(a => a == f.Extension))
@@ -304,7 +308,8 @@ namespace Saber.Common
             {
                 jsparts.Append(File.ReadAllText(f.FullName));
             }
-            File.WriteAllText(App.MapPath("/wwwroot/editor/js/vendors-editor.js"), string.Join("\n", jsparts));
+            //gzip vendors-eitor.js
+            Utility.Compression.GzipCompress(string.Join("\n", jsparts), "/wwwroot/editor/js/vendors-editor.js");
         }
         #endregion
 

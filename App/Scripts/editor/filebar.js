@@ -59,7 +59,7 @@ S.editor.filebar = {
                         var html = '';
                         var langs = d.split('|');
                         var userlang = window.language || 'en';
-                        for (x = 0; x < langs.length; x++) {
+                        for (var x = 0; x < langs.length; x++) {
                             var lang = langs[x].split(',');
                             html += '<option value="' + lang[0] + '"' + (lang[0] == userlang ? ' selected' : '') + '>' + lang[1] + '</option>';
                         }

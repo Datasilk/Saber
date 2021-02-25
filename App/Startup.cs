@@ -311,7 +311,18 @@ namespace Saber
             provider.Mappings[".svg"] = "image/svg+xml";
             var options = new StaticFileOptions
             {
-                ContentTypeProvider = provider
+                ContentTypeProvider = provider,
+                OnPrepareResponse = (context) =>
+                {
+                    var headers = context.Context.Response.Headers;
+                    var contentType = headers["Content-Type"].ToString();
+                    if (context.File.PhysicalPath.Contains("wwwroot\\editor") && context.File.Name.EndsWith(".js"))
+                    {
+                        contentType = "application/javascript";
+                        headers.Add("Content-Encoding", "gzip");
+                        headers["Content-Type"] = contentType;
+                    }
+                }
             };
 
             app.UseStaticFiles(options);

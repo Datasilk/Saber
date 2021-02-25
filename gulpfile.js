@@ -27,16 +27,18 @@ var gulp = require('gulp'),
     cleancss = require('gulp-clean-css'),
     less = require('gulp-less'),
     rename = require('gulp-rename'),
-    del = require('del'),
     replace = require('gulp-replace'),
+    del = require('del'),
     config = require('./App/config.json'),
-    exec = require('child_process').exec;
+    exec = require('child_process').exec,
+    babel = require('gulp-babel'),
+    gzip = require('gulp-gzip');
     
 //get config variables from config.json
 var environment = config.environment;
 
 //determine environment
-var prod = false;
+var prod = true;
 if (environment != 'dev' && environment != 'development' && environment != null) {
     //using staging or production environment
     prod = true;
@@ -89,10 +91,10 @@ paths.working = {
             '!' + paths.app + '**/node_modules/*.js'
         ],
         utility: [
-            paths.scripts + 'utility/*.*',
-            paths.scripts + 'utility/**/*.*',
+            paths.scripts + 'utility/*.js',
+            paths.scripts + 'utility/**/*.js',
             '!' + paths.scripts + 'utility/**/node_modules/*',
-            '!' + paths.app + 'utility/**/*.less'
+            //'!' + paths.app + 'utility/**/*.less'
         ],
         editor: [
             paths.scripts + 'editor/_super.js',
@@ -211,37 +213,56 @@ paths.compiled = {
 gulp.task('js:app', function () {
     var pathlist = [...paths.working.js.app, ...paths.working.exclude.app];
     var p = gulp.src(pathlist)
-        .pipe(rename(function (path) {
-            path.dirname = path.dirname.toLowerCase();
-            path.basename = path.basename.toLowerCase();
-            path.extname = path.extname.toLowerCase();
-        }));
-
-    if (prod == true) { p = p.pipe(uglify()); }
+    .pipe(rename(function (path) {
+        path.dirname = path.dirname.toLowerCase();
+        path.basename = path.basename.toLowerCase();
+        path.extname = path.extname.toLowerCase();
+    }));
+    if (prod == true) {
+        p = p.pipe(babel({
+            presets: ['@babel/env']
+        })).pipe(uglify());
+    }
+    p = p.pipe(gzip({ append: false }));
     return p.pipe(gulp.dest(paths.compiled.js, { overwrite: true }));
 });
 
 gulp.task('js:platform', function () {
     var p = gulp.src(paths.working.js.platform, { base: '.' })
         .pipe(concat(paths.compiled.platform));
-    if (prod == true) { p = p.pipe(uglify()); }
+    if (prod == true) {
+        p = p.pipe(babel({
+            presets: ['@babel/env']
+        })).pipe(uglify());
+    }
+    p = p.pipe(gzip({ append: false }));
     return p.pipe(gulp.dest('.', { overwrite: true }));
 });
 
 gulp.task('js:editor', function () {
     var p = gulp.src(paths.working.js.editor, { base: '.' })
         .pipe(concat(paths.compiled.editor));
-    if (prod == true) { p = p.pipe(uglify()); }
+    if (prod == true) {
+        p = p.pipe(babel({
+            presets: ['@babel/env']
+        })).pipe(uglify());
+    }
+    p = p.pipe(gzip({ append: false }));
     return p.pipe(gulp.dest('.', { overwrite: true }));
 });
 
 gulp.task('js:utility', function () {
-    return gulp.src(paths.working.js.utility)
+    var p = gulp.src(paths.working.js.utility)
+        .pipe(gzip({ append: false }))
+    .pipe(gulp.dest(paths.compiled.js + 'utility'));
+
+    return gulp.src([paths.scripts + 'utility/*.js', paths.scripts + 'utility/**/*.*', '!' + paths.scripts + 'utility/**/*.js'])
         .pipe(gulp.dest(paths.compiled.js + 'utility'));
 });
 
 gulp.task('js:iframe', function () {
     return gulp.src(paths.working.js.iframe)
+        .pipe(gzip({ append: false }))
         .pipe(gulp.dest(paths.compiled.js));
 });
 
@@ -379,7 +400,12 @@ gulp.task('vendors:less', function () {
 gulp.task('vendors:editor.js', function () {
     var p = gulp.src(paths.working.js.vendors.editor, { base: '.' })
         .pipe(concat(paths.compiled.js + 'vendors-editor.js'));
-    if (prod == true) { p = p.pipe(uglify()); }
+    if (prod == true) {
+        p = p.pipe(babel({
+            presets: ['@babel/env']
+        })).pipe(uglify());
+    }
+    p = p.pipe(gzip({ append: false }));
     return p.pipe(gulp.dest('.', { overwrite: true }));
 });
 
