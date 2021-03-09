@@ -265,11 +265,12 @@ S.editor.init = function () {
     $('.menu-bar .item-new-window').on('click', S.editor.newWindow);
     $('.menu-bar .item-new-tab a').attr('href', path);
     $('.menu-bar .item-live-preview a').attr('href', path + '?live');
-    $('.menu-bar .item-web-stylesheets').on('click', () => { S.editor.websettings.show('stylesheets') });
-    $('.menu-bar .item-web-scripts').on('click', () => { S.editor.websettings.show('scripts') });
-    $('.menu-bar .item-web-icons').on('click', () => { S.editor.websettings.show('icons') });
-    $('.menu-bar .item-web-email').on('click', () => { S.editor.websettings.show('email-settings') });
-    $('.menu-bar .item-web-pass').on('click', () => { S.editor.websettings.show('password-settings') });
+    $('.menu-bar .item-web-stylesheets').on('click', () => { S.editor.websettings.show('stylesheets'); });
+    $('.menu-bar .item-web-scripts').on('click', () => { S.editor.websettings.show('scripts'); });
+    $('.menu-bar .item-web-icons').on('click', () => { S.editor.websettings.show('icons'); });
+    $('.menu-bar .item-web-email').on('click', () => { S.editor.websettings.show('email-settings'); });
+    $('.menu-bar .item-web-pass').on('click', () => { S.editor.websettings.show('password-settings'); });
+    $('.menu-bar .item-web-plugins').on('click', () => { S.editor.websettings.show('plugins'); });
     $('.tab-components').on('click', S.editor.components.show);
     $('.tab-content-fields').on('click', S.editor.filebar.fields.show);
     $('.tab-file-code').on('click', S.editor.filebar.code.show);

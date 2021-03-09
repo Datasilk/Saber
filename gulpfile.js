@@ -278,28 +278,28 @@ gulp.task('less:app', function () {
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
         }));
-    if(prod == true){ p = p.pipe(cleancss({compatibility: 'ie8'})); }
+    //if(prod == true){ p = p.pipe(cleancss()); }
     return p.pipe(gulp.dest(paths.compiled.app, { overwrite: true }));
 });
 
 gulp.task('less:platform', function () {
     var p = gulp.src(paths.working.less.platform)
         .pipe(less());
-    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    //if (prod == true) { p = p.pipe(cleancss()); }
     return p.pipe(gulp.dest(paths.compiled.css, { overwrite: true }));
 });
 
 gulp.task('less:themes', function () {
     var p = gulp.src(paths.working.less.themes)
         .pipe(less());
-    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    //if (prod == true) { p = p.pipe(cleancss()); }
     return p.pipe(gulp.dest(paths.compiled.css + 'themes', { overwrite: true }));
 });
 
 gulp.task('less:utility', function () {
     var p = gulp.src(paths.working.less.utility)
         .pipe(less());
-    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    //if (prod == true) { p = p.pipe(cleancss()); }
     return p.pipe(gulp.dest(paths.compiled.css + 'themes', { overwrite: true }));
 });
 
@@ -310,7 +310,7 @@ gulp.task('css:themes', function () {
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
         }));
-    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    //if (prod == true) { p = p.pipe(cleancss()); }
     return p.pipe(gulp.dest(paths.compiled.themes, { overwrite: true }));
 });
 
@@ -322,13 +322,13 @@ gulp.task('css:app', function () {
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
         }));
-    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    //if (prod == true) { p = p.pipe(cleancss()); }
     return p.pipe(gulp.dest(paths.compiled.app, { overwrite: true }));
 });
 
 gulp.task('css:iframe', function () {
     var p = gulp.src(paths.working.css.iframe);
-    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    //if (prod == true) { p = p.pipe(cleancss()); }
     return p.pipe(gulp.dest(paths.compiled.css, { overwrite: true }));
 });
 
@@ -340,19 +340,19 @@ gulp.task('css', gulp.series('css:themes', 'css:app', 'css:iframe'));
 gulp.task('website:less', function () {
     var p = gulp.src(paths.app + 'Content/pages/*.less')
         .pipe(less());
-    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    if (prod == true) { p = p.pipe(cleancss()); }
     p.pipe(gulp.dest(paths.webroot + 'content/pages/', { overwrite: true }));
 
     p = gulp.src(paths.app + 'Content/partials/*.less')
         .pipe(less());
-    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    if (prod == true) { p = p.pipe(cleancss()); }
     return p.pipe(gulp.dest(paths.webroot + 'content/partials/', { overwrite: true }));
 });
 
 gulp.task('website:css', function () {
     var p = gulp.src(paths.app + 'Content/website.less')
         .pipe(less());
-    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    if (prod == true) { p = p.pipe(cleancss()); }
     return p.pipe(gulp.dest(paths.webroot + 'css/', { overwrite: true }));
 });
 
@@ -393,7 +393,7 @@ gulp.task('vendors:less', function () {
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
         }));
-    if (prod == true) { p = p.pipe(cleancss({ compatibility: 'ie8' })); }
+    if (prod == true) { p = p.pipe(cleancss()); }
     return p.pipe(gulp.dest(paths.compiled.vendors, { overwrite: true }));
 });
 
@@ -437,7 +437,7 @@ gulp.task('file', function () {
     if (prod == true && ext == 'js') { p = p.pipe(uglify()); }
     if (ext == 'less') { p = p.pipe(less()); }
     if (prod == true && (ext == 'css' || ext == 'less')) {
-        p = p.pipe(cleancss({ compatibility: 'ie8' }));
+        p = p.pipe(cleancss());
     }
     return p.pipe(gulp.dest(outputDir, { overwrite: true }));
 });

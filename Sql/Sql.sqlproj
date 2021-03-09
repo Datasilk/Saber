@@ -129,6 +129,7 @@
     <Build Include="dbo\Vendor\DataSets_GetList.sql" />
     <Build Include="dbo\Vendor\DataSet_GetInfo.sql" />
     <Build Include="dbo\Vendor\DataSet_AddRecord.sql" />
+    <Build Include="dbo\Vendor\DataSet_UpdateRecord.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

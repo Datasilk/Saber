@@ -273,7 +273,9 @@
         input[type="checkbox"]{width:14px; height:14px; margin:10px 0 10px 5px;}
     }
     .content-section{padding-bottom:30px;
-        h2{font-size:18px !important;}
+        .section-title{
+            .icon{padding-top:5px;}
+        }
     }
     .add-lang{margin-top:12px;}
     .message{margin-bottom:-5px; position:relative; top:-5px;}
@@ -292,7 +294,7 @@
         }
     }
     ul, li{padding-bottom:0;}
-    .list-items {width:~"calc(100% - 102px)"; padding-top:4px;
+    .list-items {width:~"calc(100% - 113px)"; padding-top:4px;
         ul{min-width:200px;}
         .close-btn{opacity:0.3;
             &:hover{opacity:1;}
@@ -366,6 +368,7 @@
             }
         }
     }
+    .plugin-feature .text{max-width:~"calc(100% - 125px)";}
 }
 
 /* website analytics */
@@ -419,8 +422,8 @@
 }
 
 /* unordered list */
-.box.editor ul.list{list-style:none; padding-bottom:0;
-    li{padding:10px; padding-bottom:10px !important;
+.box.editor ul.list, .popup ul.list{list-style:none; padding-bottom:0;
+    li{padding:10px; padding-bottom:10px !important; cursor:default;
        button, .button{cursor:pointer;}
     }
 }

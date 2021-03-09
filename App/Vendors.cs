@@ -11,7 +11,6 @@ using System.Text.Json;
 
 namespace Saber.Common
 {
-
     public static class Vendors
     {
         private static List<string> DLLs { get; set; } = new List<string>();
@@ -30,6 +29,7 @@ namespace Saber.Common
         public static Dictionary<string, IVendorEmailClient> EmailClients { get; set; } = new Dictionary<string, IVendorEmailClient>();
         public static Dictionary<string, EmailType> EmailTypes { get; set; } = new Dictionary<string, EmailType>();
         public static List<IVendorWebsiteSettings> WebsiteSettings { get; set; } = new List<IVendorWebsiteSettings>();
+        public static List<DataSourceInfo> DataSources { get; set; } = new List<DataSourceInfo>();
 
         public class VendorInfo : IVendorInfo
         {
@@ -53,6 +53,13 @@ namespace Saber.Common
             public Dictionary<string, IVendorEmailClient> EmailClients { get; set; } = new Dictionary<string, IVendorEmailClient>();
             public Dictionary<string, EmailType> EmailTypes { get; set; } = new Dictionary<string, EmailType>();
             public List<IVendorWebsiteSettings> WebsiteSettings { get; set; } = new List<IVendorWebsiteSettings>();
+        }
+
+        public class DataSourceInfo
+        {
+            public string Key { get; set; }
+            public string Name { get; set; }
+            public IVendorDataSources Helper { get; set; }
         }
         #region "Assemblies"
         private class AssemblyInfo
@@ -683,6 +690,37 @@ namespace Saber.Common
             details.Icon = instance.Icon;
             details.Version = instance.Version;
             details.Path = "/Vendors/" + instance.Key + "/";
+        }
+        #endregion
+
+        #region "Data Sources"
+        public static void GetDataSourcesFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.Value.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorDataSources")
+                        {
+                            GetDataSourcesFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetDataSourcesFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorDataSources))) { return; }
+            var instance = (IVendorDataSources)Activator.CreateInstance(type);
+            foreach(var datasource in instance.List())
+            {
+                DataSources.Add(new DataSourceInfo() { Key = (string.IsNullOrEmpty(instance.Prefix) ? "" : instance.Prefix + "-") + datasource.Key, Name = datasource.Value, Helper = instance });
+            }
         }
         #endregion
     }

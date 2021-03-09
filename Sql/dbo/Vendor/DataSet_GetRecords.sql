@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[DataSet_GetRecords]
+﻿ALTER PROCEDURE [dbo].[DataSet_GetRecords]
 	@datasetId int,
 	@start int = 1,
 	@length int = 50,
@@ -8,10 +8,12 @@
 	@recordId int = 0,
 	@orderby nvarchar(MAX) = ''
 AS
+	SET NOCOUNT ON
 	DECLARE @tableName nvarchar(64)
 	SELECT @tableName=tableName FROM DataSets WHERE datasetId=@datasetId
 
 	DECLARE @sql nvarchar(MAX) = 'SELECT * FROM DataSet_' + @tableName + ' WHERE lang=''' + @lang + ''''
+	
 	IF @search IS NOT NULL AND @search != '' BEGIN
 		--get table columns
 		SELECT c.[name] AS col
@@ -20,19 +22,22 @@ AS
 		INNER JOIN sys.types t ON c.user_type_id = t.user_type_id
 		WHERE c.object_id = OBJECT_ID('DataSet_' + @tableName)
 		AND t.[Name] LIKE '%varchar%'
+		AND c.[name] NOT IN ('lang')
 
 		SET @sql += ' AND ('
+
 		DECLARE @cursor1 CURSOR, @column nvarchar(32)
 		SET @cursor1 = CURSOR FOR 
-		SELECT * FROM #cols
+		SELECT col FROM #cols
+		OPEN @cursor1
 		FETCH FROM @cursor1 INTO @column
 		WHILE @@FETCH_STATUS = 0 BEGIN
 			SET @sql += '[' + @column + '] ' + 
-				CASE WHEN @searchtype >= 0 THEN 'LIKE ''' ELSE @search END +
-				CASE WHEN @searchtype = 0 THEN '%' + @search + '%' END +
-				CASE WHEN @searchtype = 1 THEN @search + '%' END +
-				CASE WHEN @searchtype = 2 THEN '%' + @search END +
-				CASE WHEN @searchtype >= 0 THEN '''' END
+				CASE WHEN @searchtype >= 0 THEN 'LIKE ''' ELSE ' = ''' + @search + '''' END +
+				CASE WHEN @searchtype = 0 THEN '%' + @search + '%' ELSE '' END +
+				CASE WHEN @searchtype = 1 THEN @search + '%' ELSE '' END +
+				CASE WHEN @searchtype = 2 THEN '%' + @search ELSE '' END +
+				CASE WHEN @searchtype >= 0 THEN '''' ELSE '' END
 			FETCH FROM @cursor1 INTO @column
 			IF @@FETCH_STATUS = 0 BEGIN
 				SET @sql = @sql + ' OR '
@@ -51,6 +56,8 @@ AS
 	IF @recordId <= 0 AND @orderby IS NOT NULL AND @orderby != '' BEGIN
 		SET @sql = @sql + ' ORDERBY ' + @orderby
 	END
+
+	--PRINT @sql
 
 	--execute generated SQL code
 	EXECUTE sp_executesql @sql

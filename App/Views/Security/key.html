@@ -1,10 +1,12 @@
 ﻿<div class="row key hover">
     <div class="col">
-        <input type="checkbox" name="{{key}}" value="1" {{checked}}checked{{/checked}} />
+        <input type="checkbox" name="{{key}}" id="sec-{{key}}" value="1" {{checked}}checked{{/checked}} />
     </div>
     <div class="col">
-        <h3>{{label}}</h3>
-        <p>{{description}}</p>
+        <label for="sec-{{key}}">
+            <h3>{{label}}</h3>
+            <p>{{description}}</p>
+        </label>
     </div>
     
 </div>

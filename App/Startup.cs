@@ -19,6 +19,7 @@ namespace Saber
     public class Startup
     {
         private static IConfigurationRoot config;
+        private List<Assembly> assemblies = new List<Assembly> { Assembly.GetCallingAssembly() };
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
@@ -44,7 +45,6 @@ namespace Saber
             Common.Vendors.DeleteVendors();
 
             //get list of assemblies for Vendor related functionality
-            var assemblies = new List<Assembly> { Assembly.GetCallingAssembly() };
             if (!assemblies.Contains(Assembly.GetExecutingAssembly()))
             {
                 assemblies.Add(Assembly.GetExecutingAssembly());
@@ -213,15 +213,6 @@ namespace Saber
             Console.WriteLine("Found " + Common.Vendors.WebsiteSettings.Count + " Vendor Website Setting" + (Common.Vendors.WebsiteSettings.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //Run any services required after initializing all vendor plugins but before configuring vendor startup services
-            Core.Delegates.Email.Send = Email.Send;
-            Core.Delegates.Website.SaveLessFile = Website.SaveLessFile;
-            Core.Delegates.Website.CopyTempWebsite = Website.CopyTempWebsite;
-            Core.Delegates.Log.Error = Query.Logs.LogError;
-            Core.Delegates.ContentFields.GetFieldType = ContentFields.GetFieldType;
-            Core.Delegates.ContentFields.RenderForm = ContentFields.RenderForm;
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
             foreach (var kv in Common.Vendors.Startups)
             {
@@ -369,6 +360,31 @@ namespace Saber
 
             //check vendor versions which may run SQL migration scripts
             Common.Vendors.CheckVersions();
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IVendorDataSources interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorDataSources).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Common.Vendors.GetDataSourcesFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorDataSources interface
+            Common.Vendors.GetDataSourcesFromFileSystem();
+            Console.WriteLine("Found " + Common.Vendors.DataSources.Count + " Vendor Data Source" + (Common.Vendors.DataSources.Count != 1 ? "s" : ""));
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //Run any services required after initializing all vendor plugins but before configuring vendor startup services
+            Core.Delegates.Email.Send = Email.Send;
+            Core.Delegates.Website.SaveLessFile = Website.SaveLessFile;
+            Core.Delegates.Website.CopyTempWebsite = Website.CopyTempWebsite;
+            Core.Delegates.Log.Error = Query.Logs.LogError;
+            Core.Delegates.ContentFields.GetFieldType = ContentFields.GetFieldType;
+            Core.Delegates.ContentFields.RenderForm = ContentFields.RenderForm;
 
             //execute Configure method for all vendors that use IVendorStartup interface
             foreach (var kv in Common.Vendors.Startups)

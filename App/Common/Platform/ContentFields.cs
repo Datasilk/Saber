@@ -27,6 +27,7 @@ namespace Saber.Common.Platform
             var fieldVendor = new View("/Views/ContentFields/vendor.html");
             var vars = Vendors.HtmlComponentKeys;
             var html = new StringBuilder();
+            var sections = new StringBuilder();
             var sectionTitle = "";
             for (var x = 0; x < view.Elements.Count; x++)
             {
@@ -122,7 +123,16 @@ namespace Saber.Common.Platform
                             var vendor = Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0).FirstOrDefault();
                             if (fieldType == Core.ContentFields.FieldType.linebreak && elem.Vars.ContainsKey("title"))
                             {
+                                if(html.Length > 0)
+                                {
+                                    section["fields"] = html.ToString();
+                                    html.Clear();
+                                    sections.Append(section.Render());
+                                }
                                 sectionTitle = elem.Vars["title"].ToLower();
+                                section.Clear();
+                                section["title"] = sectionTitle.Capitalize();
+                                if(sectionTitle != "") { section.Show("has-title"); }
                             }
 
                             if (vendor.Value.ReplaceRow == true)
@@ -151,10 +161,10 @@ namespace Saber.Common.Platform
                     }
                 }
             }
-            section.Clear();
-            section["title"] = title;
             section["fields"] = html.ToString();
-            return html.Length == 0 ? "" : section.Render();
+            html.Clear();
+            sections.Append(section.Render());
+            return sections.Length == 0 ? "" : sections.ToString();
         }
         public static Core.ContentFields.FieldType GetFieldType(View view, int index)
         {

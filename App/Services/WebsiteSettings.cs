@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using Saber.Common.Utility;
+using Saber.Core.Extensions.Strings;
 
 namespace Saber.Services
 {
@@ -318,7 +319,7 @@ namespace Saber.Services
             foreach(var vendor in Common.Vendors.WebsiteSettings)
             {
                 accordion.Clear();
-                accordion["id"] = "plugin-" + vendor.Name.Replace(" ", "-");
+                accordion["id"] = "plugin-" + vendor.Name.ReplaceOnlyAlphaNumeric(true, true, true).Replace(" ", "-").ToLower();
                 accordion["title"] = vendor.Name;
                 accordion["contents"] = vendor.Render(this);
                 if (accordion["contents"] != "") { html.Append(accordion.Render()); }

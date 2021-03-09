@@ -71,3 +71,9 @@ S.editor.queryString = function (url, param, decode) {
     if (val.length > 0) { val = val[0]; } else { val = ''; }
     return decode ? decodeURIComponent(val) : val;
 };
+
+S.editor.objectFromString = function (str){
+    return str.split('.').reduce(function (object, property) {
+        return object[property];
+    }, window);
+}

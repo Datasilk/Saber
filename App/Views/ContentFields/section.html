@@ -1,4 +1,14 @@
 ﻿<div class="content-section">
-    <h2>{{title}}</h2>
+    {{has-title}}
+    <div class="row section-title">
+        <div class="col icon small">
+            <svg viewBox="0 0 32 32">
+                <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
+            </svg>
+        </div>
+        <div class="col pad-left"><h4>{{title}}</h4></div>
+    </div>
+    {{/has-title}}
+    
     {{fields}}
 </div>

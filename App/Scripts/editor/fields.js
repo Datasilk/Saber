@@ -112,7 +112,6 @@ S.editor.fields = {
                 //initialize all custom fields
                 S.editor.fields.custom.list.init(container);
                 
-
                 //initialize any accordions
                 S.accordion.load({}, () => { S.editor.resize.window(); });
 
@@ -269,6 +268,17 @@ S.editor.fields = {
                         $(items[y]).attr('data-index', y + 1);
                     }
                 }
+
+                //initialize all data source filter forms
+                section.find('.list-items .accordion .contents[data-init]').each((a) => {
+                    var field = $(a).parents('.content-field').first();
+                    var hidden = field.find('input.input-field');
+                    var oninit = $(a).attr('data-init');
+                    var obj = S.editor.objectFromString(oninit);
+                    if (obj && typeof obj == 'function') {
+                        obj(field.find('.accordion > .contents'), hidden);
+                    }
+                });
             },
             parse: function (hidden) {
                 var data = hidden.val();
@@ -361,6 +371,70 @@ S.editor.fields = {
                     return false;
                 });
                 return false;
+            },
+            datasource: {
+                list: function(e, title) {
+                    e.preventDefault();
+                    var field = $(e.target).parents('.content-field').first();
+                    var hidden = field.find('input.input-field');
+                    S.ajax.post('DataSources/List', {}, (response) => {
+                        var html = '';
+                        if (response.length >= 0) {
+                            response.unshift(['list-items', 'User-Defined List Items (default)']);
+                            html += '<ul class="list">' + response.map(a => {
+                                return '<li class="item" data-id="' + a[0] + '"><span>' + a[1] + '</span></li>'
+                            }).join('') + '</ul>';
+                        }
+                        S.popup.show('Select A Data Source for "' + title + '"', html);
+                        $('.popup .list li').on('click', (e) => {
+                            var target = $(e.target);
+                            if (!target.hasClass('item')) {
+                                target = target.parents('.item').first();
+                            }
+                            var key = target.attr('data-id');
+                            var name = target.find('span').html();
+                            S.popup.hide();
+                            if (key == 'list-items') {
+                                //show list items
+                                field.find('.accordion > .contents').html('<ul class="list"></ul>');
+                                field.find('.accordion > .title h6').html('List Items');
+                                field.find('.add-list-item').removeClass('hide');
+                                hidden.val('');
+                            } else {
+                                //show data source filter
+                                S.ajax.post('DataSources/RenderFilters', { key: key }, (filterform) => {
+                                    //update list data with new data source
+                                    var oninit = filterform.split('|')[0];
+                                    filterform = filterform.split('|')[1];
+                                    hidden.val('data-src=' + key);
+                                    field.find('.add-list-item').addClass('hide');
+                                    field.find('.accordion > .title h6').html('Filter for ' + name);
+                                    field.find('.accordion > .contents').html(filterform);
+                                    S.ajax.inject(filterform);
+                                    field.find('.accordion').addClass('expanded');
+                                    if (oninit && oninit != '') {
+                                        var obj = S.editor.objectFromString(oninit);
+                                        if (obj && typeof obj == 'function') {
+                                            obj(field.find('.accordion > .contents'), hidden);
+                                        }
+                                    }
+                                }, (err) => {
+                                    S.message.show('', err.responseText, 'error');
+                                });
+                            }
+                        });
+
+                    }, (err) => {
+                            S.message.show('', err.responseText, 'error');
+                    }, true);
+                    return false;
+                },
+                filter: {
+                    save: function (inputfield, filter) {
+                        var src = inputfield.val().split('|!|')[0];
+                        inputfield.val(src + '|!|' + JSON.stringify(filter));
+                    }
+                }
             }
         }
     }

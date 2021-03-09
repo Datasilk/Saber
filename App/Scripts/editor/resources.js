@@ -109,7 +109,7 @@ S.editor.resources = {
                 });
                 popup.find('.uploader').on('click', uploader.click);
                 popup.find('.apply').on('click', (e) => {
-                    S.popup.hide(e);
+                    S.popup.hide(popup);
                     if (callback) { callback(selectedResources) }
                 });
                 S.popup.resize();

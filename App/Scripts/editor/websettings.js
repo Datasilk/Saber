@@ -1,6 +1,6 @@
 S.editor.websettings = {
     _loaded:false,
-    show: function (section) {
+    show: function (section, callback) {
         S.editor.tabs.create("Website Settings", "web-settings-section", {},
             () => { //onfocus
                 $('.tab.web-settings').removeClass('hide');
@@ -38,6 +38,7 @@ S.editor.websettings = {
         function getSection() {
             $('.web-settings .accordion').removeClass('expanded');
             $('.web-settings #web-' + section).addClass('expanded');
+            if (callback) { callback(); }
         }
     }
 };

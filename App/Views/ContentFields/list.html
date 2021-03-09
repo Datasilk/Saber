@@ -1,18 +1,24 @@
 ﻿<div class="col input for-button">
-    <button onclick="S.editor.fields.custom.list.add(event, '{{title}}', '{{key}}', '{{partial}}', '{{lang}}', '{{container}}');">+ List Item</button>
+    <div class="pad-bottom add-list-item {{hide-add-list-item}}hide{{/hide-add-list-item}}">
+        <button onclick="S.editor.fields.custom.list.add(event, '{{title}}', '{{key}}', '{{partial}}', '{{lang}}', '{{container}}');">+ List Item</button>
+    </div>
+    <div class="pad-bottom change-data-source">
+        <button onclick="S.editor.fields.custom.list.datasource.list(event, '{{title}}');" class="apply">Data Source</button>
+    </div>
+
 </div>
 <div class="col pad-left list-items">
     <div class="accordion">
         <div class="title">
-            <h6>List Items</h6>
+            <h6>{{accordion-title}}</h6>
             <div class="expander">
                 <svg viewBox="0 0 32 32">
                     <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
                 </svg>
             </div>
         </div>
-        <div class="contents pad">
-            <ul class="list">{{list-items}}</ul>
+        <div class="contents pad" {{accordion-oninit}}>
+            {{accordion-contents}}
         </div>
     </div>
 </div>
