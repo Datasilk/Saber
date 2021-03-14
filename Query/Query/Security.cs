@@ -73,6 +73,11 @@ namespace Query
             {
                 return Sql.Populate<Models.SecurityGroup>("SecurityUser_GetGroups", new { userId });
             }
+
+            public static bool Check(int userId, string key)
+            {
+                return Sql.ExecuteScalar<int>("SecurityUser_Check", new { userId, key }) == 1;
+            }
         }
     }
 }

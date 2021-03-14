@@ -126,4 +126,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="tableName" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="065d4ba4-c4b3-436c-8162-46564ffa264c" ChangeDateTime="03/14/2021 05:54:54">
+    <Property Name="ElementName" Value="[dbo].[User_ApiToken].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[User_ApiToken]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="userId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9b353dd5-6c5d-4fe0-bb70-6a884533ad25" ChangeDateTime="03/14/2021 08:52:02">
+    <Property Name="ElementName" Value="[dbo].[User_ApiTokens].[apikeyId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[User_ApiTokens]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="api" />
+  </Operation>
 </Operations>

@@ -12,7 +12,7 @@ namespace Saber.Services
     {
         public string Render(string path, string filetypes = "", int sort = 0)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (User.PublicApi || !CheckSecurity()) { return AccessDenied(); }
             if(path == "") { return Error("No path specified"); }
             var canEdit = CheckSecurity("code-editor");
             var canUpload = CheckSecurity("upload");
@@ -265,7 +265,7 @@ namespace Saber.Services
 
         public string Delete(string path, string file)
         {
-            if (!CheckSecurity()) { return AccessDenied(); }
+            if (User.PublicApi || !CheckSecurity()) { return AccessDenied(); }
             try
             {
                 var paths = PageInfo.GetRelativePath(path);

@@ -282,6 +282,10 @@ namespace Saber
             Server.BcryptWorkfactor = int.Parse(config.GetSection("encryption:bcrypt_work_factor").Value);
             Server.Salt = config.GetSection("encryption:salt").Value;
 
+            //configure Public API developer key
+            Server.DeveloperKeys = config.GetSection("developer-keys").Get<List<Core.ApiKey>>();
+            Core.Service.ApiKeys = Server.DeveloperKeys;
+
             //inject app lifetime
             Server.AppLifetime = appLifetime;
 
@@ -339,7 +343,6 @@ namespace Saber
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             //set up database
-            Server.HasAdmin = Query.Users.HasAdmin();
             var resetPass = Query.Users.HasPasswords();
             Server.HasAdmin = Query.Users.HasAdmin();
 

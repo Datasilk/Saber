@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Log_GetUrlAnalytics]
 	@timeScale int = 1, -- 0 = 60 minutes, 1 = 24 hours, 2 = 7 days, 3 = 30 days, 4 = 12 months
-	@startDate datetime = NULL
+	@startDate datetime2(7) = NULL
 AS
 	IF @startDate = NULL BEGIN SET @startDate = GETUTCDATE() END
 

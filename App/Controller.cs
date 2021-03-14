@@ -24,7 +24,7 @@ namespace Saber
 
         public override bool CheckSecurity(string key = "")
         {
-            if(User.UserId == 1) { return true; }
+            if(User.IsAdmin) { return true; }
             if(key != "" && User.UserId > 0 && !User.Keys.Any(a => a.Key == key && a.Value == true))
             {
                 return false;
@@ -53,11 +53,8 @@ namespace Saber
             view["footer"] = Footer != null ? Footer.ToString() : "";
 
             //load website icon
-            if (File.Exists(App.MapPath("wwwroot/images/web-icon.png")))
-            {
-                view["favicon"] = "/images/web-icon.png";
-                view["favicon-type"] = "image/png";
-            }
+            view["favicon"] = "/images/web-icon.png";
+            view["favicon-type"] = "image/png";
 
             //load apple icons
             var appleIcons = new bool[4];

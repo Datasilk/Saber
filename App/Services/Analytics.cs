@@ -9,7 +9,7 @@ namespace Saber.Services
         public string Render(int timeScale = 2, DateTime? startDate = null)
         {
             //show website analytics
-            if (!CheckSecurity("website-analytics")) { return AccessDenied(); }
+            if (User.PublicApi || !CheckSecurity("website-analytics")) { return AccessDenied(); }
             var view = new View("/Views/Analytics/analytics.html");
 
             if (!startDate.HasValue)
@@ -40,9 +40,6 @@ namespace Saber.Services
                 }
                 view["url-list"] = html.ToString();
             }
-            
-
-
 
             //render view
             return JsonResponse(

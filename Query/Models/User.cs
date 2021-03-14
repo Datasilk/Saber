@@ -9,6 +9,7 @@ namespace Query.Models
         public string email { get; set; }
         public string password { get; set; }
         public bool photo { get; set; }
+        public bool isadmin { get; set; } = false;
         public DateTime datecreated { get; set; }
         public DateTime dateactivated { get; set; }
         public DateTime keyexpires { get; set; }

@@ -10,8 +10,7 @@
     <ProjectGuid>{5fe90778-0358-439d-a3fc-5720c909e9ff}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
-    <RootPath>
-    </RootPath>
+    <RootPath />
     <RootNamespace>Saber</RootNamespace>
     <AssemblyName>Saber</AssemblyName>
     <ModelCollation>1033, CI</ModelCollation>
@@ -52,7 +51,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
-    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
     <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
     <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
   </PropertyGroup>
@@ -130,6 +128,10 @@
     <Build Include="dbo\Vendor\DataSet_GetInfo.sql" />
     <Build Include="dbo\Vendor\DataSet_AddRecord.sql" />
     <Build Include="dbo\Vendor\DataSet_UpdateRecord.sql" />
+    <Build Include="dbo\Tables\User_ApiTokens.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_CreateApiToken.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_AuthenticateApiToken.sql" />
+    <Build Include="dbo\Stored Procedures\Secuirty\SecurityUser_Check.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

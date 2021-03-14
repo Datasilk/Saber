@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[DataSet_AddRecord]
 	@datasetId int,
+	@userId int = 0,
 	@recordId int = 0,
 	@lang nvarchar(16),
 	@fields XML 
@@ -21,6 +22,7 @@ SET NOCOUNT ON
 	FROM sys.columns c
     INNER JOIN sys.types t ON c.user_type_id = t.user_type_id
     WHERE c.object_id = OBJECT_ID('DataSet_' + @tableName)
+	AND c.[name] NOT IN ('lang', 'userId')
 
 	--next, get a list of fields from XML
 	DECLARE @hdoc INT
@@ -41,9 +43,13 @@ SET NOCOUNT ON
 	) AS x
 
 	--build SQL string from XML fields
-	DECLARE @newId nvarchar(MAX) ='DECLARE @newId int = ' + (CASE WHEN @recordId > 0 THEN CONVERT(nvarchar(16), @recordId) ELSE '0; SET @newId = NEXT VALUE FOR Sequence_DataSet_' + @tableName END) + ';'
-	DECLARE @sql nvarchar(MAX) = @newId + 'INSERT INTO DataSet_' + @tableName + ' (Id, lang, ',
-	@values nvarchar(MAX) = 'VALUES (@newId, ''' + @lang + ''', ',
+	DECLARE @newId nvarchar(MAX) ='DECLARE @newId int = ' + 
+		(CASE WHEN @recordId > 0 THEN CONVERT(nvarchar(16), @recordId) 
+		ELSE '0; SET @newId = NEXT VALUE FOR Sequence_DataSet_' + @tableName END) + ';'
+
+	DECLARE @sql nvarchar(MAX) = @newId + 'INSERT INTO DataSet_' + @tableName + ' (Id, lang, userId, ',
+	@values nvarchar(MAX) = 'VALUES (@newId, ''' + @lang + ''', ' + 
+		(CASE WHEN @userId IS NULL THEN 'NULL, ' ELSE CONVERT(nvarchar(16), @userId) + ', ' END),
 	@name nvarchar(64), @value nvarchar(MAX), 
 	@cursor CURSOR, @datatype varchar(16)
 

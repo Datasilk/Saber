@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[DataSet_Create]
+	@userId int NULL = NULL,
 	@label nvarchar(64),
 	@description nvarchar(MAX),
 	@partialview nvarchar(255),
@@ -20,7 +21,7 @@ AS
 
 
 		--create a new table for this dataset
-		SET @sql = 'CREATE TABLE [dbo].[DataSet_' + @tablename + '] (Id INT, lang NVARCHAR(16), '
+		SET @sql = 'CREATE TABLE [dbo].[DataSet_' + @tablename + '] (Id INT, lang NVARCHAR(16), userId int NOT NULL DEFAULT 1, '
 		DECLARE @sqlVars nvarchar(MAX) = ''
 		DECLARE @sqlVals nvarchar(MAX) = ''
 		DECLARE @indexes nvarchar(MAX) = ''
@@ -95,8 +96,8 @@ AS
 		EXECUTE sp_executesql @indexes
 
 		--finally, record dataset info
-		INSERT INTO DataSets ([label], tableName, partialview, [description], datecreated, deleted)
-		VALUES (@label, @tablename, @partialview, @description, GETUTCDATE(), 0)
+		INSERT INTO DataSets (userId, [label], tableName, partialview, [description], datecreated, deleted)
+		VALUES (@userId, @label, @tablename, @partialview, @description, GETUTCDATE(), 0)
 
 		SELECT datasetId FROM DataSets WHERE tableName=@tablename
 	END

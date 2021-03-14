@@ -38,7 +38,7 @@ var gulp = require('gulp'),
 var environment = config.environment;
 
 //determine environment
-var prod = true;
+var prod = false;
 if (environment != 'dev' && environment != 'development' && environment != null) {
     //using staging or production environment
     prod = true;
@@ -119,6 +119,7 @@ paths.working = {
             paths.scripts + 'editor/security.js',
             paths.scripts + 'editor/pagesettings.js',
             paths.scripts + 'editor/websettings.js',
+            paths.scripts + 'editor/datasources.js',
             paths.scripts + 'editor/analytics.js',
             paths.scripts + 'editor/resources.js',
             paths.scripts + 'editor/hotkeys.js',

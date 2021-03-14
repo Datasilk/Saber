@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace Saber.Services
 {
@@ -16,7 +14,7 @@ namespace Saber.Services
 
         public string RenderFilters(string key)
         {
-            if (!CheckSecurity("edit-content")) { return AccessDenied(); }
+            if (User.PublicApi || !CheckSecurity("edit-content")) { return AccessDenied(); }
             //get HTML partial for data source filters form
             var datasource = Common.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
             if(datasource == null)

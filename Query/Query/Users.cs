@@ -12,7 +12,7 @@ namespace Query
         public static int CreateUser(Models.User user, bool activate = false)
         {
             return Sql.ExecuteScalar<int>("User_Create",
-                new { user.name, user.email, user.password, user.photo, user.tempkey, activate }
+                new { user.name, user.email, user.password, user.photo, user.isadmin, user.tempkey, activate }
             );
         }
 
@@ -26,6 +26,13 @@ namespace Query
         public static Models.User Authenticate(string token)
         {
             var list = Sql.Populate<Models.User>("User_AuthenticateByToken", new { token });
+            if (list.Count > 0) { return list[0]; }
+            return null;
+        }
+
+        public static Models.User AuthenticateApi(string token)
+        {
+            var list = Sql.Populate<Models.User>("User_AuthenticateApiToken", new { token });
             if (list.Count > 0) { return list[0]; }
             return null;
         }
@@ -75,6 +82,11 @@ namespace Query
         public static string CreateAuthToken(int userId, int expireDays = 30)
         {
             return Sql.ExecuteScalar<string>("User_CreateAuthToken", new { userId, expireDays });
+        }
+
+        public static string CreateApiToken(int userId, string api, int expireDays = 730)
+        {
+            return Sql.ExecuteScalar<string>("User_CreateApiToken", new { userId, api, expireDays });
         }
 
         public static string GetEmail(int userId)

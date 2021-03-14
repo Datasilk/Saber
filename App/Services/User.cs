@@ -10,6 +10,7 @@ namespace Saber.Services
 
         public string Authenticate(string email, string password)
         {
+            if (User.PublicApi) { return AccessDenied(); }
             var encrypted = Query.Users.GetPassword(email);
             if(encrypted == null) { return Error(); }
             if (!DecryptPassword(email, password, encrypted)) { return Error(); }
@@ -18,7 +19,7 @@ namespace Saber.Services
                 var user = Query.Users.Authenticate(email, encrypted);
                 if (user != null)
                 {
-                    User.LogIn(user.userId, user.email, user.name, user.datecreated, user.photo);
+                    User.LogIn(user.userId, user.email, user.name, user.datecreated, user.photo, user.isadmin);
                     User.Save(true);
                     return JsonResponse(new { redirect = homePath });
                 }
@@ -28,6 +29,7 @@ namespace Saber.Services
 
         public string CreateAdminAccount(string name, string email, string password, string password2)
         {
+            if (User.PublicApi) { return AccessDenied(); }
             if (Server.HasAdmin == true) { return Error(); }
             if (!CheckEmailAddress(email)) { return Error("Email address is invalid"); }
             if (password != password2) { return Error("Passwords do not match"); }
@@ -44,7 +46,8 @@ namespace Saber.Services
             {
                 name = name,
                 email = email,
-                password = EncryptPassword(email, password)
+                password = EncryptPassword(email, password),
+                isadmin = true
             }, true);
             Server.HasAdmin = true;
             Server.ResetPass = false;
@@ -99,6 +102,7 @@ namespace Saber.Services
 
         public string Activate(string emailaddr, string activationkey)
         {
+            if (User.PublicApi) { return AccessDenied(); }
             if(Query.Users.Activate(emailaddr, activationkey))
             {
                 return Success();
@@ -110,6 +114,7 @@ namespace Saber.Services
 
         public string ForgotPassword(string emailaddr)
         {
+            if (User.PublicApi) { return AccessDenied(); }
             if (!Query.Users.CanActivate(emailaddr))
             {
                 var activationkey = Generate.NewId(16);
@@ -128,6 +133,7 @@ namespace Saber.Services
 
         public string ResetPassword(string key, string password, string password2)
         {
+            if (User.PublicApi) { return AccessDenied(); }
             if (password != password2) { return Error("Passwords do not match"); }
             try
             {
@@ -160,7 +166,7 @@ namespace Saber.Services
         {
             try
             {
-                var addr = new System.Net.Mail.MailAddress(email);
+                var addr = new MailAddress(email);
                 return addr.Address == email;
             }
             catch

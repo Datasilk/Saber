@@ -5,9 +5,10 @@
     [email] NVARCHAR(64) NOT NULL, 
     [password] NVARCHAR(255) NOT NULL DEFAULT '', 
     [photo] BIT NOT NULL DEFAULT 0, 
-    [datecreated] DATETIME NOT NULL DEFAULT GETDATE(), 
-    [dateactivated] DATETIME NULL, 
-    [keyexpires] DATETIME NULL, 
+    [isadmin] BIT NULL DEFAULT 0,
+    [datecreated] DATETIME2(7) NOT NULL DEFAULT GETUTCDATE(), 
+    [dateactivated] DATETIME2(7) NULL, 
+    [keyexpires] DATETIME2(7) NULL, 
     [tempkey] VARCHAR(16) NULL,
     PRIMARY KEY ([email])
 )

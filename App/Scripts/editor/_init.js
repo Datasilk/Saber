@@ -258,6 +258,7 @@ S.editor.init = function () {
     $('.menu-bar .item-page-settings').on('click', S.editor.filebar.settings.show);
     $('.menu-bar .item-user-management').on('click', S.editor.users.show);
     $('.menu-bar .item-security').on('click', S.editor.security.show);
+    $('.menu-bar .item-datasources').on('click', S.editor.datasources.show);
     $('.menu-bar .item-analytics').on('click', S.editor.analytics.show);
     $('.menu-bar .item-web-settings').on('click', S.editor.websettings.show);
     $('.menu-bar .item-new-file').on('click', S.editor.file.create.show);
@@ -270,6 +271,7 @@ S.editor.init = function () {
     $('.menu-bar .item-web-icons').on('click', () => { S.editor.websettings.show('icons'); });
     $('.menu-bar .item-web-email').on('click', () => { S.editor.websettings.show('email-settings'); });
     $('.menu-bar .item-web-pass').on('click', () => { S.editor.websettings.show('password-settings'); });
+    $('.menu-bar .item-web-dev-keys').on('click', () => { S.editor.websettings.show('dev-keys'); });
     $('.menu-bar .item-web-plugins').on('click', () => { S.editor.websettings.show('plugins'); });
     $('.tab-components').on('click', S.editor.components.show);
     $('.tab-content-fields').on('click', S.editor.filebar.fields.show);
