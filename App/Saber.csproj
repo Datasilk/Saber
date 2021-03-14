@@ -121,7 +121,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Query\Query.csproj" />
-    <ProjectReference Include="..\Vendor\Vendor.csproj" />
   </ItemGroup>
 
   <ItemGroup>

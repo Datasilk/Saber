@@ -25,7 +25,7 @@ namespace Saber.Common.Platform
             var fieldBlock = new View("/Views/ContentFields/block.html");
             var fieldImage = new View("/Views/ContentFields/image.html");
             var fieldVendor = new View("/Views/ContentFields/vendor.html");
-            var vars = Vendors.HtmlComponentKeys;
+            var vars = Core.Vendors.HtmlComponentKeys;
             var html = new StringBuilder();
             var sections = new StringBuilder();
             var sectionTitle = "";
@@ -120,7 +120,7 @@ namespace Saber.Common.Platform
                         case Core.ContentFields.FieldType.linebreak:
                         case Core.ContentFields.FieldType.list:
                             //vendor HTML component
-                            var vendor = Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0).FirstOrDefault();
+                            var vendor = Core.Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0).FirstOrDefault();
                             if (fieldType == Core.ContentFields.FieldType.linebreak && elem.Vars.ContainsKey("title"))
                             {
                                 if(html.Length > 0)
@@ -181,7 +181,7 @@ namespace Saber.Common.Platform
                     elemName = elemName.Replace(partial.Prefix, "");
                 }
                 //find vendor content field
-                var vendor = Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0).FirstOrDefault();
+                var vendor = Core.Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0).FirstOrDefault();
                 if (vendor.Value != null)
                 {
                     //hard-code line break component

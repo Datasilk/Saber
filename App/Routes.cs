@@ -23,10 +23,10 @@ namespace Saber
                 case "logout": return new Controllers.Logout();
                 case "upload": return new Controllers.Upload();
             }
-            if (Common.Vendors.Controllers.ContainsKey(name))
+            if (Core.Vendors.Controllers.ContainsKey(name))
             {
                 //load Vendor controller
-                return (IController)Activator.CreateInstance(Common.Vendors.Controllers[name]);
+                return (IController)Activator.CreateInstance(Core.Vendors.Controllers[name]);
             }
             //if all else fails, render Saber Editor
             return new Controllers.Page();
@@ -48,10 +48,10 @@ namespace Saber
                 case "users": return new Services.Users();
                 case "websitesettings": return new Services.WebsiteSettings();
             }
-            if (Common.Vendors.Services.ContainsKey(name))
+            if (Core.Vendors.Services.ContainsKey(name))
             {
                 //load Vendor service
-                return (IService)Activator.CreateInstance(Common.Vendors.Services[name]);
+                return (IService)Activator.CreateInstance(Core.Vendors.Services[name]);
             }
             return null;
         }

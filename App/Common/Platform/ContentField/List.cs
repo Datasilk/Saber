@@ -43,7 +43,7 @@ namespace Saber.Common.Platform.ContentField
                             //get data source filter values
                             filter = JsonSerializer.Deserialize<Dictionary<string, object>>(parts[1]);
                         }
-                        var datasource = Vendors.DataSources.Where(a => a.Key == datasrc).FirstOrDefault();
+                        var datasource = Core.Vendors.DataSources.Where(a => a.Key == datasrc).FirstOrDefault();
                         if(datasource != null)
                         {
                             //render data source filter form

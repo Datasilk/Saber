@@ -59,7 +59,7 @@ namespace Saber.Services
             viewScope.Clear();
 
             //add vendor-specific keys
-            foreach(var vendor in Common.Vendors.Keys)
+            foreach(var vendor in Core.Vendors.Keys)
             {
                 html.Clear();
                 viewScope["label"] = vendor.Vendor;
@@ -92,7 +92,7 @@ namespace Saber.Services
             if(seckey == null)
             {
                 isplatform = false;
-                seckey = Common.Vendors.Keys.Where(a => a.Keys.Any(b => b.Value == key)).FirstOrDefault()
+                seckey = Core.Vendors.Keys.Where(a => a.Keys.Any(b => b.Value == key)).FirstOrDefault()
                     ?.Keys.Where(a => a.Value == key).FirstOrDefault();
             }
             if(seckey == null) { return Error("could not find security key"); }

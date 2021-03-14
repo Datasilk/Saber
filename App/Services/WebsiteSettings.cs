@@ -91,7 +91,7 @@ namespace Saber.Services
             var clientforms = new StringBuilder();
             var emailClients = new List<Vendor.IVendorEmailClient>();
             emailClients.AddRange(Common.Platform.Email.Clients);
-            emailClients.AddRange(Common.Vendors.EmailClients.Values.OrderBy(a => a.Name));
+            emailClients.AddRange(Core.Vendors.EmailClients.Values.OrderBy(a => a.Name));
 
             foreach (var client in emailClients)
             {
@@ -150,7 +150,7 @@ namespace Saber.Services
             var viewEmailAction = new View("/Views/WebsiteSettings/email-action.html");
             var emailActions = new List<Vendor.EmailType>();
             emailActions.AddRange(Common.Platform.Email.Types);
-            emailActions.AddRange(Common.Vendors.EmailTypes.Values);
+            emailActions.AddRange(Core.Vendors.EmailTypes.Values);
 
             foreach(var action in emailActions)
             {
@@ -223,7 +223,7 @@ namespace Saber.Services
             var viewFeature = new View("/Views/WebsiteSettings/plugin-feature.html");
             var feature = new StringBuilder();
             html.Clear();
-            foreach(var plugin in Common.Vendors.Details.Where(a => a.Version != "").OrderBy(a => a.Key))
+            foreach(var plugin in Core.Vendors.Details.Where(a => a.Version != "").OrderBy(a => a.Key))
             {
                 viewPlugin["name"] = plugin.Name;
                 viewPlugin["key"] = plugin.Key;
@@ -334,7 +334,7 @@ namespace Saber.Services
 
             //add vendor plugins
             html.Clear();
-            foreach(var vendor in Common.Vendors.WebsiteSettings)
+            foreach(var vendor in Core.Vendors.WebsiteSettings)
             {
                 accordion.Clear();
                 accordion["id"] = "plugin-" + vendor.Name.ReplaceOnlyAlphaNumeric(true, true, true).Replace(" ", "-").ToLower();
@@ -651,7 +651,7 @@ namespace Saber.Services
             else
             {
                 //save vendor email client settings
-                var vendor = Common.Vendors.EmailClients.Where(a => a.Key == id).FirstOrDefault().Value;
+                var vendor = Core.Vendors.EmailClients.Where(a => a.Key == id).FirstOrDefault().Value;
                 if(vendor != null)
                 {
                     vendor.SaveConfig(parameters);

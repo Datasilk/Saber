@@ -71,7 +71,7 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorInfo interface
             Common.Vendors.GetInfoFromFileSystem();
-            var vendorCount = Common.Vendors.Details.Where(a => a.Version != "").Count();
+            var vendorCount = Core.Vendors.Details.Where(a => a.Version != "").Count();
             Console.WriteLine("Found " + vendorCount + " Vendor" + (vendorCount != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorStartup interface
             Common.Vendors.GetStartupsFromFileSystem();
-            Console.WriteLine("Found " + Common.Vendors.Startups.Count + " Vendor Startup Class" + (Common.Vendors.Startups.Count != 1 ? "es" : ""));
+            Console.WriteLine("Found " + Core.Vendors.Startups.Count + " Vendor Startup Class" + (Core.Vendors.Startups.Count != 1 ? "es" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorController interface
@@ -104,7 +104,7 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorController interface
             Common.Vendors.GetControllersFromFileSystem();
-            Console.WriteLine("Found " + Common.Vendors.Controllers.Count + " Vendor Controller" + (Common.Vendors.Controllers.Count != 1 ? "s" : ""));
+            Console.WriteLine("Found " + Core.Vendors.Controllers.Count + " Vendor Controller" + (Core.Vendors.Controllers.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorViewRenderer interface
@@ -120,7 +120,7 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorViewRenderer interface
             Common.Vendors.GetViewRenderersFromFileSystem();
-            Console.WriteLine("Found " + Common.Vendors.ViewRenderers.Count + " Vendor View Renderer" + (Common.Vendors.ViewRenderers.Count != 1 ? "s" : ""));
+            Console.WriteLine("Found " + Core.Vendors.ViewRenderers.Count + " Vendor View Renderer" + (Core.Vendors.ViewRenderers.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorHtmlComponent interface
@@ -137,10 +137,10 @@ namespace Saber
             //get list of DLLs that contain the IVendorContentField interface
             Common.Vendors.GetHtmlComponentsFromFileSystem();
             Common.Vendors.GetHtmlComponentKeys();
-            var totalcomponents = (Common.Vendors.HtmlComponents.Count - Common.Vendors.SpecialVars.Count);
-            Console.WriteLine("Found " + (Common.Vendors.HtmlComponents.Count - 1) + " Vendor HTML Component" + ((Common.Vendors.HtmlComponents.Count - 1) != 1 ? "s" : "") +
-                " (" + totalcomponents + " component" + (totalcomponents > 1 ? "s" : "") + ", " + 
-                Common.Vendors.SpecialVars.Count + " special variable" + (Common.Vendors.SpecialVars.Count > 1 ? "s" : "") + ")");
+            var totalcomponents = (Core.Vendors.HtmlComponents.Count - Core.Vendors.SpecialVars.Count);
+            Console.WriteLine("Found " + (Core.Vendors.HtmlComponents.Count - 1) + " Vendor HTML Component" + ((Core.Vendors.HtmlComponents.Count - 1) != 1 ? "s" : "") +
+                " (" + totalcomponents + " component" + (totalcomponents > 1 ? "s" : "") + ", " +
+                Core.Vendors.SpecialVars.Count + " special variable" + (Core.Vendors.SpecialVars.Count > 1 ? "s" : "") + ")");
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorContentField interface
@@ -156,7 +156,7 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorContentField interface
             Common.Vendors.GetContentFieldsFromFileSystem();
-            Console.WriteLine("Found " + Common.Vendors.ContentFields.Count + " Vendor Content Field" + (Common.Vendors.ContentFields.Count != 1 ? "s" : ""));
+            Console.WriteLine("Found " + Core.Vendors.ContentFields.Count + " Vendor Content Field" + (Core.Vendors.ContentFields.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorKeys interface
@@ -173,11 +173,11 @@ namespace Saber
             //get list of DLLs that contain the IVendorKeys interface
             Common.Vendors.GetSecurityKeysFromFileSystem();
             var totalKeys = 0;
-            foreach(var chain in Common.Vendors.Keys)
+            foreach(var chain in Core.Vendors.Keys)
             {
                 totalKeys += chain.Keys.Length;
             }
-            Console.WriteLine("Found " + Common.Vendors.Keys.Count + " Vendor" + (Common.Vendors.Keys.Count != 1 ? "s" : "") + " with Security Keys (" + totalKeys + " key" + (totalKeys != 1 ? "s" : "") + ")");
+            Console.WriteLine("Found " + Core.Vendors.Keys.Count + " Vendor" + (Core.Vendors.Keys.Count != 1 ? "s" : "") + " with Security Keys (" + totalKeys + " key" + (totalKeys != 1 ? "s" : "") + ")");
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorEmailClient interface
@@ -193,7 +193,7 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorEmailClient interface
             Common.Vendors.GetEmailClientsFromFileSystem();
-            Console.WriteLine("Found " + Common.Vendors.EmailClients.Count + " Vendor Email Client" + (Common.Vendors.EmailClients.Count != 1 ? "s" : ""));
+            Console.WriteLine("Found " + Core.Vendors.EmailClients.Count + " Vendor Email Client" + (Core.Vendors.EmailClients.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorWebsiteSettings interface
@@ -209,12 +209,12 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorWebsiteSettings interface
             Common.Vendors.GetWebsiteSettingsFromFileSystem();
-            Common.Vendors.WebsiteSettings = Common.Vendors.WebsiteSettings.OrderBy(a => a.Name).ToList();
-            Console.WriteLine("Found " + Common.Vendors.WebsiteSettings.Count + " Vendor Website Setting" + (Common.Vendors.WebsiteSettings.Count != 1 ? "s" : ""));
+            Core.Vendors.WebsiteSettings = Core.Vendors.WebsiteSettings.OrderBy(a => a.Name).ToList();
+            Console.WriteLine("Found " + Core.Vendors.WebsiteSettings.Count + " Vendor Website Setting" + (Core.Vendors.WebsiteSettings.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
-            foreach (var kv in Common.Vendors.Startups)
+            foreach (var kv in Core.Vendors.Startups)
             {
                 var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
                 try
@@ -378,7 +378,7 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorDataSources interface
             Common.Vendors.GetDataSourcesFromFileSystem();
-            Console.WriteLine("Found " + Common.Vendors.DataSources.Count + " Vendor Data Source" + (Common.Vendors.DataSources.Count != 1 ? "s" : ""));
+            Console.WriteLine("Found " + Core.Vendors.DataSources.Count + " Vendor Data Source" + (Core.Vendors.DataSources.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //Run any services required after initializing all vendor plugins but before configuring vendor startup services
@@ -390,7 +390,7 @@ namespace Saber
             Core.Delegates.ContentFields.RenderForm = ContentFields.RenderForm;
 
             //execute Configure method for all vendors that use IVendorStartup interface
-            foreach (var kv in Common.Vendors.Startups)
+            foreach (var kv in Core.Vendors.Startups)
             {
                 var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
                 try

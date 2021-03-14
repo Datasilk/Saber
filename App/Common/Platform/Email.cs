@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
-using MailKit.Net.Smtp;
 using MimeKit;
 using Saber.Vendor;
 
@@ -26,7 +25,7 @@ namespace Saber.Common.Platform
                 return;
             }
             var client = Clients.Where(a => a.Key == action.Client).FirstOrDefault() ??
-                Vendors.EmailClients.Values.Where(a => a.Key == action.Client).FirstOrDefault();
+                Core.Vendors.EmailClients.Values.Where(a => a.Key == action.Client).FirstOrDefault();
             if (client == null)
             {
                 //log error, could not send email

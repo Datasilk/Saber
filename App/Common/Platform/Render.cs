@@ -169,7 +169,7 @@ namespace Saber.Common.Platform
                 }
 
                 //get HTML components from vendors
-                var vars = Vendors.HtmlComponents;
+                var vars = Core.Vendors.HtmlComponents;
                 foreach (var item in vars)
                 {
                     var fields = view.Fields.Where(a => a.Key.IndexOf(prefix + item.Key) == 0);
@@ -201,9 +201,9 @@ namespace Saber.Common.Platform
         {
             //check for vendor-related View rendering
             var vendors = new StringBuilder();
-            if (Vendors.ViewRenderers.ContainsKey(view.Filename))
+            if (Core.Vendors.ViewRenderers.ContainsKey(view.Filename))
             {
-                var renderers = Vendors.ViewRenderers[view.Filename];
+                var renderers = Core.Vendors.ViewRenderers[view.Filename];
                 foreach (var renderer in renderers)
                 {
                     vendors.Append(itemHead + renderer.Render(request, view) + itemFoot);

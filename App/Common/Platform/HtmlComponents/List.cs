@@ -95,7 +95,7 @@ namespace Saber.Common.Platform.HtmlComponents
                                 var filter = JsonSerializer.Deserialize<Dictionary<string, object>>(parts.Length > 1 ? parts[1] : "{\"start\":\"1\",\"length\":\"10\"}");
                                 var start = filter.ContainsKey("start") && !string.IsNullOrEmpty(filter["start"].ToString()) ? int.Parse(filter["start"].ToString()) : 1;
                                 var length = filter.ContainsKey("length") && !string.IsNullOrEmpty(filter["length"].ToString()) ? int.Parse(filter["length"].ToString()) : 1;
-                                var datasource = Vendors.DataSources.Where(a => a.Key == datakey).FirstOrDefault();
+                                var datasource = Core.Vendors.DataSources.Where(a => a.Key == datakey).FirstOrDefault();
                                 if(datasource != null)
                                 {
                                     items = datasource.Helper.Filter(datakey.Replace(datasource.Helper.Prefix + "-", ""), start, length, request.User.Language ?? "en", filter);

@@ -47,7 +47,7 @@ namespace Saber.Controllers
                 //load components list
                 var viewComponent = new View("/Views/Components/list-item.html");
                 var html = new StringBuilder();
-                var htmlVars = Common.Vendors.HtmlComponentKeys;
+                var htmlVars = Core.Vendors.HtmlComponentKeys;
 
                 //add custom component for generating Partial Views
                 viewComponent["icon"] = "/editor/components/partial-view.svg";
@@ -81,7 +81,7 @@ namespace Saber.Controllers
                         Key = "var",
                         Name = "Select a special variable to use",
                         DataType = (int)Vendor.HtmlComponentParameterDataType.List,
-                        ListOptions = Common.Vendors.SpecialVars.OrderBy(a => a.Value.Name).Select(a => ("<option value=\"" +
+                        ListOptions = Core.Vendors.SpecialVars.OrderBy(a => a.Value.Name).Select(a => ("<option value=\"" +
                                 a.Value.HtmlHead.Replace("\"", "&qt;") + "{{" + a.Value.Key + "}}" + (a.Value.Block ? "{{/" + a.Value.Key + "}}" : "") + a.Value.HtmlFoot.Replace("\"", "&qt;") +
                                 "\" title=\"" + a.Value.Description.Replace("\"", "&qt;") + "\">" +
                             a.Value.Name + (a.Value.Block == true ? " (block)" : "") + "</option>").Replace("\"", "&q;")).ToArray(),
@@ -93,7 +93,7 @@ namespace Saber.Controllers
                 }).Replace("\"", "&quot;");
                 html.Append(viewComponent.Render());
 
-                foreach (var component in Common.Vendors.HtmlComponents.Values.OrderBy(a => a.Key))
+                foreach (var component in Core.Vendors.HtmlComponents.Values.OrderBy(a => a.Key))
                 {
                     if(string.IsNullOrEmpty(component.Icon) || string.IsNullOrEmpty(component.Name)) { continue; }
                     viewComponent.Clear();

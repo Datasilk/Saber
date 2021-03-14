@@ -45,7 +45,7 @@ namespace Saber.Services
             }
 
             //get all platform-specific html variables
-            var htmlVars = Common.Vendors.HtmlComponentKeys;
+            var htmlVars = Core.Vendors.HtmlComponentKeys;
 
             //generate list of page headers & footers
             var headers = new List<string>();

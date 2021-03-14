@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.IO.Compression;
 using System.Text;
 using System.Text.RegularExpressions;
 using Saber.Vendor;
 using System.Reflection;
 using System.Text.Json;
+using Saber.Core;
 
 namespace Saber.Common
 {
@@ -16,51 +16,7 @@ namespace Saber.Common
         private static List<string> DLLs { get; set; } = new List<string>();
         private static List<KeyValuePair<string, Assembly>> Assemblies { get; set; } = new List<KeyValuePair<string, Assembly>>();
         private static List<string> Uninstalled { get; set; } = new List<string>();
-        public static List<VendorInfo> Details { get; set; } = new List<VendorInfo>();
-        public static Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<IVendorViewRenderer>>();
-        public static Dictionary<string, Models.VendorContentFieldInfo> ContentFields { get; set; } = new Dictionary<string, Models.VendorContentFieldInfo>();
-        public static Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
-        public static Dictionary<string, Type> Services { get; set; } = new Dictionary<string, Type>();
-        public static Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
-        public static List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
-        public static Dictionary<string, HtmlComponentModel> HtmlComponents { get; set; } = new Dictionary<string, HtmlComponentModel>();
-        public static string[] HtmlComponentKeys { get; set; }
-        public static Dictionary<string, HtmlComponentModel> SpecialVars { get; set; } = new Dictionary<string, HtmlComponentModel>();
-        public static Dictionary<string, IVendorEmailClient> EmailClients { get; set; } = new Dictionary<string, IVendorEmailClient>();
-        public static Dictionary<string, EmailType> EmailTypes { get; set; } = new Dictionary<string, EmailType>();
-        public static List<IVendorWebsiteSettings> WebsiteSettings { get; set; } = new List<IVendorWebsiteSettings>();
-        public static List<DataSourceInfo> DataSources { get; set; } = new List<DataSourceInfo>();
 
-        public class VendorInfo : IVendorInfo
-        {
-            public string Key { get; set; }
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public string Icon { get; set; }
-            public Vendor.Version Version { get; set; }
-            public string DLL { get; set; }
-            public string Assembly { get; set; }
-            public string Path { get; set; }
-            public Dictionary<string, List<IVendorViewRenderer>> ViewRenderers { get; set; } = new Dictionary<string, List<IVendorViewRenderer>>();
-            public Dictionary<string, Models.VendorContentFieldInfo> ContentFields { get; set; } = new Dictionary<string, Models.VendorContentFieldInfo>();
-            public Dictionary<string, Type> Controllers { get; set; } = new Dictionary<string, Type>();
-            public Dictionary<string, Type> Services { get; set; } = new Dictionary<string, Type>();
-            public Dictionary<string, Type> Startups { get; set; } = new Dictionary<string, Type>();
-            public List<IVendorKeys> Keys { get; set; } = new List<IVendorKeys>();
-            public Dictionary<string, HtmlComponentModel> HtmlComponents { get; set; } = new Dictionary<string, HtmlComponentModel>();
-            public string[] HtmlComponentKeys { get; set; }
-            public Dictionary<string, HtmlComponentModel> SpecialVars { get; set; } = new Dictionary<string, HtmlComponentModel>();
-            public Dictionary<string, IVendorEmailClient> EmailClients { get; set; } = new Dictionary<string, IVendorEmailClient>();
-            public Dictionary<string, EmailType> EmailTypes { get; set; } = new Dictionary<string, EmailType>();
-            public List<IVendorWebsiteSettings> WebsiteSettings { get; set; } = new List<IVendorWebsiteSettings>();
-        }
-
-        public class DataSourceInfo
-        {
-            public string Key { get; set; }
-            public string Name { get; set; }
-            public IVendorDataSources Helper { get; set; }
-        }
         #region "Assemblies"
         private class AssemblyInfo
         {
@@ -106,7 +62,7 @@ namespace Saber.Common
         {
             var assemblyName = string.Join('.', type.FullName.Split('.').SkipLast(1));
             
-            var details = Details.Where(a => a.Assembly == assemblyName).FirstOrDefault();
+            var details = Core.Vendors.Details.Where(a => a.Assembly == assemblyName).FirstOrDefault();
             if(details == null)
             {
                 details = new VendorInfo();
@@ -114,7 +70,7 @@ namespace Saber.Common
                 details.DLL = DLL;
                 if (!assemblyName.Contains("Saber.Common"))
                 {
-                    Details.Add(details);
+                    Core.Vendors.Details.Add(details);
                 }
             }
             return details;
@@ -155,7 +111,7 @@ namespace Saber.Common
             {
                 versions = JsonSerializer.Deserialize<List<AssemblyInfo>>(File.ReadAllText(App.MapPath("/Vendors/versions.json")));
             }
-            foreach (var detail in Details)
+            foreach (var detail in Core.Vendors.Details)
             {
                 //check version of vendor
                 var v = detail.Version;
@@ -347,14 +303,14 @@ namespace Saber.Common
             var details = GetDetails(type, DLL);
             foreach (var attr in attributes)
             {
-                if (!ViewRenderers.ContainsKey(attr.Path))
+                if (!Core.Vendors.ViewRenderers.ContainsKey(attr.Path))
                 {
                     details.ViewRenderers.Add(attr.Path, new List<IVendorViewRenderer>());
-                    ViewRenderers.Add(attr.Path, new List<IVendorViewRenderer>());
+                    Core.Vendors.ViewRenderers.Add(attr.Path, new List<IVendorViewRenderer>());
                 }
                 var instance = (IVendorViewRenderer)Activator.CreateInstance(type);
                 details.ViewRenderers[attr.Path].Add(instance);
-                ViewRenderers[attr.Path].Add(instance);
+                Core.Vendors.ViewRenderers[attr.Path].Add(instance);
             }
         }
         #endregion
@@ -394,7 +350,7 @@ namespace Saber.Common
                 };
 
                 details.ContentFields.Add(attr.FieldName, info);
-                ContentFields.Add(attr.FieldName, info);
+                Core.Vendors.ContentFields.Add(attr.FieldName, info);
             }
         }
         #endregion
@@ -424,7 +380,7 @@ namespace Saber.Common
             if (type.Equals(typeof(IVendorController))) { return; }
             var details = GetDetails(type, DLL);
             details.Controllers.Add(type.Name.ToLower(), type);
-            Controllers.Add(type.Name.ToLower(), type);
+            Core.Vendors.Controllers.Add(type.Name.ToLower(), type);
         }
         #endregion
 
@@ -453,7 +409,7 @@ namespace Saber.Common
             if (type.Equals(typeof(IVendorService))) { return; }
             var details = GetDetails(type, DLL);
             details.Services.Add(type.Name.ToLower(), type);
-            Services.Add(type.Name.ToLower(), type);
+            Core.Vendors.Services.Add(type.Name.ToLower(), type);
         }
         #endregion
 
@@ -482,7 +438,7 @@ namespace Saber.Common
             if (type.Equals(typeof(IVendorStartup))) { return; }
             var details = GetDetails(type, DLL);
             details.Startups.Add(type.Assembly.GetName().Name, type);
-            Startups.Add(type.Assembly.GetName().Name, type);
+            Core.Vendors.Startups.Add(type.Assembly.GetName().Name, type);
         }
         #endregion
 
@@ -512,7 +468,7 @@ namespace Saber.Common
             var details = GetDetails(type, DLL);
             var instance = (IVendorKeys)Activator.CreateInstance(type);
             details.Keys.Add(instance);
-            Keys.Add(instance);
+            Core.Vendors.Keys.Add(instance);
         }
         #endregion
 
@@ -546,16 +502,16 @@ namespace Saber.Common
                 if(component.Parameters.Count == 0)
                 {
                     details.SpecialVars.Add(component.Key, component);
-                    SpecialVars.Add(component.Key, component);
+                    Core.Vendors.SpecialVars.Add(component.Key, component);
                 }
                 details.HtmlComponents.Add(component.Key, component);
-                HtmlComponents.Add(component.Key, component);
+                Core.Vendors.HtmlComponents.Add(component.Key, component);
             }
         }
 
         public static void GetHtmlComponentKeys()
         {
-            HtmlComponentKeys = HtmlComponents.Select(a => a.Key).OrderBy(a => a).ToArray();
+            Core.Vendors.HtmlComponentKeys = Core.Vendors.HtmlComponents.Select(a => a.Key).OrderBy(a => a).ToArray();
         }
         #endregion
 
@@ -586,7 +542,7 @@ namespace Saber.Common
             var instance = (IVendorEmailClient)Activator.CreateInstance(type);
             if(instance.Key == "smtp") { return; } //skip internal email client
             details.EmailClients.Add(instance.Key, instance);
-            EmailClients.Add(instance.Key, instance);
+            Core.Vendors.EmailClients.Add(instance.Key, instance);
             instance.Init();
         }
         #endregion
@@ -619,7 +575,7 @@ namespace Saber.Common
             foreach(var email in emails.Types)
             {
                 details.EmailTypes.Add(email.Key, email);
-                EmailTypes.Add(email.Key, email);
+                Core.Vendors.EmailTypes.Add(email.Key, email);
             }
         }
         #endregion
@@ -650,7 +606,7 @@ namespace Saber.Common
             var details = GetDetails(type, DLL);
             var instance = (IVendorWebsiteSettings)Activator.CreateInstance(type);
             details.WebsiteSettings.Add(instance);
-            WebsiteSettings.Add(instance);
+            Core.Vendors.WebsiteSettings.Add(instance);
         }
         #endregion
 
@@ -681,7 +637,7 @@ namespace Saber.Common
             var instance = (IVendorInfo)Activator.CreateInstance(type);
             if (Uninstalled.Contains(instance.Key))
             {
-                Details.Remove(details);
+                Core.Vendors.Details.Remove(details);
                 return;
             }
             details.Key = instance.Key;
@@ -719,7 +675,7 @@ namespace Saber.Common
             var instance = (IVendorDataSources)Activator.CreateInstance(type);
             foreach(var datasource in instance.List())
             {
-                DataSources.Add(new DataSourceInfo() { Key = (string.IsNullOrEmpty(instance.Prefix) ? "" : instance.Prefix + "-") + datasource.Key, Name = datasource.Value, Helper = instance });
+                Core.Vendors.DataSources.Add(new DataSourceInfo() { Key = (string.IsNullOrEmpty(instance.Prefix) ? "" : instance.Prefix + "-") + datasource.Key, Name = datasource.Value, Helper = instance });
             }
         }
         #endregion

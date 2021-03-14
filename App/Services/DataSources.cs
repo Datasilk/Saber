@@ -8,7 +8,7 @@ namespace Saber.Services
         {
             if (!CheckSecurity("edit-content")) { return AccessDenied(); }
             //get list of data sources available
-            return JsonResponse(Common.Vendors.DataSources.Select(a => new string[] {a.Key, (string.IsNullOrEmpty(a.Helper.Vendor) ? "" : a.Helper.Vendor + " - ") + a.Name 
+            return JsonResponse(Core.Vendors.DataSources.Select(a => new string[] {a.Key, (string.IsNullOrEmpty(a.Helper.Vendor) ? "" : a.Helper.Vendor + " - ") + a.Name 
             }).ToArray());
         }
 
@@ -16,7 +16,7 @@ namespace Saber.Services
         {
             if (User.PublicApi || !CheckSecurity("edit-content")) { return AccessDenied(); }
             //get HTML partial for data source filters form
-            var datasource = Common.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
+            var datasource = Core.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
             if(datasource == null)
             {
                 return Error("Could not find data source \"" + key + "\"");
