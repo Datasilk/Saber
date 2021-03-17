@@ -30,18 +30,22 @@ S.editor.dropmenu = {
         }
     },
 
-    add: function (ul, id, label, icon, separator, onclick) {
+    add: function (ul, id, label, icon, separator, onclick, li_class) {
         //ul = css selector for the ul element that contains the menu items (e.g. .menu-item-website)
         //icon can be either a file or the name of an SVG object (e.g. #icon-analytics)
         //separator = if True, then put a separator above the menu item
         var html = $('#template_menuitem').html()
             .replace('##id##', id)
             .replace('##label##', label)
+            .replace('##li-class##', li_class ? ' class="' + li_class + '"' : '')
             .replace('##icon##', icon && icon != '' ? (
                     icon.indexOf('.png') > 0 ? '<img src="' + icon + '"/>' :
                     $('#template_svgicon').html().replace('##icon##', icon)
                 ) : '')
-            .replace('##separator##', separator == true ? $('#template_separator').html() : '');
+            .replace('##separator##', separator == true ?
+                $('#template_separator').html()
+                .replace('##li-class##', li_class ? ' class="' + li_class + '"' : '')
+            : '');
         $(ul).append(html);
         if (onclick) {
             var c = $(ul).children();

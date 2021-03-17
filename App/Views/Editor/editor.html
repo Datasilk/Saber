@@ -513,7 +513,7 @@
 </script>
 <script type="text/html" id="template_menuitem">
     ##separator##
-    <li>
+    <li ##li-class##>
         <div class="row hover item item-##id##">
             <div class="col icon">
                 ##icon##
@@ -530,7 +530,7 @@
 </script>
 
 <script type="text/html" id="template_separator">
-    <li>
+    <li ##li-class##>
         <div class="row line">&nbsp;</div>
     </li>
 </script>
@@ -564,6 +564,11 @@
             <div class="col tab-title">##title##</div>
         </div>
     </li>
+</script>
+
+<script type="text/html" id="template_confirm">
+    <div class="row"><p>##msg##</p></div>
+    <div class="row text-center pad-top">##buttons##</div>
 </script>
 
 <script type="text/html" id="template_newfile">

@@ -139,8 +139,10 @@ S.editor.tabs = {
         }
         var routes = S.editor.explorer.routes;
         var route = routes.filter(a => a.path == path)[0];
-        route.onclose();
-        S.editor.explorer.routes.splice(routes.indexOf(route), 1);
+        if (route) {
+            route.onclose();
+            S.editor.explorer.routes.splice(routes.indexOf(route), 1);
+        }
 
         //update user session
         if (path.indexOf('/') >= 0) {
