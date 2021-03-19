@@ -20,18 +20,6 @@ namespace Saber.Common.Platform.HtmlComponents
                     Name = "Line Break",
                     Block = false,
                     Description = "Used to separate groups of content fields by creating a line break within the Content Fields form.",
-                    //Parameters = new Dictionary<string, HtmlComponentParameter>()
-                    //{
-                    //    {"title", 
-                    //        new HtmlComponentParameter()
-                    //        {
-                    //            Name = "Title",
-                    //            DataType = HtmlComponentParameterDataType.Text,
-                    //            Description = "Display a title above your line break",
-                    //            Required = false
-                    //        } 
-                    //    }
-                    //},
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();

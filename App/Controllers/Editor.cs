@@ -54,19 +54,19 @@ namespace Saber.Controllers
                 viewComponent["key"] = "partial-view";
                 viewComponent["name"] = "Partial View";
                 viewComponent["description"] = "Render a partial HTML file inside of your web page.";
-                viewComponent["data-params"] = JsonSerializer.Serialize(new List<Models.HtmlComponentParams>()
-                {
-                    new Models.HtmlComponentParams()
-                    {
-                        Key = "page",
-                        Name = "HTML File",
-                        DataType = (int)Vendor.HtmlComponentParameterDataType.WebPage,
-                        Description = "The relative path to your partial HTML file (e.g. \"partials/menu.html\")"
-                    }
-                }, new JsonSerializerOptions()
-                {
-                    WriteIndented = false
-                }).Replace("\"", "&quot;");
+                //viewComponent["data-params"] = JsonSerializer.Serialize(new List<Models.HtmlComponentParams>()
+                //{
+                //    new Models.HtmlComponentParams()
+                //    {
+                //        Key = "page",
+                //        Name = "HTML File",
+                //        DataType = (int)Vendor.HtmlComponentParameterDataType.WebPage,
+                //        Description = "The relative path to your partial HTML file (e.g. \"partials/menu.html\")"
+                //    }
+                //}, new JsonSerializerOptions()
+                //{
+                //    WriteIndented = false
+                //}).Replace("\"", "&quot;");
                 html.Append(viewComponent.Render());
 
                 //add custom component for generating Special Variables
@@ -74,23 +74,23 @@ namespace Saber.Controllers
                 viewComponent["key"] = "special-vars";
                 viewComponent["name"] = "Special Variable";
                 viewComponent["description"] = "Generate special variables that contain dynamic info about your website.";
-                viewComponent["data-params"] = JsonSerializer.Serialize(new List<Models.HtmlComponentParams>()
-                {
-                    new Models.HtmlComponentParams()
-                    {
-                        Key = "var",
-                        Name = "Select a special variable to use",
-                        DataType = (int)Vendor.HtmlComponentParameterDataType.List,
-                        ListOptions = Core.Vendors.SpecialVars.OrderBy(a => a.Value.Name).Select(a => ("<option value=\"" +
-                                a.Value.HtmlHead.Replace("\"", "&qt;") + "{{" + a.Value.Key + "}}" + (a.Value.Block ? "{{/" + a.Value.Key + "}}" : "") + a.Value.HtmlFoot.Replace("\"", "&qt;") +
-                                "\" title=\"" + a.Value.Description.Replace("\"", "&qt;") + "\">" +
-                            a.Value.Name + (a.Value.Block == true ? " (block)" : "") + "</option>").Replace("\"", "&q;")).ToArray(),
-                        Description = "The relative path to your partial HTML file (e.g. \"partials/menu.html\")"
-                    }
-                }, new JsonSerializerOptions()
-                {
-                    WriteIndented = false
-                }).Replace("\"", "&quot;");
+                //viewComponent["data-params"] = JsonSerializer.Serialize(new List<Models.HtmlComponentParams>()
+                //{
+                //    new Models.HtmlComponentParams()
+                //    {
+                //        Key = "var",
+                //        Name = "Select a special variable to use",
+                //        DataType = (int)Vendor.HtmlComponentParameterDataType.List,
+                //        ListOptions = Core.Vendors.SpecialVars.OrderBy(a => a.Value.Name).Select(a => ("<option value=\"" +
+                //                a.Value.HtmlHead.Replace("\"", "&qt;") + "{{" + a.Value.Key + "}}" + (a.Value.Block ? "{{/" + a.Value.Key + "}}" : "") + a.Value.HtmlFoot.Replace("\"", "&qt;") +
+                //                "\" title=\"" + a.Value.Description.Replace("\"", "&qt;") + "\">" +
+                //            a.Value.Name + (a.Value.Block == true ? " (block)" : "") + "</option>").Replace("\"", "&q;")).ToArray(),
+                //        Description = "The relative path to your partial HTML file (e.g. \"partials/menu.html\")"
+                //    }
+                //}, new JsonSerializerOptions()
+                //{
+                //    WriteIndented = false
+                //}).Replace("\"", "&quot;");
                 html.Append(viewComponent.Render());
 
                 foreach (var component in Core.Vendors.HtmlComponents.Values.OrderBy(a => a.Key))
@@ -101,26 +101,26 @@ namespace Saber.Controllers
                     viewComponent["key"] = component.Key;
                     viewComponent["name"] = component.Name;
                     viewComponent["description"] = component.Description;
-                    var parameters = new List<Models.HtmlComponentParams>();
-                    foreach(var param in component.Parameters)
-                    {
-                        parameters.Add(new Models.HtmlComponentParams()
-                        {
-                            Key = param.Key,
-                            Name = param.Value.Name,
-                            DataType = (int)param.Value.DataType,
-                            List = param.Value.List,
-                            DefaultValue = param.Value.DefaultValue,
-                            ListOptions = param.Value.ListOptions?.Select(a => "<option value=\"" + a.Value + "\">" + a.Key.Replace("\"", "&quot;") + "</option>").ToArray(),
-                            Description = param.Value.Description.Replace("\"", "&quot;"),
-                            Required = param.Value.Required,
-                            AddItemJs = param.Value.AddItemJs
-                        });
-                    }
-                    viewComponent["data-params"] = JsonSerializer.Serialize(parameters, new JsonSerializerOptions()
-                    {
-                        WriteIndented = false
-                    }).Replace("\"", "&quot;");
+                    //var parameters = new List<Models.HtmlComponentParams>();
+                    //foreach(var param in component.Parameters)
+                    //{
+                    //    parameters.Add(new Models.HtmlComponentParams()
+                    //    {
+                    //        Key = param.Key,
+                    //        Name = param.Value.Name,
+                    //        DataType = (int)param.Value.DataType,
+                    //        List = param.Value.List,
+                    //        DefaultValue = param.Value.DefaultValue,
+                    //        ListOptions = param.Value.ListOptions?.Select(a => "<option value=\"" + a.Value + "\">" + a.Key.Replace("\"", "&quot;") + "</option>").ToArray(),
+                    //        Description = param.Value.Description.Replace("\"", "&quot;"),
+                    //        Required = param.Value.Required,
+                    //        AddItemJs = param.Value.AddItemJs
+                    //    });
+                    //}
+                    //viewComponent["data-params"] = JsonSerializer.Serialize(parameters, new JsonSerializerOptions()
+                    //{
+                    //    WriteIndented = false
+                    //}).Replace("\"", "&quot;");
                     html.Append(viewComponent.Render());
                 }
                 if(html.Length > 0)
@@ -130,7 +130,7 @@ namespace Saber.Controllers
 
                 }
 
-                //add custom content field List item view
+                //add custom content field List item partial view as a text/html script 
                 var listitem = new View("/Views/ContentFields/list-item.html");
                 listitem["label"] = "##label##";
                 listitem["index"] = "##index##";

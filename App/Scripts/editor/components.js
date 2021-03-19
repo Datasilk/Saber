@@ -8,8 +8,9 @@
             }
             var key = target.attr('data-key');
             var name = target.find('h4').html().trim();
-            var params = JSON.parse(target.attr('data-params'));
-            S.editor.components.configure.show(key, name, params);
+            S.ajax.post('Components/GetParameters', { key: key }, (params) => {
+                S.editor.components.configure.show(key, name, params);
+            }, (err) => { }, true);
         });
     },
 
