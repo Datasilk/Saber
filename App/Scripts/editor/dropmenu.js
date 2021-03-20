@@ -4,6 +4,11 @@ S.editor.dropmenu = {
         $(document.body).on('click', S.editor.dropmenu.hide);
     },
 
+    show: function (e, container) {
+        $(e.target).parents(container).first().find('.drop-menu').removeClass('hide');
+        $(document.body).on('click', S.editor.dropmenu.hide);
+    },
+
     hide: function (e) {
         var hide = false;
         if (e) {
