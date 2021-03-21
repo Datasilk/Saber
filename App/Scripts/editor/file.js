@@ -21,7 +21,7 @@ S.editor.file = {
                 filename: $('#newfilename').val().replace(/\s/g, '')
             };
             if (data.path == 'root') {
-                S.message.show('.popup .message', 'error', 'You cannot create files in the root folder');
+                S.editor.error('.popup .messages', 'You cannot create files in the root folder');
                 return false;
             }
             S.ajax.post('Files/NewFile', data,
@@ -33,7 +33,7 @@ S.editor.file = {
                     S.popup.hide();
                 },
                 function (d) {
-                    S.message.show('.popup .message', 'error', d.response);
+                    S.editor.error('.popup .messages', d.response);
                 }
             );
             return false;
@@ -50,7 +50,7 @@ S.editor.file = {
                     S.editor.tabs.closeFromPath(path);
                 },
                 function (d) {
-                    S.message.show(null, 'error', d.response);
+                    S.editor.error('', d.response);
                 }
             );
         }

@@ -21,7 +21,7 @@ S.editor.folder = {
                 folder: $('#newfolder').val()
             };
             if (data.path == 'root') {
-                S.message.show('.popup .message', 'error', 'You cannot create folders within the root folder');
+                S.editor.error('.popup .messages', 'You cannot create folders within the root folder');
                 return false;
             }
             S.ajax.post('Files/NewFolder', data,
@@ -33,7 +33,7 @@ S.editor.folder = {
                     S.popup.hide();
                 },
                 function (d) {
-                    S.message.show('.popup .message', 'error', d.response);
+                    S.editor.error('.popup .messages', d.response);
                 }
             );
             return false;
@@ -50,7 +50,7 @@ S.editor.folder = {
                     S.editor.tabs.closeFromPath(path);
                 },
                 function (d) {
-                    S.message.show(null, 'error', d.response);
+                    S.editor.error('', d.response);
                 }
             );
         }

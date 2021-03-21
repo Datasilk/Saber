@@ -69,15 +69,15 @@
                 };
                 //validate data
                 if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(data.emailaddr) == false) {
-                    S.editor.message('.popup .msg', "Email address is not valid", "error");
+                    S.editor.error('.popup .msg', "Email address is not valid");
                     return;
                 }
                 if (data.password != $('#newpass2').val()) {
-                    S.editor.message('.popup .msg', "Passwords do not match", "error");
+                    S.editor.error('.popup .msg', "Passwords do not match");
                     return;
                 }
                 if (data.password.length < 8 || data.password.length > 16) {
-                    S.editor.message('.popup .msg', "Password must be between 8 to 16 characters long", "error");
+                    S.editor.error('.popup .msg', "Password must be between 8 to 16 characters long");
                     return;
                 }
 
@@ -88,7 +88,7 @@
                         S.editor.users.search(p.start, p.length, p.search, p.orderby);
                     },
                     function (err) {
-                        S.editor.message('.popup .msg', err.responseText, "error");
+                        S.editor.error('.popup .msg', err.responseText);
                     }
                 );
             })
@@ -158,7 +158,7 @@
                         S.editor.users.security.update(userId);
                     },
                     function (err) {
-                        S.editor.message('.popup .msg', err.responseText, "error");
+                        S.editor.error('.popup .msg', err.responseText);
                     }
                 );
             });

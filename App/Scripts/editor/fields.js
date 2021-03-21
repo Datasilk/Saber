@@ -226,7 +226,7 @@ S.editor.fields = {
                         S.editor.files.partials[path] = true;
                     }
                     S.editor.files.content.changed = true;
-                    S.message.show('.' + pathid + ' .message', 'confirm', 'Content fields were saved.', false, 4000, true);
+                    S.message.show('.' + pathid + ' .messages', 'confirm', 'Content fields were saved.', false, 4000, true);
                 } else { S.editor.error(); }
             },
             function () {
@@ -419,13 +419,13 @@ S.editor.fields = {
                                         }
                                     }
                                 }, (err) => {
-                                    S.message.show('', err.responseText, 'error');
+                                        S.editor.error('', err.responseText);
                                 });
                             }
                         });
 
                     }, (err) => {
-                            S.message.show('', err.responseText, 'error');
+                            S.editor.error('', 'error');
                     }, true);
                     return false;
                 },

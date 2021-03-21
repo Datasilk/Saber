@@ -90,7 +90,7 @@ S.editor.explorer = {
                                                 S.editor.sessions.selected = S.editor.sessions.selected.replace(labelName, val);
                                             }
                                         }, (err) => {
-                                            S.editor.message('', err.responseText, 'error');
+                                            S.editor.error('', err.responseText);
                                         });
                                     found = true;
                                     break;

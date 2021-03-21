@@ -98,7 +98,7 @@
                 stylesheets: $('.website-styles-list li div[data-path]').map((i, a) => $(a).attr('data-path'))
             }, () => { },
             (err) => {
-                S.editor.message('', err.responseText, 'error');
+                S.editor.error('', err.responseText);
             });
         });
     }
@@ -154,7 +154,7 @@
                 scripts: $('.website-scripts-list li div[data-path]').map((i, a) => $(a).attr('data-path'))
             }, () => { },
             (err) => {
-                S.editor.message('', err.responseText, 'error');
+                S.editor.error('', err.responseText);
             });
         });
     }
@@ -189,7 +189,7 @@
         S.ajax.post('WebsiteSettings/SaveEmailClient', data, () => {
             S.editor.message('', 'Email Client settings saved successfully');
         }, (err) => {
-            S.editor.message('', err.responseText, 'error');
+            S.editor.error('', err.responseText);
         });
     });
 
@@ -213,7 +213,7 @@
         S.ajax.post('WebsiteSettings/SaveEmailActions', data, () => {
             S.editor.message('', 'Email Action settings saved successfully');
         }, (err) => {
-            S.editor.message('', err.responseText, 'error');
+            S.editor.error('', err.responseText);
         });
     });
 
@@ -234,7 +234,7 @@
         S.ajax.post('WebsiteSettings/SavePasswords', data, () => {
             S.editor.message('', 'Password settings saved successfully');
         }, (err) => {
-            S.editor.message('', err.responseText, 'error');
+            S.editor.error('', err.responseText);
         });
     });
 
@@ -246,7 +246,7 @@
                 S.editor.message('', 'Plugin ' + key + ' was marked for uninstallation. Terminating Saber application service. Please wait...');
                 setTimeout(() => { location.reload(); }, 3000);
             }, (err) => {
-                S.editor.message('', err.responseText, 'error');
+                S.editor.error('', err.responseText);
             });
         }
     });

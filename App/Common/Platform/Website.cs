@@ -115,6 +115,10 @@ namespace Saber.Common.Platform
             {
                 throw new ServiceErrorException("You cannot create a file in the root folder");
             }
+            if (filename == "")
+            {
+                throw new ServiceErrorException("No filename was specified");
+            }
 
             var paths = PageInfo.GetRelativePath(path.ToLower());
             if (paths.Length == 0)

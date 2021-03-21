@@ -43,7 +43,7 @@ S.editor.save = function (path, content) {
             }
 
             function showmsg() {
-                S.message.show('.page-settings .message', 'confirm', 'Page settings have been updated successfully');
+                S.message.show('.page-settings .messages', 'confirm', 'Page settings have been updated successfully');
             }
 
             return;

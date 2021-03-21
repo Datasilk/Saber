@@ -1,7 +1,7 @@
 <div class="editor box bg {{editor-type}} noselect">
     {{editor-header "/Views/Editor/header.html"}}
     <div class="relative">
-        <div class="toolbar row noselect">
+        <div class="toolbar top-menu row noselect">
             <div class="col logo">
                 <a href="https://saber.datasilk.io/support/editor.html" target="_blank">
                     <svg viewBox="0 0 64 128">
@@ -10,8 +10,8 @@
                 </a>
             </div>
             <div class="col bars">
-                <div class="menu-bar">
-                    <ul>
+                <div>
+                    <ul class="menu-bar">
                         <li class="menu-item-file">
                             <div class="row hover"><span>File</span></div>
                             <div class="drop-menu hide">
@@ -446,7 +446,7 @@
                             </a>
                         </div>
                         <div class="col pad-left">
-                            <div class="row message hide"><span></span></div>
+                            <div class="row messages hide"></div>
                         </div>
                     </div>
                     <div class="row line pad-bottom"></div>
@@ -459,7 +459,7 @@
             <div class="tab page-settings hide">
                 <div class="scroller">
                     <div class="row pad-height">
-                        <div class="row message hide"><span></span></div>
+                        <div class="row messages hide"></div>
                         <div class="settings-contents"></div>
                     </div>
                 </div>
@@ -488,7 +488,7 @@
                 <div class="scroller">
                     <div class="row pad-height">
                         <h2>Website Analytics</h2>
-                        <div class="row message hide"><span></span></div>
+                        <div class="row messages hide"></div>
                         <div class="analytics-contents"></div>
                     </div>
                 </div>
@@ -536,16 +536,14 @@
 </script>
 
 <script type="text/html" id="template_message">
-    <div class="message ##type##">
-        <div class="close-btn">
-            <a href="javascript:">
-                <svg viewBox="0 0 32 32">
-                    <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
-                </svg>
-            </a>
-        </div>
-        <span>##text##</span>
+    <div class="close-btn">
+        <a href="javascript:">
+            <svg viewBox="0 0 32 32">
+                <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
+            </svg>
+        </a>
     </div>
+    <span>##text##</span>
 </script>
 
 <script type="text/html" id="template_tab">
@@ -573,7 +571,7 @@
 
 <script type="text/html" id="template_newfile">
     <form>
-        <div class="row message hide"><span></span></div>
+        <div class="row messages hide"></div>
         <div class="row field">File Name</div>
         <div class="row input">
             <input type="text" id="newfilename" spellcheck="false" placeholder="template.html" />
@@ -592,7 +590,7 @@
 
 <script type="text/html" id="template_newfolder">
     <form>
-        <div class="row message hide"><span></span></div>
+        <div class="row messages hide"></div>
         <div class="row field">Folder Name <span class="faded">(no spaces)</span></div>
         <div class="row input">
             <input type="text" id="newfolder" spellcheck="false" placeholder="BlogEntries" />
@@ -611,7 +609,7 @@
 
 <script type="text/html" id="template_lang_add">
     <form>
-        <div class="row message hide"><span></span></div>
+        <div class="row messages hide"></div>
         <div class="row field">Language</div>
         <div class="row input pad-top-sm">
             <input type="text" id="lang_name" spellcheck="false" placeholder="Spanish" />
@@ -716,7 +714,7 @@
 </script>
 {{/components}}
 <script type="text/html" id="template_select_file">
-    <div class="row message hide"><span></span></div>
+    <div class="row messages hide"></div>
     <div class="row"><div class="col modal-path"></div></div>
     <div class="row modal-browser"><ul class="menu"></ul></div>
 </script>
@@ -739,7 +737,7 @@
                 </a>
             </div>
             <div class="col pad-left">
-                <div class="row message hide"><span></span></div>
+                <div class="row messages hide"></div>
             </div>
         </div>
         <div class="row line pad-bottom"></div>

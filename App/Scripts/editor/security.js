@@ -75,7 +75,7 @@
                             S.editor.security.groups.load();
                         },
                         function (err) {
-                            S.editor.message('.popup .msg', err.responseText, "error");
+                            S.editor.error('.popup .msg', err.responseText);
                         }
                     );
                 });
@@ -140,7 +140,7 @@
             }
 
             S.ajax.post('Security/SaveKey', data, null, () => {
-                S.editor.message(null, "error", "An error occurred when trying to save your security group changes");
+                S.editor.error('', "An error occurred when trying to save your security group changes");
             }
             );
         },
@@ -157,7 +157,7 @@
                         $('table.groups tr[data-id="' + id + '"]').remove();
                     },
                     () => {
-                        S.editor.message(null, "error", "An error occurred when trying to save your security group changes");
+                        S.editor.error('', "An error occurred when trying to save your security group changes");
                     });
             }
         }

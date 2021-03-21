@@ -273,7 +273,7 @@ S.editor.settings = {
                     path: S.editor.path
                 }, () => { },
                     (err) => {
-                        S.editor.message('', err.responseText, 'error');
+                        S.editor.error('', 'error');
                     });
             });
         }
@@ -334,7 +334,7 @@ S.editor.settings = {
                     path: S.editor.path
                 }, () => { },
                     (err) => {
-                        S.editor.message('', err.responseText, 'error');
+                        S.editor.error('', err.responseText);
                     });
             });
         }

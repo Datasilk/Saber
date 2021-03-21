@@ -1,12 +1,16 @@
 S.editor.message = function (elem, msg, type) {
-    $(elem && elem != '' ? elem : '.editor > div > .messages').append(template_message.innerHTML
-        .replace('##text##', msg)
-        .replace('##type##', type ?? '')
-    );
-    $('.message .close-btn').off('click').on('click', (e) => {
-        $(e.target).parents('.message').first().remove();
+    if (!elem || elem == '') { elem = '.editor > div > .messages'; }
+    var container = $(elem);
+    var div = document.createElement('div');
+    div.className = 'message' + (type != null ? ' ' + type : '');
+    div.innerHTML = template_message.innerHTML.replace('##text##', msg);
+    container.removeClass('hide').append(div);
+    $(div).find('.close-btn').on('click', (e) => {
+        $(div).remove();
+        if (container.children().length == 0) {
+            container.addClass('hide');
+        }
     });
-    if (elem) { $(elem).removeClass('hide'); }
 };
 
 S.editor.message.confirm = function (title, msg, options, callback) {
