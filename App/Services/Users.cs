@@ -64,18 +64,48 @@ namespace Saber.Services
             if (User.PublicApi || !CheckSecurity("manage-users")) { return AccessDenied(); }
             var view = new View("/Views/Users/details.html");
             var user = Query.Users.GetDetails(userId);
-            if(userId != 1)
+            if(!user.isadmin)
             {
+                //non-admins only
                 view["group-list"] = AssignedGroups(userId);
                 view.Show("can-assign");
             }
             else
             {
+                //administrators only
                 view["group-list"] = Cache.LoadFile(App.MapPath("/Views/Users/admin-group.html"));
+            }
+            if (User.IsAdmin)
+            {
+                //allow admin to assign users as admins
+                view.Show("can-assign-admin");
             }
             
             view.Bind(new { user });
             return view.Render();
+        }
+
+        public string Update(int userId, string email, string name, bool isadmin)
+        {
+            if (User.PublicApi || !CheckSecurity("manage-users")) { return AccessDenied(); }
+            var user = Query.Users.GetDetails(userId);
+            if(user.email != email)
+            {
+                //TODO: send user an email to their new email address to verify their account
+            }
+            if (User.IsAdmin && user.isadmin != isadmin)
+            {
+                //fail-safe for main administrator (user Id: 1)
+                if(user.userId > 1)
+                {
+                    Query.Users.UpdateAdmin(userId, isadmin);
+                }
+            }
+            if(user.name != name)
+            { 
+                Query.Users.UpdateName(userId, name);
+            }
+            return Success();
         }
 
         public string AssignGroup(int groupId, int userId)
@@ -113,5 +143,20 @@ namespace Saber.Services
             }
             return html.ToString();
         }
+
+        #region "Helpers"
+
+        private string EncryptPassword(string email, string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(email + Server.Salt + password, Server.BcryptWorkfactor);
+
+        }
+
+        private bool DecryptPassword(string email, string password, string encrypted)
+        {
+            return BCrypt.Net.BCrypt.Verify(email + Server.Salt + password, encrypted);
+        }
+
+        #endregion
     }
 }

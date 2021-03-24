@@ -114,6 +114,8 @@ S.editor.explorer = {
                     url = url.replace('root', '').replace('content/', '');
                 }
                 url += '/';
+                if (url == 'content/') { url = '/'; }
+                console.log(url);
                 $('.browser-path').html(url);
                 if (path.indexOf('wwwroot') == 0) {
                     //load resources section

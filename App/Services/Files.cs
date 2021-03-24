@@ -30,6 +30,7 @@ namespace Saber.Services
             if (pid == "/") { pid = ""; }
 
             //translate root path to relative path
+            if(path == "content") { path = "root"; }
             var paths = Core.PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
             var rpath = string.Join("/", paths) + "/";
@@ -121,7 +122,7 @@ namespace Saber.Services
                 }
                 else
                 {
-                    html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", string.Join("/", paths.SkipLast(1).ToArray()), true));
+                    html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", string.Join("/", paths.SkipLast(1).ToArray()).Replace("Content/", "content/"), true));
                 }
             }
             else if (rawpaths.Length > 1)
@@ -129,17 +130,30 @@ namespace Saber.Services
                 //add parent directory;
                 html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", string.Join("/", rawpaths.SkipLast(1)), true));
             }
-            else if (rawpaths[0] == "content" && rawpaths.Length == 1)
-            {
-                //add parent directory when navigating to special directory
-                html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root", true));
-            }
             else if (rawpaths.Length == 1 && paths[0] == "")
             {
                 //add special directories & files
                 html.Append(RenderBrowserItem(item, "wwwroot", "wwwroot", "folder", "wwwroot", true));
                 html.Append(RenderBrowserItem(item, "pages", "pages", "folder", "content/pages", true));
                 html.Append(RenderBrowserItem(item, "partials", "partials", "folder", "content/partials", true));
+
+                //get all user-defined folders
+                var contentfolder = App.MapPath("/Content/");
+                var info = new DirectoryInfo(contentfolder);
+
+                foreach(var dir in info.GetDirectories())
+                {
+                    var subpath = dir.FullName.Replace(contentfolder, "").Replace("\\", "");
+                    switch (subpath.ToLower())
+                    {
+                        case "pages": case "partials": case "temp":
+                            break;
+                        default:
+                            html.Append(RenderBrowserItem(item, subpath, subpath, "folder", "content/" + subpath, true));
+                            break;
+                    }
+                }
+
                 html.Append(RenderBrowserItem(item, "website.less", "website.less", "file", "content/website.less"));
             }
             else if (paths[0] == "/wwwroot")

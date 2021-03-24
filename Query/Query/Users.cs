@@ -99,9 +99,14 @@ namespace Query
             return Sql.ExecuteScalar<string>("User_GetPassword", new { email });
         }
 
-        public static void UpdateEmail(int userId, string email)
+        public static void UpdateEmail(int userId, string email, string password)
         {
-            Sql.ExecuteNonQuery("User_UpdateEmail", new { userId, email });
+            Sql.ExecuteNonQuery("User_UpdateEmail", new { userId, email, password });
+        }
+
+        public static void UpdateName(int userId, string name)
+        {
+            Sql.ExecuteNonQuery("User_UpdateName", new { userId, name });
         }
 
         public static bool HasPasswords()
@@ -112,6 +117,11 @@ namespace Query
         public static bool HasAdmin()
         {
             return Sql.ExecuteScalar<int>("Users_HasAdmin") == 1;
+        }
+
+        public static void UpdateAdmin(int userId, bool isadmin)
+        {
+            Sql.ExecuteNonQuery("User_UpdateAdmin", new { userId, isadmin });
         }
 
         public static List<Models.UserWithSecurityCount> GetList(int page = 1, int length = 25, string search = "", int orderby = 1)

@@ -127,10 +127,18 @@
                         S.editor.users._loadedUsers.push(id);
                         self.details.updateFilebar(id, email);
                         //add event listeners
-                        $('.btn-assign-group').on('click', () => { S.editor.users.security.assign(id); })
-                        $('.user-group .btn-delete-group').on('click', (e) => {
+                        $('.tab.user-' + id + ' .btn-assign-group').on('click', () => { S.editor.users.security.assign(id); })
+                        $('.tab.user-' + id + ' .user-group .btn-delete-group').on('click', (e) => {
                             var groupId = $(e.target).parents('.user-group').attr('data-id');
                             S.editor.users.security.remove(id, groupId);
+                        });
+                        $('.tab.user-' + id + ' .btn-save').on('click', () => {
+                            var newemail = $('.tab.user-' + id + ' #user_email').val();
+                            var newname = $('.tab.user-' + id + ' #user_name').val();
+                            var isadmin = $('.tab.user-' + id + ' #admin_privilages')[0].checked;
+                            S.ajax.post('Users/Update', { userId: id, email: newemail, name: newname, isadmin: isadmin }, () => {
+                                S.editor.message('.tab.user-' + id + ' .messages', 'User Information successfully updated!');
+                            });
                         });
                     }
                 );

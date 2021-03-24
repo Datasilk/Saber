@@ -175,8 +175,9 @@ namespace Saber.Services
             }
         }
 
-        private void CheckPassword(string password)
+        public void CheckPassword(string password)
         {
+            if (User.PublicApi) { return; }
             var config = Common.Platform.Website.Settings.Load();
             if (password.Length < config.Passwords.MinChars)
             {

@@ -133,6 +133,8 @@
     <Build Include="dbo\Stored Procedures\Users\User_AuthenticateApiToken.sql" />
     <Build Include="dbo\Stored Procedures\Secuirty\SecurityUser_Check.sql" />
     <Build Include="dbo\Vendor\DataSet_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_UpdateAdmin.sql" />
+    <Build Include="dbo\Stored Procedures\Users\User_UpdateName.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

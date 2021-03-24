@@ -138,6 +138,7 @@ S.editor.filebar = {
                 self.hide();
             }
         },
+
         show: function () {
             var iframe = window.parent.document.getElementsByClassName('editor-iframe')[0];
             var doc = window.parent.document;

@@ -1,20 +1,24 @@
 S.editor.hotkey = {
+    vendor: [], //{code:'KeyA', ctrl:false, alt:true, shift: false, callback:() => {}}
     pressed: function (e) {
         if (S.editor.visible == false) { return; }
         var has = false;
         var key = String.fromCharCode(e.which).toLowerCase();
         if (e.ctrlKey == true) {
-            switch (key) {
-                case 's':
+            switch (e.code) {
+                case 'KeyS':
                     //save file
                     S.editor.save();
                     has = true;
                     break;
-                case 'b':
+                case 'KeyB':
                     S.editor.explorer.show();
                     has = true;
                     break;
+                default:
+                    //check vendor hotkeys
 
+                    break;
             }
         } else if (e.altKey == true) {
             if (!isNaN(key) && !isNaN(parseFloat(key))) {
@@ -25,7 +29,11 @@ S.editor.hotkey = {
                     S.editor.tabs.select(tabs[index].className.replace('tab-', '').replace(' selected', ''));
                     has = true;
                 }
+            } else {
+                //check vendor hotkeys
             }
+        } else if (e.shiftKey) {
+            //check vendor hotkeys
         } else {
             switch (e.code) {
                 case 'F2': //content fields
@@ -56,6 +64,9 @@ S.editor.hotkey = {
                     S.editor.explorer.show();
                     has = true;
                     break;
+                default:
+                    //check vendor hotkeys
+                    break;
             }
         }
         if (has == true) {
@@ -68,7 +79,6 @@ S.editor.hotkey = {
         if (e.ctrlKey == false && e.altKey == false && e.shiftKey == false) {
             switch (e.which) {
                 case 27: //escape key
-                    console.log('toggle preview');
                     //ignore escape key if Monaco editor is showing a suggestion popup
                     if ($('.editor-widget.suggest-widget.visible .monaco-list.element-focused').length > 0 ||
                         $('.editor-widget.find-widget.visible').length > 0

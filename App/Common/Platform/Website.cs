@@ -19,7 +19,15 @@ namespace Saber.Common.Platform
             {
                 throw new ServiceErrorException("You cannot create a file in the content/pages folder");
             }
+            else if (path.IndexOf("content") == 0 && path.IndexOf("content/temp/") == 0)
+            {
+                throw new ServiceErrorException("You cannot create a file in the content/temp folder");
+            }
             var paths = PageInfo.GetRelativePath(path.ToLower());
+            if(paths.Length == 0)
+            {
+                throw new ServiceErrorException("You cannot create files in the " + path + " folder");
+            }
             var dir = string.Join("/", paths) + "/";
             var fileparts = filename.Split('.', 2);
 
@@ -125,7 +133,7 @@ namespace Saber.Common.Platform
             {
                 throw new ServiceErrorException("No path specified");
             }
-            if(paths[0].ToLower().Replace("/", "") != "content" && paths[0].ToLower() != "wwwroot" && !Core.Website.AllRootFolders().Any(a => a.Split("/")[0] == paths[1]))
+            if(paths[0].ToLower().Replace("/", "") != "content" && paths[0].ToLower() != "wwwroot")
             {
                 throw new ServiceErrorException("Invalid path specified");
             }

@@ -1,4 +1,5 @@
 ﻿<div class="user-details">
+    <div class="messages hide"></div>
     <div class="row">
         <div class="col six pad-right">
             <h2>User Information</h2>
@@ -16,6 +17,19 @@
                     </div>
                 </div>
             </div>
+            {{can-assign-admin}}
+                <div class="row pad-top">
+                    <div class="col input">
+                        <input type="checkbox" id="admin_privilages" {{is-admin}} />
+                    </div>
+                    <div class="col label pad-left-sm">
+                        <label for="admin_privilages">Administrator Privilages</label>
+                    </div>
+                </div>
+                <div class="row pad-top faded">
+                    <span>Only assign administrator privilages for users who need full access to all security keys.</span>
+                </div>
+            {{/can-assign-admin}}
         </div>
         <div class="col six pad-left">
             <div class="row">
@@ -35,7 +49,7 @@
             <div class="row group-list">{{group-list}}</div>
         </div>
     </div>
-    <div class="row pad-top text-right">
-        <div class="col"><button class="apply">Save Changes</button></div>
+    <div class="row pad-top text-center">
+        <div class="col"><button class="apply btn-save">Save Changes</button></div>
     </div>
 </div>

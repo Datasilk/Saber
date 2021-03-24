@@ -60,10 +60,10 @@ namespace Saber.Common.Platform
             },
             new EmailType()
             {
-                Key="forgotpass",
-                Name = "Forgot Password",
+                Key="updatepass",
+                Name = "Update Password",
                 Description = "",
-                TemplateFile = "forgot-pass.html",
+                TemplateFile = "update-pass.html",
                 UserDefinedSubject = true
             }
         };
