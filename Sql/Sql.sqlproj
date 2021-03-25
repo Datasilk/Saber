@@ -135,6 +135,7 @@
     <Build Include="dbo\Vendor\DataSet_Delete.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_UpdateAdmin.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_UpdateName.sql" />
+    <Build Include="dbo\Vendor\DataSet_UpdateInfo.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

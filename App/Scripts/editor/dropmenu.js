@@ -67,18 +67,18 @@ S.editor.topmenu = {
         var html = $('#template_topmenuitem').html()
             .replace('##id##', id)
             .replace('##label##', label);
-        $('.top-menu .menu-bar > ul').append(html);
+        $('.top-menu ul.menu-bar').append(html);
     },
 
     hover: function (e) {
-        if ($('.top-menu .menu-bar .drop-menu:not(.hide)').length == 0) { return; }
+        if ($('.top-menu ul.menu-bar .drop-menu:not(.hide)').length == 0) { return; }
         var target = $(e.target);
         if (e.target.tagName.toLowerCase() != 'li') {
             target = target.parents('li').first();
         }
         var menu = target.find('.drop-menu');
         if (menu.hasClass('hide')) {
-            $('.menu-bar .drop-menu').addClass('hide');
+            $('ul.menu-bar .drop-menu').addClass('hide');
             menu.removeClass('hide');
         }
     }
