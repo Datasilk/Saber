@@ -136,6 +136,8 @@
     <Build Include="dbo\Stored Procedures\Users\User_UpdateAdmin.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_UpdateName.sql" />
     <Build Include="dbo\Vendor\DataSet_UpdateInfo.sql" />
+    <Build Include="dbo\Vendor\DataSet_UpdateColumns.sql" />
+    <Build Include="dbo\Vendor\DataSet_GetColumns.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

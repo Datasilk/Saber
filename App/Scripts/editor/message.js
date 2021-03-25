@@ -1,5 +1,5 @@
 S.editor.message = function (elem, msg, type) {
-    if (!elem || elem == '') { elem = '.editor > div > .messages'; }
+    if (!elem || elem == '') { elem = '.editor .toolbar > .messages'; }
     var container = $(elem);
     var div = document.createElement('div');
     div.className = 'message' + (type != null ? ' ' + type : '');
