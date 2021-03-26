@@ -10,8 +10,9 @@
   },
   "developer-keys": [
     {
-      "name": "saber",
-      "key": "Test1Test2Test3Test4"
+      "client_id": "saber",
+      "key": "8jd8Hn3Pmd58aBrek$bvldQbXLk7je2p",
+      "redirect_uri": "https://sabercms.com/saber-auth"
     }
   ]
 }

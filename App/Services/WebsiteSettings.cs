@@ -207,8 +207,9 @@ namespace Saber.Services
             foreach (var key in Server.DeveloperKeys)
             {
                 viewDevkey.Clear();
-                viewDevkey["name"] = key.Name;
+                viewDevkey["client_id"] = key.Client_ID;
                 viewDevkey["dev-key"] = key.Key;
+                viewDevkey["redirect_uri"] = key.Redirect_URI;
                 html.Append(viewDevkey.Render());
             }
             viewDevkeys["dev-keys"] = html.ToString();

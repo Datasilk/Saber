@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Mail;
 using Saber.Core.Extensions.Strings;
 
@@ -25,6 +26,45 @@ namespace Saber.Services
                 }
             }
             return Error();
+        }
+
+        public string OAuth(string clientId, string email, string password)
+        {
+            if (User.PublicApi) { return AccessDenied(); }
+            if(clientId == "") { return Error("Client ID was not provided");  }
+            if(!Server.DeveloperKeys.Any(a => a.Client_ID == clientId)) { return Error("Client ID not found"); }
+            var encrypted = Query.Users.GetPassword(email);
+            if (encrypted == null) { return Error(); }
+            if (!DecryptPassword(email, password, encrypted)) { return Error(); }
+            {
+                //password verified by Bcrypt
+                var user = Query.Users.Authenticate(email, encrypted);
+                if (user != null)
+                {
+                    //TODO: generate temporary code for user account & save in database
+                    var code = "notimplimented";
+                    return Server.DeveloperKeys.Where(a => a.Client_ID == clientId).First().Redirect_URI + "?code=" + code;
+                }
+            }
+            return Error();
+        }
+
+        public string Token(string code)
+        {
+            //TODO: generate OAuth 2.0 token for user authenication from temporary code
+            return Error("Endpoint not yet implemented");
+        }
+
+        public string NewToken(string oldtoken)
+        {
+            //TODO: generate OAuth 2.0 token for user authenication from expired token
+            return Error("Endpoint not yet implemented");
+        }
+
+        public string Authorize(string token)
+        {
+            //TODO: authorize user account using OAuth 2.0 token
+            return Error("Endpoint not yet implemented");
         }
 
         public string CreateAdminAccount(string name, string email, string password, string password2)

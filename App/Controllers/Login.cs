@@ -13,7 +13,15 @@
                 AddScript("/editor/js/views/login/new-admin.js");
                 return base.Render(view.Render());
             }
-            return "";
+            else
+            {
+                //login form for 3rd-party authentication
+                var view = new View("/Views/Login/login.html");
+                AddScript("/editor/js/platform.js");
+                AddScript("/editor/js/views/login/login.js");
+                AddScript("<script>var clientId = '" + Parameters["client_id"] + ";</script>");
+                return view.Render();
+            }
         }
     }
 }

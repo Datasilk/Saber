@@ -38,21 +38,24 @@
         }
 
         //disable button
-        S('#btnsavepass').prop("disabled", "disabled");
+        S('#btncreate').prop("disabled", "disabled");
 
         //send new account info to server
-        S.ajax.post('User/CreateAdminAccount', { name:name, email: email, password: pass, password2: pass2 }, function (data) {
-            //callback, replace form with message
-            if (data == 'success') { 
-                //show success message
-                window.location.reload();
-            } else {
-                //show error message
+        S.ajax.post('User/CreateAdminAccount', { name: name, email: email, password: pass, password2: pass2 },
+            function (data) {
+                //callback, replace form with message
+                if (data == 'success') { 
+                    //show success message
+                    window.location.reload();
+                } else {
+                    //show error message
+                    S.editor.error(msg, 'An error occurred while trying to create your account');
+                    S('#btncreate').prop("disabled", null);
+                }
+            }, function () {
                 S.editor.error(msg, 'An error occurred while trying to create your account');
-            }
-        }, function () {
-            S.editor.error(msg, 'An error occurred while trying to create your account');
-        });
+                S('#btncreate').prop("disabled", null);
+            });
     },
 
     validatePass: function (pass, pass2) {

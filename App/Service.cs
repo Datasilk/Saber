@@ -26,7 +26,7 @@ namespace Saber
             {
                 ViewCache.Clear();
             }
-            if (Context.Request.Scheme + "://" + Context.Request.Host.Value != App.Host)
+            if ((Context.Request.Scheme + "://" + Context.Request.Host.Value).IndexOf(App.Host) < 0)
             {
                 //require a Public API developer key to continue
                 if (!Parameters.ContainsKey("apikey"))

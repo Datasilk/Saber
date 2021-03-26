@@ -12,8 +12,9 @@ namespace Saber
             {
                 case "editor": return new Controllers.Editor();
                 case "login":
-                    if (Server.HasAdmin == false || Server.ResetPass == true)
+                    if (Server.HasAdmin == false || Server.ResetPass == true || parameters.ContainsKey("client_id"))
                     {
+                        //display internal login page for admin account creation or OAuth 2.0 authentication
                         return new Controllers.Login();
                     }
                     else
