@@ -41,9 +41,17 @@
 
   <ItemGroup>
     <None Remove="CSS\tapestry\LICENSE" />
+    <None Remove="Views\Login\login.html" />
+    <None Remove="Views\Login\login.js" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Views\Login\login.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Login\login.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\WebsiteSettings\androidicon.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
