@@ -7,7 +7,7 @@ namespace Saber.Services
     {
         public string Groups()
         {
-            if (User.PublicApi || !CheckSecurity("manage-security")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("manage-security")) { return AccessDenied(); }
             var view = new View("/Views/Security/groups.html");
             var listitem = new View("/Views/Security/group-item.html");
             var html = new StringBuilder();
@@ -24,7 +24,7 @@ namespace Saber.Services
 
         public string CreateGroup(string name)
         {
-            if (User.PublicApi || !CheckSecurity("manage-security")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("manage-security")) { return AccessDenied(); }
             if (Query.Security.Groups.Exists(name)) { return Error("Group \"" + name + "\" already exists"); }
             Query.Security.Groups.Create(name);
             return Success();
@@ -32,7 +32,7 @@ namespace Saber.Services
 
         public string GroupDetails(int groupId)
         {
-            if (User.PublicApi || !CheckSecurity("manage-security")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("manage-security")) { return AccessDenied(); }
             var view = new View("/Views/Security/details.html");
             var viewScope = new View("/Views/Security/scope.html");
             var viewKey = new View("/Views/Security/key.html");
@@ -86,7 +86,7 @@ namespace Saber.Services
 
         public string SaveKey(int groupId, string key, bool value)
         {
-            if (User.PublicApi || !CheckSecurity("manage-security")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("manage-security")) { return AccessDenied(); }
             var isplatform = true;
             var seckey = Core.Security.Keys.Where(a => a.Value == key).FirstOrDefault();
             if(seckey == null)
@@ -102,7 +102,7 @@ namespace Saber.Services
 
         public string DeleteGroup(int groupId)
         {
-            if (User.PublicApi || !CheckSecurity("manage-security")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("manage-security")) { return AccessDenied(); }
             Query.Security.Groups.Delete(groupId);
             return Success();
         }

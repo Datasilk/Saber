@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Mail;
 using Saber.Core.Extensions.Strings;
+using Saber.Vendor;
 
 namespace Saber.Services
 {
@@ -11,7 +12,7 @@ namespace Saber.Services
 
         public string Authenticate(string email, string password)
         {
-            if (User.PublicApi) { return AccessDenied(); }
+            if (IsPublicApiRequest) { return AccessDenied(); }
             var encrypted = Query.Users.GetPassword(email);
             if(encrypted == null) { return Error(); }
             if (!DecryptPassword(email, password, encrypted)) { return Error(); }
@@ -30,7 +31,7 @@ namespace Saber.Services
 
         public string OAuth(string clientId, string email, string password)
         {
-            if (User.PublicApi) { return AccessDenied(); }
+            if (IsPublicApiRequest) { return AccessDenied(); }
             if(clientId == "") { return Error("Client ID was not provided");  }
             if(!Server.DeveloperKeys.Any(a => a.Client_ID == clientId)) { return Error("Client ID not found"); }
             var encrypted = Query.Users.GetPassword(email);
@@ -49,27 +50,23 @@ namespace Saber.Services
             return Error();
         }
 
+        [PublicApi("Generate an OAuth 2.0 persistent token for user authentication by supplying a temporary code after the user logs into their account.")]
         public string Token(string code)
         {
             //TODO: generate OAuth 2.0 token for user authenication from temporary code
             return Error("Endpoint not yet implemented");
         }
 
+        [PublicApi("Generate an OAuth 2.0 persistent token for user authentication by supplying an expired token.")]
         public string NewToken(string oldtoken)
         {
             //TODO: generate OAuth 2.0 token for user authenication from expired token
             return Error("Endpoint not yet implemented");
         }
 
-        public string Authorize(string token)
-        {
-            //TODO: authorize user account using OAuth 2.0 token
-            return Error("Endpoint not yet implemented");
-        }
-
         public string CreateAdminAccount(string name, string email, string password, string password2)
         {
-            if (User.PublicApi) { return AccessDenied(); }
+            if (IsPublicApiRequest) { return AccessDenied(); }
             if (Server.HasAdmin == true) { return Error(); }
             if (!CheckEmailAddress(email)) { return Error("Email address is invalid"); }
             if (password != password2) { return Error("Passwords do not match"); }
@@ -94,6 +91,7 @@ namespace Saber.Services
             return "success";
         }
 
+        [PublicApi("Create a new public user account")]
         public string SignUp(string name, string emailaddr, string password, string password2)
         {
             if (!CheckEmailAddress(emailaddr)) { return Error("Email address is invalid"); }
@@ -129,6 +127,7 @@ namespace Saber.Services
             return "success";
         }
 
+        [PublicApi("Request that an activation email be sent to a new user account")]
         public string RequestActivation(string emailaddr)
         {
             if (Query.Users.CanActivate(emailaddr))
@@ -142,7 +141,7 @@ namespace Saber.Services
 
         public string Activate(string emailaddr, string activationkey)
         {
-            if (User.PublicApi) { return AccessDenied(); }
+            if (IsPublicApiRequest) { return AccessDenied(); }
             if(Query.Users.Activate(emailaddr, activationkey))
             {
                 return Success();
@@ -154,7 +153,7 @@ namespace Saber.Services
 
         public string ForgotPassword(string emailaddr)
         {
-            if (User.PublicApi) { return AccessDenied(); }
+            if (IsPublicApiRequest) { return AccessDenied(); }
             if (!Query.Users.CanActivate(emailaddr))
             {
                 var activationkey = Generate.NewId(16);
@@ -173,7 +172,7 @@ namespace Saber.Services
 
         public string ResetPassword(string key, string password, string password2)
         {
-            if (User.PublicApi) { return AccessDenied(); }
+            if (IsPublicApiRequest) { return AccessDenied(); }
             if (password != password2) { return Error("Passwords do not match"); }
             try
             {
@@ -217,7 +216,7 @@ namespace Saber.Services
 
         public void CheckPassword(string password)
         {
-            if (User.PublicApi) { return; }
+            if (IsPublicApiRequest) { return; }
             var config = Common.Platform.Website.Settings.Load();
             if (password.Length < config.Passwords.MinChars)
             {

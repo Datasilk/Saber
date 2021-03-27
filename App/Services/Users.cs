@@ -6,7 +6,7 @@ namespace Saber.Services
     {
         public string List(int start = 1, int length = 25, string search = "", int orderby = 2)
         {
-            if (User.PublicApi || !CheckSecurity("manage-users")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("manage-users")) { return AccessDenied(); }
             var view = new View("/Views/Users/users.html");
             var list = new View("/Views/Users/list.html");
             var listitem = new View("/Views/Users/list-item.html");
@@ -61,7 +61,7 @@ namespace Saber.Services
 
         public string Details(int userId)
         {
-            if (User.PublicApi || !CheckSecurity("manage-users")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("manage-users")) { return AccessDenied(); }
             var view = new View("/Views/Users/details.html");
             var user = Query.Users.GetDetails(userId);
             if(!user.isadmin)
@@ -87,7 +87,7 @@ namespace Saber.Services
 
         public string Update(int userId, string email, string name, bool isadmin)
         {
-            if (User.PublicApi || !CheckSecurity("manage-users")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("manage-users")) { return AccessDenied(); }
             var user = Query.Users.GetDetails(userId);
             if(user.email != email)
             {
@@ -110,21 +110,21 @@ namespace Saber.Services
 
         public string AssignGroup(int groupId, int userId)
         {
-            if (User.PublicApi || !CheckSecurity("manage-users")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("manage-users")) { return AccessDenied(); }
             Query.Security.Users.Add(groupId, userId);
             return Success();
         }
 
         public string RemoveGroup(int groupId, int userId)
         {
-            if (User.PublicApi || !CheckSecurity("manage-users")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("manage-users")) { return AccessDenied(); }
             Query.Security.Users.Remove(groupId, userId);
             return Success();
         }
 
         public string AssignedGroups(int userId)
         {
-            if (User.PublicApi || !CheckSecurity("manage-users")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("manage-users")) { return AccessDenied(); }
             var groups = Query.Security.Users.GetGroups(userId);
             var view = new View("/Views/Users/group-item.html");
             var html = new StringBuilder();

@@ -11,7 +11,7 @@ namespace Saber.Services
         /// <returns>rendered HTML of the page content (not including any layout, header, or footer)</returns>
         public string Render(string path, string language = "en")
         {
-            if (User.PublicApi) { return AccessDenied(); }
+            if (IsPublicApiRequest) { return AccessDenied(); }
             try
             {
                 return Response(Common.Platform.Render.Page(path, this, PageInfo.GetPageConfig(path), language));

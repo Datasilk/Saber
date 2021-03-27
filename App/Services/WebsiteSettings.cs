@@ -14,7 +14,7 @@ namespace Saber.Services
         public string Render()
         {
             //display all application settings
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             var view = new View("/Views/WebsiteSettings/websitesettings.html");
             var accordion = new View("/Views/WebsiteSettings/accordion.html");
             var accordions = new StringBuilder();
@@ -219,6 +219,36 @@ namespace Saber.Services
             accordion["contents"] = viewDevkeys.Render();
             accordions.Append(accordion.Render());
 
+            //render public api accordion
+            var viewPublicApis = new View("/Views/WebsiteSettings/publicapis.html");
+            var viewPublicApi = new View("/Views/WebsiteSettings/publicapi.html");
+            var viewPublicApiParam = new View("/Views/WebsiteSettings/publicapi-param.html");
+            html.Clear();
+            foreach (var publicapi in Common.Platform.PublicApi.GetList())
+            {
+                viewPublicApi.Clear();
+                viewPublicApi["path"] = publicapi.Path;
+                viewPublicApi["description"] = publicapi.Description;
+                if(publicapi.Parameters.Count > 0)
+                {
+                    foreach(var param in publicapi.Parameters)
+                    {
+                        viewPublicApiParam.Clear();
+                        viewPublicApiParam["name"] = param.Name;
+                        viewPublicApiParam["data-type"] = param.DataType;
+                        viewPublicApi["parameters"] += viewPublicApiParam.Render();
+                    }
+                    html.Append(viewPublicApi.Render());
+                }
+            }
+            viewPublicApis["public-apis"] = html.ToString();
+            
+            accordion.Clear();
+            accordion["id"] = "public-apis";
+            accordion["title"] = "Public APIs";
+            accordion["contents"] = viewPublicApis.Render();
+            accordions.Append(accordion.Render());
+
             //render plugins management accordion
             var viewPlugin = new View("/Views/WebsiteSettings/plugin-item.html");
             var viewFeature = new View("/Views/WebsiteSettings/plugin-feature.html");
@@ -398,7 +428,7 @@ namespace Saber.Services
 
         public string RenderStylesheetsList(string path)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             var config = Common.Platform.Website.Settings.Load();
             return RenderStylesheetsList(config);
         }
@@ -420,7 +450,7 @@ namespace Saber.Services
 
         public string GetAvailableStylesheets()
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             try
             {
                 return JsonResponse(RenderAvailableStylesheetsList());
@@ -462,7 +492,7 @@ namespace Saber.Services
 
         public string AddStylesheetToSite(string file)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             try
             {
                 if (file == "") { return Error(); }
@@ -482,7 +512,7 @@ namespace Saber.Services
 
         public string RemoveStylesheet(string file)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             try
             {
                 var config = Common.Platform.Website.Settings.Load();
@@ -501,7 +531,7 @@ namespace Saber.Services
 
         public string SortStylesheets(List<string> stylesheets)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             try
             {
                 var config = Common.Platform.Website.Settings.Load();
@@ -521,7 +551,7 @@ namespace Saber.Services
 
         public string RenderScriptsList(string path)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             var config = Common.Platform.Website.Settings.Load();
             return RenderScriptsList(config);
         }
@@ -543,7 +573,7 @@ namespace Saber.Services
 
         public string GetAvailableScripts()
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             try
             {
                 return JsonResponse(RenderAvailableScriptsList());
@@ -585,7 +615,7 @@ namespace Saber.Services
 
         public string AddScriptToSite(string file)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             try
             {
                 if (file == "") { return Error(); }
@@ -605,7 +635,7 @@ namespace Saber.Services
 
         public string RemoveScript(string file, string path)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             try
             {
                 var config = Common.Platform.Website.Settings.Load();
@@ -624,7 +654,7 @@ namespace Saber.Services
 
         public string SortScripts(List<string> scripts)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             try
             {
                 var config = Common.Platform.Website.Settings.Load();
@@ -643,7 +673,7 @@ namespace Saber.Services
         #region "Save Settings"
         public string SaveEmailClient(string id, Dictionary<string, string> parameters)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             if (id == "smtp")
             {
                 //save default email client settings
@@ -663,7 +693,7 @@ namespace Saber.Services
 
         public string SaveEmailActions(List<Models.Website.EmailAction> actions)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             var settings = Common.Platform.Website.Settings.Load();
             settings.Email.Actions = actions;
             Common.Platform.Website.Settings.Save(settings);
@@ -672,7 +702,7 @@ namespace Saber.Services
 
         public string SavePasswords(Models.Website.Passwords passwords)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             if(passwords == null) { return Error("No data recieved"); }
             var settings = Common.Platform.Website.Settings.Load();
             settings.Passwords = passwords;
@@ -683,7 +713,7 @@ namespace Saber.Services
         public string UninstallPlugin(string key)
         {
             //create file delete.tmp in Vendor plugin folder
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             File.WriteAllText(App.MapPath("/Vendors/" + key + "/uninstall.sbr"), "");
             Server.AppLifetime.StopApplication();
             return Success();
@@ -693,7 +723,7 @@ namespace Saber.Services
         #region "Upload"
         public string UploadPngIcon(int type, int px)
         {
-            if (User.PublicApi || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
             if (Parameters.Files.Count == 0 || !Parameters.Files.ContainsKey("file"))
             {
                 return Error("File upload was not found");

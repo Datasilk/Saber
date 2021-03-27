@@ -272,6 +272,7 @@ S.editor.init = function () {
     $('.top-menu .menu-bar .item-web-email').on('click', () => { S.editor.websettings.show('email-settings'); });
     $('.top-menu .menu-bar .item-web-pass').on('click', () => { S.editor.websettings.show('password-settings'); });
     $('.top-menu .menu-bar .item-web-dev-keys').on('click', () => { S.editor.websettings.show('dev-keys'); });
+    $('.top-menu .menu-bar .item-web-public-apis').on('click', () => { S.editor.websettings.show('public-apis'); });
     $('.top-menu .menu-bar .item-web-plugins').on('click', () => { S.editor.websettings.show('plugins'); });
     $('.tab-components').on('click', S.editor.components.show);
     $('.tab-content-fields').on('click', S.editor.filebar.fields.show);

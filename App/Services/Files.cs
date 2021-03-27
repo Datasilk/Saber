@@ -21,7 +21,7 @@ namespace Saber.Services
         }
         public string Dir(string path, string fileTypes = "", bool showDelete = true)
         {
-            if (User.PublicApi || !CheckSecurity()) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity()) { return AccessDenied(); }
 
             var rawpaths = path.Split('/');
             var rid = path.Replace("/", "_");
@@ -226,7 +226,7 @@ namespace Saber.Services
 
         public string Open(string path, bool pageResource = false)
         {
-            if (User.PublicApi || !CheckSecurity("code-editor")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("code-editor")) { return AccessDenied(); }
 
             //translate root path to relative path
             var paths = Core.PageInfo.GetRelativePath(path);
@@ -274,7 +274,7 @@ namespace Saber.Services
 
         public string SaveFile(string path, string content)
         {
-            if (User.PublicApi || !CheckSecurity("code-editor")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("code-editor")) { return AccessDenied(); }
 
             try
             {
@@ -293,7 +293,7 @@ namespace Saber.Services
 
         public string NewFile(string path, string filename)
         {
-            if (User.PublicApi || !CheckSecurity("code-editor")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("code-editor")) { return AccessDenied(); }
 
             try
             {
@@ -312,7 +312,7 @@ namespace Saber.Services
 
         public string NewFolder(string path, string folder)
         {
-            if (User.PublicApi || !CheckSecurity()) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity()) { return AccessDenied(); }
 
             try
             {
@@ -331,7 +331,7 @@ namespace Saber.Services
 
         public string RenameFile(string path, string newname)
         {
-            if (User.PublicApi || !CheckSecurity("code-editor")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("code-editor")) { return AccessDenied(); }
 
             try
             {
@@ -362,7 +362,7 @@ namespace Saber.Services
         public string DeleteFile(string path)
         {
             
-            if (User.PublicApi || !CheckSecurity()) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity()) { return AccessDenied(); }
             var paths = Core.PageInfo.GetRelativePath(path);
             if(paths[0] == "/pages" || paths[0] == "/partials")
             {
@@ -388,7 +388,7 @@ namespace Saber.Services
 
         public string DeleteFolder(string path)
         {
-            if (User.PublicApi || !CheckSecurity()) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity()) { return AccessDenied(); }
             var paths = Core.PageInfo.GetRelativePath(path);
             if (paths[0] == "/pages" || paths[0] == "/partials")
             {

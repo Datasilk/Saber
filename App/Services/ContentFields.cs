@@ -11,7 +11,7 @@ namespace Saber.Services
     {
         public string Render(string path, string language, string container, bool showlang = false, Dictionary<string, string> data = null)
         {
-            if (User.PublicApi || !CheckSecurity("edit-content")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
             var paths = PageInfo.GetRelativePath(path);
             var fields = data != null && data.Keys.Count > 0 ? data : Core.ContentFields.GetPageContent(path, language);
             var view = new View(string.Join("/", paths) + (path.Contains(".html") ? "" : ".html"));
@@ -34,7 +34,7 @@ namespace Saber.Services
 
         public string Save(string path, string language, Dictionary<string, string> fields)
         {
-            if (User.PublicApi || !CheckSecurity("edit-content")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
 
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }

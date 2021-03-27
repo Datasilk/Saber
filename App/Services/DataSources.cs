@@ -14,7 +14,7 @@ namespace Saber.Services
 
         public string RenderFilters(string key)
         {
-            if (User.PublicApi || !CheckSecurity("edit-content")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
             //get HTML partial for data source filters form
             var datasource = Core.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
             if(datasource == null)

@@ -9,7 +9,7 @@ namespace Saber.Services
         public string Render(int timeScale = 2, DateTime? startDate = null)
         {
             //show website analytics
-            if (User.PublicApi || !CheckSecurity("website-analytics")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("website-analytics")) { return AccessDenied(); }
             var view = new View("/Views/Analytics/analytics.html");
 
             if (!startDate.HasValue)

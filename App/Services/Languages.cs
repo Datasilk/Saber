@@ -9,7 +9,7 @@ namespace Saber.Services
     {
         public string Get()
         {
-            if (User.PublicApi) { return AccessDenied(); }
+            if (IsPublicApiRequest) { return AccessDenied(); }
             var html = new StringBuilder();
             foreach (var lang in App.Languages)
             {
@@ -20,7 +20,7 @@ namespace Saber.Services
 
         public string Create(string name, string abbr)
         {
-            if (User.PublicApi || !CheckSecurity("edit-content")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
             try
             {
                 var config = Website.Settings.Load();

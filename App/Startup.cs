@@ -212,6 +212,9 @@ namespace Saber
             Core.Vendors.WebsiteSettings = Core.Vendors.WebsiteSettings.OrderBy(a => a.Name).ToList();
             Console.WriteLine("Found " + Core.Vendors.WebsiteSettings.Count + " Vendor Website Setting" + (Core.Vendors.WebsiteSettings.Count != 1 ? "s" : ""));
 
+            //Get list of all Public APIs
+            PublicApi.GetList(assemblies);
+
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)

@@ -640,6 +640,7 @@ namespace Saber.Common
                 Core.Vendors.Details.Remove(details);
                 return;
             }
+            details.Type = type;
             details.Key = instance.Key;
             details.Name = instance.Name;
             details.Description = instance.Description;

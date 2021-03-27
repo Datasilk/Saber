@@ -20,7 +20,7 @@ namespace Saber.Services
 
         public string Render(string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             var config = Core.PageInfo.GetPageConfig(path);
             var webconfig = Website.Settings.Load();
             var view = new View("/Views/PageSettings/pagesettings.html");
@@ -132,7 +132,7 @@ namespace Saber.Services
 
         public string UpdatePageTitle(string path, string prefix, string suffix, string title)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
@@ -150,7 +150,7 @@ namespace Saber.Services
 
         public string CreatePageTitlePart(string title, bool prefix)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             //add space at end if user didn't
             if (prefix == true)
             {
@@ -181,7 +181,7 @@ namespace Saber.Services
 
         public string DeletePageTitlePart(string title, bool prefix)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             //add space at end if user didn't
             if (prefix == true)
             {
@@ -209,7 +209,7 @@ namespace Saber.Services
 
         public string UpdatePageDescription(string path, string description)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
@@ -225,7 +225,7 @@ namespace Saber.Services
 
         public string UpdatePagePartials(string path, string header, string footer)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
@@ -244,7 +244,7 @@ namespace Saber.Services
 
         public string RenderStylesheetsList(string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             var config = Core.PageInfo.GetPageConfig(path);
             return RenderStylesheetsList(config);
         }
@@ -266,7 +266,7 @@ namespace Saber.Services
 
         public string GetAvailableStylesheets ()
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 return JsonResponse(RenderAvailableStylesheetsList());
@@ -308,7 +308,7 @@ namespace Saber.Services
 
         public string AddStylesheetToPage(string file, string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 if(file == "") { return Error(); }
@@ -328,7 +328,7 @@ namespace Saber.Services
 
         public string RemoveStylesheetFromPage(string file, string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
@@ -347,7 +347,7 @@ namespace Saber.Services
 
         public string SortStylesheets(List<string> stylesheets, string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
@@ -367,7 +367,7 @@ namespace Saber.Services
 
         public string RenderScriptsList(string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             var config = Core.PageInfo.GetPageConfig(path);
             return RenderScriptsList(config);
         }
@@ -389,7 +389,7 @@ namespace Saber.Services
 
         public string GetAvailableScripts()
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 return JsonResponse(RenderAvailableScriptsList());
@@ -431,7 +431,7 @@ namespace Saber.Services
 
         public string AddScriptToPage(string file, string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 if(file == "") { return Error(); }
@@ -451,7 +451,7 @@ namespace Saber.Services
 
         public string RemoveScriptFromPage(string file, string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
@@ -470,7 +470,7 @@ namespace Saber.Services
 
         public string SortScripts(List<string> scripts, string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
@@ -490,7 +490,7 @@ namespace Saber.Services
 
         public string RenderSecurityGroupsList(string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             var config = Core.PageInfo.GetPageConfig(path);
             return RenderSecurityGroupsList(config);
         }
@@ -518,7 +518,7 @@ namespace Saber.Services
 
         public string GetAvailableSecurityGroups()
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             var groups = Query.Security.Groups.GetList();
             if(groups != null && groups.Count > 0)
             {
@@ -529,7 +529,7 @@ namespace Saber.Services
 
         public string AddSecurityGroup(int groupId, string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);
@@ -550,7 +550,7 @@ namespace Saber.Services
 
         public string RemoveSecurityGroup(int groupId, string path)
         {
-            if (User.PublicApi || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
                 var config = Core.PageInfo.GetPageConfig(path);

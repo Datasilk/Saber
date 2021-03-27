@@ -50,6 +50,7 @@ namespace Saber
                         if (user != null)
                         {
                             User.LogIn(user.userId, user.email, user.name, user.datecreated, user.photo, user.isadmin, true);
+                            IsPublicApiRequest = true;
                         }
                         else
                         {
