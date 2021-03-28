@@ -9,7 +9,7 @@ public static class Server
     public static string[] ServicePaths { get; set; } = new string[] { "api" };
     public static int BcryptWorkfactor { get; set; } = 10;
     public static string Salt { get; set; } = "";
-    public static List<Saber.Core.ApiKey> DeveloperKeys { get; set; } = new List<Saber.Core.ApiKey>(); //used for public APIs
+    public static List<Saber.Models.ApiKey> DeveloperKeys { get; set; } = new List<Saber.Models.ApiKey>(); //used for public APIs
     public static bool HasAdmin { get; set; } = false; //no admin account exists
     public static bool ResetPass { get; set; } = false; //force admin to reset password
     public static string Version { get; set; } = "1.0";

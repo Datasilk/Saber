@@ -50,14 +50,14 @@ namespace Saber.Services
             return Error();
         }
 
-        [PublicApi("Generate an OAuth 2.0 persistent token for user authentication by supplying a temporary code after the user logs into their account.")]
+        [PublicApi("Generate an OAuth 2.0 persistent token for user authentication.", "A temporary random string provided after the user logs into their account")]
         public string Token(string code)
         {
             //TODO: generate OAuth 2.0 token for user authenication from temporary code
             return Error("Endpoint not yet implemented");
         }
 
-        [PublicApi("Generate an OAuth 2.0 persistent token for user authentication by supplying an expired token.")]
+        [PublicApi("Generate an OAuth 2.0 persistent token for user authentication by supplying an expired token.", "The expired persistent token associated with a user account")]
         public string NewToken(string oldtoken)
         {
             //TODO: generate OAuth 2.0 token for user authenication from expired token
@@ -91,7 +91,7 @@ namespace Saber.Services
             return "success";
         }
 
-        [PublicApi("Create a new public user account")]
+        [PublicApi("Create a new public user account", "Display name of the user", "Valid email address used to send an authentication email", "A password that adheres to the current password policies", "Force the user to retype their password")]
         public string SignUp(string name, string emailaddr, string password, string password2)
         {
             if (!CheckEmailAddress(emailaddr)) { return Error("Email address is invalid"); }
@@ -127,7 +127,7 @@ namespace Saber.Services
             return "success";
         }
 
-        [PublicApi("Request that an activation email be sent to a new user account")]
+        [PublicApi("Request that an activation email be sent to a new user account", "A valid email address associated with the user's account")]
         public string RequestActivation(string emailaddr)
         {
             if (Query.Users.CanActivate(emailaddr))

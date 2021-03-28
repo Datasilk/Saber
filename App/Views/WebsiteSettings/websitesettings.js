@@ -250,4 +250,19 @@
             });
         }
     });
+
+    $('#publicapis_enabled').on('change', () => {
+        var api = $('#publicapis_enabled').val();
+        var enabled = $('#publicapis_enabled')[0].checked;
+        S.ajax.post('WebsiteSettings/SavePublicApi', { api: api, enabled: enabled });
+    });
+
+    $('.public-api-checkbox').on('change', (e) => {
+        var target = $(e.target);
+        console.log(target);
+        var api = target.val();
+        var enabled = target[0].checked;
+        console.table([api, enabled]);
+        S.ajax.post('WebsiteSettings/SavePublicApi', { api: api, enabled: enabled });
+    });
 })();

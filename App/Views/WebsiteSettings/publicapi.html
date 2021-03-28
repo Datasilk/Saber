@@ -1,15 +1,27 @@
 ﻿<div class="row hover margin-bottom pad">
     <div class="col six tablet-twelve pad-right">
         <div class="row pad-bottom api-path">
-            <span class="color path">{{path}}</span>
+            <span class="color path"><a href="/{{path}}" target="_blank" >{{path}}</a></span>
         </div>
         <div class="row api-description">
             <span>{{description}}</span>
         </div>
+        <div class="row pad-top">
+            <div class="col input checkbox">
+                <input type="checkbox" id="publicapi_{{id}}_enabled" class="public-api-checkbox" value="{{api}}" {{enabled}}checked="checked"{{/enabled}} />
+            </div>
+            <div class="col text"><label for="publicapi_{{id}}_enabled">Publicly Accessable</label></div>
+        </div>
     </div>
-    <div class="col six tablet-twelve">
+    <div class="col six tablet-twelve params">
         <table class="spreadsheet">
-            <thead><tr><td>Parameter</td><td>Data Type</td></tr></thead>
+            <thead>
+                <tr>
+                    <td>Parameter</td>
+                    <td>Data Type</td>
+                    <td>Description</td>
+                </tr>
+            </thead>
             <tbody>{{parameters}}</tbody>
         </table>
     </div>

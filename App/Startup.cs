@@ -212,9 +212,6 @@ namespace Saber
             Core.Vendors.WebsiteSettings = Core.Vendors.WebsiteSettings.OrderBy(a => a.Name).ToList();
             Console.WriteLine("Found " + Core.Vendors.WebsiteSettings.Count + " Vendor Website Setting" + (Core.Vendors.WebsiteSettings.Count != 1 ? "s" : ""));
 
-            //Get list of all Public APIs
-            PublicApi.GetList(assemblies);
-
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)
@@ -286,7 +283,7 @@ namespace Saber
             Server.Salt = config.GetSection("encryption:salt").Value;
 
             //configure Public API developer key
-            Server.DeveloperKeys = config.GetSection("developer-keys").Get<List<Core.ApiKey>>();
+            Server.DeveloperKeys = config.GetSection("developer-keys").Get<List<Models.ApiKey>>();
             Core.Service.ApiKeys = Server.DeveloperKeys;
 
             //inject app lifetime
@@ -384,6 +381,11 @@ namespace Saber
             Console.WriteLine("Found " + Core.Vendors.DataSources.Count + " Vendor Data Source" + (Core.Vendors.DataSources.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //Get list of all Public APIs
+            var apis = PublicApi.GetList(assemblies);
+            Console.WriteLine("Found " + apis.Count + " Public API endpoints");
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //Run any services required after initializing all vendor plugins but before configuring vendor startup services
             Core.Delegates.Email.Send = Email.Send;
             Core.Delegates.Website.SaveLessFile = Website.SaveLessFile;
@@ -414,10 +416,11 @@ namespace Saber
 
 
             //run Datasilk Core MVC Middleware
+            App.ServicePaths = new string[] { "api", "gmail" };
             app.UseDatasilkMvc(new MvcOptions()
             {
                 IgnoreRequestBodySize = true,
-                ServicePaths = new string[] { "api", "gmail" },
+                ServicePaths = App.ServicePaths,
                 Routes = new Routes()
             });
 

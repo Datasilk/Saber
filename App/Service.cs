@@ -26,7 +26,7 @@ namespace Saber
             {
                 ViewCache.Clear();
             }
-            if ((Context.Request.Scheme + "://" + Context.Request.Host.Value).IndexOf(App.Host) < 0)
+            if ((Context.Request.Scheme + "://" + Context.Request.Host.Value).IndexOf(App.Host) < 0 || Parameters.ContainsKey("apikey"))
             {
                 //require a Public API developer key to continue
                 if (!Parameters.ContainsKey("apikey"))
@@ -37,7 +37,7 @@ namespace Saber
                 }
                 else if (!CheckApiKey(Parameters["apikey"]))
                 {
-                    //api key doesn't exist config.json
+                    //api key doesn't exist in config.json
                     Context.Response.WriteAsync(AccessDenied("access denied"));
                     return;
                 }
@@ -60,6 +60,7 @@ namespace Saber
                     else
                     {
                         User.PublicApi = true;
+                        IsPublicApiRequest = true;
                     }
                 }
             }

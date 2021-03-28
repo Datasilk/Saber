@@ -1,3 +1,9 @@
 ﻿<div class="row web-public-api">
+    <div class="row pad-bottom">
+        <div class="col input checkbox">
+            <input type="checkbox" id="publicapis_enabled" value="{{api}}" {{enabled}}checked="checked"{{/enabled}} />
+        </div>
+        <div class="col text"><label for="publicapis_enabled" title="Allow anyone with a developer key to access publicly available APIs">Enable Public API Access</label></div>
+    </div>
     {{public-apis}}
 </div>

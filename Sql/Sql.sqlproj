@@ -69,6 +69,7 @@
     <Folder Include="dbo\Stored Procedures\Logs" />
     <Folder Include="dbo\Stored Procedures\Secuirty" />
     <Folder Include="dbo\Vendor" />
+    <Folder Include="dbo\Stored Procedures\PublicApis" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Sequences\SequenceUsers.sql" />
@@ -138,6 +139,9 @@
     <Build Include="dbo\Vendor\DataSet_UpdateInfo.sql" />
     <Build Include="dbo\Vendor\DataSet_UpdateColumns.sql" />
     <Build Include="dbo\Vendor\DataSet_GetColumns.sql" />
+    <Build Include="dbo\Tables\PublicApis.sql" />
+    <Build Include="dbo\Stored Procedures\PublicApis\PublicApis_GetList.sql" />
+    <Build Include="dbo\Stored Procedures\PublicApis\PublicApi_Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

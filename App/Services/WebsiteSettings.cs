@@ -227,20 +227,32 @@ namespace Saber.Services
             foreach (var publicapi in Common.Platform.PublicApi.GetList())
             {
                 viewPublicApi.Clear();
-                viewPublicApi["path"] = publicapi.Path;
+                viewPublicApi["path"] = App.ServicePaths[0] + "/" + publicapi.Path;
                 viewPublicApi["description"] = publicapi.Description;
-                if(publicapi.Parameters.Count > 0)
+                viewPublicApi["id"] = publicapi.Path.Replace("/", "_");
+                viewPublicApi["api"] = publicapi.Path;
+                if(publicapi.Enabled == true)
+                {
+                    viewPublicApi.Show("enabled");
+                }
+                if (publicapi.Parameters.Count > 0)
                 {
                     foreach(var param in publicapi.Parameters)
                     {
                         viewPublicApiParam.Clear();
                         viewPublicApiParam["name"] = param.Name;
                         viewPublicApiParam["data-type"] = param.DataType;
+                        viewPublicApiParam["description"] = param.Description;
                         viewPublicApi["parameters"] += viewPublicApiParam.Render();
                     }
                     html.Append(viewPublicApi.Render());
                 }
             }
+            if (Common.Platform.PublicApi.Enabled == true)
+            {
+                viewPublicApis.Show("enabled");
+            }
+            viewPublicApis["api"] = Common.Platform.PublicApi.Name;
             viewPublicApis["public-apis"] = html.ToString();
             
             accordion.Clear();
@@ -253,6 +265,8 @@ namespace Saber.Services
             var viewPlugin = new View("/Views/WebsiteSettings/plugin-item.html");
             var viewFeature = new View("/Views/WebsiteSettings/plugin-feature.html");
             var feature = new StringBuilder();
+            var paramOpen = "<span class=\"color param\">";
+            var paramClose = "</span>";
             html.Clear();
             foreach(var plugin in Core.Vendors.Details.Where(a => a.Version != "").OrderBy(a => a.Key))
             {
@@ -279,7 +293,7 @@ namespace Saber.Services
                 if (plugin.Controllers.Count > 0)
                 {
                     viewFeature["field"] = "Controllers";
-                    viewFeature["text"] = string.Join(", ", plugin.Controllers.Select(a => a.Value.Name));
+                    viewFeature["text"] = string.Join(", ", plugin.Controllers.Select(a => paramOpen + a.Value.Name + paramClose));
                     feature.Append(viewFeature.Render());
                     viewFeature.Clear();
                 }
@@ -287,7 +301,7 @@ namespace Saber.Services
                 if (plugin.Services.Count > 0)
                 {
                     viewFeature["field"] = "Services";
-                    viewFeature["text"] = string.Join(", ", plugin.Services.Select(a => a.Value.Name));
+                    viewFeature["text"] = string.Join(", ", plugin.Services.Select(a => paramOpen + a.Value.Name + paramClose));
                     feature.Append(viewFeature.Render());
                     viewFeature.Clear();
                 }
@@ -303,7 +317,7 @@ namespace Saber.Services
                 if (plugin.Keys.Count > 0)
                 {
                     viewFeature["field"] = "Security Keys";
-                    viewFeature["text"] = string.Join(", ", plugin.Keys.SelectMany(a => a.Keys).Select(a => a.Label));
+                    viewFeature["text"] = string.Join(", ", plugin.Keys.SelectMany(a => a.Keys).Select(a => paramOpen + a.Label + paramClose));
                     feature.Append(viewFeature.Render());
                     viewFeature.Clear();
                 }
@@ -311,7 +325,7 @@ namespace Saber.Services
                 if (plugin.HtmlComponents.Count > 0)
                 {
                     viewFeature["field"] = "HTML Components";
-                    viewFeature["text"] = string.Join(", ", plugin.HtmlComponents.Select(a => a.Value.Name));
+                    viewFeature["text"] = string.Join(", ", plugin.HtmlComponents.Select(a => paramOpen + a.Value.Name + paramClose));
                     feature.Append(viewFeature.Render());
                     viewFeature.Clear();
                 }
@@ -319,7 +333,7 @@ namespace Saber.Services
                 if (plugin.SpecialVars.Count > 0)
                 {
                     viewFeature["field"] = "Special Vars";
-                    viewFeature["text"] = string.Join(", ", plugin.SpecialVars.Select(a => a.Value.Name));
+                    viewFeature["text"] = string.Join(", ", plugin.SpecialVars.Select(a => paramOpen + a.Value.Name + paramClose));
                     feature.Append(viewFeature.Render());
                     viewFeature.Clear();
                 }
@@ -327,7 +341,7 @@ namespace Saber.Services
                 if (plugin.EmailClients.Count > 0)
                 {
                     viewFeature["field"] = "Email Clients";
-                    viewFeature["text"] = string.Join(", ", plugin.EmailClients.Select(a => a.Value.Name));
+                    viewFeature["text"] = string.Join(", ", plugin.EmailClients.Select(a => paramOpen + a.Value.Name + paramClose));
                     feature.Append(viewFeature.Render());
                     viewFeature.Clear();
                 }
@@ -335,7 +349,7 @@ namespace Saber.Services
                 if (plugin.EmailTypes.Count > 0)
                 {
                     viewFeature["field"] = "Email Types";
-                    viewFeature["text"] = string.Join(", ", plugin.EmailTypes.Select(a => a.Value.Name));
+                    viewFeature["text"] = string.Join(", ", plugin.EmailTypes.Select(a => paramOpen + a.Value.Name + paramClose));
                     feature.Append(viewFeature.Render());
                     viewFeature.Clear();
                 }
@@ -707,6 +721,28 @@ namespace Saber.Services
             var settings = Common.Platform.Website.Settings.Load();
             settings.Passwords = passwords;
             Common.Platform.Website.Settings.Save(settings);
+            return Success();
+        }
+
+        public string SavePublicApi(bool enabled, string api)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (Common.Platform.PublicApi.Name == api)
+            {
+                if (Common.Platform.PublicApi.Enabled != enabled)
+                {
+                    Query.PublicApis.Update(Common.Platform.PublicApi.Name, enabled);
+                    Common.Platform.PublicApi.Enabled = true;
+                }
+            }
+            else
+            {
+                var publicApis = Common.Platform.PublicApi.GetList();
+                if (!publicApis.Any(a => a.Path == api) || publicApis.Where(a => a.Path == api).FirstOrDefault()?.Enabled != enabled)
+                {
+                    Common.Platform.PublicApi.Update(api, enabled);
+                }
+            }
             return Success();
         }
 
