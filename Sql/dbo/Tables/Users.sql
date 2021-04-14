@@ -10,6 +10,7 @@
     [dateactivated] DATETIME2(7) NULL, 
     [keyexpires] DATETIME2(7) NULL, 
     [tempkey] VARCHAR(16) NULL,
+    [enabled] BIT NOT NULL DEFAULT 1, 
     PRIMARY KEY ([email])
 )
 

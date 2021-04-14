@@ -128,5 +128,21 @@ namespace Query
         {
             return Sql.Populate<Models.UserWithSecurityCount>("Users_GetList", new { page, length, search, orderby });
         }
+
+        public static void Disable(int userId)
+        {
+            Sql.ExecuteNonQuery("User_Disable", userId);
+        }
+
+        public static void Enable(int userId)
+        {
+            Sql.ExecuteNonQuery("User_Enable", userId);
+        }
+
+
+        public static void PermDelete(int userId)
+        {
+            Sql.ExecuteNonQuery("User_PermDelete", userId);
+        }
     }
 }

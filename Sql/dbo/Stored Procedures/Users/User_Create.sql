@@ -4,13 +4,15 @@
 	@password nvarchar(255),
 	@photo bit = 0,
 	@tempkey varchar(16),
-	@activate bit = 0
+	@activate bit = 0,
+	@isadmin bit = 0
 AS
 	DECLARE @id int = NEXT VALUE FOR SequenceUsers
-	INSERT INTO Users (userId, [name], email, [password], photo, datecreated, tempkey, keyexpires, dateactivated)
+	INSERT INTO Users (userId, [name], email, [password], photo, datecreated, tempkey, keyexpires, dateactivated, isadmin)
 	VALUES (
 		@id, @name, @email, @password, @photo, GETUTCDATE(), @tempkey, 
 		CASE WHEN @tempkey IS NOT NULL THEN DATEADD(DAY, 1, GETUTCDATE()) ELSE NULL END,
-		CASE WHEN @activate = 1 THEN GETUTCDATE() ELSE NULL END
+		CASE WHEN @activate = 1 THEN GETUTCDATE() ELSE NULL END,
+		@isadmin
 	)
 	SELECT @id

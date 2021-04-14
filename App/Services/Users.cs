@@ -64,7 +64,11 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("manage-users")) { return AccessDenied(); }
             var view = new View("/Views/Users/details.html");
             var user = Query.Users.GetDetails(userId);
-            if(!user.isadmin)
+            if(user.enabled == true)
+            {
+                view.Show("isenabled");
+            }
+            if (!user.isadmin)
             {
                 //non-admins only
                 view["group-list"] = AssignedGroups(userId);
@@ -85,13 +89,24 @@ namespace Saber.Services
             return view.Render();
         }
 
-        public string Update(int userId, string email, string name, bool isadmin)
+        public string Update(int userId, string email, string name, bool enabled, bool isadmin)
         {
             if (IsPublicApiRequest || !CheckSecurity("manage-users")) { return AccessDenied(); }
             var user = Query.Users.GetDetails(userId);
             if(user.email != email)
             {
                 //TODO: send user an email to their new email address to verify their account
+            }
+            if(user.enabled != enabled)
+            {
+                if(enabled == true)
+                {
+                    Query.Users.Enable(userId);
+                }
+                else
+                {
+                    Query.Users.Disable(userId);
+                }
             }
             if (User.IsAdmin && user.isadmin != isadmin)
             {

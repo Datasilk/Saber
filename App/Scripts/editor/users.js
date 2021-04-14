@@ -63,9 +63,10 @@
             $('.popup form').on('submit', (e) => {
                 e.preventDefault();
                 var data = {
+                    name: $('#newname').val().trim(),
                     emailaddr: $('#newemail').val().trim(),
                     password: $('#newpass').val(),
-                    name: $('#newname').val().trim()
+                    password2: $('#newpass').val()
                 };
                 //validate data
                 if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(data.emailaddr) == false) {
@@ -81,7 +82,7 @@
                     return;
                 }
 
-                S.ajax.post('User/Create', data,
+                S.ajax.post('User/SignUp', data,
                     function (d) {
                         S.popup.hide();
                         var p = S.editor.users.parameters;

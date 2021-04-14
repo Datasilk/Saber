@@ -79,7 +79,7 @@ namespace Saber.Services
                 return Error(ex.Message);
             }
             if (string.IsNullOrEmpty(name)) { return Error("Please specify your name"); }
-            Query.Users.CreateUser(new Query.Models.User()
+            var userId = Query.Users.CreateUser(new Query.Models.User()
             {
                 name = name,
                 email = email,
@@ -88,6 +88,12 @@ namespace Saber.Services
             }, true);
             Server.HasAdmin = true;
             Server.ResetPass = false;
+
+            //raise Saber Event on all supported Vendor plugins
+            Core.Vendors.EventHandlers.ForEach(a =>
+            {
+                a.CreatedUser(userId, name, email);
+            });
             return "success";
         }
 
@@ -123,6 +129,12 @@ namespace Saber.Services
             viewEmail["activation-key"] = activationkey;
             var msg = Core.Email.Create(new MailAddress(emailaddr, name), "Welcome to Saber!", viewEmail.Render());
             Core.Email.Send(msg, "signup");
+
+            //raise Saber Event on all supported Vendor plugins
+            Core.Vendors.EventHandlers.ForEach(a =>
+            {
+                a.CreatedUser(userId, name, emailaddr);
+            });
 
             return "success";
         }

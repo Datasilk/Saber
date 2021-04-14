@@ -680,5 +680,26 @@ namespace Saber.Common
             }
         }
         #endregion
+
+        #region "Saber Events"
+        public static void GetSaberEventsFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.Value.ExportedTypes.Where(a => a.GetTypeInfo().IsSubclassOf(typeof(SaberEvents))))
+                {
+                    GetSaberEventsFromType(type);
+                }
+            }
+        }
+
+        public static void GetSaberEventsFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(SaberEvents))) { return; }
+            var instance = (SaberEvents)Activator.CreateInstance(type);
+            Core.Vendors.EventHandlers.Add(instance);
+        }
+        #endregion
     }
 }
