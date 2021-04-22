@@ -127,7 +127,7 @@ namespace Saber.Services
             viewEmail["name"] = name;
             viewEmail["email"] = emailaddr;
             viewEmail["activation-key"] = activationkey;
-            var msg = Core.Email.Create(new MailAddress(emailaddr, name), "Welcome to Saber!", viewEmail.Render());
+            var msg = Core.Email.Create(Core.Email.From, new MailAddress(emailaddr, name), "Welcome to Saber!", viewEmail.Render());
             Core.Email.Send(msg, "signup");
 
             //raise Saber Event on all supported Vendor plugins
@@ -175,8 +175,8 @@ namespace Saber.Services
                 viewEmail["email"] = emailaddr;
                 viewEmail["url"] = App.Host + "/resetpass#" + activationkey;
                 viewEmail["activation-key"] = activationkey;
-                var msg = Core.Email.Create(new MailAddress(emailaddr), "Password reset for Saber", viewEmail.Render());
-                Core.Email.Send(msg, "forgotpass");
+                var msg = Core.Email.Create(Core.Email.From, new MailAddress(emailaddr), "Password reset for Saber", viewEmail.Render());
+                Core.Email.Send(msg, "updatepass");
                 return Success();
             }
             return Error("Email is not eligible for a password reset");

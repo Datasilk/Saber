@@ -8,7 +8,7 @@
 
 # make sure user can't accidentally save their custom website to git
 /App/config.json
-/App/config.docker.json
+/App/config.*.json
 /App/website.json
 /App/wwwroot/**/*.*
 !/App/wwwroot/editor/*.*
@@ -21,6 +21,8 @@
 compose.bat
 PublishProfiles
 **/.config
+**/Sql.publish*.xml
+
 
 *.bak
 *.jfm

@@ -148,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />
+    <None Include="Sql.publish.DecentFellow.xml" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Sql.refactorlog" />

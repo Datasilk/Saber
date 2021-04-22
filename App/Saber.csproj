@@ -14,6 +14,7 @@
     <RepositoryUrl>https://github.com/Datasilk/Saber</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>CMS, website builder, content management</PackageTags>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +22,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="config.prod.json" />
     <None Include="LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -34,18 +36,133 @@
   <ItemGroup>
     <Content Remove="config.docker.json" />
     <Content Remove="config.json" />
+    <Content Remove="config.prod.json" />
     <Content Remove="web.Release.config" />
     <Content Remove="wwwroot\editor\components\list.svg" />
     <Content Remove="wwwroot\js\website.js" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Content\temp\images\logo-xs.png" />
+    <None Remove="Content\temp\images\logo.png" />
+    <None Remove="Content\temp\images\web-icon.png" />
+    <None Remove="Content\temp\js\website.js" />
+    <None Remove="Content\temp\pages\access-denied.html" />
+    <None Remove="Content\temp\pages\forgotpass-complete.html" />
+    <None Remove="Content\temp\pages\forgotpass.html" />
+    <None Remove="Content\temp\pages\forgotpass.js" />
+    <None Remove="Content\temp\pages\forgotpass.less" />
+    <None Remove="Content\temp\pages\home.html" />
+    <None Remove="Content\temp\pages\home.js" />
+    <None Remove="Content\temp\pages\home.less" />
+    <None Remove="Content\temp\pages\login.html" />
+    <None Remove="Content\temp\pages\login.js" />
+    <None Remove="Content\temp\pages\login.less" />
+    <None Remove="Content\temp\pages\passwordreset.html" />
+    <None Remove="Content\temp\pages\passwordreset.js" />
+    <None Remove="Content\temp\pages\resetpass-complete.html" />
+    <None Remove="Content\temp\pages\resetpass.html" />
+    <None Remove="Content\temp\pages\resetpass.js" />
+    <None Remove="Content\temp\pages\resetpass.less" />
+    <None Remove="Content\temp\pages\signup-complete.html" />
+    <None Remove="Content\temp\pages\signup-complete.less" />
+    <None Remove="Content\temp\pages\signup.html" />
+    <None Remove="Content\temp\pages\signup.js" />
+    <None Remove="Content\temp\pages\signup.less" />
+    <None Remove="Content\temp\partials\footer.html" />
+    <None Remove="Content\temp\partials\footer.less" />
+    <None Remove="Content\temp\partials\header.html" />
+    <None Remove="Content\temp\partials\header.less" />
     <None Remove="CSS\tapestry\LICENSE" />
     <None Remove="Views\Login\login.html" />
     <None Remove="Views\Login\login.js" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Content\temp\images\logo-xs.png" />
+    <Content Include="Content\temp\images\logo.png" />
+    <Content Include="Content\temp\images\web-icon.png" />
+    <Content Include="Content\temp\js\website.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\access-denied.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\forgotpass-complete.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\forgotpass.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\forgotpass.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\forgotpass.less">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\home.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\home.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\home.less">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\login.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\login.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\login.less">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\passwordreset.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\passwordreset.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\resetpass-complete.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\resetpass.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\resetpass.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\resetpass.less">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\signup-complete.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\signup-complete.less">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\signup.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\signup.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\pages\signup.less">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\partials\footer.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\partials\footer.less">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\partials\header.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\partials\header.less">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\Login\login.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -132,8 +249,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="config.docker.json" />
-    <None Include="config.json" />
+    <None Include="config.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
     <None Include="web.Release.config" />
     <None Include="wwwroot\editor\components\list.svg" />
     <None Include="wwwroot\js\website.js" />
@@ -161,34 +279,43 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Update="Content\temp\pages\forgotpass.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Update="Content\temp\pages\home.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Update="Content\temp\pages\home_en.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Update="Content\temp\pages\home_es.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Update="Content\temp\pages\passwordreset.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Content\website.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\editor\css\themes\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Content\website.less">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
