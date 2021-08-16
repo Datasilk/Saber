@@ -18,7 +18,6 @@ AS
 	)
 	EXEC sp_xml_preparedocument @hdoc OUTPUT, @keys;
 
-	/* create new addressbook entries based on email list */
 	INSERT INTO @newkeys
 	SELECT x.[key], x.[value], x.isplatform
 	FROM (
