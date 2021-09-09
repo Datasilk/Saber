@@ -79,6 +79,7 @@ namespace Saber.Common
         public static void DeleteVendors()
         {
             //check all vendors to see if Saber has marked them for uninstallation
+            if (!Directory.Exists(App.MapPath("/Vendors"))) { return; }
             var files = Directory.GetFiles(App.MapPath("/Vendors/"), "uninstall.sbr", SearchOption.AllDirectories);
             var root = App.MapPath("/Vendors/");
             foreach(var file in files)

@@ -8,6 +8,7 @@ namespace Saber
     {
         public override IController FromControllerRoutes(HttpContext context, Parameters parameters, string name)
         {
+            if(App.Environment == Environment.development) { ViewCache.Clear(); }
             switch (name)
             {
                 case "editor": return new Controllers.Editor();

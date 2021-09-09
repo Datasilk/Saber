@@ -66,7 +66,6 @@ namespace Saber.Services
 
         public string CreateAdminAccount(string name, string email, string password, string password2)
         {
-            if (IsPublicApiRequest) { return AccessDenied(); }
             if (Server.HasAdmin == true) { return Error(); }
             if (!CheckEmailAddress(email)) { return Error("Email address is invalid"); }
             if (password != password2) { return Error("Passwords do not match"); }

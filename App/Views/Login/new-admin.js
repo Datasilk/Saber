@@ -1,77 +1,82 @@
-﻿S.login = {
-    watchPass: function (e) {
-        
-    },
+﻿(function () {
+    var byId = (name) => { return document.getElementById(name); };
+    var byClass = (name) => { return document.getElementsByClassName(name)[0]; };
+    var form = byId('signupform');
 
-    createAccount: function () {
-        //save new password for user
-        var name = S('#name').val();
-        var email = S('#email').val();
-        var pass = S('#password').val();
-        var pass2 = S('#password2').val();
-        var msg = S('.login .message');
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitForm();
+        return false;
+    });
+
+    function submitForm() {
+        var data = {
+            name: byId('name').value,
+            email: byId('email').value,
+            password: byId('password').value,
+            password2: byId('password2').value
+        };
+
+        console.log(data);
 
         //validate name
-        if (name == '') {
-            S.editor.error(msg, 'You must provide your name');
+        if (data.name == '' || data.name == null) {
+            error('You must provide your name');
             return;
         }
 
         //validate email
-        if (!S.login.validateEmail(email)) {
-            S.editor.error(msg, 'You must provide a valid email address');
+        if (!validateEmail(data.email)) {
+            error('You must provide a valid email address');
             return;
         }
 
         //validate password
-        if (pass == '' || pass2 == '') {
-            S.editor.error(msg, 'You must type in your password twice');
+        if (data.password == '' || data.password2 == '') {
+            error('You must type in your password twice');
             return;
         }
-        if (pass != pass2) {
-            S.editor.error(msg, 'Your passwords do not match'); 
+        if (data.password != data.password2) {
+            error('Your passwords do not match');
             return;
         }
-        if (pass.length < 8) {
-            S.editor.error(msg, 'Your password must be at least 8 characters long');
+        if (data.password.length < 8) {
+            error('Your password must be at least 8 characters long');
             return;
         }
 
-        //disable button
-        S('#btncreate').prop("disabled", "disabled");
+        //set up AJAX request
+        var req = new XMLHttpRequest();
 
-        //send new account info to server
-        S.ajax.post('User/CreateAdminAccount', { name: name, email: email, password: pass, password2: pass2 },
-            function (data) {
-                //callback, replace form with message
-                if (data == 'success') { 
-                    //show success message
-                    window.location.reload();
-                } else {
-                    //show error message
-                    S.editor.error(msg, 'An error occurred while trying to create your account');
-                    S('#btncreate').prop("disabled", null);
-                }
-            }, function () {
-                S.editor.error(msg, 'An error occurred while trying to create your account');
-                S('#btncreate').prop("disabled", null);
-            });
-    },
+        //set up callbacks
+        req.onload = function () {
+            if (req.status >= 200 && req.status < 400) {
+                //request success
+                document.location.href = '/login';
+            } else {
+                //connected to server, but returned an error
+                error('Error occurred on server');
+            }
+        };
 
-    validatePass: function (pass, pass2) {
-        
-    },
+        req.onerror = function () {
+            //an error occurred before connecting to server
+            error('An error occurred when contacting the server');
+        };
 
-    validateEmail: function (email) {
+        //finally, send AJAX request
+        req.open('POST', '/api/User/CreateAdminAccount');
+        req.setRequestHeader('Content-Type', 'text/html');
+        req.send(JSON.stringify(data));
+    }
+
+    function error(msg) {
+        var box = byClass('message');
+        box.innerHTML = msg;
+        box.style.display = 'block';
+    }
+
+    function validateEmail(email) {
         return /^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$/.test(email);
     }
-}
-
-//add event listeners
-S('#password, #password2').on('input', S.login.watchPass);
-S('.login form').on('submit', function (e) {
-    e.preventDefault();
-    e.cancelBubble = true;
-    S.login.createAccount();
-    return false;
-});
+})();

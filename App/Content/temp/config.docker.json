@@ -12,6 +12,7 @@
     {
       "client_id": "saber",
       "key": "8jd8Hn3Pmd58aBrek$bvldQbXLk7je2p",
+      "host": "https://sabercms.com",
       "redirect_uri": "https://sabercms.com/saber-auth"
     }
   ]

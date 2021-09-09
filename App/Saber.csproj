@@ -8,13 +8,15 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <Authors>Mark Entingh</Authors>
     <Company>Datasilk</Company>
-    <Description>A simple, straight-forward CMS website builder.</Description>
-    <Copyright>Datasilk 2020</Copyright>
+    <Description>A simple, straight-forward website builder.</Description>
+    <Copyright>Datasilk 2021</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/Datasilk/Saber</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>CMS, website builder, content management</PackageTags>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <PackageReleaseNotes>First official release into the wild</PackageReleaseNotes>
+    <PackageProjectUrl>https://saber.datasilk.io</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -43,6 +45,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Content\temp\config.docker.json" />
+    <None Remove="Content\temp\config.json" />
     <None Remove="Content\temp\images\logo-xs.png" />
     <None Remove="Content\temp\images\logo.png" />
     <None Remove="Content\temp\images\web-icon.png" />
@@ -74,11 +78,15 @@
     <None Remove="Content\temp\partials\header.html" />
     <None Remove="Content\temp\partials\header.less" />
     <None Remove="CSS\tapestry\LICENSE" />
-    <None Remove="Views\Login\login.html" />
-    <None Remove="Views\Login\login.js" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Content\temp\config.docker.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\temp\config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\temp\images\logo-xs.png" />
     <Content Include="Content\temp\images\logo.png" />
     <Content Include="Content\temp\images\web-icon.png" />
@@ -161,12 +169,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\temp\partials\header.less">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\Login\login.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\Login\login.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\WebsiteSettings\androidicon.html">

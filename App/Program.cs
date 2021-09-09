@@ -15,13 +15,13 @@ namespace Saber
             {
                 webBuilder
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                //.UseIISIntegration()
-                .UseKestrel(
-                    options =>
-                    {
-                        options.Limits.MaxRequestBodySize = null;
-                    }
-                )
+                .UseIISIntegration()
+                //.UseKestrel(
+                //    options =>
+                //    {
+                //        options.Limits.MaxRequestBodySize = null;
+                //    }
+                //)
                 //.UseKestrel(
                 //    options =>
                 //    {

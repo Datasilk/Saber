@@ -8,19 +8,24 @@
             {
                 //load new administrator form
                 var view = new View("/Views/Login/new-admin.html");
-                view["title"] = "Create an administrator account";
-                AddScript("/editor/js/platform.js");
+                view["theme"] = Theme;
+                if(Server.DeveloperKeys.Count > 0)
+                {
+                    view["apikey"] = Server.DeveloperKeys[0].Key;
+                }
+                else
+                {
+                    view.Show("no-api-key");
+                }
+                
+                //AddScript("/editor/js/platform.js");
                 AddScript("/editor/js/views/login/new-admin.js");
+                UsePlatform = false;
                 return base.Render(view.Render());
             }
             else
             {
-                //login form for 3rd-party authentication
-                var view = new View("/Views/Login/login.html");
-                AddScript("/editor/js/platform.js");
-                AddScript("/editor/js/views/login/login.js");
-                AddScript("<script>var clientId = '" + Parameters["client_id"] + ";</script>");
-                return view.Render();
+                return AccessDenied();
             }
         }
     }

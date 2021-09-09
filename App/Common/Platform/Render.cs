@@ -68,7 +68,7 @@ namespace Saber.Common.Platform
             //check security
             if (config.security.groups.Length > 0)
             {
-                if (!request.CheckSecurity() || (request.User.UserId != 1 && !config.security.groups.Any(a => request.User.Groups.Contains(a))))
+                if (!request.CheckSecurity() || (request.User.IsAdmin == false && !config.security.groups.Any(a => request.User.Groups.Contains(a))))
                 {
                     throw new ServiceDeniedException("You do not have access to this page");
                 }

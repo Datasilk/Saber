@@ -1,20 +1,27 @@
-﻿<style type="text/css">
+﻿<link type="text/css" rel="stylesheet" href="/editor/css/platform.css" />
+<link type="text/css" rel="stylesheet" href="/editor/css/themes/{{theme}}.css" />
+<style type="text/css">
+    body{background-color:#111;}
     .section.login {max-width: 440px;}
     .login .col.title{font-size:22px;}
     .section.login .logo img{max-width:100%;}
 </style>
+
 <div class="box">
     <div class="row pad-top-xl">
         <div class="section login pad-lg pad-width-xl center">
-            <form method="post">
+            <form method="post" id="signupform">
                 <div class="row logo text-center pad-top pad-bottom-lg">
                     <img src="/images/logo.png" />
                 </div>
 
                 <div class="row pad-top">
-                    <div class="col title pad-bottom">{{title}}</div>
+                    <div class="col title pad-bottom">Create an administrator account</div>
                 </div>
-                <div class="row message hide"><span></span></div>
+                {{no-api-key}}
+                <div class="row message error">Could not find a developer API key in config.json</div>
+                {{/no-api-key}}
+                <div class="row message error" style="display:none"><span></span></div>
                 <div class="row hover">
                     <div class="col field long">Your Name</div>
                     <div class="col input">

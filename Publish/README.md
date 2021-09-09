@@ -27,3 +27,14 @@ A simple, straight-forward CMS & website builder
 
 ## Linux (Nginx)
 Please follow the instruction to [Host & deploy](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-5.0) an ASP.NET Core 5.0 application on Linux.
+
+## Publish
+1. Move `\App\Vendors` folder outside of `\App` folder to make sure no vendor plugins are compiled with Saber
+2. Comment out lines of code in `Program.cs` depending if you are publishing for IIS or Kestrel
+3. Publish Saber from within Visual Studio 2019
+4. Open folder `\App\bin\Publish\Saber`
+   1. Remove `wwwroot\editor\vendors` folder
+   2. Remove `wwwroot\editor\js\vendors-editor.js`
+ 5. Open `web.config`
+    1. For IIS, use `hostingModel="inprocess"`
+    2. For Kestrel, use `hostingModel="OutOfProcess"`

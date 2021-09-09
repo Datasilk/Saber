@@ -17,7 +17,7 @@ namespace Saber
         public string Name { get; set; }
         public string DisplayName { get; set; }
         public bool Photo { get; set; }
-        public bool IsAdmin { get; set; } = false; //if true, has full permissions
+        public bool IsAdmin { get; set; } //if true, has full permissions
         public bool PublicApi { get; set; }
         public DateTime DateCreated { get; set; }
         public string Language { get; set; }

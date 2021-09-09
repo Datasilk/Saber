@@ -98,7 +98,7 @@
                             case 8: //web page
                                 fields.push(field.replace('##input##', '<div class="row select-page">' +
                                     '<div class="col"><input type="text"' + id + clss + spellchk + '/></div>' +
-                                    '<div class="col right pad-top-sm"><button>Select Web Page...</button></div>' +
+                                    '<div class="col right pad-top-sm"><button>Select HTML file...</button></div>' +
                                     '</div>'));
                                 break;
                             case 9: //partial view
@@ -144,7 +144,7 @@
                 });
                 $('.component-configure .select-page button').on('click', (e) => {
                     //show file select popup for page selection
-                    S.editor.explorer.select('Select Web Page', 'Content/partials', '.html', (file) => {
+                    S.editor.explorer.select('Select HTML File', 'Content/partials', '.html', (file) => {
                         $(e.target).parents('.select-page').first().find('input').val(file.replace('Content/', '').replace('content/', ''));
                     });
                 });
