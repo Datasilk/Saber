@@ -11,6 +11,7 @@ namespace Saber
     {
         private bool changed = false;
         private HttpContext Context;
+        private Session Session;
 
         public int UserId { get; set; } = 0;
         public string Email { get; set; }
@@ -25,18 +26,19 @@ namespace Saber
         public int[] Groups { get; set; } = new int[] { };
         public bool ResetPass { get; set; }
 
-        public static User Get(HttpContext context)
+        public static User Get(HttpContext context, Session session)
         {
             User user;
-            if (context.Session.Get("user") != null)
+            var userstr = session.Get("user");
+            if (!string.IsNullOrEmpty(userstr))
             {
-                user = JsonSerializer.Deserialize<User>(GetString(context.Session.Get("user")));
+                user = JsonSerializer.Deserialize<User>(session.Get("user"));
             }
             else
             {
                 user = (User)new User().SetContext(context);
             }
-            user.Init(context);
+            user.Init(context, session);
             return user;
         }
 
@@ -46,10 +48,17 @@ namespace Saber
             return this;
         }
 
-        public void Init(HttpContext context)
+        public IUser SetSession(Session session)
+        {
+            Session = session;
+            return this;
+        }
+
+        public void Init(HttpContext context, Session session)
         {
             //generate visitor id
             Context = context;
+            Session = session;
 
             //check for persistant cookie
             if (UserId <= 0 && context.Request.Cookies.ContainsKey("authId"))
@@ -67,7 +76,7 @@ namespace Saber
         {
             if (this.changed == true && changed == false)
             {
-                Context.Session.Set("user", GetBytes(JsonSerializer.Serialize(this)));
+                Session.Set("user", JsonSerializer.Serialize(this));
                 this.changed = false;
             }
             if (changed == true)
@@ -134,9 +143,10 @@ namespace Saber
         public string[] GetOpenTabs()
         {
             //gets a list of open tabs within the Editor UI
-            if (Context.Session.Get("open-tabs") != null)
+            var opentabs = Session.Get("open-tabs");
+            if (!string.IsNullOrEmpty(opentabs))
             {
-                return JsonSerializer.Deserialize<string[]>(GetString(Context.Session.Get("open-tabs")));
+                return JsonSerializer.Deserialize<string[]>(Session.Get("open-tabs"));
             }
             else
             {
@@ -146,7 +156,7 @@ namespace Saber
 
         public void SaveOpenTabs(string[] tabs)
         {
-            Context.Session.Set("open-tabs", GetBytes(JsonSerializer.Serialize(tabs)));
+            Session.Set("open-tabs", JsonSerializer.Serialize(tabs));
         }
 
         public void AddOpenTab(string filePath)

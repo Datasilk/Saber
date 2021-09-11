@@ -11,6 +11,7 @@ using Saber.Core;
 
 namespace Saber.Common
 {
+
     public static class Vendors
     {
         private static List<string> DLLs { get; set; } = new List<string>();
@@ -29,7 +30,7 @@ namespace Saber.Common
             if (Directory.Exists(path))
             {
                 var dir = new DirectoryInfo(path);
-                DLLs.AddRange(dir.GetFiles(App.IsDocker ? "*.so" : "*.dll").Select(a => a.FullName).ToArray());
+                DLLs.AddRange(dir.GetFiles("*.dll").Select(a => a.FullName).ToArray());
                 foreach (var sub in dir.GetDirectories())
                 {
                     RecurseDirectories(sub.FullName);
@@ -40,10 +41,20 @@ namespace Saber.Common
         public static string[] LoadDLLs()
         {
             //search Vendor folder for DLL files
+            Console.WriteLine("Load DLLs...");
+            Console.WriteLine("Is Docker = " + App.IsDocker);
+            Console.WriteLine(App.MapPath("Vendors"));
+            Console.WriteLine("Vendors = " + Directory.Exists(App.MapPath("Vendors")));
+            Console.WriteLine("/Vendors = " + Directory.Exists(App.MapPath("/Vendors")));
             if (Directory.Exists(App.MapPath("/Vendors")))
             {
+                Console.WriteLine("Vendors folder exists");
                 RecurseDirectories(App.MapPath("/Vendors"));
                 DLLs = DLLs.OrderBy(a => a).ToList();
+            }
+            foreach(var dll in DLLs)
+            {
+                Console.WriteLine("found " + dll);
             }
 
             //load assemblies from DLL files

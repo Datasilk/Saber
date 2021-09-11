@@ -83,6 +83,10 @@ namespace Saber.Services
             {
                 //allow admin to assign users as admins
                 view.Show("can-assign-admin");
+                view.Show("can-enable"); 
+                if (user.isadmin) { view["is-admin"] = "checked=\"checked\""; }
+                if (user.enabled) { view["is-enabled"] = "checked=\"checked\""; }
+
             }
             
             view.Bind(new { user });
@@ -110,11 +114,7 @@ namespace Saber.Services
             }
             if (User.IsAdmin && user.isadmin != isadmin)
             {
-                //fail-safe for main administrator (user Id: 1)
-                if(user.userId > 1)
-                {
-                    Query.Users.UpdateAdmin(userId, isadmin);
-                }
+                Query.Users.UpdateAdmin(userId, isadmin);
             }
             if(user.name != name)
             { 

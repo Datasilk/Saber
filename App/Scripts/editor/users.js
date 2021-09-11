@@ -137,7 +137,8 @@
                             var newemail = $('.tab.user-' + id + ' #user_email').val();
                             var newname = $('.tab.user-' + id + ' #user_name').val();
                             var isadmin = $('.tab.user-' + id + ' #admin_privilages')[0].checked;
-                            S.ajax.post('Users/Update', { userId: id, email: newemail, name: newname, isadmin: isadmin }, () => {
+                            var enabled = $('.tab.user-' + id + ' #user_enabled')[0].checked;
+                            S.ajax.post('Users/Update', { userId: id, email: newemail, name: newname, isadmin: isadmin, enabled: enabled }, () => {
                                 S.editor.message('.tab.user-' + id + ' .messages', 'User Information successfully updated!');
                             });
                         });

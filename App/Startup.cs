@@ -36,10 +36,13 @@ namespace Saber
             });
 
             //add session
-            services.AddSession();
+            //services.AddSession();
 
             //add health checks
             services.AddHealthChecks();
+
+            //check if app is running in Docker Container
+            App.IsDocker = System.Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 
             //try deleting Vendors that are marked for uninstallation
             Common.Vendors.DeleteVendors();
@@ -105,6 +108,22 @@ namespace Saber
             //get list of DLLs that contain the IVendorController interface
             Common.Vendors.GetControllersFromFileSystem();
             Console.WriteLine("Found " + Core.Vendors.Controllers.Count + " Vendor Controller" + (Core.Vendors.Controllers.Count != 1 ? "s" : ""));
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IVendorService interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of interfaces from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorService).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Common.Vendors.GetServiceFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorController interface
+            Common.Vendors.GetServicesFromFileSystem();
+            Console.WriteLine("Found " + Core.Vendors.Services.Count + " Vendor Service" + (Core.Vendors.Services.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorViewRenderer interface
@@ -244,8 +263,6 @@ namespace Saber
 
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime appLifetime)
         {
-            App.IsDocker = System.Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
-
             //get environment based on application build
             switch (env.EnvironmentName.ToLower())
             {
@@ -306,14 +323,13 @@ namespace Saber
             Server.AppLifetime = appLifetime;
 
             //configure cookie-based authentication
-            var expires = !string.IsNullOrWhiteSpace(config.GetSection("Session:Expires").Value) ? int.Parse(config.GetSection("Session:Expires").Value) : 60;
+            //var expires = !string.IsNullOrWhiteSpace(config.GetSection("Session:Expires").Value) ? int.Parse(config.GetSection("Session:Expires").Value) : 60;
 
             //use session
-            var sessionOpts = new SessionOptions();
-            sessionOpts.Cookie.Name = "Saber";
-            sessionOpts.IdleTimeout = TimeSpan.FromMinutes(expires);
-
-            app.UseSession(sessionOpts);
+            //var sessionOpts = new SessionOptions();
+            //sessionOpts.Cookie.Name = "Saber";
+            //sessionOpts.IdleTimeout = TimeSpan.FromMinutes(expires);
+            //app.UseSession(sessionOpts);
 
             //handle static files
             var provider = new FileExtensionContentTypeProvider();
@@ -327,7 +343,8 @@ namespace Saber
                 {
                     var headers = context.Context.Response.Headers;
                     var contentType = headers["Content-Type"].ToString();
-                    if (context.File.PhysicalPath.Contains("wwwroot\\editor") && context.File.Name.EndsWith(".js"))
+                    if ((context.File.PhysicalPath.Contains("wwwroot\\editor") ||
+                    context.File.PhysicalPath.Contains("wwwroot/editor")) && context.File.Name.EndsWith(".js"))
                     {
                         contentType = "application/javascript";
                         headers.Add("Content-Encoding", "gzip");
@@ -403,6 +420,13 @@ namespace Saber
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //Run any services required after initializing all vendor plugins but before configuring vendor startup services
+            Core.Delegates.Session.Get = Common.Session.Get;
+            Core.Delegates.Session.Set = Common.Session.Set;
+            Core.Delegates.Controller.CheckSecurity = Common.Platform.Controller.CheckSecurity;
+            Core.Delegates.Controller.GetUser = Common.Platform.Controller.GetUser;
+            Core.Delegates.Service.Init = Common.Platform.Service.Init;
+            Core.Delegates.Service.CheckSecurity = Common.Platform.Service.CheckSecurity;
+            Core.Delegates.Service.GetUser = Common.Platform.Service.GetUser;
             Core.Delegates.Email.Send = Email.Send;
             Core.Delegates.Website.SaveLessFile = Website.SaveLessFile;
             Core.Delegates.Website.CopyTempWebsite = Website.CopyTempWebsite;

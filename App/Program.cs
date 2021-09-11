@@ -15,20 +15,22 @@ namespace Saber
             {
                 webBuilder
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
+                //.UseIISIntegration()
+
                 //.UseKestrel(
                 //    options =>
                 //    {
                 //        options.Limits.MaxRequestBodySize = null;
                 //    }
                 //)
-                //.UseKestrel(
-                //    options =>
-                //    {
-                //        options.Limits.MaxRequestBodySize = null;
-                //        //options.ListenAnyIP(80); //for docker
-                //    }
-                //)
+
+                .UseKestrel(
+                    options =>
+                    {
+                        options.Limits.MaxRequestBodySize = null;
+                        options.ListenAnyIP(80); //for docker
+                    }
+                )
                 .UseStartup<Startup>();
             })
             .ConfigureServices(services =>

@@ -17,6 +17,7 @@
                     </div>
                 </div>
             </div>
+            {{can-enable}}
             <div class="row pad-top">
                 <div class="col input">
                     <input type="checkbox" id="user_enabled" {{is-enabled}} />
@@ -25,6 +26,7 @@
                     <label for="user_enabled">Enable Account</label>
                 </div>
             </div>
+            {{/can-enable}}
             {{can-assign-admin}}
                 <div class="row pad-top">
                     <div class="col input">

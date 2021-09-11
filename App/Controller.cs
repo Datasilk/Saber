@@ -15,7 +15,7 @@ namespace Saber
             {
                 if (user == null)
                 {
-                    user = Saber.User.Get(Context);
+                    user = Saber.User.Get(Context, Session);
                 }
                 return user;
             }

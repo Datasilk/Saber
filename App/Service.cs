@@ -12,7 +12,7 @@ namespace Saber
             {
                 if (user == null)
                 {
-                    user = Saber.User.Get(Context);
+                    user = Saber.User.Get(Context, Session);
                 }
                 return user;
             }
@@ -21,7 +21,6 @@ namespace Saber
 
         public override void Init()
         {
-            base.Init();
             if (App.Environment == Environment.development)
             {
                 ViewCache.Clear();

@@ -250,6 +250,11 @@ namespace Saber.Common.Platform
         {
             try
             {
+                if (pathLESS.StartsWith(App.RootPath))
+                {
+                    pathLESS = pathLESS.Substring(App.RootPath.Length);
+                }
+                
                 Directory.SetCurrentDirectory(App.MapPath(pathLESS));
                 var file = App.MapPath(outputFile);
                 var dir = file.Replace(file.GetFilename(), "");
@@ -257,12 +262,17 @@ namespace Saber.Common.Platform
                 {
                     Directory.CreateDirectory(dir);
                 }
-                var css = Less.Parse(content);
-                File.WriteAllText(file, css);
+                try
+                {
+                    File.WriteAllText(file, Less.Parse(content));
+                }
+                catch (Exception) { }
+                
                 Directory.SetCurrentDirectory(App.MapPath("/"));
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
                 throw new ServiceErrorException("Error generating compiled LESS resource");
             }
         }

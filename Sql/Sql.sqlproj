@@ -70,6 +70,7 @@
     <Folder Include="dbo\Stored Procedures\Secuirty" />
     <Folder Include="dbo\Vendor" />
     <Folder Include="dbo\Stored Procedures\PublicApis" />
+    <Folder Include="dbo\Stored Procedures\Sessions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Sequences\SequenceUsers.sql" />
@@ -145,6 +146,9 @@
     <Build Include="dbo\Stored Procedures\Users\User_PermDelete.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_Disable.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_Enable.sql" />
+    <Build Include="dbo\Tables\Sessions.sql" />
+    <Build Include="dbo\Stored Procedures\Sessions\Session_Get.sql" />
+    <Build Include="dbo\Stored Procedures\Sessions\Session_Set.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

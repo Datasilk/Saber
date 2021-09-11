@@ -17,6 +17,7 @@
 !/App/Content/temp
 /App/Vendors/**
 !/App/Vendors/README.md
+/Vendors/**
 /AWS/
 compose.bat
 PublishProfiles

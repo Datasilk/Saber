@@ -131,18 +131,18 @@ namespace Query
 
         public static void Disable(int userId)
         {
-            Sql.ExecuteNonQuery("User_Disable", userId);
+            Sql.ExecuteNonQuery("User_Disable", new { userId });
         }
 
         public static void Enable(int userId)
         {
-            Sql.ExecuteNonQuery("User_Enable", userId);
+            Sql.ExecuteNonQuery("User_Enable", new { userId });
         }
 
 
         public static void PermDelete(int userId)
         {
-            Sql.ExecuteNonQuery("User_PermDelete", userId);
+            Sql.ExecuteNonQuery("User_PermDelete", new { userId });
         }
     }
 }
