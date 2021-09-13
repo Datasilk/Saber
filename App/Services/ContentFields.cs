@@ -14,6 +14,7 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
             var paths = PageInfo.GetRelativePath(path);
             var fields = data != null && data.Keys.Count > 0 ? data : Core.ContentFields.GetPageContent(path, language);
+            Console.WriteLine("Content Fields from " + path + " for language '" + language + "', " + (data != null ? "includes data object, " : "") + " has " + (fields != null ? fields.Count : 0) + " fields");
             var view = new View(string.Join("/", paths) + (path.Contains(".html") ? "" : ".html"));
             var result = Common.Platform.ContentFields.RenderForm(this, "", view, language, container, fields);
             
@@ -41,23 +42,28 @@ namespace Saber.Services
             if(language == "") { language = "en"; }
             if (paths[1] == "partials")
             {
+                Console.WriteLine("Saving Content Fields for partial file " + path);
                 var validated = new Dictionary<string, string>();
                 ValidateField(string.Join("/", paths), fields, validated);
                 try
                 {
                     //save fields as json
                     var json = JsonSerializer.Serialize(validated);
+                    Console.WriteLine("Write content fields to " + App.MapPath(Core.ContentFields.ContentFile(path, language)));
                     File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                     //reset view cache for page
                     Website.ResetCache(path, language);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.StackTrace);
                     return Error();
                 }
             }
             else
             {
+                Console.WriteLine("Saving Content Fields for " + path);
                 var config = PageInfo.GetPageConfig(path);
                 var validated = new Dictionary<string, string>();
                 ValidateField(string.Join("/", paths) + ".html", fields, validated);
@@ -67,12 +73,15 @@ namespace Saber.Services
                 {
                     //save fields as json
                     var json = JsonSerializer.Serialize(validated);
+                    Console.WriteLine("Write content fields to " + App.MapPath(Core.ContentFields.ContentFile(path, language)));
                     File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                     //reset view cache for page
                     Website.ResetCache(path, language);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.StackTrace);
                     return Error();
                 }
             }

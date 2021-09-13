@@ -97,8 +97,8 @@
                                 break;
                             case 8: //web page
                                 fields.push(field.replace('##input##', '<div class="row select-page">' +
-                                    '<div class="col"><input type="text"' + id + clss + spellchk + '/></div>' +
-                                    '<div class="col right pad-top-sm"><button>Select HTML file...</button></div>' +
+                                    '<div class="col text-input"><input type="text"' + id + clss + spellchk + '/></div>' +
+                                    '<div class="col right"><button>...</button></div>' +
                                     '</div>'));
                                 break;
                             case 9: //partial view

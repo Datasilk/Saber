@@ -15,8 +15,15 @@ namespace Saber
             {
                 webBuilder
                 .UseContentRoot(Directory.GetCurrentDirectory())
+
+                ////////////////////////////////////////////////////////////////////////////////
+                /////Choose Your Platform
+                ////////////////////////////////////////////////////////////////////////////////
+
+                //IIS for Window ////////////////////////////////////////////
                 //.UseIISIntegration()
 
+                //Kestrel for Linux & MacOSX ////////////////////////////////
                 //.UseKestrel(
                 //    options =>
                 //    {
@@ -24,6 +31,7 @@ namespace Saber
                 //    }
                 //)
 
+                //Kestrel for Docker ///////////////////////////////////////
                 .UseKestrel(
                     options =>
                     {

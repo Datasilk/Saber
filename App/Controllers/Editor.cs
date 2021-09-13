@@ -47,7 +47,7 @@ namespace Saber.Controllers
                 //load components list
                 var viewComponent = new View("/Views/Components/list-item.html");
                 var html = new StringBuilder();
-                var htmlVars = Core.Vendors.HtmlComponentKeys;
+                var htmlVars = Vendors.HtmlComponentKeys;
 
                 //add custom component for generating Partial Views
                 viewComponent["icon"] = "/editor/components/partial-view.svg";
@@ -63,7 +63,7 @@ namespace Saber.Controllers
                 viewComponent["description"] = "Generate special variables that contain dynamic info about your website.";
                 html.Append(viewComponent.Render());
 
-                foreach (var component in Core.Vendors.HtmlComponents.Values.OrderBy(a => a.Key))
+                foreach (var component in Vendors.HtmlComponents.Values.OrderBy(a => a.Key))
                 {
                     if(string.IsNullOrEmpty(component.Icon) || string.IsNullOrEmpty(component.Name)) { continue; }
                     viewComponent.Clear();
