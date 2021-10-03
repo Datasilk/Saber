@@ -73,8 +73,8 @@ Navigate to the Saber project folder and complete the following tasks to create 
 7. Repeat steps 2 through 6 for each platform (IIS, Linux, & Docker)
 8. Publish Vendor plugins by executing command `.\publish.bat` from within each plugin folder, then copy the contents of `\Publish\win-x64` to your **bundle** folder inside the `\Vendors` folder
 9. Build the `Sql` project within Visual Studio, then copy `\Sql\bin\Debug\Sql_Create.sql` and `\Sql\bin\Debug\Sql.dacpac` to the `\Sql` folder located within your **bundle** folder
-9. Include `README.md` in the root of your **bundle** folder
-10. Include `Dockerfile` used to build a Docker Image in the root of your bundle folder
+10. Include `README.md` in the root of your **bundle** folder
+11. Include `Dockerfile` used to build a Docker Image in the root of your bundle folder
     > Dockerfile should contain the text below
 
     ```
@@ -89,7 +89,7 @@ Navigate to the Saber project folder and complete the following tasks to create 
     COPY Vendors Vendors
     ENTRYPOINT ["dotnet", "Saber.dll"]
     ```
-11. Compress the contents of your **bundle** folder into a zip file. The folder structure should look like the following:
+12. Compress the contents of your **bundle** folder into a zip file. The folder structure should look like the following:
     ```
     /Saber
     /Saber-Kestrel
@@ -99,4 +99,8 @@ Navigate to the Saber project folder and complete the following tasks to create 
     Dockerfile
     README.md
     ```
-12. Distribute your zip file to all of your sponsors, friends, and devs who want to use Saber as a platform to build their web projects
+13. Distribute your zip file to all of your sponsors, friends, and devs who want to use Saber as a platform to build their web projects
+
+14. If you're a Datasilk admin, follow the steps below
+  * Upload zip file in the following format `Saber-2021-10-03-1.1.0.zip` (**Saber-yyyy-mm-dd-version.zip**) to Amazon AWS S3 `saber.datasilk.io` **bucket** within the folder `/downloads/published/`
+  * Update the sponsorship email body for all monthly/one-time tiers in [GitHub Sponsors](https://github.com/sponsors/Datasilk/dashboard/tiers) after updating each email within `/Publish/GitHub-Sponsors.md`

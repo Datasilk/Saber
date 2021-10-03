@@ -24,21 +24,23 @@ namespace Saber
                 //.UseIISIntegration()
 
                 //Kestrel for Linux & MacOSX ////////////////////////////////
-                //.UseKestrel(
-                //    options =>
-                //    {
-                //        options.Limits.MaxRequestBodySize = null;
-                //    }
-                //)
-
-                //Kestrel for Docker ///////////////////////////////////////
                 .UseKestrel(
                     options =>
                     {
                         options.Limits.MaxRequestBodySize = null;
-                        options.ListenAnyIP(80); //for docker
                     }
                 )
+
+                //Kestrel for Docker ///////////////////////////////////////
+                //.UseKestrel(
+                //    options =>
+                //    {
+                //        options.Limits.MaxRequestBodySize = null;
+                //        options.ListenAnyIP(80); //for docker
+                //    }
+                //)
+
+
                 .UseStartup<Startup>();
             })
             .ConfigureServices(services =>
