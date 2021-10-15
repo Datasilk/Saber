@@ -13,8 +13,13 @@
 /App/wwwroot/**/*.*
 !/App/wwwroot/editor/*.*
 !/App/wwwroot/editor/components/*.*
-/App/Content/
-!/App/Content/temp
+/App/Content/pages
+/App/Content/partials
+/App/Content/emails
+/App/Content/website.less
+/App/Content/website.json
+!/App/Content/temp/*.*
+!/App/Content/temp/**/*.*
 /App/Vendors/**
 !/App/Vendors/README.md
 /Vendors/**
