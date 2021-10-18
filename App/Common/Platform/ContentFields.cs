@@ -121,7 +121,7 @@ namespace Saber.Common.Platform
                         case Core.ContentFields.FieldType.list:
                             //vendor HTML component
                             var vendor = Core.Vendors.ContentFields.Where(a => elemName.IndexOf(a.Key) == 0).FirstOrDefault();
-                            if (fieldType == Core.ContentFields.FieldType.linebreak && elem.Vars.ContainsKey("title"))
+                            if (fieldType == Core.ContentFields.FieldType.linebreak && elem.Var.Length > 0)
                             {
                                 if(html.Length > 0)
                                 {
@@ -129,7 +129,7 @@ namespace Saber.Common.Platform
                                     html.Clear();
                                     sections.Append(section.Render());
                                 }
-                                sectionTitle = elem.Vars["title"].ToLower();
+                                sectionTitle = elem.Var.ToLower();
                                 section.Clear();
                                 section["title"] = sectionTitle.Capitalize();
                                 if(sectionTitle != "") { section.Show("has-title"); }
@@ -137,7 +137,7 @@ namespace Saber.Common.Platform
 
                             if (vendor.Value.ReplaceRow == true)
                             {
-                                html.Append(vendor.Value.ContentField.Render(request, elem.Vars ?? new Dictionary<string, string>(), fieldValue, fieldId, prefix, elemName, language, container));
+                                html.Append(vendor.Value.ContentField.Render(request, elem.Vars ?? new Dictionary<string, string>() { ["var"] = elem.Var }, fieldValue, fieldId, prefix, elemName, language, container));
                             }
                             else
                             {
@@ -154,7 +154,7 @@ namespace Saber.Common.Platform
                                 fieldVendor["title"] = (fieldTitleKey != "" ? fieldTitleKey + ": " : "") + fieldTitleId.Trim().Capitalize();
                                 fieldVendor["id"] = fieldId;
                                 fieldVendor["value"] = fieldValueHtml;
-                                fieldVendor["content"] = vendor.Value.ContentField.Render(request, elem.Vars ?? new Dictionary<string, string>(), fieldValue, fieldId, prefix, elemName, language, container);
+                                fieldVendor["content"] = vendor.Value.ContentField.Render(request, elem.Vars ?? new Dictionary<string, string>() { ["var"] = elem.Var}, fieldValue, fieldId, prefix, elemName, language, container);
                                 html.Append(fieldVendor.Render());
                             }
                             break;
@@ -166,6 +166,7 @@ namespace Saber.Common.Platform
             sections.Append(section.Render());
             return sections.Length == 0 ? "" : sections.ToString();
         }
+        
         public static Core.ContentFields.FieldType GetFieldType(View view, int index)
         {
             var elem = view.Elements[index];
@@ -185,7 +186,7 @@ namespace Saber.Common.Platform
                 if (vendor.Value != null)
                 {
                     //hard-code line break component
-                    if (elem.Name == "-" && elem.Vars.ContainsKey("title"))
+                    if (elem.Name == "#" && elem.Var.Length > 0)
                     {
                         return Core.ContentFields.FieldType.linebreak;
                     }else if(elem.Name.IndexOf("list") == 0)

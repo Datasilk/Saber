@@ -15,7 +15,7 @@
         $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
         //load users list
-        S.editor.tabs.create('User Management', 'users-management-section', {},
+        S.editor.tabs.create('User Management', 'users-management-section', { removeOnClose:true},
             () => { //onfocus
                 $('.tab.users-management').removeClass('hide');
                 updateFilebar();
@@ -25,11 +25,15 @@
             },
             () => { //onsave
 
+            },
+            () => { //onclose
+                $('.tab.users-settings').remove();
             }
         );
         function updateFilebar() {
             S.editor.filebar.update('User Management', 'icon-users', $('#users_manage_toolbar').html());
             $('.tab-toolbar button.new-user').on('click', S.editor.users.create.show);
+            $('.tab-toolbar a.button.user-settings').on('click', S.editor.users.settings.show);
         }
         if (self._loaded == true) {
             S.editor.tabs.select('users-management-section');
@@ -191,6 +195,61 @@
                     });
                 }
             );
+        }
+    },
+
+    settings: {
+        show: function () {
+            $('.editor .tab.users-management').addClass('hide');
+            var tab = $('.editor .tab.users-settings');
+            var toolbar = $('.editor .tab-toolbar');
+            toolbar.append('<button class="cancel outline">Back</button>');
+            var btn = toolbar.find('a.button.user-settings');
+            var cancel = $('.editor .tab-toolbar button.cancel');
+            cancel.on('click', () => {
+                tab.hide();
+                $('.editor .tab.users-management').removeClass('hide');
+                cancel.remove();
+                btn[0].removeAttribute('style');
+            });
+            btn.hide();
+            if (tab.length == 0) {
+                //create new content area and load user settings
+                $('.editor .sections').append('<div class="tab users-settings"></div>');
+                tab = $('.editor .tab.users-settings');
+                S.ajax.post('Users/RenderSettings', {}, (response) => {
+                    tab.append(response);
+                    //set up settings form
+                    var btnsettings = $('.tab.users-settings .btn-save-settings');
+                    btnsettings.hide();
+                    btnsettings.on('click', S.editor.users.settings.save);
+
+                    tab.find('select, input').on('change, keyup', () => {
+                        btnsettings.show();
+                    });
+                    },
+                    (err) => {
+                        S.editor.error()
+                    });
+
+                S.editor.resize.window();
+            } else {
+                tab.show();
+            }
+        },
+
+        save: function () {
+            var data = {
+                groupId: $('#users_security_group').val(),
+                maxSignups: $('#users_max_signups').val(),
+                maxSignupsRange: $('#users_max_signups_range').val()
+            }
+
+            S.ajax.post('Users/UpdateSettings', data, () => {
+                S.editor.message(null, 'User System Settings were successfully saved');
+            }, () => {
+                    S.editor.error(null, 'Error saving User System Settings. Please try again or contact support.');
+            });
         }
     }
 };

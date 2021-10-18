@@ -1,0 +1,35 @@
+﻿<div class="scroller">
+    <div class="row">
+        <h4>Settings for User System</h4>
+    </div>
+    <div class="row">
+        <div class="col six mobile-twelve">
+            <div class="row hover long">
+                <div class="col field">Security Group</div>
+                <div class="col input nowrap">
+                    <select id="users_security_group">
+                        {{security-group-options}}
+                    </select>
+                    <span>&nbsp;&nbsp;is assigned to new users</span>
+                </div>
+            </div>
+        </div>
+        <div class="col six mobile-twelve">
+            <div class="row hover long">
+                <div class="col field">Max Signups</div>
+                <div class="col input nowrap">
+                    <input type="number" id="users_max_signups" value="{{max-signups}}" style="width:75px" /> 
+                    <span>&nbsp;&nbsp;every&nbsp;&nbsp;</span>
+                    <select id="users_max_signups_range">
+                        <option value="60">Hour</option>
+                        <option value="1440">Day</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row text-center pad-top-lg">
+        <div class="col"><button class="apply btn-save-settings">Save Changes</button></div>
+    </div>
+</div>
+
