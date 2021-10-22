@@ -29,6 +29,7 @@ namespace Saber.Common.Platform
             var html = new StringBuilder();
             var sections = new StringBuilder();
             var sectionTitle = "";
+            var keys = new List<string>();
             for (var x = 0; x < view.Elements.Count; x++)
             {
                 var elem = view.Elements[x];
@@ -43,6 +44,9 @@ namespace Saber.Common.Platform
                         elemName = elemName.Replace(partial.Prefix, "");
                     }
                     if(excludedFields != null && excludedFields.Any(a => a == elemName)){ continue; }
+                    if (keys.Contains(elemName)) { continue; }
+                    keys.Add(elemName);
+
                     //get partial view prefix from element name
                     prefix = elem.Name.Replace(elemName, "");
                     if (prefix == elemName) { prefix = ""; }

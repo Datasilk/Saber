@@ -165,7 +165,11 @@
                         //generate partial view
                         mustache = '{{' + suffix + ' "' + $('#param_page').val() + '"}}';
                     } else if (key == 'special-vars') {
-                        mustache = '{{# My Title}}'; //$('#param_var').val().replace(/\&qt\;/g, '"');
+                        if ($('#param_var').val() == '{{#}}') {
+                            mustache = '{{# My Title}}';
+                        } else {
+                            mustache = $('#param_var').val().replace(/\&qt\;/g, '"');
+                        }
                     } else {
                         //generate vendor HTML components
                         var paramlen = 0;
