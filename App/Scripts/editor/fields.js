@@ -68,13 +68,14 @@ S.editor.fields = {
         }
         S.editor.fields.render(file, lang, container, null, () => {});
     },
-    render: function (file, lang, container, fields, callback, ispopup, showlang) {
+    render: function (file, lang, container, fields, callback, ispopup, showlang, excludeFields) {
         var data = {
             path: file || S.editor.path,
             language: lang,
             container: container,
             showlang: showlang || false,
-            data: fields ?? {}
+            data: fields ?? {},
+            exclude: excludeFields
         };
         S.ajax.post('ContentFields/Render', data,
             function (d) {
@@ -121,7 +122,7 @@ S.editor.fields = {
             true
         );
     },
-    popup: function (partial, lang, title, fieldsdata, buttonTitle, submit) {
+    popup: function (partial, lang, title, fieldsdata, buttonTitle, submit, excludeFields) {
         //load content fields into popup modal
         var popup = $(S.popup.show(title, '<div class="has-content-fields"><form></form></div>'));
         popup.css({ width: '90%', 'max-width': '1200px' });
@@ -155,7 +156,7 @@ S.editor.fields = {
                 });
                 submit(e, fields);
             });
-        }, true, true);
+        }, true, true, excludeFields);
         return popup;
     },
     resize: function (e) {

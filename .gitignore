@@ -22,6 +22,7 @@
 !/App/Content/temp/**/*.*
 /App/Vendors/**
 !/App/Vendors/README.md
+/Sql/dbo/Vendor
 /Vendors/**
 /AWS/
 compose.bat

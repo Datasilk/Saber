@@ -9,14 +9,13 @@ namespace Saber.Services
 {
     public class ContentFields : Service
     {
-        public string Render(string path, string language, string container, bool showlang = false, Dictionary<string, string> data = null)
+        public string Render(string path, string language, string container, bool showlang = false, Dictionary<string, string> data = null, List<string> exclude = null)
         {
             if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
             var paths = PageInfo.GetRelativePath(path);
             var fields = data != null && data.Keys.Count > 0 ? data : Core.ContentFields.GetPageContent(path, language);
-            Console.WriteLine("Content Fields from " + path + " for language '" + language + "', " + (data != null ? "includes data object, " : "") + " has " + (fields != null ? fields.Count : 0) + " fields");
             var view = new View(string.Join("/", paths) + (path.Contains(".html") ? "" : ".html"));
-            var result = Common.Platform.ContentFields.RenderForm(this, "", view, language, container, fields);
+            var result = Common.Platform.ContentFields.RenderForm(this, "", view, language, container, fields, exclude?.ToArray());
             
             if (string.IsNullOrWhiteSpace(result))
             {

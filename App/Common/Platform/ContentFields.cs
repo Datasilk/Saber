@@ -18,7 +18,7 @@ namespace Saber.Common.Platform
         /// <param name="container">CSS selector of the HTML container that this form will be injected into. This field is passed into all vendor HTML Components found in the partial view.</param>
         /// <param name="fields">The values associated with each mustache variable in the partial view.</param>
         /// <returns>An HTML string representing the content fields form</returns>
-        public static string RenderForm(Core.IRequest request, string title, View view, string language, string container, Dictionary<string, string> fields)
+        public static string RenderForm(Core.IRequest request, string title, View view, string language, string container, Dictionary<string, string> fields, string[] excludedFields = null)
         {
             var section = new View("/Views/ContentFields/section.html");
             var fieldText = new View("/Views/ContentFields/text.html");
@@ -42,6 +42,7 @@ namespace Saber.Common.Platform
                     {
                         elemName = elemName.Replace(partial.Prefix, "");
                     }
+                    if(excludedFields != null && excludedFields.Any(a => a == elemName)){ continue; }
                     //get partial view prefix from element name
                     prefix = elem.Name.Replace(elemName, "");
                     if (prefix == elemName) { prefix = ""; }

@@ -311,6 +311,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Content\uploads\templates\" />
+    <Folder Include="wwwroot\content\vendors\market\template\" />
     <Folder Include="wwwroot\editor\css\themes\" />
   </ItemGroup>
 
