@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Query
 {
@@ -143,6 +144,11 @@ namespace Query
         public static void PermDelete(int userId)
         {
             Sql.ExecuteNonQuery("User_PermDelete", new { userId });
+        }
+
+        public static int CreatedInTimeRange(int minutesAgo, DateTime? dateEnd = null)
+        {
+            return Sql.ExecuteScalar<int>("Users_CreatedInTimeRange", new { minutes = minutesAgo, dateend = dateEnd });
         }
     }
 }

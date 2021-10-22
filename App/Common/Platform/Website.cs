@@ -359,16 +359,24 @@ namespace Saber.Common.Platform
 
             public static Models.Website.Settings Load()
             {
-                var file = App.MapPath("/Content/website.json");
-                if (File.Exists(file))
+                if(App.Website == null)
                 {
-                    return JsonSerializer.Deserialize<Models.Website.Settings>(Cache.LoadFile(file));
+                    var file = App.MapPath("/Content/website.json");
+                    if (File.Exists(file))
+                    {
+                        App.Website = JsonSerializer.Deserialize<Models.Website.Settings>(Cache.LoadFile(file));
+                    }
+                    else
+                    {
+                        App.Website = new Models.Website.Settings();
+                    }
                 }
-                return new Models.Website.Settings();
+                return App.Website;
             }
 
             public static void Save(Models.Website.Settings settings)
             {
+                App.Website = settings;
                 var file = App.MapPath("/Content/website.json");
                 File.WriteAllText(file, JsonSerializer.Serialize(settings, jsonOptions));
                 Cache.Remove(file);

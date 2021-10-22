@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace Saber.Services
 {
@@ -157,6 +158,43 @@ namespace Saber.Services
                 }
             }
             return html.ToString();
+        }
+
+        public string RenderSettings()
+        {
+            if (!CheckSecurity("users-settings")) { return AccessDenied(); }
+            var view = new View("/Views/Users/users-settings.html");
+            var groups = Query.Security.Groups.GetList();
+            var html = new StringBuilder();
+            var settings = Common.Platform.Website.Settings.Load();
+            foreach(var group in groups)
+            {
+                html.Append("<option value=\"" + group.groupId + "\"" + 
+                    (settings.Users.groupId == group.groupId ? " selected=\"selected\"" : "") + ">" + group.name + "</option>\n");
+            }
+            view["security-group-options"] = html.ToString();
+            view["max-signups"] = settings.Users.maxSignups.HasValue && settings.Users.maxSignups.Value > -1 ?  
+                settings.Users.maxSignups.Value.ToString() : "";
+            return view.Render();
+        }
+
+        public string UpdateSettings(string groupId, string maxSignups, string maxSignupsMinutes)
+        {
+            if (!CheckSecurity("users-settings-update")) { return AccessDenied(); }
+            try
+            {
+                //open website settings json
+                var settings = Common.Platform.Website.Settings.Load();
+                settings.Users.groupId = string.IsNullOrEmpty(groupId) ? 0 : int.Parse(groupId);
+                settings.Users.maxSignups = string.IsNullOrEmpty(maxSignups) ? -1 : int.Parse(maxSignups);
+                settings.Users.maxSignupsMinutes = string.IsNullOrEmpty(maxSignupsMinutes) ? -1 : int.Parse(maxSignupsMinutes);
+                Common.Platform.Website.Settings.Save(settings);
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+            return Success();
         }
 
         #region "Helpers"

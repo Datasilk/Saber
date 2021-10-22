@@ -4,7 +4,7 @@ using Saber.Vendor;
 
 namespace Saber.Common.Platform.ContentField
 {
-    [ContentField("-")]
+    [ContentField("#")]
     [ReplaceRow]
     public class LineBreak : IVendorContentField
     {

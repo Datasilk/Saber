@@ -85,7 +85,34 @@ namespace Saber.Common.Platform.HtmlComponents
                         return results;
                     })
                 }
-            };
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                , new HtmlComponentModel()
+                {
+                    Key = "signup-allowed",
+                    Name = "Allow Sign Ups",
+                    Block = true,
+                    Description = "Display a block of HTML when the user is allowed to sign up for an account according to Saber's User System Settings",
+                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    {
+                        var results = new List<KeyValuePair<string, string>>();
+                        //check if total signups in a given range is below the limit set in website.json
+                        var settings = Platform.Website.Settings.Load();
+                        int minutes = settings.Users.maxSignupsMinutes.HasValue ? settings.Users.maxSignupsMinutes.Value : 0;
+                        var maxSignups = settings.Users.maxSignups.HasValue ? settings.Users.maxSignups.Value : 0;
+                        if (maxSignups > 0 && minutes > 0 && Query.Users.CreatedInTimeRange(minutes) >= maxSignups)
+                        {
+                            //max sign ups in a given time range has been reached
+                            results.Add(new KeyValuePair<string, string>(prefix + "signup-restricted", "True"));
+                        }
+                        else
+                        {
+                        results.Add(new KeyValuePair<string, string>(prefix + "signup-allowed", "True"));
+                        }
+
+                        return results;
+                    })
+                }
+        };
         }
     }
 }

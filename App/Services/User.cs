@@ -99,6 +99,16 @@ namespace Saber.Services
         [PublicApi("Create a new public user account", "Display name of the user", "Valid email address used to send an authentication email", "A password that adheres to the current password policies", "Force the user to retype their password")]
         public string SignUp(string name, string emailaddr, string password, string password2)
         {
+            //check if total signups in a given range is below the limit set in website.json
+            var settings = Common.Platform.Website.Settings.Load();
+            int minutes = settings.Users.maxSignupsMinutes.Value <= 0 ? settings.Users.maxSignups.Value : settings.Users.maxSignups.Value * 60 * 24;
+            if (settings.Users.maxSignups.HasValue == true && settings.Users.maxSignups.Value > 0 && 
+                Query.Users.CreatedInTimeRange(minutes) >= settings.Users.maxSignups.Value)
+            {
+                return Error("The maximum number of sign ups have been reached. Please come back later and try again.");
+            }
+
+            //validate form fields
             if (!CheckEmailAddress(emailaddr)) { return Error("Email address is invalid"); }
             if (Query.Users.Exists(emailaddr)) { return Error("Another account is already using the email address \"" + emailaddr + "\""); }
             if(password != password2) { return Error("Passwords do not match"); }
@@ -112,6 +122,8 @@ namespace Saber.Services
             }
             if (string.IsNullOrEmpty(name)) { return Error("Please specify your name"); }
             var activationkey = Generate.NewId(16);
+
+            //create user in database
             var userId = Query.Users.CreateUser(new Query.Models.User()
             {
                 name = name,
@@ -119,6 +131,12 @@ namespace Saber.Services
                 password = EncryptPassword(emailaddr, password),
                 tempkey = activationkey
             });
+
+            //add user to default security group
+            if(settings.Users.groupId.HasValue && settings.Users.groupId.Value > 0)
+            {
+                Query.Security.Users.Add(settings.Users.groupId.Value, userId);
+            }
 
             //send signup activation email
             var viewEmail = new View("/Content/emails/signup.html");

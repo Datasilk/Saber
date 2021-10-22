@@ -41,7 +41,7 @@ S.editor.init = function () {
                         tokenizer: {
                             root: [
                                 //mustache
-                                [/({{)([\w\-]+)/, ['mustache', { token: 'mustache-tag', next: '@mustache' }]],
+                                [/({{)([\w\-#]+)/, ['mustache', { token: 'mustache-tag', next: '@mustache' }]],
 
                                 //html
                                 [/<!DOCTYPE/, 'metatag', '@doctype'],
