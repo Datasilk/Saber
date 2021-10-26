@@ -48,7 +48,6 @@
                         }
                         resizeIframe();
                     }
-                    console.log('toggle from main window');
                     break;
             }
         }

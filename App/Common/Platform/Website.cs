@@ -248,33 +248,29 @@ namespace Saber.Common.Platform
 
         public static void SaveLessFile(string content, string outputFile, string pathLESS)
         {
-            try
+            if (pathLESS.StartsWith(App.RootPath))
             {
-                if (pathLESS.StartsWith(App.RootPath))
-                {
-                    pathLESS = pathLESS.Substring(App.RootPath.Length);
-                }
-                
-                Directory.SetCurrentDirectory(App.MapPath(pathLESS));
-                var file = App.MapPath(outputFile);
-                var dir = file.Replace(file.GetFilename(), "");
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-                try
-                {
-                    File.WriteAllText(file, Less.Parse(content));
-                }
-                catch (Exception) { }
-                
-                Directory.SetCurrentDirectory(App.MapPath("/"));
+                pathLESS = pathLESS.Substring(App.RootPath.Length);
             }
-            catch (Exception ex)
+                
+            Directory.SetCurrentDirectory(App.MapPath(pathLESS));
+            var file = App.MapPath(outputFile);
+            var dir = file.Replace(file.GetFilename(), "");
+            if (!Directory.Exists(dir))
             {
-                Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
-                throw new ServiceErrorException("Error generating compiled LESS resource");
+                Directory.CreateDirectory(dir);
             }
+            var css = Less.Parse(content);
+            if (!string.IsNullOrEmpty(content.Trim()))
+            {
+                if (string.IsNullOrEmpty(css.Trim()))
+                { 
+                    throw new ServiceErrorException("LESS compile error, check your syntax");
+                }
+            }
+            File.WriteAllText(file, css);
+                
+            Directory.SetCurrentDirectory(App.MapPath("/"));
         }
 
         public static void CopyTempWebsite()

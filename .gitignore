@@ -13,6 +13,7 @@
 /App/wwwroot/**/*.*
 !/App/wwwroot/editor/*.*
 !/App/wwwroot/editor/components/*.*
+/App/Content/**
 /App/Content/pages
 /App/Content/partials
 /App/Content/emails
