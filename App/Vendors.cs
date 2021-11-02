@@ -41,20 +41,10 @@ namespace Saber.Common
         public static string[] LoadDLLs()
         {
             //search Vendor folder for DLL files
-            Console.WriteLine("Load DLLs...");
-            Console.WriteLine("Is Docker = " + App.IsDocker);
-            Console.WriteLine(App.MapPath("Vendors"));
-            Console.WriteLine("Vendors = " + Directory.Exists(App.MapPath("Vendors")));
-            Console.WriteLine("/Vendors = " + Directory.Exists(App.MapPath("/Vendors")));
             if (Directory.Exists(App.MapPath("/Vendors")))
             {
-                Console.WriteLine("Vendors folder exists");
                 RecurseDirectories(App.MapPath("/Vendors"));
                 DLLs = DLLs.OrderBy(a => a).ToList();
-            }
-            foreach(var dll in DLLs)
-            {
-                Console.WriteLine("found " + dll);
             }
 
             //load assemblies from DLL files
@@ -449,8 +439,12 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorStartup))) { return; }
             var details = GetDetails(type, DLL);
-            details.Startups.Add(type.Assembly.GetName().Name, type);
-            Core.Vendors.Startups.Add(type.Assembly.GetName().Name, type);
+            var name = type.FullName;
+            if (!Core.Vendors.Startups.ContainsKey(name))
+            {
+                details.Startups.Add(name, type);
+                Core.Vendors.Startups.Add(name, type);
+            }
         }
         #endregion
 

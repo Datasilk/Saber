@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Datasilk.Core.Extensions;
 using Saber.Common.Platform;
+using Saber.Core.Extensions.Strings;
 
 namespace Saber
 {
@@ -74,6 +75,11 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorInfo interface
             Common.Vendors.GetInfoFromFileSystem();
+
+            foreach (var vendor in Core.Vendors.Details)
+            {
+                Console.WriteLine("Found Vendor Plugin: " + vendor.Name);
+            }
             var vendorCount = Core.Vendors.Details.Where(a => a.Version != "").Count();
             Console.WriteLine("Found " + vendorCount + " Vendor" + (vendorCount != 1 ? "s" : ""));
 
@@ -384,7 +390,9 @@ namespace Saber
             App.Languages.Add("en", "English"); //english should be the default language
 
             webconfig.Languages.ForEach((lang) => {
-                App.Languages.Add(lang.Id, lang.Name);
+                if (!App.Languages.ContainsKey(lang.Id)) {
+                    App.Languages.Add(lang.Id, lang.Name);
+                }
             });
 
             //set up path pointers for View partials (e.g. {{side-bar "partials/side-bar.html"}} instead of {{side-bar "/Content/partials/side-bar.html"}})
