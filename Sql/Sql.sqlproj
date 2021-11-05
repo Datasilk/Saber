@@ -71,8 +71,6 @@
     <Folder Include="dbo\Vendor" />
     <Folder Include="dbo\Stored Procedures\PublicApis" />
     <Folder Include="dbo\Stored Procedures\Sessions" />
-    <Folder Include="dbo\Vendor\DataSets" />
-    <Folder Include="dbo\Vendor\MarketManager" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Sequences\SequenceUsers.sql" />
@@ -139,18 +137,6 @@
     <Build Include="dbo\Tables\Sessions.sql" />
     <Build Include="dbo\Stored Procedures\Sessions\Session_Get.sql" />
     <Build Include="dbo\Stored Procedures\Sessions\Session_Set.sql" />
-    <Build Include="dbo\Vendor\DataSets\DataSet_AddRecord.sql" />
-    <Build Include="dbo\Vendor\DataSets\DataSet_Create.sql" />
-    <Build Include="dbo\Vendor\DataSets\DataSet_Delete.sql" />
-    <Build Include="dbo\Vendor\DataSets\DataSet_GetColumns.sql" />
-    <Build Include="dbo\Vendor\DataSets\DataSet_GetInfo.sql" />
-    <Build Include="dbo\Vendor\DataSets\DataSet_GetRecords.sql" />
-    <Build Include="dbo\Vendor\DataSets\DataSet_UpdateColumns.sql" />
-    <Build Include="dbo\Vendor\DataSets\DataSet_UpdateInfo.sql" />
-    <Build Include="dbo\Vendor\DataSets\DataSet_UpdateRecord.sql" />
-    <Build Include="dbo\Vendor\DataSets\DataSets.sql" />
-    <Build Include="dbo\Vendor\DataSets\DataSets_GetList.sql" />
-    <Build Include="dbo\Vendor\DataSets\SequenceDataSets.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

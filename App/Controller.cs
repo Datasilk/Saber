@@ -28,7 +28,7 @@ namespace Saber
             if(key != "" && User.UserId > 0 && !User.Keys.Any(a => a.Key == key && a.Value == true))
             {
                 return false;
-            }else if(key == "" && User.UserId <= 0)
+            }else if(User.UserId <= 0)
             {
                 return false;
             }

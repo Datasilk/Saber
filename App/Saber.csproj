@@ -20,6 +20,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Content\screenshots\**" />
+    <Compile Remove="Content\uploads\**" />
+    <EmbeddedResource Remove="Content\screenshots\**" />
+    <EmbeddedResource Remove="Content\uploads\**" />
+    <None Remove="Content\screenshots\**" />
+    <None Remove="Content\uploads\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -311,8 +320,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Content\screenshots\" />
-    <Folder Include="Content\uploads\templates\" />
+    <Folder Include="wwwroot\content\pages\home\" />
+    <Folder Include="wwwroot\content\pages\login\" />
     <Folder Include="wwwroot\content\vendors\market\template\" />
     <Folder Include="wwwroot\editor\css\themes\" />
   </ItemGroup>
