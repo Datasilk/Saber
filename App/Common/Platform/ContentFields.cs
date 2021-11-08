@@ -30,9 +30,14 @@ namespace Saber.Common.Platform
             var sections = new StringBuilder();
             var sectionTitle = "";
             var keys = new List<string>();
+            var fieldElementInfo = new List<Models.ContentFieldElementInfo>();
             for (var x = 0; x < view.Elements.Count; x++)
             {
                 var elem = view.Elements[x];
+                fieldElementInfo.Add(new Models.ContentFieldElementInfo(){
+                    Type = Core.ContentFields.FieldType.text 
+                });
+                var elemInfo = fieldElementInfo[^1];
 
                 if (elem.Name != "" && elem.Name.Substring(0, 1) != "/")
                 {
@@ -93,7 +98,8 @@ namespace Saber.Common.Platform
                         fieldValue = fields[elem.Name];
                     }
                     var fieldValueHtml = fieldValue.Replace("\"", "&quot;");
-                    var fieldType = GetFieldType(view, x);
+                    var fieldType = GetFieldType(view, x, fieldElementInfo);
+                    elemInfo.Type = fieldType;
 
                     switch (fieldType)
                     {
@@ -172,7 +178,7 @@ namespace Saber.Common.Platform
             return sections.Length == 0 ? "" : sections.ToString();
         }
         
-        public static Core.ContentFields.FieldType GetFieldType(View view, int index)
+        public static Core.ContentFields.FieldType GetFieldType(View view, int index, List<Models.ContentFieldElementInfo> elemsInfo)
         {
             var elem = view.Elements[index];
             if (elem.isBlock)
@@ -208,8 +214,19 @@ namespace Saber.Common.Platform
                 if (index > 0)
                 {
                     var prev = view.Elements[index - 1];
+                    var prevElemInfo = elemsInfo[index - 1];
                     var inQuotes = false;
                     var quotes = 0;
+
+                    if (prevElemInfo.Type == Core.ContentFields.FieldType.image)
+                    {
+                        if(prev.Htm.IndexOf("\"") < 0)
+                        {
+                            return Core.ContentFields.FieldType.image;
+                        }
+                        quotes = 0;
+                    }
+
                     for (var i = prev.Htm.Length - 1; i >= 0; i--)
                     {
                         if (prev.Htm[i] == '"') { quotes++; }
