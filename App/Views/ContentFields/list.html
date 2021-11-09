@@ -1,33 +1,57 @@
-﻿{{locked}}
-<div class="row hover">
-    <div class="col text pad-left change-data-source">
-        <span>Data Source: <b>{{datasource}}</b></span>
+﻿<div class="row">
+    {{locked}}
+    <div class="col pad-right">
+        <div class="row hover">
+            <div class="col text pad-left-lg change-data-source" style="margin-left:7px;">
+                <span>Data Source: <b>{{datasource}}</b></span>
+            </div>
+        </div>
     </div>
-</div>
+    
 
-{{/locked}}
-<div class="col input for-button pad-right">
-    <div class="pad-bottom add-list-item {{hide-add-list-item}}hide{{/hide-add-list-item}}">
-        <button onclick="S.editor.fields.custom.list.add(event, '{{title}}', '{{key}}', '{{partial}}', '{{lang}}', '{{container}}');">+ List Item</button>
+    {{/locked}}
+    <div class="col right input for-button">
+        <div class="col right pad-bottom add-list-item {{hide-add-list-item}}hide{{/hide-add-list-item}}">
+            <button onclick="S.editor.fields.custom.list.add(event, '{{title}}', '{{key}}', '{{partial}}', '{{lang}}', '{{container}}');">+ List Item</button>
+        </div>
+        {{not-locked}}
+        <div class="col right pad-bottom change-data-source">
+            <button onclick="S.editor.fields.custom.list.datasource.list(event, '{{title}}');" class="apply">Data Source</button>
+        </div>
+        {{/not-locked}}
     </div>
-    {{not-locked}}
-    <div class="pad-bottom change-data-source">
-        <button onclick="S.editor.fields.custom.list.datasource.list(event, '{{title}}');" class="apply">Data Source</button>
-    </div>
-    {{/not-locked}}
 </div>
-<div class="col list-items">
+{{list-items}}
+<div class="row list-items">
     <div class="accordion">
         <div class="title">
-            <h6>{{accordion-title}}</h6>
+            <h6>{{list-title}}</h6>
             <div class="expander">
                 <svg viewBox="0 0 32 32">
                     <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
                 </svg>
             </div>
         </div>
-        <div class="contents pad" {{accordion-oninit}}>
-            {{accordion-contents}}
+        <div class="contents pad">
+            {{list-contents}}
         </div>
     </div>
 </div>
+{{/list-items}}
+{{filter}}
+<div class="row filter-settings">
+    <div class="accordion">
+        <div class="title">
+            <h6>Filter Settings</h6>
+            <div class="expander">
+                <svg viewBox="0 0 32 32">
+                    <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
+                </svg>
+            </div>
+        </div>
+        <div class="contents pad" {{filter-oninit}}>
+            {{filter-contents}}
+        </div>
+    </div>
+</div>
+{{/filter}}

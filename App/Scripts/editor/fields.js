@@ -239,6 +239,8 @@ S.editor.fields = {
         list: {
             init: function (container) {
                 let section = $(container + ' form');
+                S.accordion.load({}, () => { S.editor.resize.window(); });
+
                 //event listener for close button
                 section.find('.list-items li .close-btn').off('click').on('click', S.editor.fields.custom.list.close);
 
@@ -337,7 +339,23 @@ S.editor.fields = {
                 var hidden = field.find('input.input-field');
                 var popup = S.editor.fields.popup(partial, lang, (fieldsdata ? 'Update' : 'Add') + ' List Item for ' + title.substr(5), fieldsdata, (fieldsdata ? 'Update' : 'Add') + ' List Item', (e, fields) => {
                     //save custom list item
-                    var data = S.editor.fields.custom.list.parse(hidden);
+                    var hasDataSource = hidden.val().indexOf('data-src=') >= 0;
+                    if (hasDataSource) {
+                        //add list item to data source
+                        var datafields = hidden.val().split('|!|');
+                        var datasrc = datafields.filter(a => a.indexOf('data-src=') == 0)[0].replace('data-src=', '');
+                        S.ajax.post('DataSources/AddRecord', {datasource:datasrc, columns:fields}, (response) => {});
+
+                    } else {
+                        //add list item directly to list component hidden field
+                        var data = S.editor.fields.custom.list.parse(hidden);
+                        if (fieldsdata != null && index != null) {
+                            data[index] = fields;
+                        } else {
+                            data.push(fields);
+                        }
+                        hidden.val(JSON.stringify(data));
+                    }
 
                     //add item to list in content fields tab
                     var i = (index != null ? parseInt(index) : field.find('.list-items li').length) + 1;
@@ -354,19 +372,18 @@ S.editor.fields = {
                         .replace(/\#\#container\#\#/g, container);
                     ul.html('');
                     if (fieldsdata != null && index != null) {
-                        //update existing element in data list
-                        data[index] = fields;
+                        //update existing element
                         children[index] = child;
                     } else {
-                        data.push(fields);
                         children.push(child);
                     }
                     for (var x = 0; x < children.length; x++) {
                         ul.append(children[x]);
                     }
-                    hidden.val(JSON.stringify(data));
                     field.find('.accordion').addClass('expanded');
-                    S.editor.fields.save();
+                    if (!hasDataSource) {
+                        S.editor.fields.save();
+                    }
                     S.popup.hide();
                     S.editor.fields.custom.list.init(container);
                     return false;

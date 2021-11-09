@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using System.Linq;
 
 namespace Saber.Services
@@ -53,6 +54,17 @@ namespace Saber.Services
             }
             view["data-sources"] = html.ToString();
             return view.Render();
+        }
+
+        public string AddRecord(string datasource, Dictionary<string, string> columns)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("edit-datasources")) { return AccessDenied(); }
+            var source = Core.Vendors.DataSources.Where(a => a.Key == datasource).FirstOrDefault();
+            if(source != null)
+            {
+                source.Helper.Create(this, datasource.Replace(source.Helper.Prefix + "-", ""), columns);
+            }
+            return Success();
         }
     }
 }

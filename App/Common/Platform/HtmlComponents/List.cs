@@ -90,7 +90,7 @@ namespace Saber.Common.Platform.HtmlComponents
                             if(data.IndexOf("data-src=") == 0)
                             {
                                 //get items from custom data source via a vendor plugin
-                                var parts = data.Split("|!|", 3);
+                                var parts = data.Split("|!|");
                                 var datakey = parts[0].Split("=")[1];
                                 var filter = JsonSerializer.Deserialize<Dictionary<string, object>>(parts.Length > 1 ? parts[1] : "{\"start\":\"1\",\"length\":\"10\"}");
                                 var start = filter.ContainsKey("start") && !string.IsNullOrEmpty(filter["start"].ToString()) ? int.Parse(filter["start"].ToString()) : 1;

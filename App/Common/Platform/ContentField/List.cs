@@ -35,9 +35,10 @@ namespace Saber.Common.Platform.ContentField
                     var html = new StringBuilder();
                     if(data.IndexOf("data-src=") == 0)
                     {
-                        var parts = data.Split("|!|", 2);
+                        var parts = data.Split("|!|");
                         var datasrc = parts[0].Replace("data-src=", "");
                         var locked = parts.Contains("locked");
+                        var canadd = parts.Contains("add");
                         var filterpart = parts.Where(a => a.IndexOf("filter=") == 0).FirstOrDefault();
                         var filter = new Dictionary<string, string>();
                         if(filterpart != null)
@@ -51,13 +52,13 @@ namespace Saber.Common.Platform.ContentField
                             //render data source filter form
                             datasrc = datasrc.Replace(datasource.Helper.Prefix + "-", "");
                             var filterform = datasource.Helper.RenderFilters(request, datasrc, filter);
-                            viewlist["accordion-title"] = "Filter Settings";
-                            viewlist["accordion-contents"] = filterform.HTML;
-                            viewlist["accordion-oninit"] = "data-init=\"" + filterform.OnInit + "\"";
+                            viewlist.Show("filter");
+                            viewlist["filter-contents"] = filterform.HTML;
+                            viewlist["filter-oninit"] = "data-init=\"" + filterform.OnInit + "\"";
                             viewlist.Show(locked ? "locked" : "not-locked");
                             viewlist["datasource"] = datasource.Name;
                         }
-                        viewlist.Show("hide-add-list-item");
+                        if (!canadd) { viewlist.Show("hide-add-list-item"); }
                     }
                     else
                     {
@@ -74,8 +75,9 @@ namespace Saber.Common.Platform.ContentField
                             viewitem.Clear();
                             i++;
                         }
-                        viewlist["accordion-title"] = "List Items";
-                        viewlist["accordion-contents"] = "<ul class=\"list\">" + html.ToString() + "</ul>";
+                        viewlist.Show("list-items");
+                        viewlist["list-title"] = "List Items";
+                        viewlist["list-contents"] = "<ul class=\"list\">" + html.ToString() + "</ul>";
                     }
                 }
                 catch (Exception ex) 
