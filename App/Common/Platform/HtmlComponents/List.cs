@@ -98,7 +98,7 @@ namespace Saber.Common.Platform.HtmlComponents
                                 var datasource = Core.Vendors.DataSources.Where(a => a.Key == datakey).FirstOrDefault();
                                 if(datasource != null)
                                 {
-                                    items = datasource.Helper.Filter(datakey.Replace(datasource.Helper.Prefix + "-", ""), start, length, request.User.Language ?? "en", filter);
+                                    items = datasource.Helper.Filter(request, datakey.Replace(datasource.Helper.Prefix + "-", ""), start, length, request.User.Language ?? "en", filter);
                                 }
                                 else
                                 {

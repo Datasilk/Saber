@@ -37,20 +37,25 @@ namespace Saber.Common.Platform.ContentField
                     {
                         var parts = data.Split("|!|", 2);
                         var datasrc = parts[0].Replace("data-src=", "");
-                        var filter = new Dictionary<string, object>();
-                        if(parts.Length > 1)
+                        var locked = parts.Contains("locked");
+                        var filterpart = parts.Where(a => a.IndexOf("filter=") == 0).FirstOrDefault();
+                        var filter = new Dictionary<string, string>();
+                        if(filterpart != null)
                         {
-                            //get data source filter values
-                            filter = JsonSerializer.Deserialize<Dictionary<string, object>>(parts[1]);
+                            filter = filterpart.Replace("filter=", "").Split("|").ToDictionary
+                                (a => a.Split("=", 2)[0], a => a.Split("=", 2)[1]);
                         }
                         var datasource = Core.Vendors.DataSources.Where(a => a.Key == datasrc).FirstOrDefault();
                         if(datasource != null)
                         {
                             //render data source filter form
-                            var filterform = datasource.Helper.RenderFilters(datasrc, request, filter);
-                            viewlist["accordion-title"] = "Filter for " + (string.IsNullOrEmpty(datasource.Helper.Vendor) ? "" : datasource.Helper.Vendor + " - ") + datasource.Name;
+                            datasrc = datasrc.Replace(datasource.Helper.Prefix + "-", "");
+                            var filterform = datasource.Helper.RenderFilters(request, datasrc, filter);
+                            viewlist["accordion-title"] = "Filter Settings";
                             viewlist["accordion-contents"] = filterform.HTML;
                             viewlist["accordion-oninit"] = "data-init=\"" + filterform.OnInit + "\"";
+                            viewlist.Show(locked ? "locked" : "not-locked");
+                            viewlist["datasource"] = datasource.Name;
                         }
                         viewlist.Show("hide-add-list-item");
                     }
@@ -73,7 +78,9 @@ namespace Saber.Common.Platform.ContentField
                         viewlist["accordion-contents"] = "<ul class=\"list\">" + html.ToString() + "</ul>";
                     }
                 }
-                catch (Exception) { }
+                catch (Exception ex) 
+                { 
+                }
             }
             return viewlist.Render();
         }

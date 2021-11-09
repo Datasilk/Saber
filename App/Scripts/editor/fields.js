@@ -68,7 +68,7 @@ S.editor.fields = {
         }
         S.editor.fields.render(file, lang, container, null, () => {});
     },
-    render: function (file, lang, container, fields, callback, ispopup, showlang, excludeFields) {
+    render: function (file, lang, container, fields, callback, ispopup, showlang, excludeFields, renderApi) {
         var data = {
             path: file || S.editor.path,
             language: lang,
@@ -77,7 +77,7 @@ S.editor.fields = {
             data: fields ?? {},
             exclude: excludeFields
         };
-        S.ajax.post('ContentFields/Render', data,
+        S.ajax.post(renderApi ?? 'ContentFields/Render', data,
             function (d) {
                 d.selector = container + ' form';
                 S.ajax.inject(d);
@@ -122,11 +122,11 @@ S.editor.fields = {
             true
         );
     },
-    popup: function (partial, lang, title, fieldsdata, buttonTitle, submit, excludeFields) {
+    popup: function (partial, lang, title, fieldsdata, buttonTitle, submit, excludeFields, renderApi) {
         //load content fields into popup modal
-        var popup = $(S.popup.show(title, '<div class="has-content-fields"><form></form></div>'));
+        var popup = S.popup.show(title, '<div class="has-content-fields"><form></form></div>');
         popup.css({ width: '90%', 'max-width': '1200px' });
-        S.editor.fields.render('content/' + partial, lang, '.box.popup', fieldsdata, () => {
+        S.editor.fields.render('content/' + partial, lang, '.box.popup.show', fieldsdata, () => {
             popup.find('form').append('<div class="row text-center"><div class="col"><button class="apply">' + buttonTitle + '</button></div>');
             S.popup.resize();
             popup.find('form').on('submit', (e) => {
@@ -156,7 +156,7 @@ S.editor.fields = {
                 });
                 submit(e, fields);
             });
-        }, true, true, excludeFields);
+        }, true, true, excludeFields, renderApi);
         return popup;
     },
     resize: function (e) {

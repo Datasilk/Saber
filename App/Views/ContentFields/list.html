@@ -1,13 +1,22 @@
-﻿<div class="col input for-button">
+﻿{{locked}}
+<div class="row hover">
+    <div class="col text pad-left change-data-source">
+        <span>Data Source: <b>{{datasource}}</b></span>
+    </div>
+</div>
+
+{{/locked}}
+<div class="col input for-button pad-right">
     <div class="pad-bottom add-list-item {{hide-add-list-item}}hide{{/hide-add-list-item}}">
         <button onclick="S.editor.fields.custom.list.add(event, '{{title}}', '{{key}}', '{{partial}}', '{{lang}}', '{{container}}');">+ List Item</button>
     </div>
+    {{not-locked}}
     <div class="pad-bottom change-data-source">
         <button onclick="S.editor.fields.custom.list.datasource.list(event, '{{title}}');" class="apply">Data Source</button>
     </div>
-
+    {{/not-locked}}
 </div>
-<div class="col pad-left list-items">
+<div class="col list-items">
     <div class="accordion">
         <div class="title">
             <h6>{{accordion-title}}</h6>

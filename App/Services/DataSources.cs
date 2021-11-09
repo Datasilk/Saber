@@ -22,7 +22,7 @@ namespace Saber.Services
             {
                 return Error("Could not find data source \"" + key + "\"");
             }
-            var filter = datasource.Helper.RenderFilters(key.Replace(datasource.Helper.Prefix + "-", "") , this);
+            var filter = datasource.Helper.RenderFilters(this, key.Replace(datasource.Helper.Prefix + "-", ""));
             return filter.OnInit + "|" + filter.HTML;
         }
 
@@ -45,7 +45,7 @@ namespace Saber.Services
                 {
                     datasourceItem.Clear();
                     datasourceItem["name"] = item.Value;
-                    datasourceItem["columns"] = string.Join(", ", datasource.Get(item.Key).Columns);
+                    datasourceItem["columns"] = string.Join(", ", datasource.Get(item.Key).Columns.Select(a => a.Name));
                     htmlitem.Append(datasourceItem.Render());
                 }
                 listItem["data-sources"] = htmlitem.ToString();
