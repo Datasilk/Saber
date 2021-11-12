@@ -31,6 +31,8 @@ namespace Saber.Controllers
                 view.Show("code-editor");
                 view.Show("manage-datasources");
                 view.Show("data-sources");
+                view.Show("file-browser");
+
                 switch (EditorUsed)
                 {
                     case EditorType.Monaco:

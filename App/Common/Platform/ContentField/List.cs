@@ -26,41 +26,42 @@ namespace Saber.Common.Platform.ContentField
             viewlist["partial"] = partials[0];
             viewlist["lang"] = lang;
             viewlist["container"] = container;
+            viewlist["renderapi"] = args.ContainsKey("renderapi") ? "'" + args["renderapi"] + "'" : "null";
 
             //get list items
-            if (!string.IsNullOrEmpty(data))
+            try
             {
-                try
+                var html = new StringBuilder();
+                if(data.IndexOf("data-src=") == 0)
                 {
-                    var html = new StringBuilder();
-                    if(data.IndexOf("data-src=") == 0)
+                    var parts = data.Split("|!|");
+                    var datasrc = parts[0].Replace("data-src=", "");
+                    var locked = parts.Contains("locked");
+                    var canadd = parts.Contains("add");
+                    var filterpart = parts.Where(a => a.IndexOf("filter=") == 0).FirstOrDefault();
+                    var filter = new Dictionary<string, string>();
+                    if(filterpart != null)
                     {
-                        var parts = data.Split("|!|");
-                        var datasrc = parts[0].Replace("data-src=", "");
-                        var locked = parts.Contains("locked");
-                        var canadd = parts.Contains("add");
-                        var filterpart = parts.Where(a => a.IndexOf("filter=") == 0).FirstOrDefault();
-                        var filter = new Dictionary<string, string>();
-                        if(filterpart != null)
-                        {
-                            filter = filterpart.Replace("filter=", "").Split("|").ToDictionary
-                                (a => a.Split("=", 2)[0], a => a.Split("=", 2)[1]);
-                        }
-                        var datasource = Core.Vendors.DataSources.Where(a => a.Key == datasrc).FirstOrDefault();
-                        if(datasource != null)
-                        {
-                            //render data source filter form
-                            datasrc = datasrc.Replace(datasource.Helper.Prefix + "-", "");
-                            var filterform = datasource.Helper.RenderFilters(request, datasrc, filter);
-                            viewlist.Show("filter");
-                            viewlist["filter-contents"] = filterform.HTML;
-                            viewlist["filter-oninit"] = "data-init=\"" + filterform.OnInit + "\"";
-                            viewlist.Show(locked ? "locked" : "not-locked");
-                            viewlist["datasource"] = datasource.Name;
-                        }
-                        if (!canadd) { viewlist.Show("hide-add-list-item"); }
+                        filter = filterpart.Replace("filter=", "").Split("|").ToDictionary
+                            (a => a.Split("=", 2)[0], a => a.Split("=", 2)[1]);
                     }
-                    else
+                    var datasource = Core.Vendors.DataSources.Where(a => a.Key == datasrc).FirstOrDefault();
+                    if(datasource != null)
+                    {
+                        //render data source filter form
+                        datasrc = datasrc.Replace(datasource.Helper.Prefix + "-", "");
+                        var filterform = datasource.Helper.RenderFilters(request, datasrc, filter);
+                        viewlist.Show("filter");
+                        viewlist["filter-contents"] = filterform.HTML;
+                        viewlist["filter-oninit"] = "data-init=\"" + filterform.OnInit + "\"";
+                        viewlist.Show(locked ? "locked" : "not-locked");
+                        viewlist["datasource"] = (datasource.Helper.Vendor != "" ? datasource.Helper.Vendor + " - " : "") + datasource.Name;
+                    }
+                    if (!canadd) { viewlist.Show("hide-add-list-item"); }
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(data))
                     {
                         var items = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(data);
                         var i = 1;
@@ -75,14 +76,16 @@ namespace Saber.Common.Platform.ContentField
                             viewitem.Clear();
                             i++;
                         }
-                        viewlist.Show("list-items");
-                        viewlist["list-title"] = "List Items";
-                        viewlist["list-contents"] = "<ul class=\"list\">" + html.ToString() + "</ul>";
                     }
+                    
+                    viewlist.Show("list-items");
+                    viewlist.Show("no-datasource");
+                    viewlist["list-contents"] = "<ul class=\"list\">" + html.ToString() + "</ul>";
+                    viewlist.Show("not-locked");
                 }
-                catch (Exception ex) 
-                { 
-                }
+            }
+            catch (Exception ex) 
+            { 
             }
             return viewlist.Render();
         }

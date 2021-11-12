@@ -1,5 +1,4 @@
 S.editor.hotkey = {
-    vendor: [], //{code:'KeyA', ctrl:false, alt:true, shift: false, callback:() => {}}
     pressed: function (e) {
         if (S.editor.visible == false) { return; }
         var has = false;
@@ -17,7 +16,6 @@ S.editor.hotkey = {
                     break;
                 default:
                     //check vendor hotkeys
-
                     break;
             }
         } else if (e.altKey == true) {
@@ -75,20 +73,23 @@ S.editor.hotkey = {
         }
     },
 
-    pressedPreview: function (e) {
-        if (e.ctrlKey == false && e.altKey == false && e.shiftKey == false) {
-            switch (e.which) {
-                case 27: //escape key
-                    //ignore escape key if Monaco editor is showing a suggestion popup
-                    if ($('.editor-widget.suggest-widget.visible .monaco-list.element-focused').length > 0 ||
-                        $('.editor-widget.find-widget.visible').length > 0
-                    ) {
-                        break;
+    addListener: {
+        keyESC: function (callback) {
+            $(window).on('keydown', (e) => {
+                if (e.ctrlKey == false && e.altKey == false && e.shiftKey == false) {
+                    switch (e.which) {
+                        case 27: //escape key
+                            //ignore escape key if Monaco editor is showing a suggestion popup
+                            if ($('.editor-widget.suggest-widget.visible .monaco-list.element-focused').length > 0 ||
+                                $('.editor-widget.find-widget.visible').length > 0
+                            ) {
+                                break;
+                            }
+                            callback(e);
+                            break;
                     }
-                    //show website preview
-                    S.editor.filebar.preview.toggle();
-                    break;
-            }
+                }
+            });
         }
     }
 };

@@ -122,7 +122,7 @@ S.editor.fields = {
             true
         );
     },
-    popup: function (partial, lang, title, fieldsdata, buttonTitle, submit, excludeFields, renderApi) {
+    popup: function (partial, lang, title, fieldsdata, buttonTitle, submit, excludeFields, renderApi, callback) {
         //load content fields into popup modal
         var popup = S.popup.show(title, '<div class="has-content-fields"><form></form></div>');
         popup.css({ width: '90%', 'max-width': '1200px' });
@@ -156,6 +156,9 @@ S.editor.fields = {
                 });
                 submit(e, fields);
             });
+            if (typeof callback == 'function') {
+                callback();
+            }
         }, true, true, excludeFields, renderApi);
         return popup;
     },
@@ -188,7 +191,14 @@ S.editor.fields = {
         }
         S.editor.fields.resize(e);
     },
-    save: function () {
+
+    saveThenPreview: function () {
+        console.log('save then preview');
+        S.editor.fields.save(S.editor.filebar.preview.show);
+        
+    },
+    save: function (callback) {
+        if (S.editor.fields.changed == false) { return;}
         var fields = {};
         var seltab = $('.tab-for-content-fields.selected > div');
         var pathid = seltab.attr('data-path');
@@ -228,6 +238,7 @@ S.editor.fields = {
                     }
                     S.editor.files.content.changed = true;
                     S.message.show('.' + pathid + ' .messages', 'confirm', 'Content fields were saved.', false, 4000, true);
+                    if (callback) { callback(); }
                 } else { S.editor.error(); }
             },
             function () {
@@ -273,13 +284,13 @@ S.editor.fields = {
                 }
 
                 //initialize all data source filter forms
-                section.find('.list-items .accordion .contents[data-init]').each((a) => {
+                section.find('.filter-settings .accordion .contents[data-init]').each((a) => {
                     var field = $(a).parents('.content-field').first();
                     var hidden = field.find('input.input-field');
                     var oninit = $(a).attr('data-init');
                     var obj = S.editor.objectFromString(oninit);
                     if (obj && typeof obj == 'function') {
-                        obj(field.find('.accordion > .contents'), hidden);
+                        obj(field.find('.filter-settings .accordion > .contents'), hidden);
                     }
                 });
             },
@@ -313,8 +324,8 @@ S.editor.fields = {
                     $(items[y]).attr('data-index', y + 1);
                 }
             }, 
-            add: function (e, title, key, partial, lang, container) {
-                return S.editor.fields.custom.list.update(e, title, key, partial, lang, container);
+            add: function (e, title, key, partial, lang, container, renderApi) {
+                return S.editor.fields.custom.list.update(e, title, key, partial, lang, container, null, null, renderApi);
             },
             edit: function (e, title, key, partial, lang, container) {
                 //get data for field
@@ -333,7 +344,7 @@ S.editor.fields = {
                 var data = JSON.parse(li.parents('.content-field').find('input.input-field').val()) ?? [];
                 S.editor.fields.custom.list.update(e, title, key, partial, lang, container, data[index], index);
             },
-            update: function (e, title, key, partial, lang, container, fieldsdata, index) {
+            update: function (e, title, key, partial, lang, container, fieldsdata, index, renderApi) {
                 e.preventDefault();
                 var field = $(e.target).parents('.content-field').first();
                 var hidden = field.find('input.input-field');
@@ -345,7 +356,6 @@ S.editor.fields = {
                         var datafields = hidden.val().split('|!|');
                         var datasrc = datafields.filter(a => a.indexOf('data-src=') == 0)[0].replace('data-src=', '');
                         S.ajax.post('DataSources/AddRecord', {datasource:datasrc, columns:fields}, (response) => {});
-
                     } else {
                         //add list item directly to list component hidden field
                         var data = S.editor.fields.custom.list.parse(hidden);
@@ -355,6 +365,7 @@ S.editor.fields = {
                             data.push(fields);
                         }
                         hidden.val(JSON.stringify(data));
+                        field.find('.list-items .accordion').addClass('expanded');
                     }
 
                     //add item to list in content fields tab
@@ -380,14 +391,14 @@ S.editor.fields = {
                     for (var x = 0; x < children.length; x++) {
                         ul.append(children[x]);
                     }
-                    field.find('.accordion').addClass('expanded');
                     if (!hasDataSource) {
                         S.editor.fields.save();
                     }
-                    S.popup.hide();
+                    S.popup.hide(popup);
+                    S.editor.fields.changed = true;
                     S.editor.fields.custom.list.init(container);
                     return false;
-                });
+                }, null, renderApi);
                 return false;
             },
             datasource: {
@@ -403,7 +414,7 @@ S.editor.fields = {
                                 return '<li class="item" data-id="' + a[0] + '"><span>' + a[1] + '</span></li>'
                             }).join('') + '</ul>';
                         }
-                        S.popup.show('Select A Data Source for "' + title + '"', html);
+                        var popup = S.popup.show('Select A Data Source for "' + title + '"', html);
                         $('.popup .list li').on('click', (e) => {
                             var target = $(e.target);
                             if (!target.hasClass('item')) {
@@ -411,12 +422,14 @@ S.editor.fields = {
                             }
                             var key = target.attr('data-id');
                             var name = target.find('span').html();
-                            S.popup.hide();
+                            S.popup.hide(popup);
                             if (key == 'list-items') {
                                 //show list items
-                                field.find('.accordion > .contents').html('<ul class="list"></ul>');
-                                field.find('.accordion > .title h6').html('List Items');
+                                field.find('.list-items  .contents').html('<ul class="list"></ul>');
                                 field.find('.add-list-item').removeClass('hide');
+                                field.find('.list-items').show();
+                                field.find('.filter-settings').hide();
+                                field.find('.datasource-name').hide();
                                 hidden.val('');
                             } else {
                                 //show data source filter
@@ -425,11 +438,14 @@ S.editor.fields = {
                                     var oninit = filterform.split('|')[0];
                                     filterform = filterform.split('|')[1];
                                     hidden.val('data-src=' + key);
+                                    field.find('.filter-settings > .contents').html(filterform);
                                     field.find('.add-list-item').addClass('hide');
-                                    field.find('.accordion > .title h6').html('Filter for ' + name);
-                                    field.find('.accordion > .contents').html(filterform);
+                                    field.find('.list-items').hide();
+                                    field.find('.filter-settings').show();
+                                    field.find('.datasource-name').show();
+                                    field.find('.datasource-name b').html(name);
                                     S.ajax.inject(filterform);
-                                    field.find('.accordion').addClass('expanded');
+                                    field.find('.filter-settings .accordion').addClass('expanded');
                                     if (oninit && oninit != '') {
                                         var obj = S.editor.objectFromString(oninit);
                                         if (obj && typeof obj == 'function') {
@@ -440,6 +456,7 @@ S.editor.fields = {
                                         S.editor.error('', err.responseText);
                                 });
                             }
+                            S.editor.fields.changed = true;
                         });
 
                     }, (err) => {

@@ -1,10 +1,11 @@
 S.editor.file = {
     create: {
+        popup: null,
         show: function () {
             S.editor.dropmenu.hide();
             var path = S.editor.explorer.path;
             if (path == 'root') { path = 'wwwroot';}
-            S.popup.show('New File',
+            S.editor.file.create.popup = S.popup.show('New File',
                 $('#template_newfile').html()
                     .replace('##folder-path##', path)
             );
@@ -30,7 +31,7 @@ S.editor.file = {
                     if (data.path == S.editor.explorer.path) {
                         S.editor.explorer.dir();
                     }
-                    S.popup.hide();
+                    S.popup.hide(S.editor.file.create.popup);
                 },
                 function (d) {
                     S.editor.error('.popup .messages', d.response);

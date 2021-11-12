@@ -12,7 +12,7 @@ S.editor.dropmenu = {
                 hide = true;
             }
         } else { hide = true; }
-        if (hide == true) {
+        if (hide) {
             $('.drop-menu').addClass('hide');
             $(document.body).off('click', S.editor.dropmenu.hide);
         }

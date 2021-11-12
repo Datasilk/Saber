@@ -1,57 +1,66 @@
 ﻿<div class="row">
-    {{locked}}
-    <div class="col pad-right">
-        <div class="row hover">
-            <div class="col text pad-left-lg change-data-source" style="margin-left:7px;">
-                <span>Data Source: <b>{{datasource}}</b></span>
-            </div>
-        </div>
-    </div>
-    
+    <div class="row">
 
-    {{/locked}}
-    <div class="col right input for-button">
-        <div class="col right pad-bottom add-list-item {{hide-add-list-item}}hide{{/hide-add-list-item}}">
-            <button onclick="S.editor.fields.custom.list.add(event, '{{title}}', '{{key}}', '{{partial}}', '{{lang}}', '{{container}}');">+ List Item</button>
-        </div>
-        {{not-locked}}
-        <div class="col right pad-bottom change-data-source">
-            <button onclick="S.editor.fields.custom.list.datasource.list(event, '{{title}}');" class="apply">Data Source</button>
-        </div>
-        {{/not-locked}}
-    </div>
-</div>
-{{list-items}}
-<div class="row list-items">
-    <div class="accordion">
-        <div class="title">
-            <h6>{{list-title}}</h6>
-            <div class="expander">
-                <svg viewBox="0 0 32 32">
-                    <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
-                </svg>
+        <div class="col datasource-name pad-right" {{no-datasource}}style="display:none"{{/no-datasource}}>
+            <div class="row hover">
+                <div class="col text cursor pad-left-lg pad-right change-data-source" style="margin:7px 0 0 7px;">
+                    <span>Data Source: <b>{{datasource}}</b></span>
+                </div>
             </div>
         </div>
-        <div class="contents pad">
-            {{list-contents}}
+        <div class="col right pad-sm">
+            <div class="col right pad-left add-list-item {{hide-add-list-item}}hide{{/hide-add-list-item}}">
+                <div class="row hover light pad-sm">
+                    <div class="icon small" onclick="S.editor.fields.custom.list.add(event, '{{title}}', '{{key}}', '{{partial}}', '{{lang}}', '{{container}}', {{renderapi}})" title="Add a new item to your List">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-add" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            {{not-locked}}
+            <div class="col right change-data-source">
+                <div class="row hover light pad-sm">
+                    <div class="icon small" onclick="S.editor.fields.custom.list.datasource.list(event, '{{title}}');" title="Change the Data Source for your List">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-datasources" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            {{/not-locked}}
         </div>
     </div>
-</div>
-{{/list-items}}
-{{filter}}
-<div class="row filter-settings">
-    <div class="accordion">
-        <div class="title">
-            <h6>Filter Settings</h6>
-            <div class="expander">
-                <svg viewBox="0 0 32 32">
-                    <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
-                </svg>
+
+    <div class="row list-items" {{filter}}style="display:none"{{/filter}}>
+        <div class="accordion">
+            <div class="title">
+                <h6>List Items</h6>
+                <div class="expander">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </div>
+            </div>
+            <div class="contents pad">
+                {{list-contents}}
             </div>
         </div>
-        <div class="contents pad" {{filter-oninit}}>
-            {{filter-contents}}
+    </div>
+
+    <div class="row filter-settings" {{list-items}}style="display:none"{{/list-items}}>
+        <div class="accordion">
+            <div class="title">
+                <h6>Filter Settings</h6>
+                <div class="expander">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </div>
+            </div>
+            <div class="contents pad" {{filter-oninit}}>
+                {{filter-contents}}
+            </div>
         </div>
     </div>
 </div>
-{{/filter}}

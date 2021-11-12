@@ -168,6 +168,7 @@ S.editor.explorer = {
         let paths = path.split('/');
         let id = S.editor.fileId(path);
         S.editor.tabs.changed = false;
+        S.editor.dropmenu.hide();
 
         if (isready !== false) {
             //update selected session

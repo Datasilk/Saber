@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Saber.Core;
 using Saber.Vendor;
 
@@ -21,6 +20,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Key = "user",
                     Name = "User Logged In",
                     Block = true,
+                    ContentField = false,
                     Description = "Display a block of HTML if the user is logged into their account",
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
@@ -39,6 +39,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Key = "username",
                     Name = "User Name",
                     Description = "Display the user's name",
+                    ContentField = false,
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
@@ -56,6 +57,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Key = "userid",
                     Name = "User ID",
                     Description = "Display the user's ID",
+                    ContentField = false,
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
@@ -73,6 +75,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Key = "no-user",
                     Name = "User Not Logged In",
                     Block = true,
+                    ContentField = false,
                     Description = "Display a block of HTML when the user is not logged into their account",
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
@@ -91,6 +94,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Key = "signup-allowed",
                     Name = "Allow Sign Ups",
                     Block = true,
+                    ContentField = false,
                     Description = "Display a block of HTML when the user is allowed to sign up for an account according to Saber's User System Settings",
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
