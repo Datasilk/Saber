@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using Saber.Core.Extensions.Strings;
 
 namespace Saber.Services
 {
@@ -20,55 +20,30 @@ namespace Saber.Services
         public string RenderFilters(string key, List<Vendor.DataSource.FilterGroup> filters)
         {
             if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
-            //get HTML partial for data source filters form
             var datasource = Core.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
             if(datasource == null)
             {
                 return Error("Could not find data source \"" + key + "\"");
             }
-            //TODO: Render filter form
-            var view = new View("/Views/DataSources/filters.html");
-            var viewText = new View("/Views/DataSources/Filters/text.html");
-            var viewNumber = new View("/Views/DataSources/Filters/number.html");
-            var viewBool = new View("/Views/DataSources/Filters/bool.html");
-            var viewDateTime = new View("/Views/DataSources/Filters/datetime.html");
-            var info = datasource.Helper.Get(key);
-            var html = new StringBuilder();
-            foreach(var filter in filters)
-            {
-
-            }
-            foreach(var col in info.Columns)
-            {
-                var name = col.Name.Replace("_", " ").Capitalize();
-                switch (col.DataType)
-                {
-                    case Vendor.DataSource.DataType.Text:
-                        viewText["label"] = name;
-                        html.Append(viewText.Render());
-                        break;
-                    case Vendor.DataSource.DataType.Float:
-                    case Vendor.DataSource.DataType.Number:
-                        viewNumber["label"] = name;
-                        html.Append(viewNumber.Render());
-                        break;
-                    case Vendor.DataSource.DataType.Boolean:
-                        viewBool["label"] = name;
-                        viewText["id"] = col.Name;
-                        html.Append(viewBool.Render());
-                        break;
-                    case Vendor.DataSource.DataType.DateTime:
-                        viewDateTime["label"] = name;
-                        html.Append(viewDateTime.Render());
-                        break;
-                }
-            }
-            return view.Render();
+            return Common.Platform.DataSources.RenderFilters(this, datasource, filters);
         }
 
-        public string RenderFilterGroup(List<Vendor.DataSource.FilterGroup> group)
+        public string RenderFilterGroup(string key, List<Vendor.DataSource.FilterGroup> groups)
         {
-            return Error();
+            if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
+            try
+            {
+                var datasource = Core.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
+                if (datasource == null)
+                {
+                    return Error("Could not find data source \"" + key + "\"");
+                }
+                return Common.Platform.DataSources.RenderFilterGroups(this, datasource, groups);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
         }
 
         public string RenderList()

@@ -86,34 +86,39 @@ namespace Saber.Common.Platform.HtmlComponents
                         //deserialize the list data
                         try
                         {
-                            List<Dictionary<string, string>> items;
+                            List<Dictionary<string, string>> records;
                             if(data.IndexOf("data-src=") == 0)
                             {
                                 //get items from custom data source via a vendor plugin
                                 var parts = data.Split("|!|");
-                                var datakey = parts[0].Split("=")[1];
-                                var filter = JsonSerializer.Deserialize<Dictionary<string, object>>(parts.Length > 1 ? parts[1] : "{\"start\":\"1\",\"length\":\"10\"}");
-                                var start = filter.ContainsKey("start") && !string.IsNullOrEmpty(filter["start"].ToString()) ? int.Parse(filter["start"].ToString()) : 1;
-                                var length = filter.ContainsKey("length") && !string.IsNullOrEmpty(filter["length"].ToString()) ? int.Parse(filter["length"].ToString()) : 1;
-                                var datasource = Core.Vendors.DataSources.Where(a => a.Key == datakey).FirstOrDefault();
+                                var dataSourceKey = parts[0].Split("=")[1];
+                                var startPart = parts.Where(a => a.IndexOf("start=") == 0).FirstOrDefault();
+                                var start = startPart != null ? int.Parse(startPart.Replace("start=","")) : 0;
+                                var lengthPart = parts.Where(a => a.IndexOf("length=") == 0).FirstOrDefault();
+                                var length = lengthPart != null ? int.Parse(lengthPart.Replace("length=","")) : 10;
+                                var filterPart = parts.Where(a => a.IndexOf("filter=") == 0).FirstOrDefault();
+                                var filter = JsonSerializer.Deserialize<List<DataSource.FilterGroup>>(filterPart != null ? filterPart.Replace("filter=", "") : "[]");
+                                var sortPart = parts.Where(a => a.IndexOf("sort=") == 0).FirstOrDefault();
+                                var sort = JsonSerializer.Deserialize<List<DataSource.OrderBy>>(sortPart != null ? sortPart.Replace("sort=", "") : "[]");
+                                var datasource = Core.Vendors.DataSources.Where(a => a.Key == dataSourceKey).FirstOrDefault();
                                 if(datasource != null)
                                 {
-                                    items = datasource.Helper.Filter(request, datakey.Replace(datasource.Helper.Prefix + "-", ""), start, length, request.User.Language ?? "en", filter);
+                                    records = datasource.Helper.Filter(request, dataSourceKey.Replace(datasource.Helper.Prefix + "-", ""), start, length, request.User.Language ?? "en", filter, sort);
                                 }
                                 else
                                 {
-                                    items = new List<Dictionary<string, string>>();
+                                    records = new List<Dictionary<string, string>>();
                                 }
                             }
                             else
                             {
                                 //get items that were manually created by the user
-                                items = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(data);
+                                records = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(data);
                             }
                             var html = new StringBuilder();
                             var i = -1;
                             var forward = true;
-                            foreach (var item in items)
+                            foreach (var record in records)
                             {
                                 switch (order)
                                 {
@@ -162,7 +167,7 @@ namespace Saber.Common.Platform.HtmlComponents
                                         break;
                                 }
                                 partial = partials[i];
-                                foreach (var kv in item)
+                                foreach (var kv in record)
                                 {
                                     partial[kv.Key] = kv.Value;
                                 }

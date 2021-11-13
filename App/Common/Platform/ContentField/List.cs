@@ -35,25 +35,23 @@ namespace Saber.Common.Platform.ContentField
                 if(data.IndexOf("data-src=") == 0)
                 {
                     var parts = data.Split("|!|");
-                    var datasrc = parts[0].Replace("data-src=", "");
+                    var dataSourceKey = parts[0].Split("=")[1];
+                    var startPart = parts.Where(a => a.IndexOf("start=") == 0).FirstOrDefault();
+                    var start = startPart != null ? int.Parse(startPart.Replace("start=", "")) : 0;
+                    var lengthPart = parts.Where(a => a.IndexOf("length=") == 0).FirstOrDefault();
+                    var length = lengthPart != null ? int.Parse(lengthPart.Replace("length=", "")) : 10;
+                    var filterPart = parts.Where(a => a.IndexOf("filter=") == 0).FirstOrDefault();
+                    var filters = JsonSerializer.Deserialize<List<DataSource.FilterGroup>>(filterPart != null ? filterPart.Replace("filter=", "") : "[]");
+                    var sortPart = parts.Where(a => a.IndexOf("sort=") == 0).FirstOrDefault();
+                    var sort = JsonSerializer.Deserialize<List<DataSource.OrderBy>>(sortPart != null ? sortPart.Replace("sort=", "") : "[]");
+                    var datasource = Core.Vendors.DataSources.Where(a => a.Key == dataSourceKey).FirstOrDefault();
                     var locked = parts.Contains("locked");
                     var canadd = parts.Contains("add");
-                    var filterpart = parts.Where(a => a.IndexOf("filter=") == 0).FirstOrDefault();
-                    var filter = new Dictionary<string, string>();
-                    if(filterpart != null)
-                    {
-                        filter = filterpart.Replace("filter=", "").Split("|").ToDictionary
-                            (a => a.Split("=", 2)[0], a => a.Split("=", 2)[1]);
-                    }
-                    var datasource = Core.Vendors.DataSources.Where(a => a.Key == datasrc).FirstOrDefault();
                     if(datasource != null)
                     {
                         //render data source filter form
-                        datasrc = datasrc.Replace(datasource.Helper.Prefix + "-", "");
-                        var filterform = datasource.Helper.RenderFilters(request, datasrc, filter);
                         viewlist.Show("filter");
-                        viewlist["filter-contents"] = filterform.HTML;
-                        viewlist["filter-oninit"] = "data-init=\"" + filterform.OnInit + "\"";
+                        viewlist["filter-contents"] = DataSource.RenderFilters(request, datasource, filters);
                         viewlist.Show(locked ? "locked" : "not-locked");
                         viewlist["datasource"] = (datasource.Helper.Vendor != "" ? datasource.Helper.Vendor + " - " : "") + datasource.Name;
                     }

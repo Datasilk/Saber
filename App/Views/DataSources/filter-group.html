@@ -1,0 +1,39 @@
+﻿<div class="row hover pad filter-group">
+    <div class="row">
+        <div class="col text pad-right">Filter Group</div>
+        <div class="col input match-type pad-right">
+            <select>
+                <option value="0">Match On All</option>
+                <option value="1">Match On Any</option>
+            </select>
+        </div>
+        <div class="col right add-filter-group">
+            <div class="row hover light pad-sm">
+                <div class="icon small" onclick="S.editor.fields.custom.list.filters.addGroup(event);" title="Add a new Filter Group to your List">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-folder-add" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="col right add-filter">
+            <div class="row hover light pad-sm">
+                <div class="icon small" onclick="S.editor.fields.custom.list.filters.add(event);" title="Add a Filter to your Filter Group">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-add" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{has-filters}}
+        <div class="row">
+            {{filters}}
+        </div>
+    {{/has-filters}}
+    {{has-filter-groups}}
+        <div class="row">
+            {{filter-groups}}
+        </div>
+    {{/has-filter-groups}}
+</div>
