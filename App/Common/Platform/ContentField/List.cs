@@ -32,7 +32,7 @@ namespace Saber.Common.Platform.ContentField
             try
             {
                 var html = new StringBuilder();
-                if(data.IndexOf("data-src=") == 0)
+                if(data.IndexOf("data-src=") >= 0)
                 {
                     var parts = data.Split("|!|");
                     var dataSourceKey = parts[0].Split("=")[1];

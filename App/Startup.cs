@@ -441,6 +441,7 @@ namespace Saber
             Core.Delegates.Log.Error = Query.Logs.LogError;
             Core.Delegates.ContentFields.GetFieldType = ContentFields.GetFieldType;
             Core.Delegates.ContentFields.RenderForm = ContentFields.RenderForm;
+            Core.Delegates.DataSources.RenderFilter = DataSources.RenderFilter;
             Core.Delegates.DataSources.RenderFilters = DataSources.RenderFilters;
             Core.Delegates.DataSources.RenderFilterGroups = DataSources.RenderFilterGroups;
 

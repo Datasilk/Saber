@@ -1,7 +1,7 @@
-﻿<div class="row hover filter-input-text">
+﻿<div class="row hover filter-input-datetime" data-column="{{column}}">
     <div class="col field long">{{label}}</div>
-    <div class="col input">
-        <select class="filter-match">
+    <div class="col input filter-match">
+        <select>
             <option value="3">Equals</option>
             <option value="4">Greater Than</option>
             <option value="5">Greater Than Or Equal To</option>
@@ -10,4 +10,9 @@
         </select>
     </div>
     <div class="col input filter-input"><input type="datetime-local" value="{{value}}" /></div>
+    <div class="col right input filter-queryname">
+        <input type="text" value="{{queryname}}" placeholder="(optional)" />
+    </div>
+    <div class="col right text faded">Query Name</div>
+    <hr/>
 </div>

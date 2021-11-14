@@ -1,17 +1,15 @@
-﻿<div class="row">
-    {{no-content}}
-        <div class="col faded">Add a new Filter Group to begin</div>
-    {{/no-content}}
-    <div class="col right add-filter-group" style="margin-right:-8px">
-        <div class="row hover light pad-sm">
-            <div class="icon small" onclick="S.editor.fields.custom.list.filters.addGroup(event);" title="Add a new Filter Group to your List">
+﻿<div class="row pad-top-sm">
+    <div class="col right add-root-filter-group pad-right-sm">
+        <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.filters.addGroup('{{datasource}}', event);">
+            <div class="icon small" title="Add a new Filter Group to your List">
                 <svg viewBox="0 0 32 32">
                     <use xlink:href="#icon-folder-add" x="0" y="0" width="32" height="32"></use>
                 </svg>
             </div>
         </div>
     </div>
+    {{no-content}}
+        <div class="col text no-filtergroups faded">To begin, add a new <b>Filter Group</b>, then add a <b>Filter</b> to your new group</div>
+    {{/no-content}}
 </div>
-{{has-content}}
-    <div class="row filter-groups pad-top-sm">{{content}}</div>
-{{/has-content}}
+<div class="row filter-groups pad-top-sm">{{content}}</div>

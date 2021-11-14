@@ -197,11 +197,29 @@ S.editor.fields = {
         S.editor.fields.save(S.editor.filebar.preview.show);
         
     },
+    listeners: {
+        save: {
+            items: [],
+            add: function (callback) {
+                S.editor.fields.listeners.save.items.push(callback);
+            },
+            call: function () {
+                var calls = S.editor.fields.listeners.save.items;
+                for (var x = 0; x < calls.length; x++) {
+                    calls[x]();
+                }
+            }
+        }
+    },
     save: function (callback) {
-        if (S.editor.fields.changed == false) { return;}
-        var fields = {};
+        if (S.editor.fields.changed == false) { return; }
         var seltab = $('.tab-for-content-fields.selected > div');
         var pathid = seltab.attr('data-path');
+
+        //execite all listener callbacks before saving
+        S.editor.fields.listeners.save.items.forEach(a => a($('.' + pathid)));
+
+        var fields = {};
         var path = seltab.attr('data-path-url') || S.editor.path;
         var texts = $('.' + pathid + ' form .input-field');
         texts.each(function (txt) {
@@ -251,6 +269,11 @@ S.editor.fields = {
             init: function (container) {
                 let section = $(container + ' form');
                 S.accordion.load({}, () => { S.editor.resize.window(); });
+
+                //event listener for all input fields
+                section.find('input, select').on('input', (e) => {
+                    S.editor.fields.changed = true;
+                });
 
                 //event listener for close button
                 section.find('.list-items li .close-btn').off('click').on('click', S.editor.fields.custom.list.close);
@@ -414,7 +437,7 @@ S.editor.fields = {
                                 return '<li class="item" data-id="' + a[0] + '"><span>' + a[1] + '</span></li>'
                             }).join('') + '</ul>';
                         }
-                        var popup = S.popup.show('Select A Data Source for "' + title + '"', html);
+                        var popup = S.popup.show('Select A Data Source for "' + title + '"', html, { width: '100%', maxWidth: 420 });
                         $('.popup .list li').on('click', (e) => {
                             var target = $(e.target);
                             if (!target.hasClass('item')) {
@@ -470,6 +493,144 @@ S.editor.fields = {
                         inputfield.val(src + '|!|' + JSON.stringify(filter));
                     }
                 }
+            },
+            filters: {
+                addGroup: function (key, e) {
+                    var target = $(e.target);
+                    var container = target.parents('.filter-group').find('.sub-groups');
+                    var depth = 0;
+                    if (container.length > 0) {
+                        depth = container.length;
+                        container = container.first();
+                    } else {
+                        //add root group
+                        container = target.parents('.filter-settings').find('.filter-groups').first();
+                        target.parents('.filter-settings').find('.no-filtergroups').remove();
+                    }
+                    S.ajax.post('DataSources/RenderFilterGroups', { key: key, groups: [{ Elements: [], Groups: [] }], depth:depth }, (response) => {
+                        container.append(response);
+                        var children = container.children();
+                        $(children[children.length - 1]).find('input, select').on('input', (e) => {
+                            S.editor.fields.changed = true;
+                        });
+                    });
+                },
+
+                removeGroup: function (e) {
+                    var target = $(e.target);
+                    target.parents('.filter-group').first().remove();
+                },
+
+                add: function (key, e) {
+                    var target = $(e.target);
+                    var container = target.parents('.filter-group').first();
+                    var html = template_datasource_column.innerHTML;
+                    S.ajax.post('DataSources/Columns', { key: key }, (response) => {
+                        var columns = JSON.parse(response);
+                        var options = '';
+                        for (var x = 0; x < columns.length; x++) {
+                            var c = columns[x].Name;
+                            options += '<option value="' + c + '">' + c + '</options>';
+                        }
+                        html = html.replace('#options#', options);
+                        S.editor.message.confirm('Select Data Source Column to filter by', html, {}, (response) => {
+                            if (response == true) {
+                                S.ajax.post('DataSources/RenderFilter', { key: key, column: datasource_column.value }, (response) => {
+                                    var parent = container.find('.filters').first();
+                                    parent.append(response);
+                                    var children = parent.children();
+                                    console.log($(children[children.length - 1]));
+                                    console.log($(children[children.length - 1]).find('input, select'));
+                                    $(children[children.length - 1]).find('input, select').on('input', (e) => {
+                                        S.editor.fields.changed = true;
+                                    });
+                                });
+                            }
+                        });
+                    });
+                    
+                }
+            },
+            save: function (form) {
+                var lists = form.find('.list-component-field');
+
+                function collectFilters(container, elem) {
+                    //generate FilterGroup object
+                    var result = {
+                        Match: parseInt(container.find('.match-type select').val() ?? '0'),
+                        Elements: [],
+                        Groups: []
+                    };
+                    var subgroups = elem.find('.sub-groups').first().children();
+                    var filters = elem.find('.filters').first().children();
+                    for (var x = 0; x < filters.length; x++) {
+                        var filter = $(filters[x]);
+                        var type = 'text';
+                        if (filter.hasClass('filter-input-bool')) { type = 'bool'; }
+                        else if (filter.hasClass('filter-input-datetime')) { type = 'datetime'; }
+                        else if (filter.hasClass('filter-input-number')) { type = 'number'; }
+                        var val = '';
+                        switch (type) {
+                            case 'text': case 'number':
+                                val = filter.find('.filter-input input').val() ?? '';
+                                break;
+                            case 'datetime':
+                                var dt = new Date(filter.find('.filter-input input').val());
+                                if (dt) {
+                                    dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
+                                    val = dt.toISOString().slice(0, 16) ?? ''
+                                }
+                                break;
+                            case 'bool':
+                                val = filter.find('.filter-input input')[0].checked ? '1' : '0'
+                                break;
+                        }
+                        var column = filter.attr('data-column');
+                        if (column == null) { continue; }
+                        result.Elements.push({
+                            Column: filter.attr('data-column'),
+                            Match: parseInt(filter.find('.filter-match select').val() ?? '0'),
+                            Value: val,
+                            QueryName: filter.find('.query-name').val() ?? ''
+                        });
+                    }
+                    for (var x = 0; x < subgroups.length; x++) {
+                        result.Groups.push(collectFilters(container, $(subgroups[x])));
+                    }
+                    return result;
+                }
+
+                for (var i = 0; i < lists.length; i++) {
+                    //for each list in the content fields form
+                    var container = $(lists[i]).parents('.content-field').first();
+                    //generate content for list hidden field
+                    var filters = [];
+                    var groups = container.find('.filter-groups').children();
+                    for (var y = 0; y < groups.length; y++) {
+                        var filter = collectFilters(container, $(groups[y]));
+                        console.log(filter);
+                        if (filter.Elements.length > 0 || filter.Groups.length > 0) {
+                            filters.push(filter);
+                        }
+                    }
+                    var json = 'filter=' + JSON.stringify(filters);
+                    var input = container.find('.input-field');
+                    var inputval = input.val();
+                    var parts = inputval.split('|!|');
+                    var found = false;
+                    for (var x = 0; x < parts.length; x++) {
+                        if (parts[x].indexOf('filter=') == 0) {
+                            parts[x] = json;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        parts.push(json);
+                    }
+                    //console.log(parts);
+                    input.val(parts.join('|!|'));
+                }
             }
         }
     }
@@ -477,3 +638,6 @@ S.editor.fields = {
 
 //add event listener for window resize stop to change height of all content field textarea inputs
 S.editor.resize.stop.add('content-fields', S.editor.fields.resizeAll);
+
+//add listener so when user saves content fields, it generates list data
+S.editor.fields.listeners.save.add(S.editor.fields.custom.list.save);

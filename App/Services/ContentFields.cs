@@ -45,7 +45,7 @@ namespace Saber.Services
                 try
                 {
                     //save fields as json
-                    var json = JsonSerializer.Serialize(validated);
+                    var json = Core.ContentFields.Serialize(validated);
                     File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                     //reset view cache for page
                     Website.ResetCache(path, language);
@@ -67,7 +67,7 @@ namespace Saber.Services
                 try
                 {
                     //save fields as json
-                    var json = JsonSerializer.Serialize(validated);
+                    var json = Core.ContentFields.Serialize(validated);
                     File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                     //reset view cache for page
                     Website.ResetCache(path, language);

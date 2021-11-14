@@ -87,7 +87,7 @@ namespace Saber.Common.Platform.HtmlComponents
                         try
                         {
                             List<Dictionary<string, string>> records;
-                            if(data.IndexOf("data-src=") == 0)
+                            if(data.IndexOf("data-src=") >= 0)
                             {
                                 //get items from custom data source via a vendor plugin
                                 var parts = data.Split("|!|");

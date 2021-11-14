@@ -1,39 +1,47 @@
-﻿<div class="row hover pad filter-group">
+﻿<div class="row hover hover-outline filter-group">
     <div class="row">
-        <div class="col text pad-right">Filter Group</div>
-        <div class="col input match-type pad-right">
+        <div class="col icon small text pad-right faded">
+            <svg viewBox="0 0 32 32">
+                <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
+            </svg>
+        </div>
+        <div class="col text pad-right">Filter {{sub}}Sub-{{/sub}}Group</div>
+        <div class="col input match-type pad-right" style="max-width:130px;">
             <select>
                 <option value="0">Match On All</option>
                 <option value="1">Match On Any</option>
             </select>
         </div>
-        <div class="col right add-filter-group">
-            <div class="row hover light pad-sm">
-                <div class="icon small" onclick="S.editor.fields.custom.list.filters.addGroup(event);" title="Add a new Filter Group to your List">
-                    <svg viewBox="0 0 32 32">
-                        <use xlink:href="#icon-folder-add" x="0" y="0" width="32" height="32"></use>
-                    </svg>
-                </div>
+        <div class="col text hover-only btn-close">
+            <div class="icon small btn-close" onclick="S.editor.fields.custom.list.filters.removeGroup(event);" title="Remove Filter Group">
+                <svg viewBox="0 0 32 32">
+                    <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
+                </svg>
             </div>
         </div>
-        <div class="col right add-filter">
-            <div class="row hover light pad-sm">
-                <div class="icon small" onclick="S.editor.fields.custom.list.filters.add(event);" title="Add a Filter to your Filter Group">
+        <div class="col right add-filter pad-top-sm">
+            <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.filters.add('{{datasource}}', event);">
+                <div class="icon small" title="Add a Filter to your Filter Group">
                     <svg viewBox="0 0 32 32">
                         <use xlink:href="#icon-add" x="0" y="0" width="32" height="32"></use>
                     </svg>
                 </div>
             </div>
         </div>
+        <div class="col right add-filter-group pad-top-sm">
+            <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.filters.addGroup('{{datasource}}', event);">
+                <div class="icon small" title="Add a new Filter Sub-Group to your List">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-folder-add" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </div>
+            </div>
+        </div>
     </div>
-    {{has-filters}}
-        <div class="row">
-            {{filters}}
-        </div>
-    {{/has-filters}}
-    {{has-filter-groups}}
-        <div class="row">
-            {{filter-groups}}
-        </div>
-    {{/has-filter-groups}}
+    <div class="row filters">
+        {{filters}}
+    </div>
+    <div class="row sub-groups">
+        {{filter-groups}}
+    </div>
 </div>

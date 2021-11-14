@@ -11,6 +11,7 @@ namespace Saber.Common.Platform
         public static string RenderFilters(IRequest request, DataSourceInfo datasource, List<Vendor.DataSource.FilterGroup> filters)
         {
             var view = new View("/Views/DataSources/filters.html");
+            view["datasource"] = datasource.Key;
             if(filters == null || filters.Count == 0)
             {
                 view.Show("no-content");
@@ -23,64 +24,78 @@ namespace Saber.Common.Platform
             return view.Render();
         }
 
-        public static string RenderFilterGroups(IRequest request, DataSourceInfo datasource, List<Vendor.DataSource.FilterGroup> filters)
+        public static string RenderFilterGroups(IRequest request, DataSourceInfo datasource, List<Vendor.DataSource.FilterGroup> filters, int depth = 0)
         {
-            if(filters == null || filters.Count == 0) { return ""; }
+            if(filters == null){ filters = new List<Vendor.DataSource.FilterGroup>(); }
             var viewGroup = new View("/Views/DataSources/filter-group.html");
-            var viewText = new View("/Views/DataSources/Filters/text.html");
-            var viewNumber = new View("/Views/DataSources/Filters/number.html");
-            var viewBool = new View("/Views/DataSources/Filters/bool.html");
-            var viewDateTime = new View("/Views/DataSources/Filters/datetime.html");
-            var info = datasource.Helper.Get(datasource.Key);
+            var info = datasource.Helper.Get(datasource.Key.Replace(datasource.Helper.Prefix + "-", ""));
             var groupsHtml = new StringBuilder();
             var html = new StringBuilder();
             foreach (var group in filters)
             {
                 viewGroup.Clear();
-                if (group.Elements.Count > 0)
-                {
-                    viewGroup.Show("has-filters");
-                }
-                if (group.Groups.Count > 0)
-                {
-                    viewGroup.Show("has-filter-groups");
-                }
+                html.Clear();
+                viewGroup["datasource"] = datasource.Key;
+                if(depth > 0) { viewGroup.Show("sub"); }
                 foreach (var filter in group.Elements)
                 {
-                    var col = info.Columns.Where(a => a.Name == filter.Column).FirstOrDefault();
-                    if (col == null) { continue; }
-                    var name = col.Name.Replace("_", " ").Capitalize();
-                    var value = !string.IsNullOrEmpty(filter.QueryName) && request.Parameters.ContainsKey(filter.QueryName) ?
-                        request.Parameters[filter.QueryName] : filter.Value;
-                    switch (col.DataType)
-                    {
-                        case Vendor.DataSource.DataType.Text:
-                            viewText["label"] = name;
-                            viewText["value"] = value;
-                            html.Append(viewText.Render());
-                            break;
-                        case Vendor.DataSource.DataType.Float:
-                        case Vendor.DataSource.DataType.Number:
-                            viewNumber["label"] = name;
-                            viewNumber["value"] = value;
-                            html.Append(viewNumber.Render());
-                            break;
-                        case Vendor.DataSource.DataType.Boolean:
-                            viewBool["label"] = name;
-                            viewBool["id"] = col.Name;
-                            viewBool["checked"] = value == "1" ? "checked=\"checked\"" : "";
-                            html.Append(viewBool.Render());
-                            break;
-                        case Vendor.DataSource.DataType.DateTime:
-                            viewDateTime["label"] = name;
-                            viewDateTime["value"] = value;
-                            html.Append(viewDateTime.Render());
-                            break;
-                    }
+                    html.Append(RenderFilter(request, info, filter));
                 }
-                groupsHtml.Append(html + RenderFilterGroups(request, datasource, group.Groups));
+                if (html.Length > 0)
+                {
+                    viewGroup["filters"] = html.ToString();
+                    viewGroup.Show("has-filters");
+                }
+                if(group.Groups != null && group.Groups.Count > 0)
+                {
+                    viewGroup["filter-groups"] = RenderFilterGroups(request, datasource, group.Groups, depth + 1);
+                }
+
+                groupsHtml.Append(viewGroup.Render());
             }
             return groupsHtml.ToString();
+        }
+
+        public static string RenderFilter(IRequest request, Vendor.DataSource datasource, Vendor.DataSource.FilterElement filter)
+        {
+            var col = datasource.Columns.Where(a => a.Name == filter.Column).FirstOrDefault();
+            if (col == null) { return ""; }
+            var name = col.Name.Replace("_", " ").Capitalize();
+            var value = !string.IsNullOrEmpty(filter.QueryName) && request.Parameters.ContainsKey(filter.QueryName) ?
+                request.Parameters[filter.QueryName] : filter.Value;
+            switch (col.DataType)
+            {
+                case Vendor.DataSource.DataType.Text:
+                    var viewText = new View("/Views/DataSources/Filters/text.html");
+                    viewText["column"] = col.Name;
+                    viewText["label"] = name;
+                    viewText["value"] = value;
+                    return viewText.Render();
+
+                case Vendor.DataSource.DataType.Float:
+                case Vendor.DataSource.DataType.Number:
+                    var viewNumber = new View("/Views/DataSources/Filters/number.html");
+                    viewNumber["column"] = col.Name;
+                    viewNumber["label"] = name;
+                    viewNumber["value"] = value;
+                    return viewNumber.Render();
+
+                case Vendor.DataSource.DataType.Boolean:
+                    var viewBool = new View("/Views/DataSources/Filters/bool.html");
+                    viewBool["column"] = col.Name;
+                    viewBool["label"] = name;
+                    viewBool["id"] = col.Name;
+                    viewBool["checked"] = value == "1" ? "checked=\"checked\"" : "";
+                    return viewBool.Render();
+
+                case Vendor.DataSource.DataType.DateTime:
+                    var viewDateTime = new View("/Views/DataSources/Filters/datetime.html");
+                    viewDateTime["column"] = col.Name;
+                    viewDateTime["label"] = name;
+                    viewDateTime["value"] = value;
+                    return viewDateTime.Render();
+            }
+            return "";
         }
     }
 }

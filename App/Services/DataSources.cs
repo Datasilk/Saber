@@ -17,6 +17,31 @@ namespace Saber.Services
             }).ToArray());
         }
 
+        public string Columns(string key)
+        {
+            if (!CheckSecurity("edit-content")) { return AccessDenied(); }
+            var datasource = Core.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
+            if(datasource != null)
+            {
+                return JsonResponse(datasource.Helper.Get(key.Replace(datasource.Helper.Prefix + "-", "")).Columns);
+            }
+            return Error("Could not find data source");
+        }
+
+        public string RenderFilter(string key, string column)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
+            var datasource = Core.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
+            if (datasource == null)
+            {
+                return Error("Could not find data source \"" + key + "\"");
+            }
+            return Common.Platform.DataSources.RenderFilter(this, datasource.Helper.Get(key.Replace(datasource.Helper.Prefix + "-", "")), new Vendor.DataSource.FilterElement()
+            {
+                Column = column
+            });
+        }
+
         public string RenderFilters(string key, List<Vendor.DataSource.FilterGroup> filters)
         {
             if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
@@ -28,7 +53,7 @@ namespace Saber.Services
             return Common.Platform.DataSources.RenderFilters(this, datasource, filters);
         }
 
-        public string RenderFilterGroup(string key, List<Vendor.DataSource.FilterGroup> groups)
+        public string RenderFilterGroups(string key, List<Vendor.DataSource.FilterGroup> groups, int depth = 0)
         {
             if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
             try
@@ -38,7 +63,7 @@ namespace Saber.Services
                 {
                     return Error("Could not find data source \"" + key + "\"");
                 }
-                return Common.Platform.DataSources.RenderFilterGroups(this, datasource, groups);
+                return Common.Platform.DataSources.RenderFilterGroups(this, datasource, groups, depth);
             }
             catch (Exception ex)
             {

@@ -230,12 +230,13 @@
     hr{border-top-color:rgba(255,255,255,0.2);}
     .dragging{background-color:#1d3323;}
     .has-content-fields{
+        .row.hover.hover-outline:hover{background:transparent !important; outline:2px solid #004d97;}
         .row.hover.content-field{
             input:not([type=button]):not([type=submit]):not([type=radio]), textarea, select{
                 &:hover{background:#353535; border-color:#0072ff;}
                 &:focus{border-color:#0e4b96 !important; outline-color:#0e4b96 !important;}
             }
-            &:hover{background:transparent !important; outline:2px solid #004d97;
+            &:hover{
                 .accordion{
                     & > .title{background-color:#00407e;
                         &:hover{background-color:#0155a7 !important;}
