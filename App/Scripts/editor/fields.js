@@ -272,7 +272,7 @@ S.editor.fields = {
 
                 //event listener for all input fields
                 section.find('input, select').on('input', (e) => {
-                    S.editor.fields.changed = true;
+                    S.editor.fields.change();
                 });
 
                 //event listener for close button
@@ -418,7 +418,7 @@ S.editor.fields = {
                         S.editor.fields.save();
                     }
                     S.popup.hide(popup);
-                    S.editor.fields.changed = true;
+                    S.editor.fields.change();
                     S.editor.fields.custom.list.init(container);
                     return false;
                 }, null, renderApi);
@@ -479,7 +479,7 @@ S.editor.fields = {
                                         S.editor.error('', err.responseText);
                                 });
                             }
-                            S.editor.fields.changed = true;
+                            S.editor.fields.change();
                         });
 
                     }, (err) => {
@@ -487,10 +487,86 @@ S.editor.fields = {
                     }, true);
                     return false;
                 },
-                filter: {
-                    save: function (inputfield, filter) {
-                        var src = inputfield.val().split('|!|')[0];
-                        inputfield.val(src + '|!|' + JSON.stringify(filter));
+                save: function (form, type) {
+                    var lists = form.find('.list-component-field');
+                    function collectFilters(container, elem) {
+                        //generate FilterGroup object
+                        var result = {
+                            Match: parseInt(container.find('.match-type select').val() ?? '0'),
+                            Elements: [],
+                            Groups: []
+                        };
+                        var subgroups = elem.find('.sub-groups').first().children();
+                        var filters = elem.find('.filters').first().children();
+                        for (var x = 0; x < filters.length; x++) {
+                            var filter = $(filters[x]);
+                            var type = 'text';
+                            if (filter.hasClass('filter-input-bool')) { type = 'bool'; }
+                            else if (filter.hasClass('filter-input-datetime')) { type = 'datetime'; }
+                            else if (filter.hasClass('filter-input-number')) { type = 'number'; }
+                            var val = '';
+                            switch (type) {
+                                case 'text': case 'number':
+                                    val = filter.find('.filter-input input').val() ?? '';
+                                    break;
+                                case 'datetime':
+                                    var dt = new Date(filter.find('.filter-input input').val());
+                                    if (dt) {
+                                        dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
+                                        val = dt.toISOString().slice(0, 16) ?? ''
+                                    }
+                                    break;
+                                case 'bool':
+                                    val = filter.find('.filter-input input')[0].checked ? '1' : '0'
+                                    break;
+                            }
+                            var column = filter.attr('data-column');
+                            if (column == null) { continue; }
+                            result.Elements.push({
+                                Column: filter.attr('data-column'),
+                                Match: parseInt(filter.find('.filter-match select').val() ?? '0'),
+                                Value: val,
+                                QueryName: filter.find('.query-name').val() ?? ''
+                            });
+                        }
+                        for (var x = 0; x < subgroups.length; x++) {
+                            result.Groups.push(collectFilters(container, $(subgroups[x])));
+                        }
+                        return result;
+                    }
+
+                    for (var i = 0; i < lists.length; i++) {
+                        //find lists that use data sources
+                        var container = $(lists[i]).parents('.content-field').first();
+                        if (container.find('.list-items')[0].style.display != 'none') { continue; }
+
+                        //generate content for list hidden field
+                        var filters = [];
+                        var groups = container.find('.filter-groups').children();
+                        for (var y = 0; y < groups.length; y++) {
+                            var filter = collectFilters(container, $(groups[y]));
+                            console.log(filter);
+                            if (filter.Elements.length > 0 || filter.Groups.length > 0) {
+                                filters.push(filter);
+                            }
+                        }
+                        var json = 'filter=' + JSON.stringify(filters);
+                        var input = container.find('.input-field');
+                        var inputval = input.val();
+                        var parts = inputval.split('|!|');
+                        var found = false;
+                        for (var x = 0; x < parts.length; x++) {
+                            if (parts[x].indexOf('filter=') >= 0) {
+                                parts[x] = json;
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            parts.push(json);
+                        }
+                        //console.log(parts);
+                        input.val(parts.join('|!|'));
                     }
                 }
             },
@@ -511,7 +587,7 @@ S.editor.fields = {
                         container.append(response);
                         var children = container.children();
                         $(children[children.length - 1]).find('input, select').on('input', (e) => {
-                            S.editor.fields.changed = true;
+                            S.editor.fields.change();
                         });
                     });
                 },
@@ -519,6 +595,7 @@ S.editor.fields = {
                 removeGroup: function (e) {
                     var target = $(e.target);
                     target.parents('.filter-group').first().remove();
+                    S.editor.fields.change();
                 },
 
                 add: function (key, e) {
@@ -542,94 +619,13 @@ S.editor.fields = {
                                     console.log($(children[children.length - 1]));
                                     console.log($(children[children.length - 1]).find('input, select'));
                                     $(children[children.length - 1]).find('input, select').on('input', (e) => {
-                                        S.editor.fields.changed = true;
+                                        S.editor.fields.change();
                                     });
                                 });
                             }
                         });
                     });
                     
-                }
-            },
-            save: function (form) {
-                var lists = form.find('.list-component-field');
-
-                function collectFilters(container, elem) {
-                    //generate FilterGroup object
-                    var result = {
-                        Match: parseInt(container.find('.match-type select').val() ?? '0'),
-                        Elements: [],
-                        Groups: []
-                    };
-                    var subgroups = elem.find('.sub-groups').first().children();
-                    var filters = elem.find('.filters').first().children();
-                    for (var x = 0; x < filters.length; x++) {
-                        var filter = $(filters[x]);
-                        var type = 'text';
-                        if (filter.hasClass('filter-input-bool')) { type = 'bool'; }
-                        else if (filter.hasClass('filter-input-datetime')) { type = 'datetime'; }
-                        else if (filter.hasClass('filter-input-number')) { type = 'number'; }
-                        var val = '';
-                        switch (type) {
-                            case 'text': case 'number':
-                                val = filter.find('.filter-input input').val() ?? '';
-                                break;
-                            case 'datetime':
-                                var dt = new Date(filter.find('.filter-input input').val());
-                                if (dt) {
-                                    dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
-                                    val = dt.toISOString().slice(0, 16) ?? ''
-                                }
-                                break;
-                            case 'bool':
-                                val = filter.find('.filter-input input')[0].checked ? '1' : '0'
-                                break;
-                        }
-                        var column = filter.attr('data-column');
-                        if (column == null) { continue; }
-                        result.Elements.push({
-                            Column: filter.attr('data-column'),
-                            Match: parseInt(filter.find('.filter-match select').val() ?? '0'),
-                            Value: val,
-                            QueryName: filter.find('.query-name').val() ?? ''
-                        });
-                    }
-                    for (var x = 0; x < subgroups.length; x++) {
-                        result.Groups.push(collectFilters(container, $(subgroups[x])));
-                    }
-                    return result;
-                }
-
-                for (var i = 0; i < lists.length; i++) {
-                    //for each list in the content fields form
-                    var container = $(lists[i]).parents('.content-field').first();
-                    //generate content for list hidden field
-                    var filters = [];
-                    var groups = container.find('.filter-groups').children();
-                    for (var y = 0; y < groups.length; y++) {
-                        var filter = collectFilters(container, $(groups[y]));
-                        console.log(filter);
-                        if (filter.Elements.length > 0 || filter.Groups.length > 0) {
-                            filters.push(filter);
-                        }
-                    }
-                    var json = 'filter=' + JSON.stringify(filters);
-                    var input = container.find('.input-field');
-                    var inputval = input.val();
-                    var parts = inputval.split('|!|');
-                    var found = false;
-                    for (var x = 0; x < parts.length; x++) {
-                        if (parts[x].indexOf('filter=') == 0) {
-                            parts[x] = json;
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        parts.push(json);
-                    }
-                    //console.log(parts);
-                    input.val(parts.join('|!|'));
                 }
             }
         }
@@ -640,4 +636,4 @@ S.editor.fields = {
 S.editor.resize.stop.add('content-fields', S.editor.fields.resizeAll);
 
 //add listener so when user saves content fields, it generates list data
-S.editor.fields.listeners.save.add(S.editor.fields.custom.list.save);
+S.editor.fields.listeners.save.add(S.editor.fields.custom.list.datasource.save);

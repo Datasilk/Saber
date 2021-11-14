@@ -70,6 +70,7 @@ namespace Saber.Common.Platform.HtmlComponents
                         var results = new List<KeyValuePair<string, string>>();
                         if (!args.ContainsKey("partial") || string.IsNullOrEmpty(data))
                         {
+                            results.Add(new KeyValuePair<string, string>(prefix + key, ""));
                             return new List<KeyValuePair<string, string>>();
                         }
                         var partialFiles = args["partial"].Split("|");
@@ -118,6 +119,10 @@ namespace Saber.Common.Platform.HtmlComponents
                             var html = new StringBuilder();
                             var i = -1;
                             var forward = true;
+                            if(records == null){
+                                results.Add(new KeyValuePair<string, string>(prefix + key, ""));
+                                return results;
+                            }
                             foreach (var record in records)
                             {
                                 switch (order)
@@ -176,8 +181,9 @@ namespace Saber.Common.Platform.HtmlComponents
                             }
                             results.Add(new KeyValuePair<string, string>(prefix + key, html.ToString()));
                         }
-                        catch (Exception ex) 
-                        { 
+                        catch (Exception ex)
+                        {
+                            results.Add(new KeyValuePair<string, string>(prefix + key, ""));
                         }
                         return results;
                     })
