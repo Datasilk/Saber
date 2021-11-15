@@ -316,11 +316,18 @@ ul.menu-bar{width:100%; list-style:none;
             }
         }
     }
+    .btn-close{padding-top:12px;
+        & .btn-close{padding-top:0;}
+    }
 
     .filter-match{width:117px !important;}
-    .filter-input{width:~"calc(100% - 240px)" !important;}
-    .filter-queryname{max-width:200px;}
+    .filter-input{width:~"calc(100% - 300px)" !important;}
+    .filter-queryname{
+        .input{max-width:200px; width:100%;}
+    }
+    .filters{ min-height:30px;}
     .sub-groups{border-left:15px solid #21264c;}
+    
     .filter-settings{
         .add-root-filter-group{position:absolute; right:30px; top:-29px;}
         .add-filter{margin-right:5px;}

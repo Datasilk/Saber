@@ -212,11 +212,12 @@ S.editor.fields = {
         }
     },
     save: function (callback) {
+        console.log('save content fields');
         if (S.editor.fields.changed == false) { return; }
         var seltab = $('.tab-for-content-fields.selected > div');
         var pathid = seltab.attr('data-path');
 
-        //execite all listener callbacks before saving
+        //execute all listener callbacks before saving
         S.editor.fields.listeners.save.items.forEach(a => a($('.' + pathid)));
 
         var fields = {};
@@ -294,28 +295,12 @@ S.editor.fields = {
                         item.attr('data-index', x + 1);
                     }
                     hidden.val(JSON.stringify(newdata));
+                    S.editor.fields.change();
                     S.editor.fields.save();
                 });
 
-                //reset indexes
-                var lists = section.find('.list-items');
-                for (var x = 0; x < lists.length; x++) {
-                    var items =$(lists[x]).find('li');
-                    for (var y = 0; y < items.length; y++) {
-                        $(items[y]).attr('data-index', y + 1);
-                    }
-                }
-
-                //initialize all data source filter forms
-                section.find('.filter-settings .accordion .contents[data-init]').each((a) => {
-                    var field = $(a).parents('.content-field').first();
-                    var hidden = field.find('input.input-field');
-                    var oninit = $(a).attr('data-init');
-                    var obj = S.editor.objectFromString(oninit);
-                    if (obj && typeof obj == 'function') {
-                        obj(field.find('.filter-settings .accordion > .contents'), hidden);
-                    }
-                });
+                //S.drag.sort.add(container + ' .filter-settings .filter-groups, .filter-settings .sub-groups', container + ' .filter-settings .filter-group', S.editor.fields.custom.list.filters.sorted);
+                //S.drag.sort.add(container + ' .filter-settings .filters', container + ' .filter-settings .filter', S.editor.fields.custom.list.filters.sorted);
             },
             parse: function (hidden) {
                 var data = hidden.val();
@@ -391,34 +376,35 @@ S.editor.fields = {
                         field.find('.list-items .accordion').addClass('expanded');
                     }
 
-                    //add item to list in content fields tab
-                    var i = (index != null ? parseInt(index) : field.find('.list-items li').length) + 1;
-                    var ul = field.find('.list-items ul');
-                    var children = field.find('.list-items ul > li').map((i, a) => a.outerHTML);
-                    var child = $('#custom_field_list_item').html()
-                        .replace('##onclick##', "S.editor.fields.custom.list.edit(event, '##title##', '##key##', '##partial##', '##lang##', '##container##')")
-                        .replace(/\#\#label\#\#/g, key != '' ? fields[key] : 'List Item #' + i)
-                        .replace(/\#\#index\#\#/g, i)
-                        .replace(/\#\#title\#\#/g, title)
-                        .replace(/\#\#key\#\#/g, key)
-                        .replace(/\#\#partial\#\#/g, partial)
-                        .replace(/\#\#lang\#\#/g, lang)
-                        .replace(/\#\#container\#\#/g, container);
-                    ul.html('');
-                    if (fieldsdata != null && index != null) {
-                        //update existing element
-                        children[index] = child;
-                    } else {
-                        children.push(child);
-                    }
-                    for (var x = 0; x < children.length; x++) {
-                        ul.append(children[x]);
-                    }
                     if (!hasDataSource) {
-                        S.editor.fields.save();
+                        //add item to list in content fields tab
+                        var i = (index != null ? parseInt(index) : field.find('.list-items li').length) + 1;
+                        var ul = field.find('.list-items ul');
+                        var children = field.find('.list-items ul > li').map((i, a) => a.outerHTML);
+                        var child = $('#custom_field_list_item').html()
+                            .replace('##onclick##', "S.editor.fields.custom.list.edit(event, '##title##', '##key##', '##partial##', '##lang##', '##container##')")
+                            .replace(/\#\#label\#\#/g, key != '' ? fields[key] : 'List Item #' + i)
+                            .replace(/\#\#index\#\#/g, i)
+                            .replace(/\#\#title\#\#/g, title)
+                            .replace(/\#\#key\#\#/g, key)
+                            .replace(/\#\#partial\#\#/g, partial)
+                            .replace(/\#\#lang\#\#/g, lang)
+                            .replace(/\#\#container\#\#/g, container);
+                        if (fieldsdata != null && index != null) {
+                            //update existing element
+                            children[index] = child;
+                        } else {
+                            //create new element
+                            children.push(child);
+                        }
+                        ul.html('');
+                        for (var x = 0; x < children.length; x++) {
+                            ul.append(children[x]);
+                        }
                     }
-                    S.popup.hide(popup);
                     S.editor.fields.change();
+                    S.editor.fields.save();
+                    S.popup.hide(popup);
                     S.editor.fields.custom.list.init(container);
                     return false;
                 }, null, renderApi);
@@ -586,9 +572,11 @@ S.editor.fields = {
                     S.ajax.post('DataSources/RenderFilterGroups', { key: key, groups: [{ Elements: [], Groups: [] }], depth:depth }, (response) => {
                         container.append(response);
                         var children = container.children();
-                        $(children[children.length - 1]).find('input, select').on('input', (e) => {
+                        var newgroup = $(children[children.length - 1]);
+                        newgroup.find('input, select').on('input', (e) => {
                             S.editor.fields.change();
                         });
+                        //S.drag.sort.add(container.find('.filter-settings .filter-groups, .filter-settings .sub-groups'), newgroup, S.editor.fields.custom.list.filters.sorted);
                     });
                 },
 
@@ -616,16 +604,32 @@ S.editor.fields = {
                                     var parent = container.find('.filters').first();
                                     parent.append(response);
                                     var children = parent.children();
-                                    console.log($(children[children.length - 1]));
-                                    console.log($(children[children.length - 1]).find('input, select'));
-                                    $(children[children.length - 1]).find('input, select').on('input', (e) => {
+                                    var newfilter = $(children[children.length - 1]);
+                                    newfilter.find('input, select').on('input', (e) => {
                                         S.editor.fields.change();
                                     });
+                                    //S.drag.sort.add(container.parents('.filter-settings').find('.filters'), newfilter, S.editor.fields.custom.list.filters.sorted);
                                 });
                             }
                         });
                     });
                     
+                },
+
+                remove: function (e) {
+                    var target = $(e.target);
+                    target.parents('.filter').first().remove();
+                    S.editor.fields.change();
+                },
+
+                sorted: function () {
+                    S.editor.fields.change();
+                    S.editor.fields.save();
+                },
+
+                toggleExtra: function (e) {
+                    var target = $(e.target);
+                    target.parents('.filter').find('.filter-queryname').toggle();
                 }
             }
         }

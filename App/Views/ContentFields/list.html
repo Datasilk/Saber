@@ -57,8 +57,24 @@
                     </svg>
                 </div>
             </div>
-            <div class="contents" {{filter-oninit}}>
+            <div class="contents">
                 {{filter-contents}}
+            </div>
+        </div>
+    </div>
+
+    <div class="row orderby-settings" {{orderby}}style="display:none"{{/orderby}}>
+        <div class="accordion">
+            <div class="title">
+                <h6>Sorting</h6>
+                <div class="expander">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </div>
+            </div>
+            <div class="contents">
+                {{orderby-contents}}
             </div>
         </div>
     </div>
