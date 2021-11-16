@@ -8,6 +8,7 @@ namespace Saber.Common.Platform
 {
     public static class DataSources
     {
+        #region "Filters"
         public static string RenderFilters(IRequest request, DataSourceInfo datasource, List<Vendor.DataSource.FilterGroup> filters)
         {
             var view = new View("/Views/DataSources/filters.html");
@@ -97,5 +98,51 @@ namespace Saber.Common.Platform
             }
             return "";
         }
+        #endregion
+
+        #region "OrderBy"
+        public static string RenderOrderByList(DataSourceInfo datasource, List<Vendor.DataSource.OrderBy> orderbyList)
+        {
+            var view = new View("/Views/DataSources/orderby.html");
+            view["datasource"] = datasource.Key;
+            if (orderbyList == null || orderbyList.Count == 0)
+            {
+                view.Show("no-content");
+            }
+            else
+            {
+                var html = new StringBuilder();
+                orderbyList.ForEach(orderby =>
+                {
+                    html.Append(RenderOrderBy(orderby));
+                });
+                view["content"] = html.ToString();
+                view.Show("has-content");
+            }
+            return view.Render();
+        }
+
+        public static string RenderOrderBy(Vendor.DataSource.OrderBy orderby)
+        {
+            var name = orderby.Column.Replace("_", " ").Capitalize();
+            var view = new View("/Views/DataSources/orderby-item.html");
+            view.Show(orderby.Direction == Vendor.DataSource.OrderByDirection.Ascending ? "asc" : "desc");
+            view["column"] = orderby.Column;
+            view["label"] = name;
+            return view.Render();
+        }
+        #endregion
+
+        #region "Position Settings"
+        public static string RenderPositionSettings(DataSourceInfo datasource, Vendor.DataSource.PositionSettings settings)
+        {
+            var view = new View("Views/DataSources/position.html");
+            view["start"] = settings.Start.ToString();
+            view["start-query"] = settings.StartQuery;
+            view["length"] = settings.Length.ToString();
+            view["length-query"] = settings.LengthQuery;
+            return view.Render();
+        }
+        #endregion
     }
 }

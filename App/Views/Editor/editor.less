@@ -308,6 +308,7 @@ ul.menu-bar{width:100%; list-style:none;
     }
     hr{margin:3px 0 !important;}
     .accordion > .title h6{font-size:0.9rem;}
+    .hover-only{opacity:0;}
     .row.hover:hover .row.hover{ 
         .hover-only{opacity:0;}
         &:hover .hover-only{opacity:1;
@@ -329,9 +330,18 @@ ul.menu-bar{width:100%; list-style:none;
     .sub-groups{border-left:15px solid #21264c;}
     
     .filter-settings{
-        .add-root-filter-group{position:absolute; right:30px; top:-29px;}
+        .add-root-filter-group{position:absolute; right:0; top:-29px;}
         .add-filter{margin-right:5px;}
     }
+    .add-orderby{position:absolute; right:0; top:-29px;}
+    .orderby-settings{
+        .input{width:auto;}
+    }
+    .tab-list-items .icon-counter{display:inline-block; margin:0 -50px -9px -50px; padding:5px; font-size:7px; border-radius:6px;}
+}
+.popup .has-content-fields{
+    //popup-specific changes for content fields
+    .btn-close{position:relative; z-index:auto;}
 }
 
 .textarea-clone{opacity:0; position:absolute; z-index:-1; width:100%; height:0px; top:0; left:-100%; max-width:1250px; padding:10px 20px 30px 20px;

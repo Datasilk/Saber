@@ -37,25 +37,37 @@ namespace Saber.Common.Platform.ContentField
                     var parts = data.Split("|!|");
                     var dataSourceKey = parts[0].Split("=")[1];
                     var startPart = parts.Where(a => a.IndexOf("start=") == 0).FirstOrDefault();
-                    var start = startPart != null ? int.Parse(startPart.Replace("start=", "")) : 0;
+                    var startParts = startPart != null ? startPart.Replace("start=", "").Split("|") : new string[] { };
+                    var start = startPart != null ? int.Parse(startParts[0]) : 0;
+                    var startQuery = startPart != null ? (startParts.Length > 1 ? startParts[1] : "") : "";
                     var lengthPart = parts.Where(a => a.IndexOf("length=") == 0).FirstOrDefault();
-                    var length = lengthPart != null ? int.Parse(lengthPart.Replace("length=", "")) : 10;
+                    var lengthParts = lengthPart != null ? lengthPart.Replace("length=", "").Split("|") : new string[] { };
+                    var length = lengthPart != null ? int.Parse(lengthParts[0]) : 10;
+                    var lengthQuery = lengthPart != null ? (lengthParts.Length > 1 ? lengthParts[1] : "") : "";
                     var filterPart = parts.Where(a => a.IndexOf("filter=") == 0).FirstOrDefault();
                     var filters = JsonSerializer.Deserialize<List<DataSource.FilterGroup>>(filterPart != null ? filterPart.Replace("filter=", "") : "[]");
                     var sortPart = parts.Where(a => a.IndexOf("sort=") == 0).FirstOrDefault();
-                    var sort = JsonSerializer.Deserialize<List<DataSource.OrderBy>>(sortPart != null ? sortPart.Replace("sort=", "") : "[]");
+                    var orderby = JsonSerializer.Deserialize<List<DataSource.OrderBy>>(sortPart != null ? sortPart.Replace("sort=", "") : "[]");
                     var datasource = Core.Vendors.DataSources.Where(a => a.Key == dataSourceKey).FirstOrDefault();
                     var locked = parts.Contains("locked");
                     var canadd = parts.Contains("add");
-                    if(datasource != null)
+                    if (!canadd) { viewlist.Show("hide-add-list-item"); }
+                    if (datasource != null)
                     {
                         //render data source filter form
-                        viewlist.Show("filter");
+                        viewlist.Show("has-datasource");
                         viewlist["filter-contents"] = DataSource.RenderFilters(request, datasource, filters);
                         viewlist.Show(locked ? "locked" : "not-locked");
                         viewlist["datasource"] = (datasource.Helper.Vendor != "" ? datasource.Helper.Vendor + " - " : "") + datasource.Name;
+                        viewlist["orderby-contents"] = DataSource.RenderOrderByList(datasource, orderby);
+                        viewlist["position-contents"] = DataSource.RenderPositionSettings(datasource, new DataSource.PositionSettings()
+                        {
+                            Start = start,
+                            StartQuery = startQuery,
+                            Length = length,
+                            LengthQuery = lengthQuery
+                        });
                     }
-                    if (!canadd) { viewlist.Show("hide-add-list-item"); }
                 }
                 else
                 {
@@ -74,9 +86,12 @@ namespace Saber.Common.Platform.ContentField
                             viewitem.Clear();
                             i++;
                         }
+                        viewlist["item-count"] = items.Count.ToString();
                     }
-                    
-                    viewlist.Show("list-items");
+                    else
+                    {
+                        viewlist["item-count"] = "0";
+                    }
                     viewlist.Show("no-datasource");
                     viewlist["list-contents"] = "<ul class=\"list\">" + html.ToString() + "</ul>";
                     viewlist.Show("not-locked");
