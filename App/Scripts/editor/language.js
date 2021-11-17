@@ -27,8 +27,9 @@ S.editor.lang = {
         }
     },
     add: {
+        popup: null, 
         show: function (callback) {
-            S.popup.show('New Language',
+            S.editor.lang.add.popup = S.popup.show('New Language',
                 $('#template_lang_add').html()
             );
             $('.popup form').on('submit', (e) => { S.editor.lang.add.submit(e, callback); });
@@ -46,7 +47,7 @@ S.editor.lang = {
                     if (callback) { callback(); }
                 }
             );
-            S.popup.hide();
+            S.popup.hide(S.editor.lang.add.popup);
             return false;
         }
     }

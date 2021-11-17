@@ -34,6 +34,6 @@ S.editor.message.confirm = function (title, msg, options, callback) {
             '<div class="col pad-left-sm"><button class="button cancel">' + opts.cancel + '</button></div>' : ''
         )
     );
-    popup.find('button.okay').on('click', (e) => { callback(true);});
-    popup.find('.button.cancel').on('click', (e) => { callback(false);});
+    popup.find('button.okay').on('click', (e) => { callback(true); S.popup.hide(popup);});
+    popup.find('.button.cancel').on('click', (e) => { callback(false); S.popup.hide(popup);});
 }

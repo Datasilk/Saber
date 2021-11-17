@@ -22,6 +22,7 @@ namespace Saber.Common.Platform.HtmlComponents
                 {
                     Key = "page-url",
                     Name = "Page URL",
+                    ContentField = false,
                     Description = "Return the canonical URL based on the page request",
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                         {
@@ -45,6 +46,7 @@ namespace Saber.Common.Platform.HtmlComponents
                 {
                     Key = "page-id",
                     Name = "Page ID",
+                    ContentField = false,
                     Description = "Return an ID based on the page URL",
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
@@ -72,6 +74,7 @@ namespace Saber.Common.Platform.HtmlComponents
                 {
                     Key = "year",
                     Name = "Current Year",
+                    ContentField = false,
                     Description = "Display the current year",
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
@@ -84,14 +87,15 @@ namespace Saber.Common.Platform.HtmlComponents
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 new HtmlComponentModel()
                 {
-                    Key = "languages.options",
+                    Key = "language-options",
                     Name = "Language List Form",
+                    ContentField = false,
                     Description = "Render an HTML form so your users can select their preferred language.",
                     Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var selected = request.Parameters.ContainsKey("lang") ? request.Parameters["lang"] : request.User.Language;
                         var results = new List<KeyValuePair<string, string>>();
-                        results.Add(new KeyValuePair<string, string>(prefix + "languages.options",
+                        results.Add(new KeyValuePair<string, string>(prefix + "language-options",
                             string.Join("\n", App.Languages.Select(a => "<option value=\"" + a.Key + "\"" +
                                 (selected == a.Key ? " selected" : "") + ">" + a.Value + "</option>").ToArray())
                             ));

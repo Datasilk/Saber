@@ -352,4 +352,10 @@ S.editor.init = function () {
 $('.editor-tab').on('click', S.editor.filebar.preview.hide);
 
 //register hotkeys for preview mode
-$(window).on('keydown', S.editor.hotkey.pressedPreview);
+S.editor.hotkey.addListener.keyESC(() => {
+    //show website preview
+    S.editor.filebar.preview.toggle();
+});
+
+//save fields if user previews web page
+S.editor.hotkey.addListener.keyESC(S.editor.fields.saveThenPreview);

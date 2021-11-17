@@ -1,0 +1,37 @@
+﻿<div class="row hover filter filter-input-text" data-column="{{column}}">
+    <div class="row">
+        <div class="col field long">{{label}}</div>
+        <div class="col input filter-match">
+            <select>
+                <option value="0">Starts With</option>
+                <option value="1">Ends With</option>
+                <option value="2">Contains</option>
+                <option value="3">Equals</option>
+            </select>
+        </div>
+        <div class="col input filter-input"><input type="text" value="{{value}}" /></div>
+        <div class="col right pad-top-sm pad-right-sm">
+            <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.filters.toggleExtra(event);">
+                <div class="icon small" title="Show Extra Parameters">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-link" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="col text pad-right-sm hover-only btn-close">
+            <div class="icon small btn-close" title="Delete Filter" onclick="S.editor.fields.custom.list.filters.remove(event)">
+                <svg viewBox="0 0 32 32">
+                    <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="row filter-queryname" style="display:none;">
+        <div class="col right input">
+            <input type="text" value="{{queryname}}" placeholder="(optional)" title="Override the value of your filter column with the value of a given URL query string parameter" />
+        </div>
+        <div class="col right text faded">URL Query String Parameter</div>
+    </div>
+    <hr/>
+</div>

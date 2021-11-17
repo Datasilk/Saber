@@ -456,6 +456,12 @@ namespace Saber
             Core.Delegates.Log.Error = Query.Logs.LogError;
             Core.Delegates.ContentFields.GetFieldType = ContentFields.GetFieldType;
             Core.Delegates.ContentFields.RenderForm = ContentFields.RenderForm;
+            Core.Delegates.DataSources.RenderFilter = DataSources.RenderFilter;
+            Core.Delegates.DataSources.RenderFilters = DataSources.RenderFilters;
+            Core.Delegates.DataSources.RenderFilterGroups = DataSources.RenderFilterGroups;
+            Core.Delegates.DataSources.RenderOrderBy = DataSources.RenderOrderBy;
+            Core.Delegates.DataSources.RenderOrderByList = DataSources.RenderOrderByList;
+            Core.Delegates.DataSources.RenderPositionSettings = DataSources.RenderPositionSettings;
 
             //execute Configure method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)

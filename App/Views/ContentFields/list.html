@@ -1,24 +1,114 @@
-﻿<div class="col input for-button">
-    <div class="pad-bottom add-list-item {{hide-add-list-item}}hide{{/hide-add-list-item}}">
-        <button onclick="S.editor.fields.custom.list.add(event, '{{title}}', '{{key}}', '{{partial}}', '{{lang}}', '{{container}}');">+ List Item</button>
-    </div>
-    <div class="pad-bottom change-data-source">
-        <button onclick="S.editor.fields.custom.list.datasource.list(event, '{{title}}');" class="apply">Data Source</button>
-    </div>
-
-</div>
-<div class="col pad-left list-items">
-    <div class="accordion">
-        <div class="title">
-            <h6>{{accordion-title}}</h6>
-            <div class="expander">
-                <svg viewBox="0 0 32 32">
-                    <use xlink:href="#icon-arrow-right" x="0" y="0" width="32" height="32"></use>
-                </svg>
+﻿<div class="row list-component-field">
+    <div class="row">
+        <div class="col datasource-name pad-right" {{no-datasource}}style="display:none"{{/no-datasource}}>
+            <div class="row hover">
+                <div class="col text cursor pad-left-lg pad-right change-data-source" style="margin:7px 0 0 7px;">
+                    <span>Data Source: <b>{{datasource}}</b></span>
+                </div>
             </div>
         </div>
-        <div class="contents pad" {{accordion-oninit}}>
-            {{accordion-contents}}
+        <div class="col right pad-sm">
+            {{not-locked}}
+            <div class="col right change-data-source pad-left-sm">
+                <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.datasource.list(event, '{{title}}');">
+                    <div class="icon small" title="Change the Data Source for your List">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-datasources" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            {{/not-locked}}
+            <div class="col right tab-item tab-list-items pad-left-sm" {{has-datasource}}style="display:none"{{/has-datasource}}>
+                <div class="row hover light pad-sm text-center" onclick="S.editor.fields.custom.list.tab('list-items', event);">
+                    <div class="icon small" title="View your List Items">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-menu" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </div>
+                    <div class="icon-counter">{{item-count}}</div>
+                </div>
+            </div>
+            <div class="col right add-list-item pad-left-sm {{hide-add-list-item}}hide{{/hide-add-list-item}}">
+                <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.add(event, '{{title}}', '{{key}}', '{{partial}}', '{{lang}}', '{{container}}', {{renderapi}})">
+                    <div class="icon small" title="Add a new item to your List">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-add" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="col right tab-item tab-filters pad-left-sm" {{no-datasource}}style="display:none"{{/no-datasource}}>
+                <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.tab('filters', event);">
+                    <div class="icon small" title="Filter your List Items">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-filter" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="col right tab-item tab-orderby pad-left-sm" {{no-datasource}}style="display:none"{{/no-datasource}}>
+                <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.tab('orderby', event);">
+                    <div class="icon small" title="Sort your List Items">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-sort" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="col right tab-item tab-position pad-left-sm" {{no-datasource}}style="display:none"{{/no-datasource}}>
+                <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.tab('position', event);">
+                    <div class="icon small" title="Position your List Items">
+                        <svg viewBox="0 0 32 32">
+                            <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row list-items tab-content" style="display:none">
+        <div class="accordion expanded">
+            <div class="title">
+                <h6>List Items</h6>
+            </div>
+            <div class="contents pad">
+                {{list-contents}}
+            </div>
+        </div>
+    </div>
+
+    <div class="row filter-settings tab-content" style="display:none">
+        <div class="accordion expanded">
+            <div class="title">
+                <h6>Filters</h6>
+            </div>
+            <div class="contents">
+                {{filter-contents}}
+            </div>
+        </div>
+    </div>
+
+    <div class="row orderby-settings tab-content" style="display:none">
+        <div class="accordion expanded">
+            <div class="title">
+                <h6>Sorting</h6>
+            </div>
+            <div class="contents">
+                {{orderby-contents}}
+            </div>
+        </div>
+    </div>
+
+    <div class="row position-settings tab-content" style="display:none">
+        <div class="accordion expanded">
+            <div class="title">
+                <h6>Position</h6>
+            </div>
+            <div class="contents">
+                {{position-contents}}
+            </div>
         </div>
     </div>
 </div>

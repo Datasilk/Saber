@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Text.Json;
 using Saber.Core;
 
 namespace Saber.Services
@@ -45,7 +44,7 @@ namespace Saber.Services
                 try
                 {
                     //save fields as json
-                    var json = JsonSerializer.Serialize(validated);
+                    var json = Core.ContentFields.Serialize(validated);
                     File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                     //reset view cache for page
                     Website.ResetCache(path, language);
@@ -67,7 +66,7 @@ namespace Saber.Services
                 try
                 {
                     //save fields as json
-                    var json = JsonSerializer.Serialize(validated);
+                    var json = Core.ContentFields.Serialize(validated);
                     File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                     //reset view cache for page
                     Website.ResetCache(path, language);
