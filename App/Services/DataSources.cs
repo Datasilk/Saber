@@ -115,6 +115,16 @@ namespace Saber.Services
         #endregion
 
         #region "Order By"
+        public string RenderOrderByList(string key, List<Vendor.DataSource.OrderBy> orderby = null)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
+            var datasource = Core.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
+            if (datasource == null)
+            {
+                return Error("Could not find data source \"" + key + "\"");
+            }
+            return Common.Platform.DataSources.RenderOrderByList(datasource, orderby);
+        }
         public string RenderOrderBy(string key, string column, int direction = 0)
         {
             if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }

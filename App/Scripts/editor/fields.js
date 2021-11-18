@@ -305,6 +305,7 @@ S.editor.fields = {
 
                 //S.drag.sort.add(container + ' .filter-settings .filter-groups, .filter-settings .sub-groups', container + ' .filter-settings .filter-group', S.editor.fields.custom.list.filters.sorted);
                 //S.drag.sort.add(container + ' .filter-settings .filters', container + ' .filter-settings .filter', S.editor.fields.custom.list.filters.sorted);
+                S.drag.sort.add(container + ' .orderby-settings .contents', container + ' .orderby', S.editor.fields.custom.list.orderby.sorted);
             },
             parse: function (hidden) {
                 var data = hidden.val();
@@ -443,25 +444,41 @@ S.editor.fields = {
                             if (key == 'list-items') {
                                 //show list items
                                 field.find('.list-items .contents').html('<ul class="list"></ul>');
-                                field.find('.add-list-item').removeClass('hide');
                                 field.find('.list-items').show();
                                 field.find('.filter-settings').hide();
                                 field.find('.orderby-settings').hide();
+                                field.find('.position-settings').hide();
                                 field.find('.datasource-name').hide();
+                                field.find('.tab-list-items').show();
+                                field.find('.add-list-item').show();
+                                field.find('.tab-filters').hide();
+                                field.find('.tab-orderby').hide();
+                                field.find('.tab-position').hide();
+                                field.find('.tab-list-items .icon-counter').html('0');
                                 hidden.val('');
                             } else {
                                 //show data source filter
-                                S.ajax.post('DataSources/RenderFilters', { key: key }, (filterform) => {
+                                S.ajax.post('DataSources/RenderFilters', { key: key, filters:[] }, (form) => {
                                     //update list data with new data source
-                                    hidden.val('data-src=' + key);
-                                    field.find('.filter-settings .contents').html(filterform);
-                                    field.find('.add-list-item').addClass('hide');
+                                    field.find('.filter-settings .contents').html(form);
                                     field.find('.list-items').hide();
-                                    field.find('.filter-settings').show();
-                                    field.find('.orderby-settings').show();
                                     field.find('.datasource-name').show();
                                     field.find('.datasource-name b').html(name);
-                                    field.find('.filter-settings .accordion').addClass('expanded');
+                                    field.find('.tab-list-items').hide();
+                                    field.find('.add-list-item').hide();
+                                    field.find('.tab-filters').show();
+                                    field.find('.tab-orderby').show();
+                                    field.find('.tab-position').show();
+                                    field.find('.input-pos-start input').val('1');
+                                    field.find('.input-pos-start-query input').val('');
+                                    field.find('.input-pos-length input').val('10');
+                                    field.find('.input-pos-length-query input').val('');
+                                    hidden.val('data-src=' + key);
+                                    S.ajax.post('DataSources/RenderOrderByList', { key: key }, (form) => {
+                                        //render order by form
+                                        field.find('.orderby-settings .contents').html(form);
+                                    });
+
                                 }, (err) => {
                                         S.editor.error('', err.responseText);
                                 });
@@ -514,7 +531,7 @@ S.editor.fields = {
                                 Column: filter.attr('data-column'),
                                 Match: parseInt(filter.find('.filter-match select').val() ?? '0'),
                                 Value: val,
-                                QueryName: filter.find('.query-name').val() ?? ''
+                                QueryName: filter.find('.filter-queryname input').val() ?? ''
                             });
                         }
                         for (var x = 0; x < subgroups.length; x++) {
@@ -574,6 +591,25 @@ S.editor.fields = {
                                 parts.push(json);
                             }
 
+                            //add position to parts
+                            function addPart(name, value, query) {
+                                json = name + "=" + value + '|' + query;
+                                found = false;
+                                for (var x = 0; x < parts.length; x++) {
+                                    if (parts[x].indexOf(name + '=') >= 0) {
+                                        parts[x] = json;
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found) {
+                                    parts.push(json);
+                                }
+                            }
+
+                            addPart('start', container.find('.input-pos-start input').val(), container.find('.input-pos-start-query input').val())
+                            addPart('length', container.find('.input-pos-length input').val(), container.find('.input-pos-length-query input').val())
+
                             input.val(parts.join('|!|'));
                         }
                     }
@@ -626,7 +662,7 @@ S.editor.fields = {
                 add: function (key, e) {
                     var target = $(e.target);
                     var container = target.parents('.filter-group').first();
-                    S.editor.fields.custom.list.datasource.select(key, "Select Data Source Column to Filter By", (response) => {
+                    S.editor.fields.custom.list.datasource.select(key, "Select Column to Filter By", (response) => {
                         if (response == true) {
                             S.ajax.post('DataSources/RenderFilter', { key: key, column: datasource_column.value }, (response) => {
                                 var parent = container.find('.filters').first();
@@ -658,7 +694,7 @@ S.editor.fields = {
                 add: function (key, e) {
                     var target = $(e.target);
                     var container = target.parents('.orderby-settings .contents').first();
-                    S.editor.fields.custom.list.datasource.select(key, "Select Data Source Column to Filter By", (response) => {
+                    S.editor.fields.custom.list.datasource.select(key, "Select Column to Sort By", (response) => {
                         if (response == true) {
                             S.ajax.post('DataSources/RenderOrderBy', { key: key, column: datasource_column.value }, (response) => {
                                 container.append(response);
@@ -667,7 +703,7 @@ S.editor.fields = {
                                 neworderby.find('input, select').on('input', (e) => {
                                     S.editor.fields.change();
                                 });
-                                S.drag.sort.add(container, neworderby, S.editor.fields.custom.list.orderby.sorted);
+                                S.drag.sort.add(container, container.find('.orderby'), S.editor.fields.custom.list.orderby.sorted);
                             });
                         }
                     }, () => {

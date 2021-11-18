@@ -169,18 +169,18 @@ namespace Saber.Common.Platform
                 }
 
                 //get HTML components from vendors
-                var vars = Core.Vendors.HtmlComponents;
-                foreach (var item in vars)
+                var components = Core.Vendors.HtmlComponents;
+                foreach (var component in components)
                 {
-                    var fields = view.Fields.Where(a => a.Key.IndexOf(prefix + item.Key) == 0);
+                    var fields = view.Fields.Where(a => a.Key.IndexOf(prefix + component.Key) == 0);
                     if(fields.Count() > 0) {
                         foreach(var field in fields)
                         {
                             var elem = view.Elements[field.Value[0]];
                             var args = elem.Vars ?? new Dictionary<string, string>();
-                            var d = data.ContainsKey(elem.Name) ? data[elem.Name] : "";
+                            var elemData = data.ContainsKey(elem.Name) ? data[elem.Name] : "";
                             //run the Data Binder callback method
-                            var range = item.Value.Render(view, request, args, d, prefix, elem.Name);
+                            var range = component.Value.Render(view, request, args, elemData, prefix, elem.Name);
                             if (range.Count > 0)
                             {
                                 //add HTML component render results to list

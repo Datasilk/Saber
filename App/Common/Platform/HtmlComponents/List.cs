@@ -90,17 +90,37 @@ namespace Saber.Common.Platform.HtmlComponents
                             List<Dictionary<string, string>> records;
                             if(data.IndexOf("data-src=") >= 0)
                             {
-                                //get items from custom data source via a vendor plugin
+                                //get list options
                                 var parts = data.Split("|!|");
                                 var dataSourceKey = parts[0].Split("=")[1];
                                 var startPart = parts.Where(a => a.IndexOf("start=") == 0).FirstOrDefault();
-                                var start = startPart != null ? int.Parse(startPart.Replace("start=","")) : 0;
+                                var startParts = startPart != null ? startPart.Replace("start=", "").Split("|") : new string[] { };
+                                var start = startPart != null ? int.Parse(startParts[0]) : 1;
+                                var startQuery = startPart != null ? (startParts.Length > 1 ? startParts[1] : "") : "";
                                 var lengthPart = parts.Where(a => a.IndexOf("length=") == 0).FirstOrDefault();
-                                var length = lengthPart != null ? int.Parse(lengthPart.Replace("length=","")) : 10;
+                                var lengthParts = lengthPart != null ? lengthPart.Replace("length=", "").Split("|") : new string[] { };
+                                var length = lengthPart != null ? int.Parse(lengthParts[0]) : 10;
+                                var lengthQuery = lengthPart != null ? (lengthParts.Length > 1 ? lengthParts[1] : "") : "";
                                 var filterPart = parts.Where(a => a.IndexOf("filter=") == 0).FirstOrDefault();
                                 var filter = JsonSerializer.Deserialize<List<DataSource.FilterGroup>>(filterPart != null ? filterPart.Replace("filter=", "") : "[]");
                                 var sortPart = parts.Where(a => a.IndexOf("sort=") == 0).FirstOrDefault();
                                 var sort = JsonSerializer.Deserialize<List<DataSource.OrderBy>>(sortPart != null ? sortPart.Replace("sort=", "") : "[]");
+
+                                //override list options from request parameters
+                                if(startQuery != "" && request.Parameters.ContainsKey(startQuery))
+                                {
+                                    int.TryParse(request.Parameters[startQuery], out start);
+                                }
+                                if(lengthQuery != "" && request.Parameters.ContainsKey(lengthQuery))
+                                {
+                                    int.TryParse(request.Parameters[lengthQuery], out length) ;
+                                }
+                                foreach(var group in filter)
+                                {
+                                    OverrideFilterGroupValues(request, group);
+                                }
+
+                                //get records
                                 var datasource = Core.Vendors.DataSources.Where(a => a.Key == dataSourceKey).FirstOrDefault();
                                 if(datasource != null)
                                 {
@@ -189,6 +209,23 @@ namespace Saber.Common.Platform.HtmlComponents
                     })
                 }
             };
+        }
+
+        private void OverrideFilterGroupValues(IRequest request, DataSource.FilterGroup group)
+        {
+            //check filters for request parameter overrides
+            foreach(var elem in group.Elements)
+            {
+                if (elem.QueryName != "" && request.Parameters.ContainsKey(elem.QueryName))
+                {
+                    elem.Value = request.Parameters[elem.QueryName];
+                }
+            }
+            //check sub groups for request parameter overrides
+            foreach (var sub in group.Groups)
+            {
+                OverrideFilterGroupValues(request, sub);
+            }
         }
     }
 }

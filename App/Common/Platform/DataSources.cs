@@ -71,6 +71,7 @@ namespace Saber.Common.Platform
                     viewText["column"] = col.Name;
                     viewText["label"] = name;
                     viewText["value"] = value;
+                    viewText["queryname"] = filter.QueryName;
                     return viewText.Render();
 
                 case Vendor.DataSource.DataType.Float:
@@ -79,6 +80,7 @@ namespace Saber.Common.Platform
                     viewNumber["column"] = col.Name;
                     viewNumber["label"] = name;
                     viewNumber["value"] = value;
+                    viewNumber["queryname"] = filter.QueryName;
                     return viewNumber.Render();
 
                 case Vendor.DataSource.DataType.Boolean:
@@ -87,6 +89,7 @@ namespace Saber.Common.Platform
                     viewBool["label"] = name;
                     viewBool["id"] = col.Name;
                     viewBool["checked"] = value == "1" ? "checked=\"checked\"" : "";
+                    viewBool["queryname"] = filter.QueryName;
                     return viewBool.Render();
 
                 case Vendor.DataSource.DataType.DateTime:
@@ -94,6 +97,7 @@ namespace Saber.Common.Platform
                     viewDateTime["column"] = col.Name;
                     viewDateTime["label"] = name;
                     viewDateTime["value"] = value;
+                    viewDateTime["queryname"] = filter.QueryName;
                     return viewDateTime.Render();
             }
             return "";

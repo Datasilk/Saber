@@ -170,7 +170,7 @@ S.editor.filebar = {
             if (S.editor.files.html.changed == true || S.editor.files.content.changed == true) {
                 S.editor.files.html.changed = false;
                 S.editor.files.content.changed = false;
-                S.ajax.post('Page/Render', { path: S.editor.path + '.html', language: window.language || 'en' },
+                S.ajax.post('Page/Render' + window.parent.location.search, { path: S.editor.path + '.html', language: window.language || 'en' },
                     function (d) {
                         var website = doc.getElementsByClassName('website')[0];
                         website.innerHTML = d.html;

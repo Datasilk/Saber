@@ -38,7 +38,7 @@ namespace Saber.Common.Platform.ContentField
                     var dataSourceKey = parts[0].Split("=")[1];
                     var startPart = parts.Where(a => a.IndexOf("start=") == 0).FirstOrDefault();
                     var startParts = startPart != null ? startPart.Replace("start=", "").Split("|") : new string[] { };
-                    var start = startPart != null ? int.Parse(startParts[0]) : 0;
+                    var start = startPart != null ? int.Parse(startParts[0]) : 1;
                     var startQuery = startPart != null ? (startParts.Length > 1 ? startParts[1] : "") : "";
                     var lengthPart = parts.Where(a => a.IndexOf("length=") == 0).FirstOrDefault();
                     var lengthParts = lengthPart != null ? lengthPart.Replace("length=", "").Split("|") : new string[] { };

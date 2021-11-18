@@ -13,7 +13,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Datasilk.Core.Extensions;
 using Saber.Common.Platform;
-using Saber.Core.Extensions.Strings;
 
 namespace Saber
 {

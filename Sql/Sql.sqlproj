@@ -71,6 +71,7 @@
     <Folder Include="dbo\Vendor" />
     <Folder Include="dbo\Stored Procedures\PublicApis" />
     <Folder Include="dbo\Stored Procedures\Sessions" />
+    <Folder Include="dbo\Functions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Sequences\SequenceUsers.sql" />
@@ -137,6 +138,7 @@
     <Build Include="dbo\Tables\Sessions.sql" />
     <Build Include="dbo\Stored Procedures\Sessions\Session_Get.sql" />
     <Build Include="dbo\Stored Procedures\Sessions\Session_Set.sql" />
+    <Build Include="dbo\Functions\SplitArray.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />
