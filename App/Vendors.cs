@@ -707,5 +707,36 @@ namespace Saber.Common
             Core.Vendors.EventHandlers.Add(instance);
         }
         #endregion
+
+        #region "Internal APIs"
+        public static void GetInternalApisFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.Value.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorInteralApis")
+                        {
+                            GetInternalApisFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetInternalApisFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorInteralApis))) { return; }
+            var instance = (IVendorInteralApis)Activator.CreateInstance(type);
+            foreach(var api in instance.Apis)
+            {
+                Core.Vendors.InternalApis.Add(api);
+            }
+        }
+        #endregion
     }
 }

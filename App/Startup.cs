@@ -253,6 +253,21 @@ namespace Saber
             Console.WriteLine("Found " + Core.Vendors.EventHandlers.Count + " Vendor" + (Core.Vendors.EventHandlers.Count != 1 ? "s" : "") + " That listen to Saber Events");
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit InteralApis abstract class
+            foreach (var assembly in assemblies)
+            {
+                //get a list of abstract classes from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.InternalApi).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Common.Vendors.GetInternalApisFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorKeys interface
+            Common.Vendors.GetInternalApisFromFileSystem();
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)
             {
