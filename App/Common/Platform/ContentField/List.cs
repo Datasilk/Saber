@@ -64,7 +64,9 @@ namespace Saber.Common.Platform.ContentField
                         else
                         {
                             viewlist["lists"] = "<option value=\"" + dataSourceKey + "\">" + key.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>" + 
-                                string.Join('\n', relationships.Select(a => "<option value=\"" + a.Child.Key + "\">" + a.ListComponent.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>"
+                                string.Join('\n', relationships.Select(a => "<option value=\"" + 
+                                Core.Vendors.DataSources.Where(b => b.Key == a.ChildKey).FirstOrDefault()?.Helper.Prefix + 
+                                "-" + a.Child.Key + "\">" + a.ListComponent.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>"
                             ).ToArray());
                         }
                     }
