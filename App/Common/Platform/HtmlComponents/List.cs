@@ -65,15 +65,16 @@ namespace Saber.Common.Platform.HtmlComponents
                             }
                         }
                     },
-                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
-                        if (!args.ContainsKey("partial") || string.IsNullOrEmpty(data))
+                        var mydata = data.ContainsKey(key) ? (string)data[key] : "";
+                        if (!args.ContainsKey("partial") || string.IsNullOrEmpty(mydata))
                         {
                             results.Add(new KeyValuePair<string, string>(prefix + key, ""));
                             return new List<KeyValuePair<string, string>>();
                         }
-                        var partialFiles = args["partial"].Split("|");
+                        var partialFiles = ((string)args["partial"]).Split("|");
                         var partials = new List<View>();
                         foreach (var file in partialFiles)
                         {
@@ -85,46 +86,103 @@ namespace Saber.Common.Platform.HtmlComponents
                         var order = args.ContainsKey("loadorder") ? args["loadorder"] : "loop";
 
                         //deserialize the list data
-                        try
-                        {
+                        //try {
                             List<Dictionary<string, string>> records;
-                            if(data.IndexOf("data-src=") >= 0)
+                            DataSource.Relationship[] relationships = null;
+                            DataSourceInfo datasource = null;
+                            if(mydata.IndexOf("data-src=") >= 0)
                             {
+                                data = data.ToDictionary(a => a.Key, a => a.Value);
                                 //get list options
-                                var parts = data.Split("|!|");
+                                var parts = mydata.Split("|!|", StringSplitOptions.RemoveEmptyEntries);
                                 var dataSourceKey = parts[0].Split("=")[1];
-                                var startPart = parts.Where(a => a.IndexOf("start=") == 0).FirstOrDefault();
-                                var startParts = startPart != null ? startPart.Replace("start=", "").Split("|") : new string[] { };
-                                var start = startPart != null ? int.Parse(startParts[0]) : 1;
-                                var startQuery = startPart != null ? (startParts.Length > 1 ? startParts[1] : "") : "";
-                                var lengthPart = parts.Where(a => a.IndexOf("length=") == 0).FirstOrDefault();
-                                var lengthParts = lengthPart != null ? lengthPart.Replace("length=", "").Split("|") : new string[] { };
-                                var length = lengthPart != null ? int.Parse(lengthParts[0]) : 10;
-                                var lengthQuery = lengthPart != null ? (lengthParts.Length > 1 ? lengthParts[1] : "") : "";
-                                var filterPart = parts.Where(a => a.IndexOf("filter=") == 0).FirstOrDefault();
-                                var filter = JsonSerializer.Deserialize<List<DataSource.FilterGroup>>(filterPart != null ? filterPart.Replace("filter=", "") : "[]");
-                                var sortPart = parts.Where(a => a.IndexOf("sort=") == 0).FirstOrDefault();
-                                var sort = JsonSerializer.Deserialize<List<DataSource.OrderBy>>(sortPart != null ? sortPart.Replace("sort=", "") : "[]");
+                                var recordsetPart = parts.Where(a => a.IndexOf("recordset=") == 0).FirstOrDefault();
+                                var recordset = recordsetPart != null ? recordsetPart.Replace("recordset=", "") : "";
+                                var recordidPart = parts.Where(a => a.IndexOf("recordid=") == 0).FirstOrDefault();
+                                var recordid = recordidPart != null ? recordidPart.Replace("recordid=", "") : "";
+                                var columnPart = parts.Where(a => a.IndexOf("column=") == 0).FirstOrDefault();
+                                var column = columnPart != null ? columnPart.Replace("column=", "") : "";
+                                var listsPart = parts.Where(a => a.IndexOf("lists=") == 0).FirstOrDefault();
+                                var lists = listsPart != null ? listsPart.Replace("lists=", "") : "{}";
+                                Dictionary<string, ListSettings> settings;
+                                ListSettings mysettings;
 
-                                //override list options from request parameters
-                                if(startQuery != "" && request.Parameters.ContainsKey(startQuery))
+                                if(recordset != "")
                                 {
-                                    int.TryParse(request.Parameters[startQuery], out start);
+                                    //get cached settings list
+                                    settings = (Dictionary<string, ListSettings>)data[recordset + "-list-settings"];
                                 }
-                                if(lengthQuery != "" && request.Parameters.ContainsKey(lengthQuery))
+                                else
                                 {
-                                    int.TryParse(request.Parameters[lengthQuery], out length) ;
+                                    //load settings from content field data
+                                    settings = JsonSerializer.Deserialize<Dictionary<string, ListSettings>>(lists);
+                                    data.Add(key + "-list-settings", settings);
                                 }
-                                foreach(var group in filter)
+                                mysettings = settings.ContainsKey(dataSourceKey) ? settings[dataSourceKey] : null;
+
+                                if(mysettings != null)
                                 {
-                                    OverrideFilterGroupValues(request, group);
+                                    //override list options from request parameters
+                                    foreach(var group in mysettings.Filters)
+                                    {
+                                        OverrideFilterGroupValues(request, group);
+                                    }
+                                    if(mysettings.Position.StartQuery != "" && request.Parameters.ContainsKey(mysettings.Position.StartQuery))
+                                    {
+                                        int.TryParse(request.Parameters[mysettings.Position.StartQuery], out var start);
+                                        if(start > 0){mysettings.Position.Start = start; }
+                                    }
+                                    if(mysettings.Position.LengthQuery != "" && request.Parameters.ContainsKey(mysettings.Position.LengthQuery))
+                                    {
+                                        int.TryParse(request.Parameters[mysettings.Position.LengthQuery], out var length);
+                                    }
                                 }
 
-                                //get records
-                                var datasource = Core.Vendors.DataSources.Where(a => a.Key == dataSourceKey).FirstOrDefault();
+                                //get records from data source
+                                datasource = Core.Vendors.DataSources.Where(a => a.Key == dataSourceKey).FirstOrDefault();
                                 if(datasource != null)
                                 {
-                                    records = datasource.Helper.Filter(request, dataSourceKey.Replace(datasource.Helper.Prefix + "-", ""), start, length, request.User.Language ?? "en", filter, sort);
+                                    var datasourceId = dataSourceKey.Replace(datasource.Helper.Prefix + "-", "");
+                                    if(recordset != "")
+                                    {
+                                        var recordsets = (Dictionary<string, List<Dictionary<string, string>>>)data[recordset + "-recordset"];
+                                        records = recordsets.ContainsKey(datasourceId) ? recordsets[datasourceId].Where(a => a[column] == recordid).ToList() : new List<Dictionary<string, string>>();
+                                    }
+                                    else
+                                    {
+                                        relationships = datasource.Helper.Get(datasourceId).Relationships;
+                                        if(relationships.Length > 0)
+                                        {
+                                            var childFilters = new Dictionary<string, List<DataSource.FilterGroup>>();
+                                            var childOrderBy = new Dictionary<string, List<DataSource.OrderBy>>();
+                                            if(mysettings != null)
+                                            {
+                                                childFilters.Add(dataSourceKey, mysettings.Filters);
+                                                childOrderBy.Add(dataSourceKey, mysettings.OrderBy);
+                                            }
+                                            
+                                            //get record sets for list & sub-lists
+                                            var recordsets = datasource.Helper.Filter(request, datasourceId, request.User.Language ?? "en", settings.ToDictionary(a => a.Key, a => a.Value.Position), settings.ToDictionary(a => a.Key, a => a.Value.Filters), settings.ToDictionary(a => a.Key, a => a.Value.OrderBy), relationships.Select(a => a.ChildKey).ToArray());
+                                            records = recordsets.ContainsKey(datasourceId) ? recordsets[datasourceId] : new List<Dictionary<string, string>>();
+
+                                            //find settings for each list component
+                                            foreach(var relationship in relationships)
+                                            {
+                                                if (data.ContainsKey(relationship.ListComponent))
+                                                {
+                                                    data.Remove(relationship.ListComponent);
+                                                }
+                                                data.Add(relationship.ListComponent, "data-src=" + relationship.ChildKey +
+                                                    "|!|recordset=" + key + "|!|column=" + relationship.ChildColumn);
+                                            }
+                                            
+                                            data.Add(key + "-recordset", recordsets);
+                                        }
+                                        else
+                                        {
+                                            records = datasource.Helper.Filter(request, dataSourceKey.Replace(datasource.Helper.Prefix + "-", ""), mysettings?.Position.Start ?? 1, mysettings?.Position.Length ?? 10, request.User.Language ?? "en", mysettings?.Filters, mysettings?.OrderBy);
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -134,8 +192,10 @@ namespace Saber.Common.Platform.HtmlComponents
                             else
                             {
                                 //get items that were manually created by the user
-                                records = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(data);
+                                records = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(mydata);
                             }
+
+                            //render all records using partial views ////////////////////////////////////////////////////////////////
                             var html = new StringBuilder();
                             var i = -1;
                             var forward = true;
@@ -191,20 +251,57 @@ namespace Saber.Common.Platform.HtmlComponents
                                         }
                                         break;
                                 }
+                                //select partial from array
                                 partial = partials[i];
+
+                                //populate all mustache variables
                                 foreach (var kv in record)
                                 {
                                     partial[kv.Key] = kv.Value;
                                 }
+
+                                //render all HTML components in the partial view
+                                if(datasource != null && relationships != null && relationships.Length > 0)
+                                {
+                                    //modify data for specific list component
+                                    foreach(var relationship in relationships)
+                                    {
+                                        if (data.ContainsKey(relationship.ListComponent))
+                                        {
+                                            var d = (string)data[relationship.ListComponent];
+                                            if (d.Contains("recordid="))
+                                            {
+                                                var s = d.Split("recordid=");
+                                                s[1] = record["Id"];
+                                                d = string.Join("recordid=", s);
+                                            }
+                                            else
+                                            {
+                                                d += "|!|recordid=" + record["Id"];
+                                            }
+                                            data[relationship.ListComponent] = d;
+                                        }
+                                    }
+                                }
+                                var components = Render.HtmlComponents(partial, request, data);
+                                if (components.Count > 0)
+                                {
+                                    foreach (var item in components)
+                                    {
+                                        partial[item.Key] = item.Value;
+                                    }
+                                }
+
+                                //render list item as HTML
                                 html.Append(partial.Render());
                                 partial.Clear();
                             }
                             results.Add(new KeyValuePair<string, string>(prefix + key, html.ToString()));
-                        }
-                        catch (Exception ex)
-                        {
-                            results.Add(new KeyValuePair<string, string>(prefix + key, ""));
-                        }
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    results.Add(new KeyValuePair<string, string>(prefix + key, ""));
+                        //}
                         return results;
                     })
                 }
@@ -226,6 +323,13 @@ namespace Saber.Common.Platform.HtmlComponents
             {
                 OverrideFilterGroupValues(request, sub);
             }
+        }
+
+        public class ListSettings
+        {
+            public DataSource.PositionSettings Position { get; set; }
+            public List<DataSource.FilterGroup> Filters { get; set; }
+            public List<DataSource.OrderBy> OrderBy { get; set; }
         }
     }
 }

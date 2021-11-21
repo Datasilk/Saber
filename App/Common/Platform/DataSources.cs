@@ -9,7 +9,7 @@ namespace Saber.Common.Platform
     public static class DataSources
     {
         #region "Filters"
-        public static string RenderFilters(IRequest request, DataSourceInfo datasource, List<Vendor.DataSource.FilterGroup> filters)
+        public static string RenderFilters(IRequest request, DataSourceInfo datasource, List<Vendor.DataSource.FilterGroup> filters = null)
         {
             var view = new View("/Views/DataSources/filters.html");
             view["datasource"] = datasource.Key;
@@ -25,7 +25,7 @@ namespace Saber.Common.Platform
             return view.Render();
         }
 
-        public static string RenderFilterGroups(IRequest request, DataSourceInfo datasource, List<Vendor.DataSource.FilterGroup> filters, int depth = 0)
+        public static string RenderFilterGroups(IRequest request, DataSourceInfo datasource,List<Vendor.DataSource.FilterGroup> filters, int depth = 0)
         {
             if(filters == null){ filters = new List<Vendor.DataSource.FilterGroup>(); }
             var viewGroup = new View("/Views/DataSources/filter-group.html");
@@ -37,7 +37,8 @@ namespace Saber.Common.Platform
                 viewGroup.Clear();
                 html.Clear();
                 viewGroup["datasource"] = datasource.Key;
-                if(depth > 0) { viewGroup.Show("sub"); }
+                viewGroup[group.Match == Vendor.DataSource.GroupMatchType.Any ? "match-any" : "match-all"] = " selected=\"selected\"";
+                if (depth > 0) { viewGroup.Show("sub"); }
                 foreach (var filter in group.Elements)
                 {
                     html.Append(RenderFilter(request, info, filter));
@@ -60,6 +61,26 @@ namespace Saber.Common.Platform
         public static string RenderFilter(IRequest request, Vendor.DataSource datasource, Vendor.DataSource.FilterElement filter)
         {
             var col = datasource.Columns.Where(a => a.Name == filter.Column).FirstOrDefault();
+            if(col == null)
+            {
+                switch (filter.Column)
+                {
+                    case "id":
+                        col = new Vendor.DataSource.Column()
+                        {
+                            Name = filter.Column,
+                            DataType = Vendor.DataSource.DataType.Number
+                        };
+                        break;
+                    case "datecreated": case "datemodified":
+                        col = new Vendor.DataSource.Column()
+                        {
+                            Name = filter.Column,
+                            DataType = Vendor.DataSource.DataType.DateTime
+                        };
+                        break;
+                }
+            }
             if (col == null) { return ""; }
             var name = col.Name.Replace("_", " ").Capitalize();
             var value = !string.IsNullOrEmpty(filter.QueryName) && request.Parameters.ContainsKey(filter.QueryName) ?
@@ -72,6 +93,7 @@ namespace Saber.Common.Platform
                     viewText["label"] = name;
                     viewText["value"] = value;
                     viewText["queryname"] = filter.QueryName;
+                    viewText[GetFilterMatch(filter)] = " selected=\"selected\"";
                     return viewText.Render();
 
                 case Vendor.DataSource.DataType.Float:
@@ -81,6 +103,7 @@ namespace Saber.Common.Platform
                     viewNumber["label"] = name;
                     viewNumber["value"] = value;
                     viewNumber["queryname"] = filter.QueryName;
+                    viewNumber[GetFilterMatch(filter)] = " selected=\"selected\"";
                     return viewNumber.Render();
 
                 case Vendor.DataSource.DataType.Boolean:
@@ -98,7 +121,32 @@ namespace Saber.Common.Platform
                     viewDateTime["label"] = name;
                     viewDateTime["value"] = value;
                     viewDateTime["queryname"] = filter.QueryName;
+                    viewDateTime[GetFilterMatch(filter)] = " selected=\"selected\"";
                     return viewDateTime.Render();
+            }
+            return "";
+        }
+
+        private static string GetFilterMatch(Vendor.DataSource.FilterElement filter)
+        {
+            switch (filter.Match)
+            {
+                case Vendor.DataSource.FilterMatchType.Contains:
+                    return "contains";
+                case Vendor.DataSource.FilterMatchType.EndsWith:
+                    return "ends-with";
+                case Vendor.DataSource.FilterMatchType.Equals:
+                    return "equals";
+                case Vendor.DataSource.FilterMatchType.GreaterEqualTo:
+                    return "greater-than-equals";
+                case Vendor.DataSource.FilterMatchType.GreaterThan:
+                    return "greater-than";
+                case Vendor.DataSource.FilterMatchType.LessThan:
+                    return "less-than";
+                case Vendor.DataSource.FilterMatchType.LessThanEqualTo:
+                    return "less-than-equals";
+                case Vendor.DataSource.FilterMatchType.StartsWith:
+                    return "starts-with";
             }
             return "";
         }
@@ -138,13 +186,13 @@ namespace Saber.Common.Platform
         #endregion
 
         #region "Position Settings"
-        public static string RenderPositionSettings(DataSourceInfo datasource, Vendor.DataSource.PositionSettings settings)
+        public static string RenderPositionSettings(DataSourceInfo datasource, Vendor.DataSource.PositionSettings settings = null)
         {
             var view = new View("Views/DataSources/position.html");
-            view["start"] = settings.Start.ToString();
-            view["start-query"] = settings.StartQuery;
-            view["length"] = settings.Length.ToString();
-            view["length-query"] = settings.LengthQuery;
+            view["start"] = settings?.Start.ToString() ?? "1";
+            view["start-query"] = settings?.StartQuery;
+            view["length"] = settings?.Length.ToString() ?? "10";
+            view["length-query"] = settings?.LengthQuery;
             return view.Render();
         }
         #endregion

@@ -266,6 +266,7 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorKeys interface
             Common.Vendors.GetInternalApisFromFileSystem();
+            Console.WriteLine("Found " + Core.Vendors.InternalApis.Count + " Vendor Internal API" + (Core.Vendors.InternalApis.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
@@ -433,7 +434,12 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorDataSources interface
             Common.Vendors.GetDataSourcesFromFileSystem();
+
             Console.WriteLine("Found " + Core.Vendors.DataSources.Count + " Vendor Data Source" + (Core.Vendors.DataSources.Count != 1 ? "s" : ""));
+
+            //init all data sources
+            Console.WriteLine("Initialize all data sources...");
+            Common.Vendors.InitDataSources();
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //Get list of all Public APIs

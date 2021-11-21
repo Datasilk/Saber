@@ -277,6 +277,7 @@ namespace Saber.Common.Platform
         {
             if (!File.Exists(App.MapPath("/Content/pages/home.html")))
             {
+                Console.WriteLine("Copying template website to live website...");
                 //copy default website since none exists yet
                 Directory.CreateDirectory(App.MapPath("/wwwroot/content/"));
                 Directory.CreateDirectory(App.MapPath("/wwwroot/content/pages/"));

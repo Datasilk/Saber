@@ -23,7 +23,37 @@ namespace Saber.Services
             var datasource = Core.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
             if(datasource != null)
             {
-                return JsonResponse(datasource.Helper.Get(key.Replace(datasource.Helper.Prefix + "-", "")).Columns);
+                var columns = new List<Vendor.DataSource.Column>() { 
+                    new Vendor.DataSource.Column()
+                    {
+                        Name = "id",
+                        DataType = Vendor.DataSource.DataType.Number
+                    },
+                    new Vendor.DataSource.Column()
+                    {
+                        Name = "datecreated",
+                        DataType = Vendor.DataSource.DataType.DateTime
+                    },
+                    new Vendor.DataSource.Column()
+                    {
+                        Name = "datemodified",
+                        DataType = Vendor.DataSource.DataType.DateTime
+                    }
+                };
+                
+                columns.AddRange(datasource.Helper.Get(key.Replace(datasource.Helper.Prefix + "-", "")).Columns);
+                return JsonResponse(columns);
+            }
+            return Error("Could not find data source");
+        }
+
+        public string Relationships(string key)
+        {
+            if (!CheckSecurity("edit-content")) { return AccessDenied(); }
+            var datasource = Core.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
+            if (datasource != null)
+            {
+                return JsonResponse(datasource.Helper.Get(key.Replace(datasource.Helper.Prefix + "-", "")).Relationships);
             }
             return Error("Could not find data source");
         }

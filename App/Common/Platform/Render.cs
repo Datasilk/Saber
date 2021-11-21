@@ -75,7 +75,7 @@ namespace Saber.Common.Platform
             }
 
             //load user content from json file, depending on selected language
-            var data = Core.ContentFields.GetPageContent(path, language);
+            var data = Core.ContentFields.GetPageContent(path, language).ToDictionary(a => a.Key, a => (object)a.Value);
 
             if (data.Count > 0)
             {
@@ -83,22 +83,23 @@ namespace Saber.Common.Platform
                 var blocks = view.Elements.Where(a => a.Name.StartsWith("/")).Select(a => a.Name.Substring(1));
                 foreach (var item in data)
                 {
+                    var value = (string)item.Value;
                     if (blocks.Contains(item.Key))
                     {
-                        if (item.Value == "1")
+                        if (value == "1")
                         {
                             view.Show(item.Key);
                         }
                     }
                     else
                     {
-                        if (item.Value.Contains('\n'))
+                        if (value.Contains('\n'))
                         {
-                            view[item.Key] = Markdown.ToHtml(item.Value, markdownPipeline);
+                            view[item.Key] = Markdown.ToHtml(value, markdownPipeline);
                         }
                         else
                         {
-                            view[item.Key] = item.Value;
+                            view[item.Key] = value;
                         }
                     }
                 }
@@ -118,7 +119,7 @@ namespace Saber.Common.Platform
             if(uselayout)
             {
                 //render all content
-                var data2 = Core.ContentFields.GetPageContent("/Content/partials/" + config.header, language);
+                var data2 = Core.ContentFields.GetPageContent("/Content/partials/" + config.header, language).ToDictionary(a => a.Key, a => (object)a.Value); ;
                 results = HtmlComponents(header, request, data2);
 
                 foreach (var item in results)
@@ -129,10 +130,10 @@ namespace Saber.Common.Platform
                 {
                     if (!header.ContainsKey(item.Key))
                     {
-                        header[item.Key] = item.Value;
+                        header[item.Key] = (string)item.Value;
                     }
                 }
-                data2 = Core.ContentFields.GetPageContent("/Content/partials/" + config.footer, language);
+                data2 = Core.ContentFields.GetPageContent("/Content/partials/" + config.footer, language).ToDictionary(a => a.Key, a => (object)a.Value);
                 results = HtmlComponents(footer, request, data2);
                 foreach (var item in results)
                 {
@@ -142,7 +143,7 @@ namespace Saber.Common.Platform
                 {
                     if (!footer.ContainsKey(item.Key))
                     {
-                        footer[item.Key] = item.Value;
+                        footer[item.Key] = (string)item.Value;
                     }
                     
                 }
@@ -156,7 +157,7 @@ namespace Saber.Common.Platform
             }
         }
 
-        private static List<KeyValuePair<string, string>> HtmlComponents(View view, IRequest request, Dictionary<string, string> data)
+        public static List<KeyValuePair<string, string>> HtmlComponents(View view, IRequest request, Dictionary<string, object> data)
         {
             var results = new List<KeyValuePair<string, string>>();
             var prefix = "";
@@ -178,9 +179,8 @@ namespace Saber.Common.Platform
                         {
                             var elem = view.Elements[field.Value[0]];
                             var args = elem.Vars ?? new Dictionary<string, string>();
-                            var elemData = data.ContainsKey(elem.Name) ? data[elem.Name] : "";
                             //run the Data Binder callback method
-                            var range = component.Value.Render(view, request, args, elemData, prefix, elem.Name);
+                            var range = component.Value.Render(view, request, args, data, prefix, elem.Name);
                             if (range.Count > 0)
                             {
                                 //add HTML component render results to list

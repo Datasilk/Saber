@@ -319,10 +319,14 @@ ul.menu-bar{width:100%; list-style:none;
     }
     .btn-close{padding-top:12px;
         & .btn-close{padding-top:0;}
-    }`
+    }
 
     .filter-match{width:117px !important;}
     .filter-input{width:~"calc(100% - 300px)" !important;}
+    .filter-input-number, .filter-input-datetime{
+        .filter-match{width:200px !important;}
+        .filter-input{width:~"calc(100% - 383px)" !important;}
+    }
     .filter-queryname{
         .input{max-width:200px; width:100%;}
     }
@@ -338,6 +342,7 @@ ul.menu-bar{width:100%; list-style:none;
         .input{width:auto;}
     }
     .tab-list-items .icon-counter{display:inline-block; margin:0 -50px -9px -50px; padding:5px; font-size:7px; border-radius:6px;}
+    .list-lists{max-width:200px; width:~"calc(100% - 500px)"; min-width:140px;}
 }
 .popup .has-content-fields{
     //popup-specific changes for content fields

@@ -215,7 +215,6 @@ S.editor.fields = {
             S.editor.fields.custom.list.datasource.save($(form));
         });
     },
-
     save: function (callback) {
         if (S.editor.fields.changed == false) { return; }
         var seltab = $('.tab-for-content-fields.selected > div');
@@ -271,6 +270,7 @@ S.editor.fields = {
     },
     custom: {
         list: {
+            selected: null,
             init: function (container) {
                 let section = $(container + ' form');
                 S.accordion.load({}, () => { S.editor.resize.window(); });
@@ -282,6 +282,9 @@ S.editor.fields = {
 
                 //event listener for close button
                 section.find('.list-items li .close-btn').off('click').on('click', S.editor.fields.custom.list.remove);
+
+                //event listener for list drop down
+                section.find('.list-lists select').off().on('input', S.editor.fields.custom.list.select);
 
                 //drag & sort event listeners
                 S.drag.sort.add(container + ' .list-items ul', container + ' .list-items li', (e) => {
@@ -419,6 +422,36 @@ S.editor.fields = {
                 }, null, renderApi);
                 return false;
             },
+            select: function (e) {
+                //used when list component contains one or more list components within the partial view used by your list component
+                //select list component from drop down and update content field sections based on selected list key
+                var target = $(e.target);
+                var container = target.parents('.content-field').first();
+                var selected = container.find('.list-lists select').val();
+                var key = S.editor.fields.custom.list.datasource.key(container);
+
+                //save selected list settings before selecting a different list
+                S.editor.fields.custom.list.datasource.save(container);
+                container.find('.list-lists input').val(selected);
+
+                //load settings for list
+                var settings = S.editor.fields.custom.list.datasource.settings(container);
+                var list = settings[selected] ?? { Filter: [], OrderBy: [] };
+
+                //populate posiion settings
+
+
+                //load filters, orderby, and position values
+                S.ajax.post('DataSources/RenderFilters', { key: key, filters: list.Filters }, (form) => {
+                    //update list data with new data source
+                    container.find('.filter-settings .contents').html(form);
+                });
+                S.ajax.post('DataSources/RenderOrderByList', { key: key, orderby: list.OrderBy }, (response) => {
+                    var contents = container.find('.orderby-settings .contents');
+                    contents.html(response);
+                    S.drag.sort.add(contents, contents.find('.orderby'), S.editor.fields.custom.list.orderby.sorted);
+                });
+            },
             datasource: {
                 list: function(e, title) {
                     e.preventDefault();
@@ -445,6 +478,7 @@ S.editor.fields = {
                                 //show list items
                                 field.find('.list-items .contents').html('<ul class="list"></ul>');
                                 field.find('.list-items').show();
+                                field.find('.list-lists').hide();
                                 field.find('.filter-settings').hide();
                                 field.find('.orderby-settings').hide();
                                 field.find('.position-settings').hide();
@@ -457,7 +491,20 @@ S.editor.fields = {
                                 field.find('.tab-list-items .icon-counter').html('0');
                                 hidden.val('');
                             } else {
-                                //show data source filter
+                                //show data source UI elements
+                                S.ajax.post('DataSources/Relationships', { key: key, filters: [] }, (response) => {
+                                    var relationships = JSON.parse(response);
+                                    var listname = field.find('.col.field').first().html().replace('List: ', '');
+                                    var html = '<option value="' + key + '">' + listname + '</option>\n';
+                                    for (var x = 0; x < relationships.length; x++) {
+                                        var item = relationships[x];
+                                        html += '<option value="' + item.ChildKey + '">' +
+                                            S.util.str.Capitalize(item.ListComponent.replace('list-', '').replace('-', ' ')) + '</option>\n';
+                                    }
+                                    field.find('.list-lists select').html(html);
+                                    field.find('.list-lists input').val(key);
+                                    field.find('.list-lists').show();
+                                });
                                 S.ajax.post('DataSources/RenderFilters', { key: key, filters:[] }, (form) => {
                                     //update list data with new data source
                                     field.find('.filter-settings .contents').html(form);
@@ -491,7 +538,31 @@ S.editor.fields = {
                     }, true);
                     return false;
                 },
-                save: function (form, type) {
+                key: function (container) {
+                    var input = container.find('input.input-field').val();
+                    if (input.indexOf('data-src=') >= 0) {
+                        var parts = input.split('|!|');
+                        for (var x = 0; x < parts.length; x++) {
+                            if (parts[x].indexOf('data-src=') >= 0) {
+                                return parts[x].replace('data-src=', '');
+                            }
+                        }
+                    }
+                    return {};
+                },
+                settings: function (container) {
+                    var input = container.find('input.input-field').val();
+                    if (input.indexOf('data-src=') >= 0) {
+                        var parts = input.split('|!|');
+                        for (var x = 0; x < parts.length; x++) {
+                            if (parts[x].indexOf('lists=') >= 0) {
+                                return JSON.parse(parts[x].replace('lists=', ''));
+                            }
+                        }
+                    }
+                    return {};
+                },
+                save: function (form) {
                     var lists = form.find('.list-component-field');
 
                     function collectFilters(container, elem) {
@@ -545,7 +616,13 @@ S.editor.fields = {
                         var container = $(lists[i]).parents('.content-field').first();
                         if (container.find('.list-items')[0].style.display != 'none') { continue; }
 
-                        //generate content for list hidden field
+                        //generate serialized object for list hidden field
+                        var key = container.find('.list-lists input').val();
+                        var input = container.find('.input-field');
+                        var lists = {};
+                        var list = {};
+
+                        //get filter data
                         var filters = [];
                         var groups = container.find('.filter-groups').children();
                         for (var y = 0; y < groups.length; y++) {
@@ -554,63 +631,46 @@ S.editor.fields = {
                                 filters.push(filter);
                             }
                         }
-                        //add filter to parts
-                        var input = container.find('.input-field');
+                        list.Filters = filters;
+
+                        //get orderby data
+                        list.OrderBy = container.find('.orderby-settings .orderby').map((i, a) => {
+                            var orderby = $(a);
+                            return {
+                                Column: orderby.attr('data-column'),
+                                Direction: parseInt(orderby.find('.orderby-direction select').val())
+                            };
+                        });
+
+                        //get position data
+                        list.Position = {
+                            Start: parseInt(container.find('.input-pos-start input').val()),
+                            StartQuery: container.find('.input-pos-start-query input').val(),
+                            Length: parseInt(container.find('.input-pos-length input').val()),
+                            LengthQuery: container.find('.input-pos-length-query input').val()
+                        };
+                        if (list.Position.Start == null) { list.Position.Start = 1; }
+                        if (list.Position.Length == null) { list.Position.Length = 10; }
+
                         if (input.val().indexOf('data-src=') >= 0) {
+                            //save parts to hidden input
                             var parts = input.val().split('|!|');
-                            var json = 'filter=' + JSON.stringify(filters);
                             var found = false;
                             for (var x = 0; x < parts.length; x++) {
-                                if (parts[x].indexOf('filter=') >= 0) {
-                                    parts[x] = json;
+                                if (parts[x].indexOf('lists=') >= 0) {
+                                    lists = JSON.parse(parts[x].replace('lists=', ''));
                                     found = true;
                                     break;
-                                }
+                                } else if (parts[x].indexOf('data-src=') >= 0) {
+                                } else { parts[x] = '';}
                             }
-                            if (!found) {
-                                parts.push(json);
+                            lists[key] = list;
+                            if (found) {
+                                parts[x] = 'lists=' + JSON.stringify(lists);
+                            } else {
+                                parts.push('lists=' + JSON.stringify(lists));
                             }
-
-                            //add orderby to parts
-                            json = "sort=" + JSON.stringify(container.find('.orderby-settings .orderby').map((i, a) => {
-                                var orderby = $(a);
-                                return {
-                                    Column: orderby.attr('data-column'),
-                                    Direction: parseInt(orderby.find('.orderby-direction select').val())
-                                };
-                            }));
-                            found = false;
-                            for (var x = 0; x < parts.length; x++) {
-                                if (parts[x].indexOf('sort=') >= 0) {
-                                    parts[x] = json;
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found) {
-                                parts.push(json);
-                            }
-
-                            //add position to parts
-                            function addPart(name, value, query) {
-                                json = name + "=" + value + '|' + query;
-                                found = false;
-                                for (var x = 0; x < parts.length; x++) {
-                                    if (parts[x].indexOf(name + '=') >= 0) {
-                                        parts[x] = json;
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found) {
-                                    parts.push(json);
-                                }
-                            }
-
-                            addPart('start', container.find('.input-pos-start input').val(), container.find('.input-pos-start-query input').val())
-                            addPart('length', container.find('.input-pos-length input').val(), container.find('.input-pos-length-query input').val())
-
-                            input.val(parts.join('|!|'));
+                            input.val(parts.filter(a => a != '').join('|!|'));
                         }
                     }
                 },
@@ -694,6 +754,7 @@ S.editor.fields = {
                 add: function (key, e) {
                     var target = $(e.target);
                     var container = target.parents('.orderby-settings .contents').first();
+                    container.find('.no-orderby').remove();
                     S.editor.fields.custom.list.datasource.select(key, "Select Column to Sort By", (response) => {
                         if (response == true) {
                             S.ajax.post('DataSources/RenderOrderBy', { key: key, column: datasource_column.value }, (response) => {

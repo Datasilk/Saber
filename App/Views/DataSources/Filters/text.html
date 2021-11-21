@@ -3,10 +3,10 @@
         <div class="col field long">{{label}}</div>
         <div class="col input filter-match">
             <select>
-                <option value="0">Starts With</option>
-                <option value="1">Ends With</option>
-                <option value="2">Contains</option>
-                <option value="3">Equals</option>
+                <option value="0"{{starts-with}}>Starts With</option>
+                <option value="1"{{end-with}}>Ends With</option>
+                <option value="2"{{contains}}>Contains</option>
+                <option value="3"{{equals}}>Equals</option>
             </select>
         </div>
         <div class="col input filter-input"><input type="text" value="{{value}}" /></div>

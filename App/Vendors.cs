@@ -685,6 +685,14 @@ namespace Saber.Common
                 Core.Vendors.DataSources.Add(new DataSourceInfo() { Key = (string.IsNullOrEmpty(instance.Prefix) ? "" : instance.Prefix + "-") + datasource.Key, Name = datasource.Value, Helper = instance });
             }
         }
+
+        public static void InitDataSources()
+        {
+            foreach(var datasource in Core.Vendors.DataSources)
+            {
+                datasource.Helper.Init();
+            }
+        }
         #endregion
 
         #region "Saber Events"

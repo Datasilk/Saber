@@ -20,7 +20,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Name = "Page Content Title",
                     Block = false,
                     Description = "Used to separate groups of content fields by creating a line break & heading element within the Content Fields form.",
-                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         results.Add(new KeyValuePair<string, string>(prefix + "-", ""));

@@ -22,7 +22,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Block = true,
                     ContentField = false,
                     Description = "Display a block of HTML if the user is logged into their account",
-                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if user is logged in
@@ -40,7 +40,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Name = "User Name",
                     Description = "Display the user's name",
                     ContentField = false,
-                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if user is logged in
@@ -58,7 +58,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Name = "User ID",
                     Description = "Display the user's ID",
                     ContentField = false,
-                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if user is logged in
@@ -77,7 +77,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Block = true,
                     ContentField = false,
                     Description = "Display a block of HTML when the user is not logged into their account",
-                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if user is logged in
@@ -96,7 +96,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Block = true,
                     ContentField = false,
                     Description = "Display a block of HTML when the user is allowed to sign up for an account according to Saber's User System Settings",
-                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if total signups in a given range is below the limit set in website.json
