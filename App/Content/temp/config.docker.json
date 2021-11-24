@@ -15,5 +15,10 @@
       "host": "https://sabercms.com",
       "redirect_uri": "https://sabercms.com/saber-auth"
     }
-  ]
+  ],
+  "cors": {
+    "development": [ "" ],
+    "staging": [ "" ],
+    "production": [ "" ]
+  }
 }

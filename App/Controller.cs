@@ -110,7 +110,7 @@ namespace Saber
             //add initialization script
             view["scripts"] = Scripts.ToString();
 
-            return view.Render();
+            return Common.Platform.Render.View(this, view);
         }
 
         public override string AccessDenied()

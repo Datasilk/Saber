@@ -203,10 +203,13 @@ namespace Saber.Common.Platform
             var vendors = new StringBuilder();
             if (Core.Vendors.ViewRenderers.ContainsKey(view.Filename))
             {
-                var renderers = Core.Vendors.ViewRenderers[view.Filename];
-                foreach (var renderer in renderers)
+                var renderers = Core.Vendors.ViewRenderers.ContainsKey(view.Filename) == true ? Core.Vendors.ViewRenderers[view.Filename] : null;
+                if(renderers != null && renderers.Count > 0)
                 {
-                    vendors.Append(itemHead + renderer.Render(request, view) + itemFoot);
+                    foreach (var renderer in renderers)
+                    {
+                        vendors.Append(itemHead + renderer.Render(request, view) + itemFoot);
+                    }
                 }
             }
             if (vendors.Length > 0)

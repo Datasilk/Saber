@@ -320,6 +320,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Common\Platform\CORS\" />
     <Folder Include="wwwroot\content\pages\home\" />
     <Folder Include="wwwroot\content\pages\login\" />
     <Folder Include="wwwroot\content\vendors\market\template\" />

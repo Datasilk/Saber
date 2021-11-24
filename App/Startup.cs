@@ -38,6 +38,9 @@ namespace Saber
             //add session
             //services.AddSession();
 
+            //add CORS
+            services.AddCors();
+
             //add health checks
             services.AddHealthChecks();
 
@@ -483,8 +486,66 @@ namespace Saber
                 }
             }
 
-            //copy temporary website (if neccessary)
+            //copy temporary website (if neccessary) /////////////////////////////////////////////////////////////////////////
             Website.CopyTempWebsite();
+
+            //Set Up CORS ///////////////////////////////////////////////////////////////////////////////////////////////////
+            var origins = new string[] { };
+            var section = "";
+            try
+            {
+                switch (App.Environment)
+                {
+                    case Environment.development:
+                        section = "development";
+                        break;
+                    case Environment.production:
+                        section = "production";
+                        break;
+                    case Environment.staging:
+                        section = "staging";
+                        break;
+                }
+
+                origins = config.GetSection("cors:" + section).Get<string[]>().Where(a => a != "").ToArray();
+            }
+            catch (Exception)
+            {
+            }
+
+            if (origins.Length > 0)
+            {
+                Console.WriteLine("found CORS origins: " + string.Join("; ", origins));
+
+                if (origins.Contains("*"))
+                {
+                    //wildcard CORS
+                    app.UseCors(builder =>
+                    {
+                        builder.WithOrigins("*")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                    });
+                }
+                else
+                {
+                    //domaim list CORS
+                    app.UseCors(builder =>
+                    {
+                        builder.WithOrigins(origins)
+                        .WithHeaders("GET", "POST", "OPTIONS")
+                        .WithHeaders("*")
+                        .AllowCredentials();
+                    });
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("No CORS origins defined for " + section);
+            }
+
+
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
