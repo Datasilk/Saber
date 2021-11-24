@@ -210,7 +210,7 @@ namespace Saber.Common.Platform
                         break;
                 }
             }
-            else if(paths[0].ToLower() == "/content")
+            else if(paths[0].ToLower() == "content")
             {
                 switch (paths[1].ToLower())
                 {
@@ -238,6 +238,9 @@ namespace Saber.Common.Platform
                                 }
                                 break;
                         }
+                        break;
+                    case "website.js":
+                        File.Copy(App.MapPath(filepath), App.MapPath("/wwwroot/js/" + paths[paths.Length - 1]), true);
                         break;
                     case "website.less":
                         SaveLessFile(content, "/wwwroot/css/website.css", "/Content/");

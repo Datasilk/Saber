@@ -71,10 +71,10 @@ S.editor.save = function (path, content) {
                 S.editor.files.js.changed = true;
             } else if(path.indexOf('/partials/' >= 0)) {
                 //check if file is a partial and if partial content fields tab is loaded
-                var fieldstab = $('.tab-' + self.fileId(path.replace('content/partials/', 'content-fields-')));
-                if (fieldstab.length > 0) {
-                    S.editor.fields.load(path, false);
-                }
+                //var fieldstab = $('.tab-' + self.fileId(path.replace('content/partials/', 'content-fields-')));
+                //if (fieldstab.length > 0) {
+                //    S.editor.fields.load(path, false);
+                //}
                 S.editor.files.content.changed = true;
             }
             tab.find('.loader').remove();

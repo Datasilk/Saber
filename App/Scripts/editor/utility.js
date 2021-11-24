@@ -46,12 +46,12 @@ S.editor.isResource = function (path, type) {
         switch (dir + fileparts.join('.')) {
             case 'content/partials/header.less':
             case 'content/partials/footer.less':
-            case 'content/website.less':
+            case 'website.less':
                 return true;
         }
     } else if (type == 'website.js') {
         switch (dir + fileparts.join('.')) {
-            case 'root/scripts/website.js':
+            case 'website.js':
                 return true;
         }
     } else if (type == 'partial') {

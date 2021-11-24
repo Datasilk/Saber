@@ -90,6 +90,8 @@ namespace Saber.Common.Platform.HtmlComponents
                             List<Dictionary<string, string>> records;
                             DataSource.Relationship[] relationships = null;
                             DataSourceInfo datasource = null;
+                            Dictionary<string, ListSettings> settings = null;
+                            ListSettings mysettings = null;
                             if(mydata.IndexOf("data-src=") >= 0)
                             {
                                 data = data.ToDictionary(a => a.Key, a => a.Value);
@@ -104,8 +106,6 @@ namespace Saber.Common.Platform.HtmlComponents
                                 var column = columnPart != null ? columnPart.Replace("column=", "") : "";
                                 var listsPart = parts.Where(a => a.IndexOf("lists=") == 0).FirstOrDefault();
                                 var lists = listsPart != null ? listsPart.Replace("lists=", "") : "{}";
-                                Dictionary<string, ListSettings> settings;
-                                ListSettings mysettings;
 
                                 if(recordset != "")
                                 {
@@ -203,8 +203,11 @@ namespace Saber.Common.Platform.HtmlComponents
                                 results.Add(new KeyValuePair<string, string>(prefix + key, ""));
                                 return results;
                             }
+                            var x = 0;
                             foreach (var record in records)
                             {
+                                x++;
+                                if(mysettings != null && mysettings.Position.Length < x){ break; }
                                 switch (order)
                                 {
                                     case "loop":

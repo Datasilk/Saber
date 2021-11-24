@@ -439,7 +439,14 @@ S.editor.fields = {
                 var list = settings[selected] ?? { Filter: [], OrderBy: [] };
 
                 //populate posiion settings
-
+                var pos = list.Position;
+                if (!pos) {
+                    pos = { Start: 1, Length: 10, StartQuery: '', LengthQuery: '' };
+                }
+                container.find('.input-pos-start input').val(pos.Start);
+                container.find('.input-pos-start-query input').val(pos.StartQuery);
+                container.find('.input-pos-length input').val(pos.Length);
+                container.find('.input-pos-length-query input').val(pos.LengthQuery);
 
                 //load filters, orderby, and position values
                 S.ajax.post('DataSources/RenderFilters', { key: key, filters: list.Filters }, (form) => {
