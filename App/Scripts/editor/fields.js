@@ -440,6 +440,9 @@ S.editor.fields = {
 
                 //populate posiion settings
                 var pos = list.Position;
+                if (!pos) {
+                    pos = { Start: 1, Length: 10, StartQuery: '', LengthQuery: '' };
+                }
                 container.find('.input-pos-start input').val(pos.Start);
                 container.find('.input-pos-start-query input').val(pos.StartQuery);
                 container.find('.input-pos-length input').val(pos.Length);

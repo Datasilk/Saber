@@ -288,7 +288,7 @@ S.editor.init = function () {
     });
 
     //add drop down events
-    $('.editor #lang').on('change', S.editor.fields.load);
+    //$('.editor #lang').on('change', S.editor.fields.load);
 
     //add window resize event
     $(window).on('resize', S.editor.resize.window);
