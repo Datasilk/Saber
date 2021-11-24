@@ -258,7 +258,7 @@ namespace Saber
             {
                 //get a list of abstract classes from the assembly
                 var types = assembly.GetTypes()
-                    .Where(type => typeof(Vendor.InternalApi).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                    .Where(type => typeof(Vendor.IVendorInteralApis).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
                 foreach (var type in types)
                 {
                     Common.Vendors.GetInternalApisFromType(type);
