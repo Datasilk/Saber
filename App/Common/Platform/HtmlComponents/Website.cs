@@ -55,6 +55,7 @@ namespace Saber.Common.Platform.HtmlComponents
                         }
                         else if (request.Path.Contains("api/") && request.Parameters.ContainsKey("path"))
                         {
+                            //if loading page from AJAX
                             var paths = request.Parameters["path"].Replace("content/", "").Replace(".html", "").Split("/");
                             results.Add(new KeyValuePair<string, string>(prefix + "page-id", string.Join('_', paths)));
                         }
@@ -62,6 +63,66 @@ namespace Saber.Common.Platform.HtmlComponents
                         {
                             var paths = request.Path.Split('/');
                             results.Add(new KeyValuePair<string, string>(prefix + "page-id", string.Join('_', paths)));
+                        }
+                        return results;
+                    })
+                },
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                new HtmlComponentModel()
+                {
+                    Key = "page-parent-id",
+                    Name = "Parent Page ID",
+                    ContentField = false,
+                    Description = "Return an ID based on the page URL",
+                    Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    {
+                        var results = new List<KeyValuePair<string, string>>();
+                        if(request.Path == "")
+                        {
+                            results.Add(new KeyValuePair<string, string>(prefix + "page-parent-id", "home"));
+                        }
+                        else if (request.Path.Contains("api/") && request.Parameters.ContainsKey("path"))
+                        {
+                            //if loading page from AJAX
+                            var paths = request.Parameters["path"].Replace("content/", "").Replace(".html", "").Split("/");
+                            results.Add(new KeyValuePair<string, string>(prefix + "page-id", string.Join('_', paths.SkipLast(1))));
+                        }
+                        else
+                        {
+                            var paths = request.Path.Split('/');
+                            
+                            results.Add(new KeyValuePair<string, string>(prefix + "page-parent-id", string.Join('_', paths.SkipLast(1))));
+                        }
+                        return results;
+                    })
+                },
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                new HtmlComponentModel()
+                {
+                    Key = "page-root-id",
+                    Name = "Root Page ID",
+                    ContentField = false,
+                    Description = "Return an ID based on the page URL",
+                    Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    {
+                        var results = new List<KeyValuePair<string, string>>();
+                        if(request.Path == "")
+                        {
+                            results.Add(new KeyValuePair<string, string>(prefix + "page-root-id", "home"));
+                        }
+                        else if (request.Path.Contains("api/") && request.Parameters.ContainsKey("path"))
+                        {
+                            //if loading page from AJAX
+                            var paths = request.Parameters["path"].Replace("content/", "").Replace(".html", "").Split("/");
+                            results.Add(new KeyValuePair<string, string>(prefix + "page-id", paths[0]));
+                        }
+                        else
+                        {
+                            var paths = request.Path.Split('/');
+
+                            results.Add(new KeyValuePair<string, string>(prefix + "page-root-id", paths[0]));
                         }
                         return results;
                     })
