@@ -161,7 +161,7 @@ namespace Saber.Controllers
                 "</script>\n"
             );
 
-            return base.Render(view.Render());
+            return base.Render(Common.Platform.Render.View(this, view));
         }
     }
 }

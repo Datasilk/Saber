@@ -16,9 +16,13 @@ Saber gives software engineers the ability to focus on traditional web developme
 
 ## Installation
 
-1. Clone the repository:
+1. Clone the repository and get all submodules:
 
-    ```git clone --recurse-submodules http://github.com/Datasilk/Saber```
+    ```
+    git clone --recurse-submodules http://github.com/Datasilk/Saber
+    git submodule foreach git checkout master
+    git submodule foreach git submodule update --init
+    ```
 
 2. Run command `npm install`
 3. Run command `gulp default`

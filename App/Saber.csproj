@@ -20,10 +20,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Common\Platform\CORS\**" />
     <Compile Remove="Content\screenshots\**" />
     <Compile Remove="Content\uploads\**" />
+    <EmbeddedResource Remove="Common\Platform\CORS\**" />
     <EmbeddedResource Remove="Content\screenshots\**" />
     <EmbeddedResource Remove="Content\uploads\**" />
+    <None Remove="Common\Platform\CORS\**" />
     <None Remove="Content\screenshots\**" />
     <None Remove="Content\uploads\**" />
   </ItemGroup>
@@ -320,7 +323,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Platform\CORS\" />
     <Folder Include="wwwroot\content\pages\home\" />
     <Folder Include="wwwroot\content\pages\login\" />
     <Folder Include="wwwroot\content\vendors\market\template\" />
