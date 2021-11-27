@@ -100,6 +100,7 @@ S.editor.fields = {
                         parent.find('.img').html('<div><img src="' + src + '"/></div>');
                         parent.find('.img').css({ 'background-image': 'url(' + src + ')' });
                         field.val(src);
+                        S.editor.fields.change();
                         if (!ispopup) { S.editor.fields.save(file); }
                     });
                 });
