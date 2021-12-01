@@ -238,16 +238,18 @@ namespace Saber.Common.Platform.HtmlComponents
                             pageButtons = new StringBuilder();
 
                             //item-button
-                            var elem = container.Elements.Where(a => a.Name == "item-button").FirstOrDefault();
-                            if(elem.Htm != "")
+                            var elemIndex = container.Elements.FindIndex(a => a.Name == "item-button");
+                            if(elemIndex >= 0)
                             {
-                                itemButton = new View(new ViewOptions(){Html = elem.Htm });
+                                //render item button
+                                itemButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
                             }
+                            
                             //page-button
-                            elem = container.Elements.Where(a => a.Name == "page-button").FirstOrDefault();
-                            if(elem.Htm != null && elem.Htm != "")
+                            elemIndex = container.Elements.FindIndex(a => a.Name == "page-button");
+                            if(elemIndex >= 0)
                             {
-                                pageButton = new View(new ViewOptions(){Html = elem.Htm }); 
+                                pageButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
                             }
                         }
 
@@ -357,6 +359,7 @@ namespace Saber.Common.Platform.HtmlComponents
                                 itemButton.Clear();
                                 itemButton["item-number"] = x.ToString();
                                 itemButton["item-key"] = keyColumn != "" && record.ContainsKey(keyColumn) ? record[keyColumn] : "";
+                                if(x == 1){itemButton.Show("selected"); }
                                 itemButtons.Append(itemButton.Render());
                             }
                             partial.Show(x == 1 ? "is-first-item" : "not-first-item");
