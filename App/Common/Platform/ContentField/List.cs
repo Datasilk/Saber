@@ -17,12 +17,12 @@ namespace Saber.Common.Platform.ContentField
         {
             if (!args.ContainsKey("partial")) { return "You must provide the \"partial\" property for your mustache \"list\" component"; }
             //load provided partial view
-            var partials = args["partial"].Split("|");
+            var partials = (args["partial"].Contains("|") ? args["partial"].Split("|") : args["partial"].Split(",")).Select(a => a.Trim()).ToArray(); 
             var viewlist = new View("/Views/ContentFields/list.html");
             var viewitem = new View("/Views/ContentFields/list-item.html");
             var fieldKey = args.ContainsKey("key") ? args["key"] : "";
             viewlist["title"] = key.Replace("-", " ").Replace("_", " ").Capitalize();
-            viewlist["key"] = key;
+            viewlist["field-key"] = fieldKey;
             viewlist["partial"] = partials[0];
             viewlist["lang"] = lang;
             viewlist["container"] = container;
@@ -84,8 +84,8 @@ namespace Saber.Common.Platform.ContentField
                             viewitem["label"] = fieldKey != "" ? item[fieldKey] : "List Item #" + i;
                             viewitem["index"] = i.ToString();
                             viewitem["onclick"] = "S.editor.fields.custom.list.edit(event, '" + viewlist["title"] +
-                                "', '" + viewlist["key"] +
-                                "', '" + viewlist["partial"] + "', '" + lang + "', '" + container + "')";
+                                "', '" + fieldKey +
+                                "', '" + viewlist["partial"].Split(",")[0].Trim() + "', '" + lang + "', '" + container + "')";
                             html.Append(viewitem.Render());
                             viewitem.Clear();
                             i++;

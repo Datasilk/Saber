@@ -161,6 +161,7 @@ namespace Saber.Common.Platform
             var filepath = string.Join("/", paths); //relative filename & path
             var file = paths[paths.Length - 1]; //filename only
             var ext = file.Split('.', 2)[1].ToLower(); //file extension only
+            if(paths[0] == "/Content") { paths[0] = "content"; }
 
             //create folder for file
             if (!Directory.Exists(absdir))

@@ -87,7 +87,7 @@ namespace Saber.Common.Platform.HtmlComponents
                         }
                         var containerPath = args.ContainsKey("container") ? args["container"] : "";
                         var keyColumn = args.ContainsKey("key") ? args["key"] : "";
-                        var partialFiles = (args["partial"]).Split("|");
+                        var partialFiles = (args["partial"].Contains("|") ? args["partial"].Split("|") : args["partial"].Split(",")).Select(a => a.Trim()).ToArray();
                         var partials = new List<View>();
                         foreach (var file in partialFiles)
                         {

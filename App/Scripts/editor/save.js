@@ -101,3 +101,7 @@ S.editor.saveAs = function () {
         S.editor.save(path, value);
     }
 };
+
+S.editor.save.enable = function () {
+    $('.editor .item-save').removeClass('faded').removeAttr('disabled');
+}
