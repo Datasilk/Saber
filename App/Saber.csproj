@@ -251,6 +251,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0006" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+
+
+    <PackageReference Include="System.ServiceModel.Http" Version="4.5.0" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.5.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -323,6 +328,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Vendors\Collector\Images\icons\" />
+    <Folder Include="Vendors\Collector\Models\" />
+    <Folder Include="Vendors\Collector\Sql\Schema\" />
     <Folder Include="wwwroot\content\pages\home\" />
     <Folder Include="wwwroot\content\pages\login\" />
     <Folder Include="wwwroot\content\vendors\market\template\" />

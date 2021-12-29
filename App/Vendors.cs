@@ -77,15 +77,30 @@ namespace Saber.Common
             return details;
         }
 
+        public static List<string> MarkedForUninstall = null;
+
+        public static List<string> GetVendorsMarkedForUninstall()
+        {
+            if(MarkedForUninstall != null) { return MarkedForUninstall; }
+            if (!Directory.Exists(App.MapPath("/Vendors"))) {
+                MarkedForUninstall = new List<string>();
+            }
+            else
+            {
+                var root = App.MapPath("/Vendors/");
+                MarkedForUninstall = Directory.GetFiles(App.MapPath("/Vendors/"), "uninstall.sbr", SearchOption.AllDirectories).Select(a => a.Replace(root, "").Replace("uninstall.sbr", "").Replace("\\", "/").Replace("/", "")).ToList();
+            }
+            return MarkedForUninstall;
+        }
+
         public static void DeleteVendors()
         {
             //check all vendors to see if Saber has marked them for uninstallation
             if (!Directory.Exists(App.MapPath("/Vendors"))) { return; }
-            var files = Directory.GetFiles(App.MapPath("/Vendors/"), "uninstall.sbr", SearchOption.AllDirectories);
-            var root = App.MapPath("/Vendors/");
-            foreach(var file in files)
+            var vendors = GetVendorsMarkedForUninstall();
+            
+            foreach(var vendor in vendors)
             {
-                var vendor = file.Replace(root, "").Replace("uninstall.sbr", "").Replace("\\", "/").Replace("/", "");
                 try
                 {
                     Uninstalled.Add(vendor);
@@ -98,7 +113,9 @@ namespace Saber.Common
                     Directory.Delete(App.MapPath("/Vendors/" + vendor), true);
                     Console.WriteLine("Uninstalled Vendor " + vendor);
                 }
-                catch (Exception) { }
+                catch (Exception ex) {
+                    Console.WriteLine(ex.InnerException.Message);
+                }
             }
         }
         #endregion
@@ -112,6 +129,10 @@ namespace Saber.Common
             if (File.Exists(App.MapPath("/Vendors/versions.json")))
             {
                 versions = JsonSerializer.Deserialize<List<AssemblyInfo>>(File.ReadAllText(App.MapPath("/Vendors/versions.json")));
+            }
+            if (Directory.Exists(App.MapPath("/wwwroot/editor/vendors")))
+            {
+                Directory.CreateDirectory(App.MapPath("/wwwroot/editor/vendors"));
             }
             foreach (var detail in Core.Vendors.Details)
             {
@@ -303,6 +324,7 @@ namespace Saber.Common
             if (type.Equals(typeof(IVendorViewRenderer))) { return; }
             var attributes = type.GetCustomAttributes<ViewPathAttribute>();
             var details = GetDetails(type, DLL);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             foreach (var attr in attributes)
             {
                 if (!Core.Vendors.ViewRenderers.ContainsKey(attr.Path))
@@ -342,6 +364,7 @@ namespace Saber.Common
             if (type.Equals(typeof(IVendorContentField))) { return; }
             var attributes = type.GetCustomAttributes<ContentFieldAttribute>();
             var details = GetDetails(type, DLL);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             foreach (var attr in attributes)
             {
                 var instance = (IVendorContentField)Activator.CreateInstance(type);
@@ -381,6 +404,7 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorController))) { return; }
             var details = GetDetails(type, DLL);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             details.Controllers.Add(type.Name.ToLower(), type);
             Core.Vendors.Controllers.Add(type.Name.ToLower(), type);
         }
@@ -410,6 +434,7 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorService))) { return; }
             var details = GetDetails(type, DLL);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             details.Services.Add(type.Name.ToLower(), type);
             Core.Vendors.Services.Add(type.Name.ToLower(), type);
         }
@@ -439,6 +464,7 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorStartup))) { return; }
             var details = GetDetails(type, DLL);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             var name = type.FullName;
             if (!Core.Vendors.Startups.ContainsKey(name))
             {
@@ -472,6 +498,7 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorKeys))) { return; }
             var details = GetDetails(type, DLL);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             var instance = (IVendorKeys)Activator.CreateInstance(type);
             details.Keys.Add(instance);
             Core.Vendors.Keys.Add(instance);
@@ -502,6 +529,7 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorHtmlComponents))) { return; }
             var details = GetDetails(type, DLL);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             var instance = (IVendorHtmlComponents)Activator.CreateInstance(type);
             var components = instance.Bind();
             foreach (var component in components) {
@@ -545,6 +573,7 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorEmailClient))) { return; }
             var details = GetDetails(type, DLL);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             var instance = (IVendorEmailClient)Activator.CreateInstance(type);
             if(instance.Key == "smtp") { return; } //skip internal email client
             details.EmailClients.Add(instance.Key, instance);
@@ -577,6 +606,7 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorEmails))) { return; }
             var details = GetDetails(type, DLL);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             var emails = (IVendorEmails)Activator.CreateInstance(type);
             foreach(var email in emails.Types)
             {
@@ -610,6 +640,7 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorWebsiteSettings))) { return; }
             var details = GetDetails(type, DLL);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             var instance = (IVendorWebsiteSettings)Activator.CreateInstance(type);
             details.WebsiteSettings.Add(instance);
             Core.Vendors.WebsiteSettings.Add(instance);
@@ -640,6 +671,7 @@ namespace Saber.Common
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorInfo))) { return; }
             var details = GetDetails(type, DLL);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             var instance = (IVendorInfo)Activator.CreateInstance(type);
             if (Uninstalled.Contains(instance.Key))
             {
@@ -679,6 +711,8 @@ namespace Saber.Common
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorDataSources))) { return; }
+            var details = GetDetails(type);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             var instance = (IVendorDataSources)Activator.CreateInstance(type);
             foreach(var datasource in instance.List())
             {
@@ -711,6 +745,8 @@ namespace Saber.Common
         {
             if (type == null) { return; }
             if (type.Equals(typeof(SaberEvents))) { return; }
+            var details = GetDetails(type);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             var instance = (SaberEvents)Activator.CreateInstance(type);
             Core.Vendors.EventHandlers.Add(instance);
         }
@@ -739,11 +775,44 @@ namespace Saber.Common
         {
             if (type == null) { return; }
             if (type.Equals(typeof(IVendorInteralApis))) { return; }
+            var details = GetDetails(type);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
             var instance = (IVendorInteralApis)Activator.CreateInstance(type);
             foreach(var api in instance.Apis)
             {
                 Core.Vendors.InternalApis.Add(api);
             }
+        }
+        #endregion
+
+        #region "SignalR"
+        public static void GetSignalRFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.Value.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorSignalR")
+                        {
+                            GetSignalRFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetSignalRFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorSignalR))) { return; }
+            var details = GetDetails(type);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
+            var instance = (IVendorSignalR)Activator.CreateInstance(type);
+            Core.Vendors.SignalR.Add(instance);
+            details.SignalR.Add(instance);
         }
         #endregion
     }
