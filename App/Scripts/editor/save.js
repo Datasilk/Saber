@@ -81,8 +81,10 @@ S.editor.save = function (path, content) {
             self.unChanged(path);
             //S.editor.explorer.open(path);
         },
-        function () {
-            S.editor.error();
+        function (d) {
+            console.log(d);
+            S.editor.error('', d.responseText);
+            tab.find('.loader').remove();
         }
     );
 };

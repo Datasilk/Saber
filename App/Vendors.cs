@@ -142,24 +142,23 @@ namespace Saber.Common
                 var vparts = v.ToString().Split('.').Select(a => int.Parse(a)).ToArray();
                 var isnew = false;
                 var isupdated = false;
-                var i = versions.FindIndex(a => a.Assembly == detail.Assembly);
+                var haserror = false;
+                var versionIndex = versions.FindIndex(a => a.Assembly == detail.Assembly);
                 var v2 = new int[] { };
-                if (i >= 0)
+                if (versionIndex >= 0)
                 {
-                    v2 = versions[i].Version.Split('.').Select(a => int.Parse(a)).ToArray();
+                    v2 = versions[versionIndex].Version.Split('.').Select(a => int.Parse(a)).ToArray();
                     if (Utility.Versions.Compare(vparts, v2))
                     {
                         isnew = true;
                         isupdated = true;
                         versionsChanged = true;
-                        versions[i] = new AssemblyInfo() { Assembly = versions[i].Assembly, Version = v };
                     }
                 }
                 else
                 {
                     isnew = true;
                     versionsChanged = true;
-                    versions.Add(new AssemblyInfo() { Assembly = detail.Assembly, Version = v });
                 }
 
                 if (isnew)
@@ -169,23 +168,14 @@ namespace Saber.Common
                     var relpath = detail.Key + "/";
                     var dir = new DirectoryInfo(path);
                     var files = dir.GetFiles().Where(Current => Regex.IsMatch(Current.Extension, "\\.(js|css|less|" + string.Join("|", Core.Image.Extensions).Replace(".", "") + ")", RegexOptions.IgnoreCase));
-                    var jsPath = "/wwwroot/editor/vendors/" + relpath.ToLower();
-                    var cssPath = "/wwwroot/editor/vendors/" + relpath.ToLower();
-                    var imagesPath = "/wwwroot/editor/vendors/" + relpath.ToLower();
+                    var vendorsPath = "/wwwroot/editor/vendors/";
+                    var vendorPath = vendorsPath + relpath.ToLower();
                     if (files.Count() > 0)
                     {
-                        //create wwwroot paths
-                        if (!Directory.Exists(App.MapPath(jsPath)))
+                        //create wwwroot vendor path
+                        if (!Directory.Exists(App.MapPath(vendorPath)))
                         {
-                            Directory.CreateDirectory(App.MapPath(jsPath));
-                        }
-                        if (!Directory.Exists(App.MapPath(cssPath)))
-                        {
-                            Directory.CreateDirectory(App.MapPath(cssPath));
-                        }
-                        if (!Directory.Exists(App.MapPath(imagesPath)))
-                        {
-                            Directory.CreateDirectory(App.MapPath(imagesPath));
+                            Directory.CreateDirectory(App.MapPath(vendorPath));
                         }
                     }
                     foreach (var f in files)
@@ -194,19 +184,19 @@ namespace Saber.Common
                         switch (f.Extension)
                         {
                             case ".js":
-                                Utility.Compression.GzipCompress(f.OpenText().ReadToEnd(), jsPath + Path.GetFileName(f.FullName));
+                                Utility.Compression.GzipCompress(f.OpenText().ReadToEnd(), vendorPath + Path.GetFileName(f.FullName));
                                 break;
                             case ".css":
-                                File.Copy(f.FullName, App.MapPath(cssPath + Path.GetFileName(f.FullName)), true);
+                                File.Copy(f.FullName, App.MapPath(vendorPath + Path.GetFileName(f.FullName)), true);
                                 break;
                             case ".less":
-                                Platform.Website.SaveLessFile(f.OpenText().ReadToEnd(), cssPath + Path.GetFileName(f.FullName), f.FullName.Replace(f.Name, ""));
+                                Platform.Website.SaveLessFile(f.OpenText().ReadToEnd(), vendorPath + Path.GetFileName(f.FullName), f.FullName.Replace(f.Name, ""));
                                 break;
                             default:
                                 if (Core.Image.Extensions.Any(a => a == f.Extension))
                                 {
                                     //images
-                                    File.Copy(f.FullName, App.MapPath(imagesPath + Path.GetFileName(f.FullName)), true);
+                                    File.Copy(f.FullName, App.MapPath(vendorPath + Path.GetFileName(f.FullName)), true);
                                 }
                                 break;
                         }
@@ -220,12 +210,14 @@ namespace Saber.Common
                             try
                             {
                                 Query.Script.Execute(App.MapPath(detail.Path + "Sql/install.sql"));
-                                Console.WriteLine("Executed " + detail.Path + "Sql/install.sql");
+                                Console.WriteLine("Executed " + detail.Path + "Sql/install.sql with no errors");
                             }
                             catch(Exception ex)
                             {
                                 Console.WriteLine("Error executing " + detail.Path + "Sql/install.sql");
                                 Console.WriteLine(ex.Message);
+                                Console.WriteLine(ex.InnerException.Message);
+                                haserror = true;
                             }
                         }
                     }
@@ -250,13 +242,28 @@ namespace Saber.Common
                             try
                             {
                                 Query.Script.Execute(App.MapPath(detail.Path + "Sql/" + script.Value));
-                                Console.WriteLine("Executed " + detail.Path + "Sql/" + script.Value);
+                                Console.WriteLine("Executed " + detail.Path + "Sql/" + script.Value + " with no errors");
                             }
                             catch (Exception ex)
                             {
                                 Console.WriteLine("Error executing " + detail.Path + "Sql/" + script.Value);
                                 Console.WriteLine(ex.Message);
+                                Console.WriteLine(ex.InnerException.Message);
+                                haserror = true;
                             }
+                        }
+                    }
+
+                    //check if there are any errors before updating the plugin version in Venders/versions.json
+                    if (haserror == false)
+                    {
+                        if (isupdated)
+                        {
+                            versions[versionIndex] = new AssemblyInfo() { Assembly = versions[versionIndex].Assembly, Version = v };
+                        }
+                        else
+                        {
+                            versions.Add(new AssemblyInfo() { Assembly = detail.Assembly, Version = v });
                         }
                     }
                 }

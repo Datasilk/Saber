@@ -5,6 +5,8 @@ using System.Text.Json;
 using Saber.Core;
 using Saber.Core.Extensions.Strings;
 using dotless.Core;
+using dotless.Core.Loggers;
+using dotless.Core.configuration;
 
 
 namespace Saber.Common.Platform
@@ -69,13 +71,13 @@ namespace Saber.Common.Platform
         {
             //check for root & content folders
             var paths = PageInfo.GetRelativePath(path.ToLower());
-            if (path == "root")
+            //if (path == "root")
+            //{
+            //    throw new ServiceErrorException("You cannot create a file in the root folder");
+            //}
+            if (path == "")
             {
-                throw new ServiceErrorException("You cannot create a file in the root folder");
-            }
-            if (paths[0] == "/Content" && paths.Length == 0)
-            {
-                throw new ServiceErrorException("You cannot create a file in the content folder");
+                //throw new ServiceErrorException("You cannot create a file in the content folder");
             }
 
             //check folder characters
@@ -264,7 +266,13 @@ namespace Saber.Common.Platform
             {
                 Directory.CreateDirectory(dir);
             }
-            var css = Less.Parse(content);
+            var css = Less.Parse(content, new dotless.Core.configuration.DotlessConfiguration()
+            {
+                Debug = true,
+                InlineCssFiles = true,
+                Logger = typeof (Website.ConsoleLogger)
+            });
+            
             if (!string.IsNullOrEmpty(content.Trim()))
             {
                 if (string.IsNullOrEmpty(css.Trim()))
@@ -277,7 +285,23 @@ namespace Saber.Common.Platform
             Directory.SetCurrentDirectory(App.MapPath("/"));
         }
 
-        public static void CopyTempWebsite()
+
+        public class ConsoleLogger : Logger
+        {
+            public ConsoleLogger(LogLevel level) : base(level) { }
+
+            public ConsoleLogger(DotlessConfiguration config) : this(config.LogLevel)
+            {
+
+            }
+
+            protected override void Log(string message)
+            {
+                Console.WriteLine(message);
+            }
+        }
+
+    public static void CopyTempWebsite()
         {
             if (!File.Exists(App.MapPath("/Content/pages/home.html")))
             {
