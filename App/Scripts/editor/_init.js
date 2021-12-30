@@ -9,7 +9,7 @@ S.editor.init = function () {
         //remove leading slash
         path = path.substr(0, path.length - 1);
     }
-    this.path = 'content' + path;
+    this.path = 'content/pages/' + path;
     var paths = this.path.split('/').filter(a => a != '');
     var file = paths[paths.length - 1];
     var dir = paths.join('/').replace(file, '');

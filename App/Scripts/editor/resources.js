@@ -38,7 +38,7 @@ S.editor.resources = {
             function (d) {
                 $('.sections > .' + id).html(d);
                 S.editor.resources._loaded = true;
-                pagename = path.replace('content/', '');
+                pagename = path.replace('content/pages/', '');
 
                 //initialize uploader
                 if (self.uploader == null) {

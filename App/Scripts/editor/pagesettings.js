@@ -41,7 +41,7 @@ S.editor.settings = {
                 //set up settings title
                 S.editor.settings._loaded = true;
                 S.editor.settings.clone = $('.page-settings .textarea-clone > div');
-                var p = path.replace('content/', '');
+                var p = path.replace('content/pages/', '');
                 $('.editor .page-name').attr('href', '/' + p).html(p);
                 S.editor.resize.window();
 

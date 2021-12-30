@@ -268,8 +268,6 @@ namespace Saber.Common.Platform
             }
             var css = Less.Parse(content, new dotless.Core.configuration.DotlessConfiguration()
             {
-                Debug = true,
-                InlineCssFiles = true,
                 Logger = typeof (Website.ConsoleLogger)
             });
             

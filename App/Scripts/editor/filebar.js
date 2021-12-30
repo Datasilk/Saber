@@ -144,8 +144,8 @@ S.editor.filebar = {
             var doc = window.parent.document;
             var tagcss = doc.getElementById('page_css');
             var tagjs = doc.getElementById('page_js');
-            var css = '/' + S.editor.path.replace('content/', 'content/pages/') + '.css';
-            var src = '/' + S.editor.path.replace('content/', 'content/pages/') + '.js';
+            var css = '/' + S.editor.path + '.css';
+            var src = '/' + S.editor.path + '.js';
             var rnd = Math.floor(Math.random() * 9999);
 
             //first, reload CSS

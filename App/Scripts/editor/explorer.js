@@ -111,10 +111,10 @@ S.editor.explorer = {
                 });
                 var url = path;
                 if (path.indexOf('root') == 0) {
-                    url = url.replace('root', '').replace('content/', '');
+                    url = url.replace('root', '').replace('content/pages/', '');
                 }
                 url += '/';
-                if (url == 'content/') { url = '/'; }
+                if (url == 'content/pages/') { url = '/'; }
                 //console.log(url);
                 $('.browser-path').html(url);
                 if (path.indexOf('wwwroot') == 0) {
@@ -163,7 +163,7 @@ S.editor.explorer = {
         }
     },
 
-    open: function (path, code, isready, callback) {
+    open: function (path, code, isready, callback, redirect) {
         //opens a resource that exists on the server
         let paths = path.split('/');
         let id = S.editor.fileId(path);
@@ -200,7 +200,7 @@ S.editor.explorer = {
         let file = paths[paths.length - 1];
         var fileparts = paths[paths.length - 1].split('.', 2);
         let isPageResource = S.editor.isResource(path);
-        if (path.indexOf('content/pages/') >= 0 && path.indexOf('.html') > 0 && isready == true) {
+        if (path.indexOf('content/pages/') >= 0 && path.indexOf('.html') > 0 && isready == true && redirect == true) {
             //redirect to page instead of opening tab
             if (S.editor.files.html.changed == true) {
                 //TODO:confirm if user wants to save changes to html page
@@ -248,8 +248,8 @@ S.editor.explorer = {
             var cleanPath = path;
             if (cleanPath.indexOf('content/partials/') == 0) {
                 cleanPath = cleanPath.replace('content/', '');
-            } else if (cleanPath.indexOf('content/') == 0) {
-                cleanPath = cleanPath.replace('content/', '');
+            } else if (cleanPath.indexOf('content/pages/') == 0) {
+                cleanPath = cleanPath.replace('content/pages/', '');
             }
             if (cleanPath.indexOf('root/') == 0) { cleanPath = cleanPath.replace('root/', ''); }
 

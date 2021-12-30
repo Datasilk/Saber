@@ -16,7 +16,7 @@ S.target = {
 }
 
 S.editor.fileId = function (path) {
-    if (path == null) { path = 'content' + window.location.pathname.toLowerCase(); }
+    if (path == null) { path = 'content/pages' + window.location.pathname.toLowerCase(); }
     return path.replace(/\//g, '_').replace(/\./g, '_');
 };
 
