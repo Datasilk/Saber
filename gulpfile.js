@@ -168,17 +168,22 @@ paths.working = {
     },
 
     vendors: {
-        resources: [
-            paths.app + 'vendors/**/*.js',
-            '!' + paths.app + 'vendors/**/gulpfile.js',
-            '!' + paths.app + 'vendors/**/editor.js',
-            paths.app + 'vendors/**/*.css',
-            paths.app + 'vendors/**/*.svg',
-            paths.app + 'vendors/**/*.jpg',
-            paths.app + 'vendors/**/*.png',
-            paths.app + 'vendors/**/*.gif',
-            '!' + paths.app + 'vendors/**/node_modules/**/*.*'
-        ],
+        resources: {
+            js: [
+                paths.app + 'vendors/**/*.js',
+                '!' + paths.app + 'vendors/**/gulpfile.js',
+                '!' + paths.app + 'vendors/**/editor.js',
+                '!' + paths.app + 'vendors/**/node_modules/**/*.*'
+            ],
+            media: [
+                paths.app + 'vendors/**/*.css',
+                paths.app + 'vendors/**/*.svg',
+                paths.app + 'vendors/**/*.jpg',
+                paths.app + 'vendors/**/*.png',
+                paths.app + 'vendors/**/*.gif',
+                '!' + paths.app + 'vendors/**/node_modules/**/*.*'
+            ]
+        },
         less: [
             paths.app + 'vendors/**/*.less',
             '!' + paths.app + 'vendors/**/editor.less',
@@ -259,6 +264,7 @@ gulp.task('js:utility', function () {
     .pipe(gulp.dest(paths.compiled.js + 'utility'));
 
     return gulp.src([paths.scripts + 'utility/*.js', paths.scripts + 'utility/**/*.*', '!' + paths.scripts + 'utility/**/*.js'])
+        .pipe(gzip({ append: false }))
         .pipe(gulp.dest(paths.compiled.js + 'utility'));
 });
 
@@ -375,8 +381,14 @@ gulp.task('icons', function () {
 
 //copy vendor resources ///////////////////////////////////////////////////////////////////
 gulp.task('vendors:resources', function () {
-    var pathlist = paths.working.vendors.resources;
-    var p = gulp.src(pathlist)
+    var p = gulp.src(paths.working.vendors.resources.media)
+        .pipe(rename(function (path) {
+            path.dirname = path.dirname.toLowerCase();
+            path.basename = path.basename.toLowerCase();
+            path.extname = path.extname.toLowerCase();
+        }));
+
+    var p = gulp.src(paths.working.vendors.resources.js)
         .pipe(rename(function (path) {
             path.dirname = path.dirname.toLowerCase();
             path.basename = path.basename.toLowerCase();
@@ -384,6 +396,8 @@ gulp.task('vendors:resources', function () {
         }));
 
     if (prod == true) { p = p.pipe(uglify()); }
+    p = p.pipe(gzip({ append: false }));
+     
     return p.pipe(gulp.dest(paths.compiled.vendors, { overwrite: true }));
 });
 

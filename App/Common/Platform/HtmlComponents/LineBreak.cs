@@ -23,7 +23,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
-                        results.Add(new KeyValuePair<string, string>(prefix + "-", ""));
+                        results.Add(new KeyValuePair<string, string>(prefix + "#", ""));
                         return results;
                     })
                 }
