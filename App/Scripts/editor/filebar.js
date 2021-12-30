@@ -175,7 +175,7 @@ S.editor.filebar = {
                         var website = doc.getElementsByClassName('website')[0];
                         website.innerHTML = d.html;
                         if (d.javascript) {
-                            doc.addScript(d.javascript);
+                            window.parent.addScript(d.javascript);
                         }
                         changeJs(true);
                     },

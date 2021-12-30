@@ -123,7 +123,7 @@ namespace Saber.Controllers
                     if (File.Exists(App.MapPath(rpath + rfile + ".html")))
                     {
                         //page exists
-                        html.Append(Common.Platform.Render.Page("content/" + pathname + ".html", this, config, lang));
+                        html.Append(Common.Platform.Render.Page("content/pages/" + pathname + ".html", this, config, lang));
                         AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
                         AddScript(rpath.ToLower() + rfile + ".js", "page_js");
                     }
@@ -147,14 +147,14 @@ namespace Saber.Controllers
                     {
                         //page does not exist, try to load template page from parent
                         var templatePath = string.Join('/', PathParts.Take(PathParts.Length - 1).ToArray());
-                        html.Append(Common.Platform.Render.Page("content/" + templatePath + "/template.html", this, config, lang));
+                        html.Append(Common.Platform.Render.Page("content/pages/" + templatePath + "/template.html", this, config, lang));
                         AddCSS(rpath.ToLower() + "template.css", "page_css");
                         AddScript(rpath.ToLower() + "template.js", "page_js");
                     }
                     else
                     {
                         //last resort, page & template doesn't exists
-                        html.Append(Common.Platform.Render.Page("content/" + pathname + ".html", this, config, lang));
+                        html.Append(Common.Platform.Render.Page("content/pages/" + pathname + ".html", this, config, lang));
                         AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
                         AddScript(rpath.ToLower() + rfile + ".js", "page_js");
                     }
@@ -189,7 +189,7 @@ namespace Saber.Controllers
                 try
                 {
                     return "<span style=\"display:none;\"></span>\n" + //CORS fix: add empty span at top of page to trick CORB validation
-                        Common.Platform.Render.Page("content/" + pathname + ".html", this, config, lang);
+                        Common.Platform.Render.Page("content/pages/" + pathname + ".html", this, config, lang);
                 }
                 catch (ServiceDeniedException)
                 {

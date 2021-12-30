@@ -24,7 +24,7 @@ namespace Saber.Common.Platform
             var content = new View("/Views/Editor/content.html");
             var header = new View("/Content/partials/" + (config.header != "" ? config.header : "header.html"));
             var footer = new View("/Content/partials/" + (config.footer != "" ? config.footer : "footer.html"));
-            var paths = PageInfo.GetRelativePath(path.Replace("content/", "content/pages/"));
+            var paths = PageInfo.GetRelativePath(path);
             var relpath = string.Join("/", paths);
             if (paths.Length == 0)
             {
