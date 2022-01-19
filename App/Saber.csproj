@@ -90,6 +90,7 @@
     <None Remove="Content\temp\partials\header.html" />
     <None Remove="Content\temp\partials\header.less" />
     <None Remove="CSS\tapestry\LICENSE" />
+    <None Remove="Views\Shared\layout.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -183,6 +184,9 @@
     <Content Include="Content\temp\partials\header.less">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\Shared\layout.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\WebsiteSettings\androidicon.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -235,9 +239,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PageSettings\pagesettings.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\Shared\layout.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

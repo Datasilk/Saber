@@ -176,7 +176,6 @@ namespace Saber.Controllers
                     AddScript("/editor/js/iframe.js");
                 }
 
-
                 //log page request
                 var url = string.Join("/", PathParts) + (Context.Request.QueryString.HasValue ? "?" + Context.Request.QueryString.Value : "");
                 Query.Logs.LogUrl(url, Context.Connection.RemoteIpAddress.ToInt());

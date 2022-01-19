@@ -191,10 +191,10 @@ namespace Saber.Common.Platform
 
             //process saved files
 
-            if (paths[0].ToLower() == "/content/pages")
+            if (dir.IndexOf("content/pages") == 0)
             {
                 //create public folder in wwwroot
-                var pubdir = "/wwwroot/content/pages/" + string.Join("/", paths.Skip(1)).Replace(file, "");
+                var pubdir = "/wwwroot/content/pages/" + string.Join("/", paths.Skip(2)).Replace(file, "");
                 if (pubdir[pubdir.Length - 1] != '/') { pubdir += "/"; }
                 if (!Directory.Exists(App.MapPath(pubdir)))
                 {

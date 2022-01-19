@@ -600,7 +600,11 @@ namespace Saber.Services
 
         private List<string> RenderAvailableScriptsList()
         {
-            var list = new List<string>();
+            var list = new List<string>(){
+                "editor/js/platform.js",
+                "editor/js/selector.js",
+                "editor/js/utility/velocity.min.js"
+            };
             RecurseDirectoriesForScripts(list, App.MapPath("/wwwroot/js"));
             RecurseDirectoriesForScripts(list, App.MapPath("/wwwroot/content"));
             var root = App.MapPath("/") + "\\";

@@ -123,6 +123,7 @@ paths.working = {
             paths.scripts + 'editor/analytics.js',
             paths.scripts + 'editor/resources.js',
             paths.scripts + 'editor/hotkeys.js',
+            paths.scripts + 'editor/signalr.js',
             paths.scripts + 'editor/events.js',
             paths.scripts + 'editor/utility.js',
             paths.scripts + 'editor/_init.js'
@@ -274,7 +275,13 @@ gulp.task('js:iframe', function () {
         .pipe(gulp.dest(paths.compiled.js));
 });
 
-gulp.task('js', gulp.series('js:app', 'js:platform', 'js:editor', 'js:utility', 'js:iframe'));
+gulp.task('js:selector', function () {
+    return gulp.src(paths.scripts + 'selector/selector.js')
+        .pipe(gzip({ append: false }))
+        .pipe(gulp.dest(paths.compiled.js));
+});
+
+gulp.task('js', gulp.series('js:app', 'js:platform', 'js:editor', 'js:utility', 'js:iframe', 'js:selector'));
 
 //tasks for compiling LESS & CSS /////////////////////////////////////////////////////////////////////
 gulp.task('less:app', function () {
