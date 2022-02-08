@@ -31,6 +31,8 @@ namespace Saber.Controllers
                 view.Show("code-editor");
                 view.Show("manage-datasources");
                 view.Show("data-sources");
+                view.Show("file-browser");
+
                 switch (EditorUsed)
                 {
                     case EditorType.Monaco:
@@ -158,8 +160,11 @@ namespace Saber.Controllers
                     "S.editor.init();" +
                 "</script>\n"
             );
+            //allow CORS wildcard
+            Context.Response.Headers.Add(
+                    new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("Access-Control-Allow-Origin", "*"));
 
-            return base.Render(view.Render());
+            return base.Render(Common.Platform.Render.View(this, view));
         }
     }
 }

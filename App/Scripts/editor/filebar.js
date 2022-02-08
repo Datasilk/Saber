@@ -144,8 +144,8 @@ S.editor.filebar = {
             var doc = window.parent.document;
             var tagcss = doc.getElementById('page_css');
             var tagjs = doc.getElementById('page_js');
-            var css = '/' + S.editor.path.replace('content/', 'content/pages/') + '.css';
-            var src = '/' + S.editor.path.replace('content/', 'content/pages/') + '.js';
+            var css = '/' + S.editor.path + '.css';
+            var src = '/' + S.editor.path + '.js';
             var rnd = Math.floor(Math.random() * 9999);
 
             //first, reload CSS
@@ -170,12 +170,12 @@ S.editor.filebar = {
             if (S.editor.files.html.changed == true || S.editor.files.content.changed == true) {
                 S.editor.files.html.changed = false;
                 S.editor.files.content.changed = false;
-                S.ajax.post('Page/Render', { path: S.editor.path + '.html', language: window.language || 'en' },
+                S.ajax.post('Page/Render' + window.parent.location.search, { path: S.editor.path + '.html', language: window.language || 'en' },
                     function (d) {
                         var website = doc.getElementsByClassName('website')[0];
                         website.innerHTML = d.html;
                         if (d.javascript) {
-                            doc.addScript(d.javascript);
+                            window.parent.addScript(d.javascript);
                         }
                         changeJs(true);
                     },

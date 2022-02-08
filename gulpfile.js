@@ -123,6 +123,7 @@ paths.working = {
             paths.scripts + 'editor/analytics.js',
             paths.scripts + 'editor/resources.js',
             paths.scripts + 'editor/hotkeys.js',
+            paths.scripts + 'editor/signalr.js',
             paths.scripts + 'editor/events.js',
             paths.scripts + 'editor/utility.js',
             paths.scripts + 'editor/_init.js'
@@ -168,17 +169,22 @@ paths.working = {
     },
 
     vendors: {
-        resources: [
-            paths.app + 'vendors/**/*.js',
-            '!' + paths.app + 'vendors/**/gulpfile.js',
-            '!' + paths.app + 'vendors/**/editor.js',
-            paths.app + 'vendors/**/*.css',
-            paths.app + 'vendors/**/*.svg',
-            paths.app + 'vendors/**/*.jpg',
-            paths.app + 'vendors/**/*.png',
-            paths.app + 'vendors/**/*.gif',
-            '!' + paths.app + 'vendors/**/node_modules/**/*.*'
-        ],
+        resources: {
+            js: [
+                paths.app + 'vendors/**/*.js',
+                '!' + paths.app + 'vendors/**/gulpfile.js',
+                '!' + paths.app + 'vendors/**/editor.js',
+                '!' + paths.app + 'vendors/**/node_modules/**/*.*'
+            ],
+            media: [
+                paths.app + 'vendors/**/*.css',
+                paths.app + 'vendors/**/*.svg',
+                paths.app + 'vendors/**/*.jpg',
+                paths.app + 'vendors/**/*.png',
+                paths.app + 'vendors/**/*.gif',
+                '!' + paths.app + 'vendors/**/node_modules/**/*.*'
+            ]
+        },
         less: [
             paths.app + 'vendors/**/*.less',
             '!' + paths.app + 'vendors/**/editor.less',
@@ -259,6 +265,7 @@ gulp.task('js:utility', function () {
     .pipe(gulp.dest(paths.compiled.js + 'utility'));
 
     return gulp.src([paths.scripts + 'utility/*.js', paths.scripts + 'utility/**/*.*', '!' + paths.scripts + 'utility/**/*.js'])
+        .pipe(gzip({ append: false }))
         .pipe(gulp.dest(paths.compiled.js + 'utility'));
 });
 
@@ -268,7 +275,13 @@ gulp.task('js:iframe', function () {
         .pipe(gulp.dest(paths.compiled.js));
 });
 
-gulp.task('js', gulp.series('js:app', 'js:platform', 'js:editor', 'js:utility', 'js:iframe'));
+gulp.task('js:selector', function () {
+    return gulp.src(paths.scripts + 'selector/selector.js')
+        .pipe(gzip({ append: false }))
+        .pipe(gulp.dest(paths.compiled.js));
+});
+
+gulp.task('js', gulp.series('js:app', 'js:platform', 'js:editor', 'js:utility', 'js:iframe', 'js:selector'));
 
 //tasks for compiling LESS & CSS /////////////////////////////////////////////////////////////////////
 gulp.task('less:app', function () {
@@ -375,8 +388,14 @@ gulp.task('icons', function () {
 
 //copy vendor resources ///////////////////////////////////////////////////////////////////
 gulp.task('vendors:resources', function () {
-    var pathlist = paths.working.vendors.resources;
-    var p = gulp.src(pathlist)
+    var p = gulp.src(paths.working.vendors.resources.media)
+        .pipe(rename(function (path) {
+            path.dirname = path.dirname.toLowerCase();
+            path.basename = path.basename.toLowerCase();
+            path.extname = path.extname.toLowerCase();
+        }));
+
+    var p = gulp.src(paths.working.vendors.resources.js)
         .pipe(rename(function (path) {
             path.dirname = path.dirname.toLowerCase();
             path.basename = path.basename.toLowerCase();
@@ -384,6 +403,8 @@ gulp.task('vendors:resources', function () {
         }));
 
     if (prod == true) { p = p.pipe(uglify()); }
+    p = p.pipe(gzip({ append: false }));
+     
     return p.pipe(gulp.dest(paths.compiled.vendors, { overwrite: true }));
 });
 

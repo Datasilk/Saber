@@ -5,6 +5,8 @@ using System.Text.Json;
 using Saber.Core;
 using Saber.Core.Extensions.Strings;
 using dotless.Core;
+using dotless.Core.Loggers;
+using dotless.Core.configuration;
 
 
 namespace Saber.Common.Platform
@@ -69,13 +71,13 @@ namespace Saber.Common.Platform
         {
             //check for root & content folders
             var paths = PageInfo.GetRelativePath(path.ToLower());
-            if (path == "root")
+            //if (path == "root")
+            //{
+            //    throw new ServiceErrorException("You cannot create a file in the root folder");
+            //}
+            if (path == "")
             {
-                throw new ServiceErrorException("You cannot create a file in the root folder");
-            }
-            if (paths[0] == "/Content" && paths.Length == 0)
-            {
-                throw new ServiceErrorException("You cannot create a file in the content folder");
+                //throw new ServiceErrorException("You cannot create a file in the content folder");
             }
 
             //check folder characters
@@ -161,6 +163,7 @@ namespace Saber.Common.Platform
             var filepath = string.Join("/", paths); //relative filename & path
             var file = paths[paths.Length - 1]; //filename only
             var ext = file.Split('.', 2)[1].ToLower(); //file extension only
+            if(paths[0] == "/Content") { paths[0] = "content"; }
 
             //create folder for file
             if (!Directory.Exists(absdir))
@@ -188,10 +191,10 @@ namespace Saber.Common.Platform
 
             //process saved files
 
-            if (paths[0].ToLower() == "/content/pages")
+            if (dir.IndexOf("content/pages") == 0)
             {
                 //create public folder in wwwroot
-                var pubdir = "/wwwroot/content/pages/" + string.Join("/", paths.Skip(1)).Replace(file, "");
+                var pubdir = "/wwwroot/content/pages/" + string.Join("/", paths.Skip(2)).Replace(file, "");
                 if (pubdir[pubdir.Length - 1] != '/') { pubdir += "/"; }
                 if (!Directory.Exists(App.MapPath(pubdir)))
                 {
@@ -210,7 +213,7 @@ namespace Saber.Common.Platform
                         break;
                 }
             }
-            else if(paths[0].ToLower() == "/content")
+            else if(paths[0].ToLower() == "content")
             {
                 switch (paths[1].ToLower())
                 {
@@ -239,6 +242,9 @@ namespace Saber.Common.Platform
                                 break;
                         }
                         break;
+                    case "website.js":
+                        File.Copy(App.MapPath(filepath), App.MapPath("/wwwroot/js/" + paths[paths.Length - 1]), true);
+                        break;
                     case "website.less":
                         SaveLessFile(content, "/wwwroot/css/website.css", "/Content/");
                         break;
@@ -248,39 +254,56 @@ namespace Saber.Common.Platform
 
         public static void SaveLessFile(string content, string outputFile, string pathLESS)
         {
-            try
+            if (pathLESS.StartsWith(App.RootPath))
             {
-                if (pathLESS.StartsWith(App.RootPath))
-                {
-                    pathLESS = pathLESS.Substring(App.RootPath.Length);
-                }
-                
-                Directory.SetCurrentDirectory(App.MapPath(pathLESS));
-                var file = App.MapPath(outputFile);
-                var dir = file.Replace(file.GetFilename(), "");
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-                try
-                {
-                    File.WriteAllText(file, Less.Parse(content));
-                }
-                catch (Exception) { }
-                
-                Directory.SetCurrentDirectory(App.MapPath("/"));
+                pathLESS = pathLESS.Substring(App.RootPath.Length);
             }
-            catch (Exception ex)
+                
+            Directory.SetCurrentDirectory(App.MapPath(pathLESS));
+            var file = App.MapPath(outputFile);
+            var dir = file.Replace(file.GetFilename(), "");
+            if (!Directory.Exists(dir))
             {
-                Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
-                throw new ServiceErrorException("Error generating compiled LESS resource");
+                Directory.CreateDirectory(dir);
+            }
+            var css = Less.Parse(content, new dotless.Core.configuration.DotlessConfiguration()
+            {
+                Logger = typeof (Website.ConsoleLogger)
+            });
+            
+            if (!string.IsNullOrEmpty(content.Trim()))
+            {
+                if (string.IsNullOrEmpty(css.Trim()))
+                { 
+                    throw new ServiceErrorException("LESS compile error, check your syntax");
+                }
+            }
+            File.WriteAllText(file, css);
+                
+            Directory.SetCurrentDirectory(App.MapPath("/"));
+        }
+
+
+        public class ConsoleLogger : Logger
+        {
+            public ConsoleLogger(LogLevel level) : base(level) { }
+
+            public ConsoleLogger(DotlessConfiguration config) : this(config.LogLevel)
+            {
+
+            }
+
+            protected override void Log(string message)
+            {
+                Console.WriteLine(message);
             }
         }
 
-        public static void CopyTempWebsite()
+    public static void CopyTempWebsite()
         {
             if (!File.Exists(App.MapPath("/Content/pages/home.html")))
             {
+                Console.WriteLine("Copying template website to live website...");
                 //copy default website since none exists yet
                 Directory.CreateDirectory(App.MapPath("/wwwroot/content/"));
                 Directory.CreateDirectory(App.MapPath("/wwwroot/content/pages/"));

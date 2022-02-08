@@ -58,6 +58,13 @@ namespace Saber
                     }
                     else
                     {
+                        var apiInfo = GetApiKeyInfo(Parameters["apikey"]);
+                        if(apiInfo.UserId.HasValue == true)
+                        {
+                            var user = Query.Users.GetDetails(apiInfo.UserId.Value);
+                            User.LogIn(user.userId, user.email, user.name, user.datecreated, user.photo, user.isadmin, true);
+                        }
+
                         User.PublicApi = true;
                         IsPublicApiRequest = true;
                     }

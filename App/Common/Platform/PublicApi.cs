@@ -85,6 +85,7 @@ namespace Saber.Common.Platform
 
         public static List<Models.PublicApiInfo> GetFromType(Type type, List<Query.Models.PublicApi> apis = null)
         {
+            if(type == null) { return new List<Models.PublicApiInfo>(); }
             var results = new List<Models.PublicApiInfo>();
             //get public api methods from type
             var methods = type.GetMethods()

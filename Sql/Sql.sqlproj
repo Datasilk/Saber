@@ -71,6 +71,7 @@
     <Folder Include="dbo\Vendor" />
     <Folder Include="dbo\Stored Procedures\PublicApis" />
     <Folder Include="dbo\Stored Procedures\Sessions" />
+    <Folder Include="dbo\Functions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Sequences\SequenceUsers.sql" />
@@ -121,25 +122,13 @@
     <Build Include="dbo\Stored Procedures\Users\User_ResetPassword.sql" />
     <Build Include="dbo\Tables\Log_ForgotPasswords.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_GetEmailFromResetKey.sql" />
-    <Build Include="dbo\Vendor\DataSet_Create.sql" />
-    <Build Include="dbo\Vendor\DataSets.sql" />
-    <Build Include="dbo\Vendor\SequenceDataSets.sql" />
     <Build Include="dbo\Stored Procedures\Secuirty\SecurityGroups_GetListByIds.sql" />
-    <Build Include="dbo\Vendor\DataSet_GetRecords.sql" />
-    <Build Include="dbo\Vendor\DataSets_GetList.sql" />
-    <Build Include="dbo\Vendor\DataSet_GetInfo.sql" />
-    <Build Include="dbo\Vendor\DataSet_AddRecord.sql" />
-    <Build Include="dbo\Vendor\DataSet_UpdateRecord.sql" />
     <Build Include="dbo\Tables\User_ApiTokens.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_CreateApiToken.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_AuthenticateApiToken.sql" />
     <Build Include="dbo\Stored Procedures\Secuirty\SecurityUser_Check.sql" />
-    <Build Include="dbo\Vendor\DataSet_Delete.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_UpdateAdmin.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_UpdateName.sql" />
-    <Build Include="dbo\Vendor\DataSet_UpdateInfo.sql" />
-    <Build Include="dbo\Vendor\DataSet_UpdateColumns.sql" />
-    <Build Include="dbo\Vendor\DataSet_GetColumns.sql" />
     <Build Include="dbo\Tables\PublicApis.sql" />
     <Build Include="dbo\Stored Procedures\PublicApis\PublicApis_GetList.sql" />
     <Build Include="dbo\Stored Procedures\PublicApis\PublicApi_Update.sql" />
@@ -149,6 +138,7 @@
     <Build Include="dbo\Tables\Sessions.sql" />
     <Build Include="dbo\Stored Procedures\Sessions\Session_Get.sql" />
     <Build Include="dbo\Stored Procedures\Sessions\Session_Set.sql" />
+    <Build Include="dbo\Functions\SplitArray.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

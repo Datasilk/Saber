@@ -92,7 +92,8 @@
                         <li class="menu-item-view">
                             <div class="row hover"><span>View</span></div>
                             <div class="drop-menu hide">
-                                <ul class="menu">
+                                <ul class="menu" style="max-width:275px">
+                                    {{file-browser}}
                                     <li>
                                         <div class="row hover item item-browse">
                                             <div class="col icon">
@@ -106,6 +107,70 @@
                                     <li>
                                         <div class="row line">&nbsp;</div>
                                     </li>
+                                    <li class="col six">
+                                        <div class="row hover item" onclick="S.editor.explorer.open('website.js')">
+                                            <div class="col icon">
+                                                <svg viewBox="0 0 32 32">
+                                                    <use xlink:href="#icon-file-js" x="0" y="0" width="32" height="32"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="col text">website.js</div>
+                                        </div>
+                                    </li>
+                                    <li class="col six">
+                                        <div class="row hover item" onclick="S.editor.explorer.open('website.less')">
+                                            <div class="col icon">
+                                                <svg viewBox="0 0 32 32">
+                                                    <use xlink:href="#icon-file-less" x="0" y="0" width="32" height="32"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="col text">website.less</div>
+                                        </div>
+                                    </li>
+                                    <li class="col six">
+                                        <div class="row hover item" onclick="S.editor.explorer.open('partials/header.html')">
+                                            <div class="col icon">
+                                                <svg viewBox="0 0 32 32">
+                                                    <use xlink:href="#icon-file-html" x="0" y="0" width="32" height="32"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="col text">header.html</div>
+                                        </div>
+                                    </li>
+                                    <li class="col six">
+                                        <div class="row hover item" onclick="S.editor.explorer.open('partials/header.less')">
+                                            <div class="col icon">
+                                                <svg viewBox="0 0 32 32">
+                                                    <use xlink:href="#icon-file-less" x="0" y="0" width="32" height="32"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="col text">header.less</div>
+                                        </div>
+                                    </li>
+                                    <li class="col six">
+                                        <div class="row hover item" onclick="S.editor.explorer.open('partials/footer.html')">
+                                            <div class="col icon">
+                                                <svg viewBox="0 0 32 32">
+                                                    <use xlink:href="#icon-file-html" x="0" y="0" width="32" height="32"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="col text">footer.html</div>
+                                        </div>
+                                    </li>
+                                    <li class="col six">
+                                        <div class="row hover item" onclick="S.editor.explorer.open('partials/footer.less')">
+                                            <div class="col icon">
+                                                <svg viewBox="0 0 32 32">
+                                                    <use xlink:href="#icon-file-less" x="0" y="0" width="32" height="32"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="col text">footer.less</div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="row line">&nbsp;</div>
+                                    </li>
+                                    {{/file-browser}}
                                     {{page-content}}
                                     <li>
                                         <div class="row hover item item-content-fields">
@@ -534,7 +599,7 @@
 <script type="text/html" id="template_menuitem">
     ##separator##
     <li ##li-class##>
-        <div class="row hover item item-##id##">
+        <div class="row hover item nowrap item-##id##">
             <div class="col icon">
                 ##icon##
             </div>
@@ -770,6 +835,10 @@
         <div class="col field">##name##</div>
         <div class="col input">##input##</div>
     </div>
+</script>
+<script type="text/html" id="template_datasource_column">
+    <div class="row field">Select A Column</div>
+    <div class="row input"><select id="datasource_column">#options#</select></div>
 </script>
 <script type="text/html" id="custom_field_list_item">{{custom-field-list-item}}</script>
 {{vendor-templates}}

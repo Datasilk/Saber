@@ -36,7 +36,7 @@
     {{/android-manifest}}
     <meta name="mobile-web-app-capable" content="yes">
 </head>
-<body>
+<body{{has-body-class}} class="{{body-class}}"{{/has-body-class}}{{body-attr}}>
 
     {{platform}}
     <div class="bg for-popup hide"></div>

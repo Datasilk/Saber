@@ -38,14 +38,20 @@ namespace Saber
             //add session
             //services.AddSession();
 
+            //add CORS
+            services.AddCors();
+
+            //add SignalR
+            services.AddSignalR();
+
             //add health checks
             services.AddHealthChecks();
 
             //check if app is running in Docker Container
             App.IsDocker = System.Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 
-            //try deleting Vendors that are marked for uninstallation
-            Common.Vendors.DeleteVendors();
+            //get list of vendors marked for uninstallation
+            Common.Vendors.GetVendorsMarkedForUninstall();
 
             //get list of assemblies for Vendor related functionality
             if (!assemblies.Contains(Assembly.GetExecutingAssembly()))
@@ -74,6 +80,11 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorInfo interface
             Common.Vendors.GetInfoFromFileSystem();
+
+            foreach (var vendor in Core.Vendors.Details)
+            {
+                Console.WriteLine("Found Vendor Plugin: " + vendor.Name);
+            }
             var vendorCount = Core.Vendors.Details.Where(a => a.Version != "").Count();
             Console.WriteLine("Found " + vendorCount + " Vendor" + (vendorCount != 1 ? "s" : ""));
 
@@ -248,6 +259,38 @@ namespace Saber
             Console.WriteLine("Found " + Core.Vendors.EventHandlers.Count + " Vendor" + (Core.Vendors.EventHandlers.Count != 1 ? "s" : "") + " That listen to Saber Events");
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit InteralApis abstract class
+            foreach (var assembly in assemblies)
+            {
+                //get a list of abstract classes from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorInteralApis).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Common.Vendors.GetInternalApisFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorInteralApis interface
+            Common.Vendors.GetInternalApisFromFileSystem();
+            Console.WriteLine("Found " + Core.Vendors.InternalApis.Count + " Vendor Internal API" + (Core.Vendors.InternalApis.Count != 1 ? "s" : ""));
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IVendorSignalR interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of abstract classes from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorSignalR).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Common.Vendors.GetSignalRFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorInteralApis interface
+            Common.Vendors.GetSignalRFromFileSystem();
+            Console.WriteLine("Found " + Core.Vendors.SignalR.Count + " Vendor" + (Core.Vendors.SignalR.Count != 1 ? "s" : "") + " that use SignalR");
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)
             {
@@ -384,7 +427,9 @@ namespace Saber
             App.Languages.Add("en", "English"); //english should be the default language
 
             webconfig.Languages.ForEach((lang) => {
-                App.Languages.Add(lang.Id, lang.Name);
+                if (!App.Languages.ContainsKey(lang.Id)) {
+                    App.Languages.Add(lang.Id, lang.Name);
+                }
             });
 
             //set up path pointers for View partials (e.g. {{side-bar "partials/side-bar.html"}} instead of {{side-bar "/Content/partials/side-bar.html"}})
@@ -393,6 +438,9 @@ namespace Saber
                 new KeyValuePair<string, string>("partials", "Content/partials"),
                 new KeyValuePair<string, string>("pages", "Content/pages")
             });
+
+            //try deleting Vendors that are marked for uninstallation
+            Common.Vendors.DeleteVendors();
 
             //check vendor versions which may run SQL migration scripts
             Common.Vendors.CheckVersions();
@@ -411,7 +459,12 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorDataSources interface
             Common.Vendors.GetDataSourcesFromFileSystem();
+
             Console.WriteLine("Found " + Core.Vendors.DataSources.Count + " Vendor Data Source" + (Core.Vendors.DataSources.Count != 1 ? "s" : ""));
+
+            //init all data sources
+            Console.WriteLine("Initialize all data sources...");
+            Common.Vendors.InitDataSources();
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //Get list of all Public APIs
@@ -433,6 +486,12 @@ namespace Saber
             Core.Delegates.Log.Error = Query.Logs.LogError;
             Core.Delegates.ContentFields.GetFieldType = ContentFields.GetFieldType;
             Core.Delegates.ContentFields.RenderForm = ContentFields.RenderForm;
+            Core.Delegates.DataSources.RenderFilter = DataSources.RenderFilter;
+            Core.Delegates.DataSources.RenderFilters = DataSources.RenderFilters;
+            Core.Delegates.DataSources.RenderFilterGroups = DataSources.RenderFilterGroups;
+            Core.Delegates.DataSources.RenderOrderBy = DataSources.RenderOrderBy;
+            Core.Delegates.DataSources.RenderOrderByList = DataSources.RenderOrderByList;
+            Core.Delegates.DataSources.RenderPositionSettings = DataSources.RenderPositionSettings;
 
             //execute Configure method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)
@@ -449,12 +508,93 @@ namespace Saber
                 }
             }
 
-            //copy temporary website (if neccessary)
+            //copy temporary website (if neccessary) /////////////////////////////////////////////////////////////////////////
             Website.CopyTempWebsite();
 
+            //Set Up CORS ///////////////////////////////////////////////////////////////////////////////////////////////////
+            var origins = new string[] { };
+            var section = "";
+            try
+            {
+                switch (App.Environment)
+                {
+                    case Environment.development:
+                        section = "development";
+                        break;
+                    case Environment.production:
+                        section = "production";
+                        break;
+                    case Environment.staging:
+                        section = "staging";
+                        break;
+                }
+
+                origins = config.GetSection("cors:" + section).Get<string[]>().Where(a => a != "").ToArray();
+            }
+            catch (Exception)
+            {
+            }
+
+            if (origins.Length > 0)
+            {
+                Console.WriteLine("found CORS origins: " + string.Join("; ", origins));
+
+                if (origins.Contains("*"))
+                {
+                    //wildcard CORS
+                    app.UseCors(builder =>
+                    {
+                        builder.WithOrigins("*")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                    });
+                }
+                else
+                {
+                    //domaim list CORS
+                    app.UseCors(builder =>
+                    {
+                        builder.WithOrigins(origins)
+                        .WithHeaders("GET", "POST", "OPTIONS")
+                        .WithHeaders("*")
+                        .AllowCredentials();
+                    });
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("No CORS origins defined for " + section);
+            }
+
+
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //set up SignalR hubs
+            if(Core.Vendors.SignalR.Count > 0)
+            {
+                app.UseRouting();
+                app.UseEndpoints(endpoints =>
+                {
+                    //register hubs for all Vendor plugins that support SignalR
+                    foreach(var signalr in Core.Vendors.SignalR)
+                    {
+                        signalr.RegisterHubs(endpoints);
+                    }
+                    //find registered endpoints and console log findings
+                    foreach(var datasource in endpoints.DataSources)
+                    {
+                        foreach(var endpoint in datasource.Endpoints)
+                        {
+                            var metadata = (Microsoft.AspNetCore.SignalR.HubMetadata)endpoint.Metadata.Where(a => a is Microsoft.AspNetCore.SignalR.HubMetadata).FirstOrDefault();
+                            if(metadata == null || endpoint.DisplayName.Contains("/negotiate")) { continue; }
+                            Console.WriteLine("Found SignalR Hub " + metadata.HubType.Name + " (" + endpoint.DisplayName + ")");
+                        }
+                    }
+                });
+            }
 
 
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //run Datasilk Core MVC Middleware
             App.ServicePaths = new string[] { "api", "gmail" };
             app.UseDatasilkMvc(new MvcOptions()
@@ -485,7 +625,7 @@ namespace Saber
                 }
             });
 
-            Console.WriteLine("Running Saber Server in " + App.Environment.ToString() + " environment");
+            Console.WriteLine("Running Saber Server in " + App.Environment.ToString() + " environment at " + App.Host);
         }
 
         private string GetFileExtension(string filename)

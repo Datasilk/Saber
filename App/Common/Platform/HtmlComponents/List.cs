@@ -26,12 +26,23 @@ namespace Saber.Common.Platform.HtmlComponents
                     Description = "Generate a list of content using one or more partial views",
                     Parameters = new Dictionary<string, HtmlComponentParameter>()
                     {
+                        { "container",
+                            new HtmlComponentParameter()
+                            {
+                                Name = "Container View",
+                                DataType = HtmlComponentParameterDataType.PartialView,
+                                Description = "The HTML file to use as a wrapper around your list items",
+                                Required = false,
+                                List = false,
+                                AddItemJs = "S.editor.components.partials.show(event, S.editor.components.accordion.accept)"
+                            }
+                        },
                         { "partial",
                             new HtmlComponentParameter()
                             {
-                                Name = "Partial View",
+                                Name = "Partial Views",
                                 DataType = HtmlComponentParameterDataType.PartialView,
-                                Description = "The HTML file to use as a partial view",
+                                Description = "The HTML file(s) used to render each list item",
                                 Required = true,
                                 List = true,
                                 AddItemJs = "S.editor.components.partials.show(event, S.editor.components.accordion.accept)"
@@ -42,7 +53,7 @@ namespace Saber.Common.Platform.HtmlComponents
                             {
                                 Name = "Load Order",
                                 DataType = HtmlComponentParameterDataType.List,
-                                Description = "If using multiple partial views, the load order determines the pattern to use when selecting which partial view to use for each item in your list",
+                                Description = "If using multiple partial views, the load order determines the pattern to use when choosing which partial view to render for each item in your list",
                                 Required = false,
                                 ListOptions = new KeyValuePair<string, string>[]
                                     {
@@ -65,119 +76,379 @@ namespace Saber.Common.Platform.HtmlComponents
                             }
                         }
                     },
-                    Render = new Func<View, IRequest, Dictionary<string, string>, string, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
-                        if (!args.ContainsKey("partial") || string.IsNullOrEmpty(data))
+                        var mydata = data.ContainsKey(key) ? (string)data[key] : "";
+                        if (!args.ContainsKey("partial") || string.IsNullOrEmpty(mydata))
                         {
+                            results.Add(new KeyValuePair<string, string>(prefix + key, ""));
                             return new List<KeyValuePair<string, string>>();
                         }
-                        var partialFiles = args["partial"].Split("|");
+                        var containerPath = args.ContainsKey("container") ? args["container"] : "";
+                        var keyColumn = args.ContainsKey("key") ? args["key"] : "";
+                        var partialFiles = (args["partial"].Contains("|") ? args["partial"].Split("|") : args["partial"].Split(",")).Select(a => a.Trim()).ToArray();
                         var partials = new List<View>();
                         foreach (var file in partialFiles)
                         {
                             partials.Add(new View("/Content/" + file));
                         }
                         View partial = partials[0];
+                        View container = containerPath != "" ? new View("/Content/" + containerPath) : null;
 
                         //determine load order
                         var order = args.ContainsKey("loadorder") ? args["loadorder"] : "loop";
 
+                        #region "get records ////////////////////////////////////////////////////////////////"
                         //deserialize the list data
-                        try
+                        //try {
+                        List<Dictionary<string, string>> records;
+                        DataSource.Relationship[] relationships = null;
+                        DataSourceInfo datasource = null;
+                        Dictionary<string, ListSettings> settings = null;
+                        ListSettings mysettings = null;
+                        Dictionary<string, int> totals = null;
+                        int total = 0;
+                        int start = 1;
+                        int length = 1000;
+
+                        if(mydata.IndexOf("data-src=") >= 0)
                         {
-                            List<Dictionary<string, string>> items;
-                            if(data.IndexOf("data-src=") == 0)
+                            data = data.ToDictionary(a => a.Key, a => a.Value);
+                            //get list options
+                            var parts = mydata.Split("|!|", StringSplitOptions.RemoveEmptyEntries);
+                            var dataSourceKey = parts[0].Split("=")[1];
+                            var recordsetPart = parts.Where(a => a.IndexOf("recordset=") == 0).FirstOrDefault();
+                            var recordset = recordsetPart != null ? recordsetPart.Replace("recordset=", "") : "";
+                            var recordidPart = parts.Where(a => a.IndexOf("recordid=") == 0).FirstOrDefault();
+                            var recordid = recordidPart != null ? recordidPart.Replace("recordid=", "") : "";
+                            var columnPart = parts.Where(a => a.IndexOf("column=") == 0).FirstOrDefault();
+                            var column = columnPart != null ? columnPart.Replace("column=", "") : "";
+                            var listsPart = parts.Where(a => a.IndexOf("lists=") == 0).FirstOrDefault();
+                            var lists = listsPart != null ? listsPart.Replace("lists=", "") : "{}";
+
+                            if(recordset != "")
                             {
-                                //get items from custom data source via a vendor plugin
-                                var parts = data.Split("|!|", 3);
-                                var datakey = parts[0].Split("=")[1];
-                                var filter = JsonSerializer.Deserialize<Dictionary<string, object>>(parts.Length > 1 ? parts[1] : "{\"start\":\"1\",\"length\":\"10\"}");
-                                var start = filter.ContainsKey("start") && !string.IsNullOrEmpty(filter["start"].ToString()) ? int.Parse(filter["start"].ToString()) : 1;
-                                var length = filter.ContainsKey("length") && !string.IsNullOrEmpty(filter["length"].ToString()) ? int.Parse(filter["length"].ToString()) : 1;
-                                var datasource = Core.Vendors.DataSources.Where(a => a.Key == datakey).FirstOrDefault();
-                                if(datasource != null)
+                                //get cached settings list
+                                settings = (Dictionary<string, ListSettings>)data[recordset + "-list-settings"];
+                            }
+                            else
+                            {
+                                //load settings from content field data
+                                settings = JsonSerializer.Deserialize<Dictionary<string, ListSettings>>(lists);
+                                data.Add(key + "-list-settings", settings);
+                            }
+                            mysettings = settings.ContainsKey(dataSourceKey) ? settings[dataSourceKey] : null;
+
+                            if(mysettings != null)
+                            {
+                                start = mysettings.Position.Start;
+                                length = mysettings.Position.Length;
+
+                                //override list options from request parameters
+                                foreach(var group in mysettings.Filters)
                                 {
-                                    items = datasource.Helper.Filter(datakey.Replace(datasource.Helper.Prefix + "-", ""), start, length, request.User.Language ?? "en", filter);
+                                    OverrideFilterGroupValues(request, group);
+                                }
+                                if(mysettings.Position.StartQuery != "" && request.Parameters.ContainsKey(mysettings.Position.StartQuery))
+                                {
+                                    int.TryParse(request.Parameters[mysettings.Position.StartQuery], out var xstart);
+                                    if(xstart > 0){mysettings.Position.Start = xstart; }
+                                }
+                                if(mysettings.Position.LengthQuery != "" && request.Parameters.ContainsKey(mysettings.Position.LengthQuery))
+                                {
+                                    int.TryParse(request.Parameters[mysettings.Position.LengthQuery], out var xlength);
+                                    if(xlength > 0){mysettings.Position.Length = xlength; }
+                                }
+                            }
+
+                            //get records from data source
+                            datasource = Core.Vendors.DataSources.Where(a => a.Key == dataSourceKey).FirstOrDefault();
+                            if(datasource != null)
+                            {
+                                var datasourceId = dataSourceKey.Replace(datasource.Helper.Prefix + "-", "");
+                                if(recordset != "")
+                                {
+                                    var recordsets = (Dictionary<string, List<Dictionary<string, string>>>)data[recordset + "-recordset"];
+                                    records = recordsets.ContainsKey(datasourceId) ? recordsets[datasourceId].Where(a => a[column] == recordid).ToList() : new List<Dictionary<string, string>>();
+                                    totals = (Dictionary<string, int>)data[recordset + "-totals"];
+                                    total = totals.ContainsKey(datasourceId) ? totals[datasourceId] : 0;
                                 }
                                 else
                                 {
-                                    items = new List<Dictionary<string, string>>();
+                                    relationships = datasource.Helper.Get(datasourceId).Relationships;
+                                    if(relationships.Length > 0)
+                                    {
+                                        var childFilters = new Dictionary<string, List<DataSource.FilterGroup>>();
+                                        var childOrderBy = new Dictionary<string, List<DataSource.OrderBy>>();
+                                        if(mysettings != null)
+                                        {
+                                            childFilters.Add(dataSourceKey, mysettings.Filters);
+                                            childOrderBy.Add(dataSourceKey, mysettings.OrderBy);
+                                        }
+                                            
+                                        //get record sets for list & sub-lists
+                                        var recordsets = datasource.Helper.Filter(request, datasourceId, request.User.Language ?? "en", settings.ToDictionary(a => a.Key, a => a.Value.Position), settings.ToDictionary(a => a.Key, a => a.Value.Filters), settings.ToDictionary(a => a.Key, a => a.Value.OrderBy), relationships.Select(a => a.ChildKey).ToArray());
+                                        records = recordsets.ContainsKey(datasourceId) ? recordsets[datasourceId] : new List<Dictionary<string, string>>();
+
+                                        //find settings for each list component
+                                        foreach(var relationship in relationships)
+                                        {
+                                            if (data.ContainsKey(relationship.ListComponent))
+                                            {
+                                                data.Remove(relationship.ListComponent);
+                                            }
+                                            data.Add(relationship.ListComponent, "data-src=" + relationship.ChildKey +
+                                                "|!|recordset=" + key + "|!|column=" + relationship.ChildColumn);
+                                        }
+                                            
+                                        data.Add(key + "-recordset", recordsets);
+
+                                        //save filtered record set totals
+                                        data.Add(key + "-totals", datasource.Helper.FilterTotal(request, datasourceId, request.User.Language ?? "en", settings.ToDictionary(a => a.Key, a => a.Value.Filters), settings.ToDictionary(a => a.Key, a => a.Value.OrderBy), relationships.Select(a => a.ChildKey).ToArray()));
+                                    }
+                                    else
+                                    {
+                                        records = datasource.Helper.Filter(request, dataSourceKey.Replace(datasource.Helper.Prefix + "-", ""), mysettings?.Position.Start ?? 1, mysettings?.Position.Length ?? 10, request.User.Language ?? "en", mysettings?.Filters, mysettings?.OrderBy);
+                                        total = datasource.Helper.FilterTotal(request, dataSourceKey.Replace(datasource.Helper.Prefix + "-", ""), request.User.Language ?? "en", mysettings?.Filters, mysettings?.OrderBy);
+                                    }
                                 }
                             }
                             else
                             {
-                                //get items that were manually created by the user
-                                items = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(data);
+                                records = new List<Dictionary<string, string>>();
                             }
-                            var html = new StringBuilder();
-                            var i = -1;
-                            var forward = true;
-                            foreach (var item in items)
+                        }
+                        else
+                        {
+                            //get items that were manually created by the user
+                            records = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(mydata);
+                            total = records.Count;
+                        }
+#endregion
+
+                        //get container elements
+                        View itemButton = null;
+                        View pageButton = null;
+                        StringBuilder itemButtons = null;
+                        StringBuilder pageButtons = null;
+                        if(container != null)
+                        {
+                            itemButtons = new StringBuilder();
+                            pageButtons = new StringBuilder();
+
+                            //item-button
+                            var elemIndex = container.Elements.FindIndex(a => a.Name == "item-button");
+                            if(elemIndex >= 0)
                             {
-                                switch (order)
-                                {
-                                    case "loop":
+                                //render item button
+                                itemButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
+                            }
+                            
+                            //page-button
+                            elemIndex = container.Elements.FindIndex(a => a.Name == "page-button");
+                            if(elemIndex >= 0)
+                            {
+                                pageButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
+                            }
+                        }
+
+                        #region "render all records using partial views ////////////////////////////////////////////////////////////////"
+                        var html = new StringBuilder();
+                        var i = -1;
+                        var x = 0;
+                        var forward = true;
+                        if(records == null){
+                            results.Add(new KeyValuePair<string, string>(prefix + key, ""));
+                            return results;
+                        }
+                        foreach (var record in records)
+                        {
+                            x++;
+                            if(mysettings != null && mysettings.Position.Length < x){ break; }
+                            switch (order)
+                            {
+                                case "loop":
+                                    i++;
+                                    if (i >= partials.Count)
+                                    {
+                                        i = 0;
+                                    }
+                                    break;
+                                case "reverse":
+                                    i--;
+                                    if (i < 0)
+                                    {
+                                        i = partials.Count - 1;
+                                    }
+                                    break;
+                                case "bounce":
+                                    i = i + (forward ? 1 : -1);
+                                    if (i < 0) { i = 1; forward = true; }
+                                    if (i >= partials.Count)
+                                    {
+                                        i = partials.Count - 2;
+                                        forward = false;
+                                    }
+                                    break;
+                                case "random":
+                                    var rnd = new Random();
+                                    i = rnd.Next(0, partials.Count);
+                                    break;
+                                case "random-first":
+                                    if (forward == true)
+                                    {
+                                        var rnd2 = new Random();
+                                        i = rnd2.Next(0, partials.Count);
+                                        forward = false;
+                                    }
+                                    else
+                                    {
                                         i++;
                                         if (i >= partials.Count)
                                         {
                                             i = 0;
                                         }
-                                        break;
-                                    case "reverse":
-                                        i--;
-                                        if (i < 0)
+                                    }
+                                    break;
+                            }
+                            //select partial from array
+                            partial = partials[i];
+
+                            //populate all mustache variables
+                            foreach (var kv in record)
+                            {
+                                partial[kv.Key] = kv.Value;
+                            }
+
+                            //render all HTML components in the partial view
+                            if(datasource != null && relationships != null && relationships.Length > 0)
+                            {
+                                //modify data for specific list component
+                                foreach(var relationship in relationships)
+                                {
+                                    if (data.ContainsKey(relationship.ListComponent))
+                                    {
+                                        var d = (string)data[relationship.ListComponent];
+                                        if (d.Contains("recordid="))
                                         {
-                                            i = partials.Count - 1;
-                                        }
-                                        break;
-                                    case "bounce":
-                                        i = i + (forward ? 1 : -1);
-                                        if (i < 0) { i = 1; forward = true; }
-                                        if (i >= partials.Count)
-                                        {
-                                            i = partials.Count - 2;
-                                            forward = false;
-                                        }
-                                        break;
-                                    case "random":
-                                        var rnd = new Random();
-                                        i = rnd.Next(0, partials.Count);
-                                        break;
-                                    case "random-first":
-                                        if (forward == true)
-                                        {
-                                            var rnd2 = new Random();
-                                            i = rnd2.Next(0, partials.Count);
-                                            forward = false;
+                                            var s = d.Split("recordid=");
+                                            s[1] = record["Id"];
+                                            d = string.Join("recordid=", s);
                                         }
                                         else
                                         {
-                                            i++;
-                                            if (i >= partials.Count)
-                                            {
-                                                i = 0;
-                                            }
+                                            d += "|!|recordid=" + record["Id"];
                                         }
-                                        break;
+                                        data[relationship.ListComponent] = d;
+                                    }
                                 }
-                                partial = partials[i];
-                                foreach (var kv in item)
-                                {
-                                    partial[kv.Key] = kv.Value;
-                                }
-                                html.Append(partial.Render());
-                                partial.Clear();
                             }
-                            results.Add(new KeyValuePair<string, string>(prefix + key, html.ToString()));
+                            var components = Render.HtmlComponents(partial, request, data);
+                            if (components.Count > 0)
+                            {
+                                foreach (var item in components)
+                                {
+                                    partial[item.Key] = item.Value;
+                                }
+                            }
+
+                            //container-related rendering
+                            if(itemButton != null)
+                            {
+                                itemButton.Clear();
+                                itemButton["item-number"] = x.ToString();
+                                itemButton["item-key"] = keyColumn != "" && record.ContainsKey(keyColumn) ? record[keyColumn] : "";
+                                if(x == 1){itemButton.Show("selected"); }
+                                itemButtons.Append(itemButton.Render());
+                            }
+                            partial.Show(x == 1 ? "is-first-item" : "not-first-item");
+
+                            //render list item as HTML
+                            html.Append(partial.Render());
+                            partial.Clear();
                         }
-                        catch (Exception ex) 
-                        { 
+#endregion
+
+                        if(container != null)
+                        {
+                            //render container elements
+                            var startQuery = mysettings?.Position.StartQuery ?? "";
+                            var lengthQuery = mysettings?.Position.LengthQuery ?? "";
+                            var totalPages = Math.Floor((decimal)total / (decimal)length) + 1;
+                            var currentPage = (Math.Floor((decimal)start / (decimal)length) + 1);
+                            if(startQuery != "")
+                            {
+                                for(var y = 1; y <= totalPages; y++)
+                                {
+                                    pageButton.Clear();
+                                    pageButton["page-number"] = y.ToString();
+                                    pageButton["page-url"] = request.AlterUrl(new Dictionary<string, string>(){
+                                        { startQuery, (y * length).ToString() }
+                                    });
+                                    pageButtons.Append(pageButton.Render());
+                                }
+                                container["page-buttons"] = pageButtons.ToString();
+                            }
+                            else
+                            {
+                                container["page-buttons"] = "<span title=\"You must set the Starting Record > URL Query String Parameter in your List component content field settings to display paging buttons\">Paging Buttons Error</span>";
+                            }
+
+                            container["item-buttons"] = itemButtons.ToString();
+                            container["current-page"] = currentPage.ToString();
+                            container["total-pages"] = totalPages.ToString();
+                            if( totalPages != 1){container.Show("is-plural"); }
+                            container.Show(start <= 1 ? "hide-back" : "show-back");
+                            container.Show(start + length >= total ? "hide-next" : "show-next");
+                            container["back-url"] = request.AlterUrl(new Dictionary<string, string>(){
+                                        { startQuery, (start - length).ToString() }
+                                    });
+                            container["next-url"] = request.AlterUrl(new Dictionary<string, string>(){
+                                        { startQuery, (start + length).ToString() }
+                                    });
+                            container["list"] = html.ToString();
+
+                            //render container
+                            results.Add(new KeyValuePair<string, string>(prefix + key, container.Render()));
                         }
+                        else
+                        {
+                        results.Add(new KeyValuePair<string, string>(prefix + key, html.ToString()));
+                        }
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    results.Add(new KeyValuePair<string, string>(prefix + key, ""));
+                        //}
                         return results;
                     })
                 }
             };
+        }
+
+        private void OverrideFilterGroupValues(IRequest request, DataSource.FilterGroup group)
+        {
+            //check filters for request parameter overrides
+            foreach(var elem in group.Elements)
+            {
+                if (elem.QueryName != "" && request.Parameters.ContainsKey(elem.QueryName))
+                {
+                    elem.Value = request.Parameters[elem.QueryName];
+                }
+            }
+            //check sub groups for request parameter overrides
+            foreach (var sub in group.Groups)
+            {
+                OverrideFilterGroupValues(request, sub);
+            }
+        }
+
+        public class ListSettings
+        {
+            public DataSource.PositionSettings Position { get; set; }
+            public List<DataSource.FilterGroup> Filters { get; set; }
+            public List<DataSource.OrderBy> OrderBy { get; set; }
         }
     }
 }

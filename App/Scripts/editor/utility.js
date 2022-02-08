@@ -16,7 +16,7 @@ S.target = {
 }
 
 S.editor.fileId = function (path) {
-    if (path == null) { path = 'content' + window.location.pathname.toLowerCase(); }
+    if (path == null) { path = 'content/pages' + window.location.pathname.toLowerCase(); }
     return path.replace(/\//g, '_').replace(/\./g, '_');
 };
 
@@ -46,12 +46,12 @@ S.editor.isResource = function (path, type) {
         switch (dir + fileparts.join('.')) {
             case 'content/partials/header.less':
             case 'content/partials/footer.less':
-            case 'content/website.less':
+            case 'website.less':
                 return true;
         }
     } else if (type == 'website.js') {
         switch (dir + fileparts.join('.')) {
-            case 'root/scripts/website.js':
+            case 'website.js':
                 return true;
         }
     } else if (type == 'partial') {

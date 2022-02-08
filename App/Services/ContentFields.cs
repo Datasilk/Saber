@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Text.Json;
 using Saber.Core;
 
 namespace Saber.Services
 {
     public class ContentFields : Service
     {
-        public string Render(string path, string language, string container, bool showlang = false, Dictionary<string, string> data = null)
+        public string Render(string path, string language, string container, bool showlang = false, Dictionary<string, string> data = null, List<string> exclude = null)
         {
             if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
             var paths = PageInfo.GetRelativePath(path);
             var fields = data != null && data.Keys.Count > 0 ? data : Core.ContentFields.GetPageContent(path, language);
-            Console.WriteLine("Content Fields from " + path + " for language '" + language + "', " + (data != null ? "includes data object, " : "") + " has " + (fields != null ? fields.Count : 0) + " fields");
             var view = new View(string.Join("/", paths) + (path.Contains(".html") ? "" : ".html"));
-            var result = Common.Platform.ContentFields.RenderForm(this, "", view, language, container, fields);
+            var result = Common.Platform.ContentFields.RenderForm(this, "", view, language, container, fields, exclude?.ToArray());
             
             if (string.IsNullOrWhiteSpace(result))
             {
@@ -46,7 +44,7 @@ namespace Saber.Services
                 try
                 {
                     //save fields as json
-                    var json = JsonSerializer.Serialize(validated);
+                    var json = Core.ContentFields.Serialize(validated);
                     File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                     //reset view cache for page
                     Website.ResetCache(path, language);
@@ -68,7 +66,7 @@ namespace Saber.Services
                 try
                 {
                     //save fields as json
-                    var json = JsonSerializer.Serialize(validated);
+                    var json = Core.ContentFields.Serialize(validated);
                     File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                     //reset view cache for page
                     Website.ResetCache(path, language);

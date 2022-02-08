@@ -9,7 +9,7 @@ S.editor.init = function () {
         //remove leading slash
         path = path.substr(0, path.length - 1);
     }
-    this.path = 'content' + path;
+    this.path = 'content/pages' + path;
     var paths = this.path.split('/').filter(a => a != '');
     var file = paths[paths.length - 1];
     var dir = paths.join('/').replace(file, '');
@@ -41,7 +41,7 @@ S.editor.init = function () {
                         tokenizer: {
                             root: [
                                 //mustache
-                                [/({{)([\w\-#]+)/, ['mustache', { token: 'mustache-tag', next: '@mustache' }]],
+                                [/({{)([\w\/#]+)/, ['mustache', { token: 'mustache-tag', next: '@mustache' }]],
 
                                 //html
                                 [/<!DOCTYPE/, 'metatag', '@doctype'],
@@ -288,7 +288,7 @@ S.editor.init = function () {
     });
 
     //add drop down events
-    $('.editor #lang').on('change', S.editor.fields.load);
+    //$('.editor #lang').on('change', S.editor.fields.load);
 
     //add window resize event
     $(window).on('resize', S.editor.resize.window);
@@ -352,4 +352,10 @@ S.editor.init = function () {
 $('.editor-tab').on('click', S.editor.filebar.preview.hide);
 
 //register hotkeys for preview mode
-$(window).on('keydown', S.editor.hotkey.pressedPreview);
+S.editor.hotkey.addListener.keyESC(() => {
+    //show website preview
+    S.editor.filebar.preview.toggle();
+});
+
+//save fields if user previews web page
+S.editor.hotkey.addListener.keyESC(S.editor.fields.saveThenPreview);

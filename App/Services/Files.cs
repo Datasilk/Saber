@@ -206,13 +206,13 @@ namespace Saber.Services
             if (title.IndexOf(".") > 0)
             {
                 item["icon"] = "file-" + title.Split('.')[^1].ToLower();
-                if(path.IndexOf("/Content/pages/") == 0)
+                if(path.ToLower().IndexOf("content/pages/") == 0)
                 {
-                    item["onclick"] = "window.parent.location.href='" + path.Replace("/Content/pages", "").Replace(".html", "");
+                    item["onclick"] = "window.parent.location.href='" + path.ToLower().Replace("content/pages", "").Replace(".html", "") + "'";
                 }
                 else
                 {
-                    item["onclick"] = "S.editor.explorer.open('" + path + "', null, true)";
+                    item["onclick"] = "S.editor.explorer.open('" + path + "', null, true, null, true)";
                 }
             }
             else

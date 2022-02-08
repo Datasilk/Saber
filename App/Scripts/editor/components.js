@@ -103,8 +103,8 @@
                                 break;
                             case 9: //partial view
                                 fields.push(field.replace('##input##', '<div class="row select-partial">' +
-                                    '<div class="row"><input type="text"' + id + clss + spellchk + '/></div>' +
-                                    '<div class="row text-right pad-top-sm"><button>Select Partial View...</button></div>' +
+                                    '<div class="col"><input type="text"' + id + clss + spellchk + '/></div>' +
+                                    '<div class="col"><button>...</button></div>' +
                                     '</div>'));
                                 break;
                         }
@@ -165,7 +165,11 @@
                         //generate partial view
                         mustache = '{{' + suffix + ' "' + $('#param_page').val() + '"}}';
                     } else if (key == 'special-vars') {
-                        mustache = '{{# My Title}}'; //$('#param_var').val().replace(/\&qt\;/g, '"');
+                        if ($('#param_var').val() == '{{#}}') {
+                            mustache = '{{# My Title}}';
+                        } else {
+                            mustache = $('#param_var').val().replace(/\&qt\;/g, '"');
+                        }
                     } else {
                         //generate vendor HTML components
                         var paramlen = 0;

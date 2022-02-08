@@ -38,7 +38,7 @@ S.editor.resources = {
             function (d) {
                 $('.sections > .' + id).html(d);
                 S.editor.resources._loaded = true;
-                pagename = path.replace('content/', '');
+                pagename = path.replace('content/pages/', '');
 
                 //initialize uploader
                 if (self.uploader == null) {
@@ -78,7 +78,7 @@ S.editor.resources = {
         S.ajax.post('PageResources/Render', { path: path, filetypes:filetypes },
             function (d) {
                 popup.find('.resources-list').html(d);
-                popup.find('.img .close-btn').each(a => {
+                popup.find('.img .close-btn').each((i, a) => {
                     $(a).attr('onclick', $(a).attr('onclick').replace('this)', 'this, \'' + path + '\')'));
                 });
                 popup.find('.img').prepend($('#template_resource_selected').html());

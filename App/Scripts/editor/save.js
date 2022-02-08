@@ -71,18 +71,20 @@ S.editor.save = function (path, content) {
                 S.editor.files.js.changed = true;
             } else if(path.indexOf('/partials/' >= 0)) {
                 //check if file is a partial and if partial content fields tab is loaded
-                var fieldstab = $('.tab-' + self.fileId(path.replace('content/partials/', 'content-fields-')));
-                if (fieldstab.length > 0) {
-                    S.editor.fields.load(path, false);
-                }
+                //var fieldstab = $('.tab-' + self.fileId(path.replace('content/partials/', 'content-fields-')));
+                //if (fieldstab.length > 0) {
+                //    S.editor.fields.load(path, false);
+                //}
                 S.editor.files.content.changed = true;
             }
             tab.find('.loader').remove();
             self.unChanged(path);
             //S.editor.explorer.open(path);
         },
-        function () {
-            S.editor.error();
+        function (d) {
+            console.log(d);
+            S.editor.error('', d.responseText);
+            tab.find('.loader').remove();
         }
     );
 };
@@ -101,3 +103,7 @@ S.editor.saveAs = function () {
         S.editor.save(path, value);
     }
 };
+
+S.editor.save.enable = function () {
+    $('.editor .item-save').removeClass('faded').removeAttr('disabled');
+}

@@ -17,44 +17,65 @@ namespace Saber.Common.Platform.ContentField
         {
             if (!args.ContainsKey("partial")) { return "You must provide the \"partial\" property for your mustache \"list\" component"; }
             //load provided partial view
-            var partials = args["partial"].Split("|");
+            var partials = (args["partial"].Contains("|") ? args["partial"].Split("|") : args["partial"].Split(",")).Select(a => a.Trim()).ToArray(); 
             var viewlist = new View("/Views/ContentFields/list.html");
             var viewitem = new View("/Views/ContentFields/list-item.html");
-            var fieldKey = args.ContainsKey("key") ? args["key"] : ""; ;
+            var fieldKey = args.ContainsKey("key") ? args["key"] : "";
             viewlist["title"] = key.Replace("-", " ").Replace("_", " ").Capitalize();
-            viewlist["key"] = fieldKey;
+            viewlist["field-key"] = fieldKey;
             viewlist["partial"] = partials[0];
             viewlist["lang"] = lang;
             viewlist["container"] = container;
+            viewlist["renderapi"] = args.ContainsKey("renderapi") ? "'" + args["renderapi"] + "'" : "null";
 
             //get list items
-            if (!string.IsNullOrEmpty(data))
+            try
             {
-                try
+                var html = new StringBuilder();
+                if (data.IndexOf("data-src=") >= 0)
                 {
-                    var html = new StringBuilder();
-                    if(data.IndexOf("data-src=") == 0)
+                    //use data source
+                    var parts = data.Split("|!|");
+                    var dataSourceKey = parts[0].Split("=")[1];
+                    viewlist["lists-key"] = dataSourceKey;
+                    var listsPart = parts.Where(a => a.IndexOf("lists=") == 0).FirstOrDefault();
+                    var lists = listsPart != null ? listsPart.Replace("lists=", "") : "{}";
+                    var settings = JsonSerializer.Deserialize<Dictionary<string, HtmlComponents.List.ListSettings>>(lists);
+                    var mysettings = settings.ContainsKey(dataSourceKey) ? settings[dataSourceKey] : null;
+                    var datasource = Core.Vendors.DataSources.Where(a => a.Key == dataSourceKey).FirstOrDefault();
+                    var locked = parts.Contains("locked");
+                    var canadd = parts.Contains("add");
+                    if (!canadd) { viewlist.Show("hide-add-list-item"); }
+                    if (datasource != null)
                     {
-                        var parts = data.Split("|!|", 2);
-                        var datasrc = parts[0].Replace("data-src=", "");
-                        var filter = new Dictionary<string, object>();
-                        if(parts.Length > 1)
-                        {
-                            //get data source filter values
-                            filter = JsonSerializer.Deserialize<Dictionary<string, object>>(parts[1]);
+                        //render data source filter form
+                        var datasourceId = dataSourceKey.Replace(datasource.Helper.Prefix + "-", "");
+                        viewlist.Show("has-datasource");
+                        viewlist["filter-contents"] = DataSource.RenderFilters(request, datasource, mysettings?.Filters);
+                        viewlist.Show(locked ? "locked" : "not-locked");
+                        viewlist["datasource"] = (datasource.Helper.Vendor != "" ? datasource.Helper.Vendor + " - " : "") + datasource.Name;
+                        viewlist["orderby-contents"] = DataSource.RenderOrderByList(datasource, mysettings?.OrderBy);
+                        viewlist["position-contents"] = DataSource.RenderPositionSettings(datasource, mysettings?.Position);
+                        var relationships = datasource.Helper.Get(datasourceId).Relationships;
+                        if(relationships.Length == 0) 
+                        { 
+                            viewlist.Show("no-lists");
                         }
-                        var datasource = Core.Vendors.DataSources.Where(a => a.Key == datasrc).FirstOrDefault();
-                        if(datasource != null)
+                        else
                         {
-                            //render data source filter form
-                            var filterform = datasource.Helper.RenderFilters(datasrc, request, filter);
-                            viewlist["accordion-title"] = "Filter for " + (string.IsNullOrEmpty(datasource.Helper.Vendor) ? "" : datasource.Helper.Vendor + " - ") + datasource.Name;
-                            viewlist["accordion-contents"] = filterform.HTML;
-                            viewlist["accordion-oninit"] = "data-init=\"" + filterform.OnInit + "\"";
+                            viewlist["lists"] = "<option value=\"" + dataSourceKey + "\">" + key.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>" + 
+                                string.Join('\n', relationships.Select(a => "<option value=\"" + 
+                                Core.Vendors.DataSources.Where(b => b.Key == a.ChildKey).FirstOrDefault()?.Helper.Prefix + 
+                                "-" + a.Child.Key + "\">" + a.ListComponent.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>"
+                            ).ToArray());
                         }
-                        viewlist.Show("hide-add-list-item");
                     }
-                    else
+                }
+                else
+                {
+                    //use custom list items
+                    viewlist.Show("no-lists");
+                    if (!string.IsNullOrEmpty(data))
                     {
                         var items = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(data);
                         var i = 1;
@@ -63,17 +84,32 @@ namespace Saber.Common.Platform.ContentField
                             viewitem["label"] = fieldKey != "" ? item[fieldKey] : "List Item #" + i;
                             viewitem["index"] = i.ToString();
                             viewitem["onclick"] = "S.editor.fields.custom.list.edit(event, '" + viewlist["title"] +
-                                "', '" + viewlist["key"] +
-                                "', '" + viewlist["partial"] + "', '" + lang + "', '" + container + "')";
+                                "', '" + fieldKey +
+                                "', '" + viewlist["partial"].Split(",")[0].Trim() + "', '" + lang + "', '" + container + "')";
                             html.Append(viewitem.Render());
                             viewitem.Clear();
                             i++;
                         }
-                        viewlist["accordion-title"] = "List Items";
-                        viewlist["accordion-contents"] = "<ul class=\"list\">" + html.ToString() + "</ul>";
+                        viewlist["item-count"] = items.Count.ToString();
                     }
+                    else
+                    {
+                        viewlist["item-count"] = "0";
+                    }
+                    viewlist.Show("no-datasource");
+                    viewlist["list-contents"] = "<ul class=\"list\">" + html.ToString() + "</ul>";
+                    viewlist.Show("not-locked");
+                    viewlist["position-contents"] = DataSource.RenderPositionSettings(null, new DataSource.PositionSettings()
+                    {
+                        Start = 1,
+                        StartQuery = "",
+                        Length = 10,
+                        LengthQuery = ""
+                    });
                 }
-                catch (Exception) { }
+            }
+            catch (Exception ex) 
+            { 
             }
             return viewlist.Render();
         }

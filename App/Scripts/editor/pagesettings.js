@@ -35,24 +35,21 @@ S.editor.settings = {
                 S.editor.settings.footers = json.footers;
 
                 //update settings header & footer events
-                $('#page_header').on('change', S.editor.settings.partials.header.update);
-                $('#page_footer').on('change', S.editor.settings.partials.footer.update);
-                $('.settings-header-footer input[type="text"]').on('keyup', () => {
-                    S.editor.settings.partials.changed = true;
-                })
+                $('#page_header').on('input', S.editor.settings.partials.header.update);
+                $('#page_footer').on('input', S.editor.settings.partials.footer.update);
 
                 //set up settings title
                 S.editor.settings._loaded = true;
                 S.editor.settings.clone = $('.page-settings .textarea-clone > div');
-                var p = path.replace('content/', '');
+                var p = path.replace('content/pages/', '');
                 $('.editor .page-name').attr('href', '/' + p).html(p);
                 S.editor.resize.window();
 
                 //set up events to detect changes
                 var description = $('#page_description');
-                $('#page_title_prefix, #page_title_suffix, #page_title').on('change, keyup', self.title.change);
-                description.on('change, keyup, keydown', self.description.change);
-                self.change(description, true);
+                $('#page_title_prefix, #page_title_suffix, #page_title').on('input', self.title.change);
+                description.on('input', self.description.change);
+                self.change(description);
 
                 //set up button events
                 $('.page-settings .title-prefix .icon a').on('click', S.editor.settings.title.prefix.show);
@@ -65,7 +62,6 @@ S.editor.settings = {
                 //execute init scripts
                 S.editor.settings.partials.header.update();
                 S.editor.settings.partials.footer.update();
-                S.editor.settings.partials.changed = false;
                 S.editor.settings.styles.init();
                 S.editor.settings.scripts.init();
             }
@@ -78,9 +74,8 @@ S.editor.settings = {
             var clone = S.editor.settings.clone;
             clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
             field.css({ height: clone.height() });
-            if (changed == false) {
-                //enable save menu
-                $('.editor .item-save').removeClass('faded').removeAttr('disabled');
+            if (changed == true) {
+                S.editor.save.enable();
             }
         }
     },
@@ -141,7 +136,7 @@ S.editor.settings = {
             if (prefix != '' && prefix[prefix.length - 1] != ' ') { prefix += ' '; }
             if (suffix != '' && suffix[0] != ' ') { suffix = ' ' + suffix; }
             window.document.title = prefix + $('#page_title').val() + suffix;
-            $('.item-save').removeClass('faded').removeAttr('disabled');
+            S.editor.save.enable();
             S.editor.settings.title.changed = true;
         },
 
@@ -155,16 +150,15 @@ S.editor.settings = {
             S.ajax.post('PageSettings/UpdatePageTitle', data, callback,
                 function () { S.editor.error(); }
             );
+            S.editor.settings.title.changed = false;
         }
     },
 
     description: {
         changed: false,
         change: function () {
-            var description = $('#page_description');
-            S.editor.settings.change(description, S.editor.settings.description.changed);
             S.editor.settings.description.changed = true;
-            $('.item-save').removeClass('faded').removeAttr('disabled');
+            S.editor.settings.change($('#page_description'), true);
         },
 
         save: function (callback) {
@@ -175,27 +169,31 @@ S.editor.settings = {
             S.ajax.post('PageSettings/UpdatePageDescription', data, callback,
                 function () { S.editor.error(); }
             );
+            S.editor.settings.description.changed = false;
         }
     },
 
     partials: {
         changed: false,
-
         header: {
             update: function () {
                 S.editor.settings.partials.changed = true;
+                S.editor.files.html.changed = true;
                 var file = 'content/partials/' + $('#page_header').val();
                 $('.edit-header-file a').attr('href', 'javascript:S.editor.explorer.open(\'' + file + '\')');
                 $('.edit-header-content a').attr('href', 'javascript:S.editor.fields.load(\'' + file + '\')');
+                S.editor.save.enable();
             }
         },
 
         footer: {
             update: function () {
                 S.editor.settings.partials.changed = true;
+                S.editor.files.html.changed = true;
                 var file = 'content/partials/' + $('#page_footer').val();
                 $('.edit-footer-file a').attr('href', 'javascript:S.editor.explorer.open(\'' + file + '\')');
                 $('.edit-footer-content a').attr('href', 'javascript:S.editor.fields.load(\'' + file + '\')');
+                S.editor.save.enable();
             }
         },
 
@@ -214,6 +212,7 @@ S.editor.settings = {
                 },
                 function () { S.editor.error(); }
             );
+            S.editor.settings.partials.changed = false;
         }
 
     },

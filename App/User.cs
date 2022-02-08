@@ -21,7 +21,7 @@ namespace Saber
         public bool IsAdmin { get; set; } //if true, has full permissions
         public bool PublicApi { get; set; }
         public DateTime DateCreated { get; set; }
-        public string Language { get; set; }
+        public string Language { get; set; } = "en";
         public List<KeyValuePair<string, bool>> Keys { get; set; } = new List<KeyValuePair<string, bool>>();
         public int[] Groups { get; set; } = new int[] { };
         public bool ResetPass { get; set; }
