@@ -31,7 +31,7 @@ The above statement is true for the end-user, but for us developers who wish to 
 * **CSS**
   * All site-wide CSS & LESS files are stored here, and gulp compiles the LESS and copies them into the *wwwroot/css* folder. 
   * **tapestry**
-    * This folder is a git submodule for the LESS UI framework *[Tapestry](https://github.com/Websilk/Tapestry)*, which is used for Saber's IDE.
+    * This folder is a git submodule for the LESS UI framework *[Tapestry](https://github.com/Datasilk/Tapestry)*, which is used for Saber's IDE.
   * **themes**
     * Tapestry color schemes for Saber's IDE reside in this folder
   * **platform.less**
@@ -43,7 +43,7 @@ The above statement is true for the end-user, but for us developers who wish to 
   * **platform**
     * This folder is a git submodule for the *[Datasilk Core JS](https://github.com/Datasilk/CoreJs)* framework. It contains features such as a modal popup, drag & drop events, svg sprite loader, and a simple scaffolding framework like *Mustache*.
   *  **selector**
-     *  This folder is a git submodule for *[Selector](https://github.com/Websilk/Selector)*, a jQuery replacement developed by Mark Entingh. It is used instead of jQuery because it weighs in under 5kb in size after being minified & gzip compressed.
+     *  This folder is a git submodule for *[Selector](https://github.com/Datasilk/Selector)*, a jQuery replacement developed by Mark Entingh. It is used instead of jQuery because it weighs in under 5kb in size after being minified & gzip compressed.
   * **utility**
     * This folder contains various 3rd-party JavaScript libraries such as the Monaco source code editor.
 * **Services**

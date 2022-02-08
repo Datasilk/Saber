@@ -3,13 +3,13 @@
 	url = https://github.com/datasilk/corejs
 [submodule "App/Scripts/selector"]
 	path = App/Scripts/selector
-	url = https://github.com/websilk/selector
+	url = https://github.com/datasilk/selector
 [submodule "App/Scripts/utility/launchpad"]
 	path = App/Scripts/utility/launchpad
 	url = https://github.com/datasilk/launchpad
 [submodule "App/CSS/tapestry"]
 	path = App/CSS/tapestry
-	url = https://github.com/websilk/tapestry
+	url = https://github.com/datasilk/tapestry
 [submodule "Core"]
 	path = Core
 	url = https://github.com/datasilk/saber-core

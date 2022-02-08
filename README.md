@@ -181,7 +181,7 @@ Generate form fields by writing HTML variables (e.g. `<h2>{{hero-title}}</h2>`) 
 * Create lists of content on your web pages by using the List Component to select one or more partial views to render for your list items.
 
 ## Under The Hood
-Saber uses many technologies developed by [Mark Entingh](http://www.github.com/markentingh), including [Datasilk Core MVC](http://www.github.com/datasilk/core) as the MVC middleware for ASP.NET Core, [Tapestry](http://www.github.com/websilk/tapestry) for frontend CSS UI design, [Datasilk Core JS](http://www.github.com/datasilk/corejs) as a frontend JavaScript framework, and [Selector](http://www.github.com/websilk/selector) as a replacement for jQuery at only 5kb in size.
+Saber uses many technologies developed by [Mark Entingh](http://www.github.com/markentingh), including [Datasilk Core MVC](http://www.github.com/datasilk/core) as the MVC middleware for ASP.NET Core, [Tapestry](http://www.github.com/datasilk/tapestry) for frontend CSS UI design, [Datasilk Core JS](http://www.github.com/datasilk/corejs) as a frontend JavaScript framework, and [Selector](http://www.github.com/datasilk/selector) as a replacement for jQuery at only 5kb in size.
 
 ## Future Development
 * Publish content using other formats besides HTML & CSS, such as uploading a PDF, DOC, DOCX, MP3 (for auto-transcribing), or Excel spreadsheet.
