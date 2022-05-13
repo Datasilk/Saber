@@ -264,8 +264,7 @@ gulp.task('js:utility', function () {
         .pipe(gzip({ append: false }))
     .pipe(gulp.dest(paths.compiled.js + 'utility'));
 
-    return gulp.src([paths.scripts + 'utility/*.js', paths.scripts + 'utility/**/*.*', '!' + paths.scripts + 'utility/**/*.js'])
-        .pipe(gzip({ append: false }))
+    return gulp.src([paths.scripts + 'utility/**/*.*', '!' + paths.scripts + 'utility/*.js', '!' + paths.scripts + 'utility/**/*.js'])
         .pipe(gulp.dest(paths.compiled.js + 'utility'));
 });
 
