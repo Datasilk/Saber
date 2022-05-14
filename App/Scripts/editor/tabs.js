@@ -53,15 +53,11 @@ S.editor.tabs = {
                 options: opts,
                 onfocus: () => {
                     if (opts.showPageButtons == true) {
-                        $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
+                        S.editor.filebar.buttons.show(null, path.indexOf('.html') > 0);
                     } else {
-                        $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
+                        S.editor.filebar.buttons.hide();
                     }
-                    if (path.indexOf('.html') > 0) {
-                        $('.tab-components').show();
-                    } else {
-                        $('.tab-components').hide();
-                    }
+                        
                     elem.addClass('selected');
                     $('.tab-toolbar').html('');
                     S.editor.tabs.changed = true;
@@ -69,6 +65,7 @@ S.editor.tabs = {
                 },
                 onblur: () => {
                     $('.tab-components').hide();
+                    $('.tab-sourcecode').hide();
                     if (typeof onblur == 'function') { onblur(); }
                 },
                 onsave: onsave,
@@ -127,6 +124,15 @@ S.editor.tabs = {
             div[0].click();
         }
     },
+    show: function (tabname) {
+        //show tab contents and hide other tab's contents
+        S.editor.dropmenu.hide();
+        $('.tab-components').hide();
+        $('.tab-sourcecode').hide();
+        $('.editor .sections > .tab').addClass('hide');
+        $('ul.file-tabs > li').removeClass('selected');
+        $('.tab.' + tabname).removeClass('hide');
+    },
     close: function (id, path, callback) {
         var tab = $('.tab-' + id);
         var sibling = tab.prev().find('.row.hover');
@@ -149,7 +155,6 @@ S.editor.tabs = {
             S.ajax.post('Files/Close', { path: path }, callback);
         }
     },
-
     closeFromPath: function (path) {
         //find any tabs that exist in the path
         var tabs = $('.edit-tabs li > div').filter((i, a) => $(a).attr('data-path') && $(a).attr('data-path').indexOf(path) >= 0);

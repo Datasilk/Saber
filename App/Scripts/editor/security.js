@@ -16,7 +16,7 @@
         //load users list
         S.editor.tabs.create('Security Groups', 'security-groups-section', null,
             () => { //onfocus
-                $('.tab.security-groups').removeClass('hide');
+                S.editor.tabs.show('security-groups');
                 self.groups.updateFilebar();
             },
             () => { //onblur
@@ -98,7 +98,7 @@
 
                 S.editor.tabs.create('Security Group: ' + name, 'security-group-' + id, null,
                     () => { //onfocus
-                        $('.tab.security-group-' + id).removeClass('hide');
+                        S.editor.tabs.show('security-group-' + id);
                         self.group.updateFilebar(id, name);
                     },
                     () => { //onblur

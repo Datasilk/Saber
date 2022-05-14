@@ -17,7 +17,7 @@
         //load users list
         S.editor.tabs.create('User Management', 'users-management-section', { removeOnClose:true},
             () => { //onfocus
-                $('.tab.users-management').removeClass('hide');
+                S.editor.tabs.show('users-management');
                 updateFilebar();
             },
             () => { //onblur
@@ -115,7 +115,7 @@
 
                 S.editor.tabs.create('User: ' + email, 'user-' + id, { },
                     () => { //onfocus
-                        $('.tab.user-' + id).removeClass('hide');
+                        S.editor.tabs.show('user-' + id);
                         self.details.updateFilebar(id, email);
                     },
                     () => { //onblur

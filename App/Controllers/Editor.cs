@@ -80,6 +80,7 @@ namespace Saber.Controllers
                 if(html.Length > 0)
                 {
                     view.Show("components");
+                    view.Show("sourcecode");
                     view["components-list"] = html.ToString();
 
                 }

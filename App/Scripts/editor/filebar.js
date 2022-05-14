@@ -19,17 +19,18 @@ S.editor.filebar = {
                 return;
             }
             S.editor.dropmenu.hide();
-            S.editor.tabs.create("Page Content", "content-fields-section", { showPageButtons:true },
+            S.editor.tabs.create("Page Content", "content-fields-section", { showPageButtons:true, selected:true },
                 () => { //onfocus
-                    $('.tab.content-fields-section').removeClass('hide');
-                    $('ul.file-tabs > li').removeClass('selected');
+                    console.log('focus fields');
+                    S.editor.tabs.show('content-fields-section');
                     $('ul.file-tabs > li.tab-content-fields-section').addClass('selected');
-                    var path = S.editor.path.substr(8);
+                    var path = S.editor.path.replace('content/pages/', '');
                     S.editor.filebar.update('Page Content for <a href="/' + path + '">' + path + '</a>', 'icon-form-fields');
                     if (S.editor.files.content.changed == true) {
                         //reload content fields
                         S.editor.fields.load();
                     }
+                    S.editor.filebar.buttons.show('content-fields');
                 },
                 () => { //onblur
 
@@ -38,15 +39,7 @@ S.editor.filebar = {
 
                 }
             );
-
             $('.tab-content-fields-section').addClass('tab-for-content-fields');
-
-
-            //show content fields section & hide other sections
-            $('.editor .sections > .tab').addClass('hide');
-            $('.editor .sections > .content-fields-section').removeClass('hide');
-            $('ul.file-tabs > li').removeClass('selected');
-            $('ul.file-tabs > li.tab-content-fields').addClass('selected');
 
             //disable save menu
             $('.item-save').addClass('faded').attr('disabled', 'disabled');
@@ -70,13 +63,6 @@ S.editor.filebar = {
                         S.editor.error();
                     }
                 );
-            } else {
-                //tab already loaded
-                S.editor.tabs.select('content-fields-section');
-                if (S.editor.fields.changed == true) {
-                    //enable save menu since file was previously changed
-                    $('.item-save').removeClass('faded').removeAttr('disabled');
-                }
             }
         }
     },
@@ -96,17 +82,15 @@ S.editor.filebar = {
 
     settings: {
         show: function () {
+            S.editor.pagesettings.load();
             S.editor.dropmenu.hide();
-            $('.editor .sections > .tab').addClass('hide');
-            $('.editor .sections > .page-settings').removeClass('hide');
-            $('ul.file-tabs > li').removeClass('selected');
+            S.editor.tabs.show('page-settings');
+            S.editor.filebar.buttons.show('page-settings');
             $('ul.file-tabs > li.tab-page-settings').addClass('selected');
 
             //disable save menu
             $('.item-save').addClass('faded').attr('disabled', 'disabled');
             $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
-
-            S.editor.settings.load();
         }
     },
 
@@ -114,17 +98,16 @@ S.editor.filebar = {
         show: function (noload) {
             if (S.editor.selected == '') { return; }
             S.editor.dropmenu.hide();
-            $('.editor .sections > .tab').addClass('hide');
-            $('.editor .sections > .page-resources').removeClass('hide');
-            $('ul.file-tabs > li').removeClass('selected');
+            S.editor.tabs.show('page-resources');
             $('ul.file-tabs > li.tab-page-resources').addClass('selected');
 
             //disable save menu
             $('.item-save').addClass('faded').attr('disabled', 'disabled');
             $('.item-save-as').addClass('faded').attr('disabled', 'disabled');
 
-            if (noload === true) { return; }
-            S.editor.resources.load(S.editor.path);
+            //load resources
+            if (noload != true) { S.editor.resources.load(S.editor.path); }
+            S.editor.filebar.buttons.show('page-resources');
         }
     },
 
@@ -245,6 +228,24 @@ S.editor.filebar = {
             setTimeout(function () {
                 S.editor.resize.window();
             }, 10);
+        }
+    },
+
+    buttons: {
+        show: function (selected, ishtml) {
+            $('.file-tabs .selected').removeClass('selected');
+            if(selected && selected.length > 0)$('.tab-' + selected + ' .row.hover').addClass('selected');
+            $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
+            if (ishtml) {
+                $('.tab-components').show();
+                $('.tab-sourcecode').hide();
+            } else {
+                $('.tab-components').hide();
+                $('.tab-sourcecode').show();
+            }
+        },
+        hide: function () {
+            $('.tab-components, .tab-sourcecode, .tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
         }
     }
 };

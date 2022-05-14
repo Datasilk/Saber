@@ -2,7 +2,7 @@ S.editor.analytics = {
     show: function () {
         S.editor.tabs.create("Website Analytics", "analytics-section", {},
             () => { //onfocus
-                $('.tab.website-analytics').removeClass('hide');
+                S.editor.tabs.show('website-analytics');
             },
             () => { //onblur
 
@@ -11,9 +11,7 @@ S.editor.analytics = {
 
             }
         );
-        S.editor.dropmenu.hide();
-        $('.editor .sections > .tab').addClass('hide');
-        $('.editor .sections > .website-analytics').removeClass('hide');
+        S.editor.tabs.show('website-analytics');
 
         //disable save menu
         $('.item-save').addClass('faded').attr('disabled', 'disabled');

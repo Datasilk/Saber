@@ -11,8 +11,9 @@ S.editor.resources = {
         var id = isRoot ? 'resources' : 'page-resources';
         S.editor.tabs.create(isRoot ? 'Resources' : 'Page Resources', id + '-section', { showPageButtons:true, selected:true },
             () => { //onfocus
-                $('.tab.' + id).removeClass('hide');
+                S.editor.tabs.show(id);
                 updateFilebar();
+                S.editor.filebar.buttons.show(id);
             },
             () => { //onblur
 
@@ -23,7 +24,7 @@ S.editor.resources = {
         );
 
         function updateFilebar() {
-            S.editor.filebar.update((isRoot ? 'Resources for ' + pagename : 'Page Resources for <a href="/' + pagename + '">/' + pagename + '</a>'), 'icon-photos', $('#page_resources_toolbar').html());
+            S.editor.filebar.update((isRoot ? 'Resources for ' + pagename : 'Page Resources for <a href="/' + pagename + '">' + pagename + '</a>'), 'icon-photos', $('#page_resources_toolbar').html());
             if (S.editor.resources.uploader != null) {
                 $('.tab-toolbar .uploader').on('click', S.editor.resources.uploader.click);
             }

@@ -4,9 +4,6 @@
     show: function () {
         //show Data Sources tab
         S.editor.dropmenu.hide();
-        $('.editor .sections > .tab').addClass('hide');
-        $('.editor .sections > .data-sources').removeClass('hide');
-        $('ul.file-tabs > li').removeClass('selected');
 
         //disable save menu
         $('.item-save').addClass('faded').attr('disabled', 'disabled');
@@ -16,7 +13,7 @@
             //load data sources list
             S.editor.tabs.create('Data Sources', 'data-sources-section', { removeOnClose: true },
                 () => { //onfocus
-                    $('.tab.data-sources').removeClass('hide');
+                    S.editor.tabs.show('data-sources');
                     updateFilebar();
                 },
                 () => { //onblur
@@ -33,6 +30,8 @@
                 $('.sections .datasources-contents').html(response);
                 S.editor.resize.window();
             });
+        } else {
+            S.editor.tabs.show('data-sources');
         }
     },
     added: function () {
@@ -47,6 +46,4 @@
     }
 };
 
-setTimeout(() => {
-    S.editor.events.add('data-source-added');
-}, 50);
+setTimeout(() => { S.editor.events.add('data-source-added'); }, 50);

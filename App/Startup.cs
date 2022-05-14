@@ -625,7 +625,7 @@ namespace Saber
                 }
             });
 
-            Console.WriteLine("Running Saber Server in " + App.Environment.ToString() + " environment at " + App.Host);
+            Console.WriteLine("Saber is ready! <(^.^<)");
         }
 
         private string GetFileExtension(string filename)

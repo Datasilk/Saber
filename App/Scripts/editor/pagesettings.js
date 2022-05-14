@@ -1,16 +1,17 @@
-S.editor.settings = {
+S.editor.pagesettings = {
     _loaded: false,
     clone: null,
     headers: [],
     footers: [],
 
     load: function () {
-        var self = S.editor.settings;
-        S.editor.tabs.create('Page Settings', 'page-settings-section', { showPageButtons:true },
+        var self = S.editor.pagesettings;
+        S.editor.tabs.create('Page Settings', 'page-settings-section', { showPageButtons: true, selected: true },
             () => { //onfocus
-                $('.tab.page-settings').removeClass('hide');
-                var path = S.editor.path.substr(8);
-                S.editor.filebar.update('Page Settings for <a href="/' + path + '">' + path + '</a>', 'icon-settings');
+                S.editor.tabs.show('page-settings');
+                S.editor.filebar.buttons.show('page-settings');
+                let p = S.editor.path.replace('content/pages/', '');
+                S.editor.filebar.update('Page Settings for <a href="/' + p + '">' + p + '</a>', 'icon-settings');
             },
             () => { //onblur
 
@@ -19,10 +20,7 @@ S.editor.settings = {
 
             }
         );
-        if (self._loaded == true) {
-            S.editor.tabs.select('page-settings-section');
-            return;
-        }
+
         var path = S.editor.path;
         S.ajax.post('PageSettings/Render', { path: path },
             function (d) {
@@ -31,16 +29,16 @@ S.editor.settings = {
                 S.ajax.inject(data);
 
                 //load settings header & footer fields
-                S.editor.settings.headers = json.headers;
-                S.editor.settings.footers = json.footers;
+                S.editor.pagesettings.headers = json.headers;
+                S.editor.pagesettings.footers = json.footers;
 
                 //update settings header & footer events
-                $('#page_header').on('input', S.editor.settings.partials.header.update);
-                $('#page_footer').on('input', S.editor.settings.partials.footer.update);
+                $('#page_header').on('input', S.editor.pagesettings.partials.header.update);
+                $('#page_footer').on('input', S.editor.pagesettings.partials.footer.update);
 
                 //set up settings title
-                S.editor.settings._loaded = true;
-                S.editor.settings.clone = $('.page-settings .textarea-clone > div');
+                S.editor.pagesettings._loaded = true;
+                S.editor.pagesettings.clone = $('.page-settings .textarea-clone > div');
                 var p = path.replace('content/pages/', '');
                 $('.editor .page-name').attr('href', '/' + p).html(p);
                 S.editor.resize.window();
@@ -52,18 +50,18 @@ S.editor.settings = {
                 self.change(description);
 
                 //set up button events
-                $('.page-settings .title-prefix .icon a').on('click', S.editor.settings.title.prefix.show);
-                $('.page-settings .title-suffix .icon a').on('click', S.editor.settings.title.suffix.show);
-                $('.page-styles .btn-add-style').on('click', S.editor.settings.styles.add.show);
-                $('.page-scripts .btn-add-script').on('click', S.editor.settings.scripts.add.show);
-                $('.page-security .btn-add-group').on('click', S.editor.settings.security.add.show);
-                $('.editor .security-list .close-btn').on('click', S.editor.settings.security.remove);
+                $('.page-settings .title-prefix .icon a').on('click', S.editor.pagesettings.title.prefix.show);
+                $('.page-settings .title-suffix .icon a').on('click', S.editor.pagesettings.title.suffix.show);
+                $('.page-styles .btn-add-style').on('click', S.editor.pagesettings.styles.add.show);
+                $('.page-scripts .btn-add-script').on('click', S.editor.pagesettings.scripts.add.show);
+                $('.page-security .btn-add-group').on('click', S.editor.pagesettings.security.add.show);
+                $('.editor .security-list .close-btn').on('click', S.editor.pagesettings.security.remove);
 
                 //execute init scripts
-                S.editor.settings.partials.header.update();
-                S.editor.settings.partials.footer.update();
-                S.editor.settings.styles.init();
-                S.editor.settings.scripts.init();
+                S.editor.pagesettings.partials.header.update();
+                S.editor.pagesettings.partials.footer.update();
+                S.editor.pagesettings.styles.init();
+                S.editor.pagesettings.scripts.init();
             }
         );
     },
@@ -71,7 +69,7 @@ S.editor.settings = {
     change: function (field, changed) {
         //update textarea height for given field
         if (S.editor.visible == true) {
-            var clone = S.editor.settings.clone;
+            var clone = S.editor.pagesettings.clone;
             clone.html(field.val().replace(/\n/g, '<br/>') + '</br>');
             field.css({ height: clone.height() });
             if (changed == true) {
@@ -89,7 +87,7 @@ S.editor.settings = {
                 S.popup.show('New Page Title Prefix',
                     $('#template_pagetitle_newprefix').html()
                 );
-                $('.popup form').on('submit', S.editor.settings.title.prefix.submit);
+                $('.popup form').on('submit', S.editor.pagesettings.title.prefix.submit);
             },
 
             submit: function (e) {
@@ -99,7 +97,7 @@ S.editor.settings = {
                 S.ajax.post('PageSettings/CreatePageTitlePart', data,
                     function (d) {
                         $('#page_title_prefix').append('<option value="' + d + '">' + d + '</option>').val(d);
-                        S.editor.settings.title.change();
+                        S.editor.pagesettings.title.change();
                     }
                 );
                 S.popup.hide();
@@ -112,7 +110,7 @@ S.editor.settings = {
                 S.popup.show('New Page Title Suffix',
                     $('#template_pagetitle_newsuffix').html()
                 );
-                $('.popup form').on('submit', S.editor.settings.title.suffix.submit);
+                $('.popup form').on('submit', S.editor.pagesettings.title.suffix.submit);
             },
 
             submit: function (e) {
@@ -122,7 +120,7 @@ S.editor.settings = {
                 S.ajax.post('PageSettings/CreatePageTitlePart', data,
                     function (d) {
                         $('#page_title_suffix').append('<option value="' + d + '">' + d + '</option>').val(d);
-                        S.editor.settings.title.change();
+                        S.editor.pagesettings.title.change();
                     }
                 );
                 S.popup.hide();
@@ -137,7 +135,7 @@ S.editor.settings = {
             if (suffix != '' && suffix[0] != ' ') { suffix = ' ' + suffix; }
             window.document.title = prefix + $('#page_title').val() + suffix;
             S.editor.save.enable();
-            S.editor.settings.title.changed = true;
+            S.editor.pagesettings.title.changed = true;
         },
 
         save: function (callback) {
@@ -150,15 +148,15 @@ S.editor.settings = {
             S.ajax.post('PageSettings/UpdatePageTitle', data, callback,
                 function () { S.editor.error(); }
             );
-            S.editor.settings.title.changed = false;
+            S.editor.pagesettings.title.changed = false;
         }
     },
 
     description: {
         changed: false,
         change: function () {
-            S.editor.settings.description.changed = true;
-            S.editor.settings.change($('#page_description'), true);
+            S.editor.pagesettings.description.changed = true;
+            S.editor.pagesettings.change($('#page_description'), true);
         },
 
         save: function (callback) {
@@ -169,7 +167,7 @@ S.editor.settings = {
             S.ajax.post('PageSettings/UpdatePageDescription', data, callback,
                 function () { S.editor.error(); }
             );
-            S.editor.settings.description.changed = false;
+            S.editor.pagesettings.description.changed = false;
         }
     },
 
@@ -177,7 +175,7 @@ S.editor.settings = {
         changed: false,
         header: {
             update: function () {
-                S.editor.settings.partials.changed = true;
+                S.editor.pagesettings.partials.changed = true;
                 S.editor.files.html.changed = true;
                 var file = 'content/partials/' + $('#page_header').val();
                 $('.edit-header-file a').attr('href', 'javascript:S.editor.explorer.open(\'' + file + '\')');
@@ -188,7 +186,7 @@ S.editor.settings = {
 
         footer: {
             update: function () {
-                S.editor.settings.partials.changed = true;
+                S.editor.pagesettings.partials.changed = true;
                 S.editor.files.html.changed = true;
                 var file = 'content/partials/' + $('#page_footer').val();
                 $('.edit-footer-file a').attr('href', 'javascript:S.editor.explorer.open(\'' + file + '\')');
@@ -212,7 +210,7 @@ S.editor.settings = {
                 },
                 function () { S.editor.error(); }
             );
-            S.editor.settings.partials.changed = false;
+            S.editor.pagesettings.partials.changed = false;
         }
 
     },
@@ -223,7 +221,7 @@ S.editor.settings = {
                 S.popup.show('Add Stylesheet to Page',
                     $('#template_styles_add').html()
                 );
-                $('.popup form').on('submit', S.editor.settings.styles.add.submit);
+                $('.popup form').on('submit', S.editor.pagesettings.styles.add.submit);
 
                 //get list of available scripts
                 S.ajax.post('PageSettings/GetAvailableStylesheets', {}, (list) => {
@@ -246,7 +244,7 @@ S.editor.settings = {
                     S.util.css.load(data.file, 'css_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), window.parent.document);
                     S.editor.files.less.changed = true;
                     $('.page-settings .styles-list > ul').html(list);
-                    S.editor.settings.styles.init();
+                    S.editor.pagesettings.styles.init();
                     S.popup.hide();
                 });
             }
@@ -259,12 +257,12 @@ S.editor.settings = {
                 //add script to page
                 S.editor.files.less.changed = true;
                 $('.page-settings .styles-list > ul').html(list);
-                S.editor.settings.styles.init();
+                S.editor.pagesettings.styles.init();
             });
         },
 
         init: function () {
-            $('.page-settings .styles-list .close-btn').on('click', S.editor.settings.styles.remove);
+            $('.page-settings .styles-list .close-btn').on('click', S.editor.pagesettings.styles.remove);
             S.drag.sort.add('.page-settings .styles-list ul', '.page-settings .styles-list li', () => {
                 //update website.config with new stylesheet sort order
                 S.ajax.post('PageSettings/SortStylesheets', {
@@ -284,7 +282,7 @@ S.editor.settings = {
                 S.popup.show('Add Script to Page',
                     $('#template_scripts_add').html()
                 );
-                $('.popup form').on('submit', S.editor.settings.scripts.add.submit);
+                $('.popup form').on('submit', S.editor.pagesettings.scripts.add.submit);
 
                 //get list of available scripts
                 S.ajax.post('PageSettings/GetAvailableScripts', {}, (list) => {
@@ -307,7 +305,7 @@ S.editor.settings = {
                     S.util.js.load(data.file, 'js_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), null, null, window.parent.document);
                     S.editor.files.js.changed = true;
                     $('.page-settings .scripts-list > ul').html(list);
-                    S.editor.settings.scripts.init();
+                    S.editor.pagesettings.scripts.init();
                     S.popup.hide();
                 });
             }
@@ -320,12 +318,12 @@ S.editor.settings = {
                 //add script to page
                 S.editor.files.js.changed = true;
                 $('.page-settings .scripts-list > ul').html(list);
-                S.editor.settings.scripts.init();
+                S.editor.pagesettings.scripts.init();
             });
         },
 
         init: function () {
-            $('.page-settings .scripts-list .close-btn').on('click', S.editor.settings.scripts.remove);
+            $('.page-settings .scripts-list .close-btn').on('click', S.editor.pagesettings.scripts.remove);
             S.drag.sort.add('.page-settings .scripts-list ul', '.page-settings .scripts-list li', () => {
                 //update page json with new stylesheet sort order
                 S.ajax.post('PageSettings/SortScripts', {
@@ -345,7 +343,7 @@ S.editor.settings = {
                 S.popup.show('Add Security Group to Page',
                     $('#template_security_add').html()
                 );
-                $('.popup form').on('submit', S.editor.settings.security.add.submit);
+                $('.popup form').on('submit', S.editor.pagesettings.security.add.submit);
 
                 //get list of available scripts
                 S.ajax.post('PageSettings/GetAvailableSecurityGroups', {}, (list) => {
@@ -366,7 +364,7 @@ S.editor.settings = {
                 S.ajax.post('PageSettings/AddSecurityGroup', data, (list) => {
                     //update security group list
                     $('.editor .security-list > ul').html(list);
-                    $('.editor .security-list .close-btn').on('click', S.editor.settings.security.remove);
+                    $('.editor .security-list .close-btn').on('click', S.editor.pagesettings.security.remove);
                     S.popup.hide();
                 });
             }
@@ -378,7 +376,7 @@ S.editor.settings = {
             S.ajax.post('PageSettings/RemoveSecurityGroup', data, (list) => {
                 //update security group list
                 $('.editor .security-list > ul').html(list);
-                $('.editor .security-list .close-btn').on('click', S.editor.settings.security.remove);
+                $('.editor .security-list .close-btn').on('click', S.editor.pagesettings.security.remove);
             });
         }
     }

@@ -275,6 +275,7 @@ S.editor.init = function () {
     $('.top-menu .menu-bar .item-web-public-apis').on('click', () => { S.editor.websettings.show('public-apis'); });
     $('.top-menu .menu-bar .item-web-plugins').on('click', () => { S.editor.websettings.show('plugins'); });
     $('.tab-components').on('click', S.editor.components.show);
+    $('.tab-sourcecode').on('click', () => { S.editor.explorer.open(S.editor.path + '.html'); });
     $('.tab-content-fields').on('click', S.editor.filebar.fields.show);
     $('.tab-file-code').on('click', S.editor.filebar.code.show);
     $('.tab-page-settings').on('click', S.editor.filebar.settings.show);

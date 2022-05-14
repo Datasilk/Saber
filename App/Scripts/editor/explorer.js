@@ -222,17 +222,13 @@ S.editor.explorer = {
 
         function loadCode() {
             S.editor.filebar.code.show();
+            //show/hide filebar buttons
             if (isPageResource || (paths.indexOf('partials') >= 0 && file.indexOf('.html') > 0)) {
-                //show file bar icons for page html resource
-                $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').show();
+                S.editor.filebar.buttons.show(null, path.indexOf('.html') > 0);
             } else {
-                $('.tab-content-fields, .tab-file-code, .tab-page-settings, .tab-page-resources, .tab-preview').hide();
+                S.editor.filebar.buttons.hide();
             }
-            if (path.indexOf('.html') > 0) {
-                $('.tab-components').show();
-            } else {
-                $('.tab-components').hide();
-            }
+
             //check for existing source code
             var nocode = (code == null || typeof code == 'undefined');
             var session = S.editor.sessions[id];

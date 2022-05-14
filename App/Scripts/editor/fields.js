@@ -18,6 +18,7 @@ S.editor.fields = {
             container = '.sections .content-fields-' + fileid;
             if (show !== false) {
                 $('.editor .sections > .tab').addClass('hide');
+                $('.tab-sourcecode').show();
             }
 
             if ($('.content-fields-' + fileid).length == 0) {
@@ -41,11 +42,9 @@ S.editor.fields = {
                 //render new tab
                 S.editor.tabs.create('Content: ' + filepath, 'content-fields-' + fileid, { removeOnClose: true, selected:show !== false },
                     () => { //onfocus
-                        $('.tab.content-fields-' + fileid).removeClass('hide');
-                        $('ul.file-tabs > li').removeClass('selected');
+                        S.editor.tabs.show('content-fields-' + fileid);
                         $('ul.file-tabs > li.tab-content-fields').addClass('selected');
                         S.editor.filebar.update('Page Content for <a href="javascript:S.editor.explorer.open(\'' + file + '\')">' + file.replace('content/', '') + '</a>', 'icon-form-fields');
-                        //TODO: check if associated HTML partial has changed, then reload content fields
                     },
                     () => { //onblur
 
@@ -95,7 +94,7 @@ S.editor.fields = {
                     S.editor.resources.select(file ? 'wwwroot/images' : S.editor.path, '.jpg, .png, .gif', true, "Select An Image", "Select Image", (results) => {
                         var parent = $(e.target).parents('.content-field');
                         var field = parent.find('.input-field');
-                        var newpath = file ? '/images/' : S.editor.path.replace('content/', 'content/pages/') + '/';
+                        var newpath = file ? '/images/' : S.editor.path + '/';
                         var src = newpath + results[0];
                         parent.find('.img').html('<div><img src="' + src + '"/></div>');
                         parent.find('.img').css({ 'background-image': 'url(' + src + ')' });
