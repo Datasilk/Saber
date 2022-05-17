@@ -17,8 +17,6 @@
             password2: byId('password2').value
         };
 
-        console.log(data);
-
         //validate name
         if (data.name == '' || data.name == null) {
             error('You must provide your name');

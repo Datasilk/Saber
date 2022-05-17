@@ -391,7 +391,6 @@ S.editor.fields = {
                         var i = (index != null ? parseInt(index) : field.find('.list-items li').length) + 1;
                         var ul = field.find('.list-items ul');
                         var children = field.find('.list-items ul > li').map((i, a) => a.outerHTML);
-                        console.log('key = ' + key);
                         var child = $('#custom_field_list_item').html()
                             .replace('##onclick##', "S.editor.fields.custom.list.edit(event, '##title##', '##key##', '##partial##', '##lang##', '##container##')")
                             .replace(/\#\#label\#\#/g, key != '' && fields[key] && fields[key] != '' ? fields[key] : 'List Item #' + i)

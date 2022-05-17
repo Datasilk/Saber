@@ -226,7 +226,7 @@ namespace Saber.Common.Platform
                                 break;
                             default:
                                 var pubpath = "/wwwroot/content/partials/" + string.Join('/', paths.Skip(2).ToArray()).Replace(paths[paths.Length - 1], "");
-                                if (paths[2].Right(5) == ".less")
+                                if (paths[paths.Length - 1].Length > 5 && paths[paths.Length - 1].Right(5) == ".less")
                                 {
                                     //compile less file
                                     
@@ -235,7 +235,7 @@ namespace Saber.Common.Platform
                                         Directory.CreateDirectory(App.MapPath(pubpath));
                                     }
                                     SaveLessFile(content, pubpath + paths[paths.Length - 1].Replace(".less", ".css"), dir);
-                                }else if (paths[2].Right(3) == ".js")
+                                }else if (paths[paths.Length - 1].Length > 3 && paths[paths.Length - 1].Right(3) == ".js")
                                 {
                                     File.Copy(App.MapPath(filepath), App.MapPath(pubpath + paths[paths.Length - 1]), true);
                                 }

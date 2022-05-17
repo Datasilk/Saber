@@ -259,7 +259,6 @@
 
     $('.public-api-checkbox').on('change', (e) => {
         var target = $(e.target);
-        console.log(target);
         var api = target.val();
         var enabled = target[0].checked;
         console.table([api, enabled]);

@@ -21,7 +21,6 @@ S.editor.filebar = {
             S.editor.dropmenu.hide();
             S.editor.tabs.create("Page Content", "content-fields-section", { showPageButtons:true, selected:true },
                 () => { //onfocus
-                    console.log('focus fields');
                     S.editor.tabs.show('content-fields-section');
                     $('ul.file-tabs > li.tab-content-fields-section').addClass('selected');
                     var path = S.editor.path.replace('content/pages/', '');

@@ -88,7 +88,7 @@ namespace Saber.Common.Platform
                     case Core.ContentFields.FieldType.block:
                         //load block field
                         fieldBlock.Clear();
-                        fieldBlock["title"] = fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize();
+                        fieldBlock["title"] = sectionTitle != "" ? fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize() : fieldTitle.Capitalize();
                         fieldBlock["id"] = fieldId;
                         if (fieldValue == "1") { fieldBlock.Show("checked"); }
                         html.Append(fieldBlock.Render());
