@@ -329,7 +329,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Content\Collector\" />
     <Folder Include="Vendors\Collector\Images\icons\" />
+    <Folder Include="wwwroot\content\collector\" />
     <Folder Include="wwwroot\content\pages\home\" />
     <Folder Include="wwwroot\content\pages\login\" />
     <Folder Include="wwwroot\content\vendors\market\template\" />
