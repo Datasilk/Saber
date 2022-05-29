@@ -22,7 +22,7 @@ S.editor.save = function (path, content) {
         }
         else if ($('.tab-page-settings').hasClass('selected')) {
             //save page settings ///////////////////////////////////////////////////////////////////////////////
-            var settings = self.settings;
+            var settings = self.pagesettings;
 
             //save title
             if (settings.title.changed == true) {

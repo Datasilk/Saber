@@ -35,7 +35,7 @@ namespace Saber.Controllers
             {
                 uselayout = false;
             }
-            var config = PageInfo.GetPageConfig("content/" + pathname);
+            var config = PageInfo.GetPageConfig("content/pages/" + pathname);
             var webconfig = Common.Platform.Website.Settings.Load();
 
             if (uselayout)
@@ -133,7 +133,7 @@ namespace Saber.Controllers
                         Context.Response.StatusCode = 404;
                         if (File.Exists(App.MapPath("content/pages/404.html")))
                         {
-                            config = PageInfo.GetPageConfig("content/404");
+                            config = PageInfo.GetPageConfig("content/pages/404");
                             html.Append(Common.Platform.Render.Page("content/pages/404.html", this, config, lang));
                             AddCSS("/content/pages/404.css", "page_css");
                             AddScript("/content/pages/404.js", "page_js");

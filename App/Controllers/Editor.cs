@@ -18,7 +18,7 @@ namespace Saber.Controllers
             var pathname = Parameters.ContainsKey("path") ? Parameters["path"] : "home";
 
             //load page configuration
-            var config = PageInfo.GetPageConfig("content/" + pathname);
+            var config = PageInfo.GetPageConfig("content/pages/" + pathname);
             var webconfig = Common.Platform.Website.Settings.Load();
 
 

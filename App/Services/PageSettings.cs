@@ -61,11 +61,11 @@ namespace Saber.Services
 
                 //get list of fields within html template
                 TemplateFileType filetype = TemplateFileType.none;
-                if (filename.IndexOf("header") >= 0)
+                if (filename.IndexOf("header") >= 0 || filepath.IndexOf("header") > 0)
                 {
                     filetype = TemplateFileType.header;
                 }
-                else if (filename.IndexOf("footer") >= 0)
+                else if (filename.IndexOf("footer") >= 0 || filepath.IndexOf("footer") > 0)
                 {
                     filetype = TemplateFileType.footer;
                 }

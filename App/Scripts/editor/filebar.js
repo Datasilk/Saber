@@ -176,7 +176,7 @@ S.editor.filebar = {
             //finally, reload javascript file
             function changeJs(htmlChanged) {
                 var js = doc.getElementById('website_js');
-                js.parentNode.removeChild(js);
+                if (js) { js.parentNode.removeChild(js); }
 
                 S.util.js.load('/js/website.js' + '?r=' + rnd, 'website_js',
                     function () {
