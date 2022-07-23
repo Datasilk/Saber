@@ -2,7 +2,6 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.Primitives;
 
 namespace Saber.Common.Utility
 {
@@ -29,7 +28,7 @@ namespace Saber.Common.Utility
         {
             ImageInfo newImg = new ImageInfo();
             var image = SixLabors.ImageSharp.Image.Load(stream);
-            newImg.bitmap = image;
+            newImg.bitmap = (Image<Rgba32>)image;
             newImg.filename = filename;
             newImg.path = path;
             newImg.width = image.Width;

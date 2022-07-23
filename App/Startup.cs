@@ -601,7 +601,8 @@ namespace Saber
             {
                 IgnoreRequestBodySize = true,
                 ServicePaths = App.ServicePaths,
-                Routes = new Routes()
+                Routes = new Routes(),
+                InvokeNext = true
             });
 
             //handle missing static files
@@ -623,6 +624,7 @@ namespace Saber
                             break;
                     }
                 }
+                next(context);
             });
 
             Console.WriteLine("Saber is ready! <(^.^<)");

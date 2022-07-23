@@ -17,17 +17,24 @@
         if (target.parents('.tab-button').length > 0) {
             var menu = $('.components-menu');
             menu.removeClass('hide');
-            $(document.body).off(hideMenu).on('click', hideMenu);
-            //$('.component-configure').addClass('hide');
-            //$('.components-list').removeClass('hide');
-            function hideMenu(e) {
-                if ($(e.target).parents('.tab-components').length <= 0 &&
-                    $(e.target).parents('.popup').length <= 0 &&
-                    !$(e.target).hasClass('popup')) {
-                    menu.addClass('hide');
-                }
-            }
+            S.editor.components.resize();
+            $(document.body).off(S.editor.components.hide).on('click', S.editor.components.hide);
         }
+    },
+
+    hide: function () {
+        if ($(e.target).parents('.tab-components').length <= 0 &&
+            $(e.target).parents('.popup').length <= 0 &&
+            !$(e.target).hasClass('popup')) {
+            menu.addClass('hide');
+        }
+    },
+
+    resize: function () {
+        var menu = $('.components-menu');
+        var win = S.window.pos();
+        var pos = menu.offset();
+        menu.css({ 'max-height': (win.h - pos.top - 30) + 'px' });
     },
 
     configure: {
@@ -280,3 +287,5 @@
         }
     }
 };
+
+$(window).on('resize', S.editor.components.resize);

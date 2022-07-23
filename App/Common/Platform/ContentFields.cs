@@ -211,19 +211,19 @@ namespace Saber.Common.Platform
 
                     if (prevElemInfo.Type == Core.ContentFields.FieldType.image)
                     {
-                        if(prev.Htm.IndexOf("\"") < 0)
+                        if(prev.Html.IndexOf("\"") < 0)
                         {
                             return Core.ContentFields.FieldType.image;
                         }
                         quotes = 0;
                     }
 
-                    for (var i = prev.Htm.Length - 1; i >= 0; i--)
+                    for (var i = prev.Html.Length - 1; i >= 0; i--)
                     {
-                        if (prev.Htm[i] == '"') { quotes++; }
-                        if (prev.Htm[i] == '=' && quotes == 1) { inQuotes = true; }
-                        if (prev.Htm[i] == '>') { break; }
-                        if (prev.Htm[i] == '<')
+                        if (prev.Html[i] == '"') { quotes++; }
+                        if (prev.Html[i] == '=' && quotes == 1) { inQuotes = true; }
+                        if (prev.Html[i] == '>') { break; }
+                        if (prev.Html[i] == '<')
                         {
                             //found html element
                             if (inQuotes == true)
@@ -231,7 +231,7 @@ namespace Saber.Common.Platform
                                 //content field exists inside an HTML element attribute value
                                 try
                                 {
-                                    var htmElem = prev.Htm.Substring(i + 1);
+                                    var htmElem = prev.Html.Substring(i + 1);
                                     var tagParts = htmElem.Split(" ");
                                     var tagName = tagParts[0].ToLower();
                                     var attrName = tagParts[^1].Split("=")[0];

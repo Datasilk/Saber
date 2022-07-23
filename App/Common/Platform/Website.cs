@@ -387,13 +387,14 @@ namespace Saber.Common.Platform
                     var file = App.MapPath("/Content/website.json");
                     if (File.Exists(file))
                     {
-                        App.Website = JsonSerializer.Deserialize<Models.Website.Settings>(Cache.LoadFile(file));
-                    }
-                    else
-                    {
-                        App.Website = new Models.Website.Settings();
+                        var json = Cache.LoadFile(file);
+                        if(json != null && json != "")
+                        {
+                            App.Website = JsonSerializer.Deserialize<Models.Website.Settings>(json);
+                        }
                     }
                 }
+                if(App.Website == null) { App.Website = new Models.Website.Settings(); }
                 return App.Website;
             }
 

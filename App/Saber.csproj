@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <StartupObject></StartupObject>
     <UserSecretsId>9a847bc6-13f3-4478-8479-dc34f3467551</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -48,7 +48,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="config.docker.json" />
     <Content Remove="config.json" />
     <Content Remove="config.prod.json" />
     <Content Remove="web.Release.config" />
@@ -57,43 +56,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Content\temp\config.docker.json" />
-    <None Remove="Content\temp\config.json" />
-    <None Remove="Content\temp\images\logo-xs.png" />
-    <None Remove="Content\temp\images\logo.png" />
-    <None Remove="Content\temp\images\web-icon.png" />
-    <None Remove="Content\temp\js\website.js" />
-    <None Remove="Content\temp\pages\access-denied.html" />
-    <None Remove="Content\temp\pages\forgotpass-complete.html" />
-    <None Remove="Content\temp\pages\forgotpass.html" />
-    <None Remove="Content\temp\pages\forgotpass.js" />
-    <None Remove="Content\temp\pages\forgotpass.less" />
-    <None Remove="Content\temp\pages\home.html" />
-    <None Remove="Content\temp\pages\home.js" />
-    <None Remove="Content\temp\pages\home.less" />
-    <None Remove="Content\temp\pages\login.html" />
-    <None Remove="Content\temp\pages\login.js" />
-    <None Remove="Content\temp\pages\login.less" />
-    <None Remove="Content\temp\pages\passwordreset.html" />
-    <None Remove="Content\temp\pages\passwordreset.js" />
-    <None Remove="Content\temp\pages\resetpass-complete.html" />
-    <None Remove="Content\temp\pages\resetpass.html" />
-    <None Remove="Content\temp\pages\resetpass.js" />
-    <None Remove="Content\temp\pages\resetpass.less" />
-    <None Remove="Content\temp\pages\signup-complete.html" />
-    <None Remove="Content\temp\pages\signup-complete.less" />
-    <None Remove="Content\temp\pages\signup.html" />
-    <None Remove="Content\temp\pages\signup.js" />
-    <None Remove="Content\temp\pages\signup.less" />
-    <None Remove="Content\temp\partials\footer.html" />
-    <None Remove="Content\temp\partials\footer.less" />
-    <None Remove="Content\temp\partials\header.html" />
-    <None Remove="Content\temp\partials\header.less" />
+    <None Remove="config.docker.json" />
+    <None Remove="Content\website.js" />
+    <None Remove="Content\website.json" />
+    <None Remove="Content\website.less" />
     <None Remove="CSS\tapestry\LICENSE" />
-    <None Remove="Views\Shared\layout.html" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="config.docker.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\temp\config.docker.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -184,6 +157,13 @@
     <Content Include="Content\temp\partials\header.less">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\website.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\website.json" />
+    <Content Include="Content\website.less">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\Shared\layout.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -246,17 +226,17 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="dotless.Core" Version="1.6.7" />
-    <PackageReference Include="MailKit" Version="2.10.0" />
-    <PackageReference Include="Markdig" Version="0.22.0" />
+    <PackageReference Include="MailKit" Version="3.3.0" />
+    <PackageReference Include="Markdig" Version="0.30.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0006" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.16.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
 
 
-    <PackageReference Include="System.ServiceModel.Http" Version="4.5.0" />
-    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.5.0" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.5.0" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.9.0" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.9.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -336,12 +316,6 @@
     <Folder Include="wwwroot\content\pages\login\" />
     <Folder Include="wwwroot\content\vendors\market\template\" />
     <Folder Include="wwwroot\editor\css\themes\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Content\website.less">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

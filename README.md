@@ -32,27 +32,11 @@ Saber gives software engineers the ability to focus on traditional web developme
 
 #### Docker Support
 Saber also supports Docker. In order for Saber to work with Docker in Windows, you must first install and run [Docker Desktop](https://docs.docker.com/docker-for-windows/). 
-1. Open `config.docker.json` file and update the Sql connection string Initial Catalog along with the User ID & Password you've created in Sql Server that has access to your Saber database
+1. Copy `/App/Content/temp/config.docker.json` to `/App` folder and open the file to update the Sql connection string Initial Catalog along with the User ID & Password you've created in Sql Server that has access to your Saber database
 2. Click **Play** in Visual Studio after selecting the **Docker** launch command from the drop down
 
 #### IIS Support
-You will need to make a simple code change in `Program.cs` to support IIS integration.
-1. In `Program.cs`, remove or comment the following code:
-
-``` csharp
-.UseKestrel(
-    options =>
-    {
-        options.Limits.MaxRequestBodySize = null;
-        //options.ListenAnyIP(80); //for docker
-    }
-)
-```
-2. In `Program.cs`, uncomment the following code:
-
-``` csharp
-.UseIISIntegration()
-```
+Saber now supports IIS natively
 ----
 
 ![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-file.jpg)

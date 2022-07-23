@@ -173,7 +173,7 @@ namespace Saber.Common.Platform
                 var components = Core.Vendors.HtmlComponents;
                 foreach (var component in components)
                 {
-                    var fields = view.Fields.Where(a => a.Key.IndexOf(prefix + component.Key) == 0);
+                    var fields = view.Fields.Where(a => a.Key == prefix + component.Key);
                     if(fields.Count() > 0) {
                         foreach(var field in fields)
                         {
