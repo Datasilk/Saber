@@ -28,6 +28,7 @@ var gulp = require('gulp'),
     less = require('gulp-less'),
     rename = require('gulp-rename'),
     replace = require('gulp-replace'),
+    merge = require('merge-stream'),
     del = require('del'),
     config = require('./App/config.json'),
     exec = require('child_process').exec,
@@ -222,7 +223,7 @@ gulp.task('js:app', function () {
     var pathlist = [...paths.working.js.app, ...paths.working.exclude.app];
     var p = gulp.src(pathlist)
     .pipe(rename(function (path) {
-        path.dirname = path.dirname.toLowerCase();
+        path.dirname = path.dirname.toLowerCase().replace('/app/', '/App/');
         path.basename = path.basename.toLowerCase();
         path.extname = path.extname.toLowerCase();
     }));
@@ -288,7 +289,7 @@ gulp.task('less:app', function () {
     var p = gulp.src(pathlist)
         .pipe(less())
         .pipe(rename(function (path) {
-            path.dirname = path.dirname.toLowerCase();
+            path.dirname = path.dirname.toLowerCase().replace('/app/', '/App/');
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
         }));
@@ -320,7 +321,7 @@ gulp.task('less:utility', function () {
 gulp.task('css:themes', function () {
     var p = gulp.src(paths.working.css.themes)
         .pipe(rename(function (path) {
-            path.dirname = path.dirname.toLowerCase();
+            path.dirname = path.dirname.toLowerCase().replace('/app/', '/App/');
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
         }));
@@ -332,7 +333,7 @@ gulp.task('css:app', function () {
     var pathlist = [...paths.working.css.app, ...paths.working.exclude.app];
     var p = gulp.src(pathlist)
         .pipe(rename(function (path) {
-            path.dirname = path.dirname.toLowerCase();
+            path.dirname = path.dirname.toLowerCase().replace('/app/', '/App/');
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
         }));
@@ -389,14 +390,14 @@ gulp.task('icons', function () {
 gulp.task('vendors:resources', function () {
     var p = gulp.src(paths.working.vendors.resources.media)
         .pipe(rename(function (path) {
-            path.dirname = path.dirname.toLowerCase();
+            path.dirname = path.dirname.toLowerCase().replace('/app/', '/App/');
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
         }));
 
     var p = gulp.src(paths.working.vendors.resources.js)
         .pipe(rename(function (path) {
-            path.dirname = path.dirname.toLowerCase();
+            path.dirname = path.dirname.toLowerCase().replace('/app/', '/App/');
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
         }));
@@ -411,7 +412,7 @@ gulp.task('vendors:less', function () {
     var p = gulp.src(paths.working.vendors.less)
         .pipe(less())
         .pipe(rename(function (path) {
-            path.dirname = path.dirname.toLowerCase();
+            path.dirname = path.dirname.toLowerCase().replace('/app/', '/App/');
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
         }));
@@ -474,7 +475,32 @@ gulp.task('watch', function () {
 
     //watch app JS
     var pathjs = [...paths.working.js.app, ...paths.working.exclude.app.map(a => a + '*.js')];
-    gulp.watch(pathjs, gulp.series('js:app'));
+
+    var watchAppJs = gulp.watch(pathjs);
+    watchAppJs.on('change', (path) => {
+        //only copy JS files that were changed in the app folder
+        path = path.replace(/\\/g, '/');
+        var tasks = [];
+        var p = gulp.src(path, { base: 'App' })
+        .pipe(rename(function (name) {
+            name.dirname = name.dirname.toLowerCase().replace('/app/', '/App/');
+            name.basename = name.basename.toLowerCase();
+            name.extname = name.extname.toLowerCase();
+        }));
+        if (prod == true) {
+            p = p.pipe(babel({
+                presets: ['@babel/env']
+            })).pipe(uglify());
+        }
+        p = p.pipe(gzip({ append: false }));
+
+        p.pipe(gulp.dest(paths.compiled.js, { overwrite: true }));
+        tasks.push(p);
+
+        var newpath = path.toLowerCase().replace(paths.app.toLowerCase().replace('/app/', '/App/'), paths.compiled.js);
+        console.log('copying ' + path + ' to ' + newpath);
+        return merge(tasks);
+    });
 
     //watch utility JS
     gulp.watch(paths.working.js.utility, gulp.series('js:utility'));
@@ -488,9 +514,55 @@ gulp.task('watch', function () {
     //watch vendors/**/editor.less
     gulp.watch(paths.working.less.vendors.editor, gulp.series('vendors:editor.less'))
 
+    //watch vendors custom javascript
+    var watchVendorJs = gulp.watch(paths.working.vendors.resources.js);
+    watchVendorJs.on('change', (path) => {
+        //only copy JS files that were changed in the app folder
+        path = path.replace(/\\/g, '/');
+        var tasks = [];
+        var p = gulp.src(path, { base: 'App/Vendors' })
+            .pipe(rename(function (name) {
+                name.dirname = name.dirname.toLowerCase().replace('/app/', '/App/');
+                name.basename = name.basename.toLowerCase();
+                name.extname = name.extname.toLowerCase();
+            }));
+        if (prod == true) {
+            p = p.pipe(babel({
+                presets: ['@babel/env']
+            })).pipe(uglify());
+        }
+        p = p.pipe(gzip({ append: false }));
+
+        p.pipe(gulp.dest(paths.compiled.vendors, { overwrite: true }));
+        tasks.push(p);
+
+        var newpath = path.toLowerCase().replace(paths.app.toLowerCase().replace('/app/', '/App/'), paths.compiled.vendors);
+        console.log('copying ' + path + ' to ' + newpath);
+        return merge(tasks);
+    });
+
     //watch app LESS
     var pathless = [...paths.working.less.app, ...paths.working.exclude.app.map(a => a + '*.less')];
-    gulp.watch(pathless, gulp.series('less:app'));
+    var watchAppLESS = gulp.watch(pathless);
+    watchAppLESS.on('change', (path) => {
+        //only copy css files that were changed in the app folder
+        path = path.replace(/\\/g, '/');
+        var tasks = [];
+        var p = gulp.src(path, { base: 'App' })
+            .pipe(less())
+            .pipe(rename(function (name) {
+                name.dirname = name.dirname.toLowerCase().replace('/app/', '/App/');
+                name.basename = name.basename.toLowerCase();
+                name.extname = name.extname.toLowerCase();
+            }));
+        p.pipe(gulp.dest(paths.compiled.css, { overwrite: true }));
+        tasks.push(p);
+
+        var newpath = path.toLowerCase().replace(paths.app.toLowerCase().replace('/app/', '/App/'), paths.compiled.css);
+        console.log('copying ' + path + ' to ' + newpath);
+        return merge(tasks);
+    });
+
 
     //watch platform LESS
     gulp.watch([
@@ -505,7 +577,24 @@ gulp.task('watch', function () {
 
     //watch app CSS
     var pathcss = [...paths.working.css.app, ...paths.working.exclude.app.map(a => a + '*.css')];
-    gulp.watch(pathcss, gulp.series('css:app'));
+    var watchAppCss = gulp.watch(pathcss);
+    watchAppCss.on('change', (path) => {
+        //only copy css files that were changed in the app folder
+        path = path.replace(/\\/g, '/');
+        var tasks = [];
+        var p = gulp.src(path, { base: 'App' })
+            .pipe(rename(function (name) {
+                name.dirname = name.dirname.toLowerCase().replace('/app/', '/App/');
+                name.basename = name.basename.toLowerCase();
+                name.extname = name.extname.toLowerCase();
+            }));
+        p.pipe(gulp.dest(paths.compiled.css, { overwrite: true }));
+        tasks.push(p);
+
+        var newpath = path.toLowerCase().replace(paths.app.toLowerCase().replace('/app/', '/App/'), paths.compiled.css);
+        console.log('copying ' + path + ' to ' + newpath);
+        return merge(tasks);
+    });
 
     //watch iframe CSS
     gulp.watch(paths.working.css.iframe, gulp.series('css:iframe'));

@@ -9,7 +9,7 @@
         return false;
     });
 
-    function submitForm() {
+    function submitForm() { 
         var data = {
             name: byId('name').value,
             email: byId('email').value,
