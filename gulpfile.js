@@ -575,6 +575,27 @@ gulp.task('watch', function () {
         paths.working.less.themes
     ], gulp.series('less:themes', 'less:platform'));
 
+    //watch vendor LESS
+    var watchVendorLESS = gulp.watch(paths.working.vendors.less);
+    watchVendorLESS.on('change', (path) => {
+        //only copy css files that were changed in the app folder
+        path = path.replace(/\\/g, '/');
+        var tasks = [];
+        var p = gulp.src(path, { base: 'App/Vendors' })
+            .pipe(less())
+            .pipe(rename(function (name) {
+                name.dirname = name.dirname.toLowerCase().replace('/app/', '/App/');
+                name.basename = name.basename.toLowerCase();
+                name.extname = name.extname.toLowerCase();
+            }));
+        p.pipe(gulp.dest(paths.compiled.vendors, { overwrite: true }));
+        tasks.push(p);
+
+        var newpath = path.toLowerCase().replace(paths.app.toLowerCase().replace('/app/', '/App/'), paths.compiled.vendors);
+        console.log('copying ' + path + ' to ' + newpath);
+        return merge(tasks);
+    });
+
     //watch app CSS
     var pathcss = [...paths.working.css.app, ...paths.working.exclude.app.map(a => a + '*.css')];
     var watchAppCss = gulp.watch(pathcss);
