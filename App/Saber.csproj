@@ -311,6 +311,7 @@
   <ItemGroup>
     <Folder Include="Content\Collector\" />
     <Folder Include="Vendors\Collector\Images\icons\" />
+    <Folder Include="Vendors\Collector\Sql\Schema\Stored Procedures\Domains\Hierarchy\" />
     <Folder Include="wwwroot\content\collector\" />
     <Folder Include="wwwroot\content\pages\home\" />
     <Folder Include="wwwroot\content\pages\login\" />
