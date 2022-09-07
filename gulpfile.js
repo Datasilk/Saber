@@ -51,7 +51,7 @@ var paths = {
     css: 'App/CSS/',
     app: 'App/',
     webroot: 'App/wwwroot/',
-    release: 'App/bin/Release/net5.0/',
+    release: 'App/bin/Release/net6.0/',
     publish: 'App/bin/Release/Saber/',
     publishapp: 'App/bin/Release/Saber/App/',
     sql: {
@@ -686,3 +686,4 @@ gulp.task('publish:step-3', function () {
 });
 
 gulp.task('publish', gulp.series('publish:step-1', 'publish:step-2', 'publish:step-3'));
+gulp.task('publish-nosql', gulp.series('publish:step-1', 'publish:step-3'));
