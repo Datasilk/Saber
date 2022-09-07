@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Query</RootNamespace>
+    <Authors>Datasilk</Authors>
+    <Description>Data Access Layer for Saber, which uses Dapper as an ORM</Description>
+    <PackageProjectUrl></PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
