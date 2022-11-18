@@ -64,12 +64,10 @@
     <Folder Include="dbo\Tables" />
     <Folder Include="dbo\Sequences" />
     <Folder Include="dbo\Stored Procedures" />
-    <Folder Include="dbo\Views" />
     <Folder Include="dbo\Stored Procedures\Users" />
     <Folder Include="dbo\Stored Procedures\Utility" />
     <Folder Include="dbo\Stored Procedures\Logs" />
     <Folder Include="dbo\Stored Procedures\Secuirty" />
-    <Folder Include="dbo\Vendor" />
     <Folder Include="dbo\Stored Procedures\PublicApis" />
     <Folder Include="dbo\Stored Procedures\Sessions" />
     <Folder Include="dbo\Functions" />

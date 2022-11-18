@@ -162,8 +162,8 @@ namespace Saber.Controllers
                 "</script>\n"
             );
             //allow CORS wildcard
-            Context.Response.Headers.Add(
-                    new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("Access-Control-Allow-Origin", "*"));
+            //Context.Response.Headers.Add(
+            //        new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("Access-Control-Allow-Origin", "*"));
 
             return base.Render(Common.Platform.Render.View(this, view));
         }

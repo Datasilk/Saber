@@ -593,18 +593,6 @@ namespace Saber
                 });
             }
 
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //run Datasilk Core MVC Middleware
-            App.ServicePaths = new string[] { "api", "gmail" };
-            app.UseDatasilkMvc(new MvcOptions()
-            {
-                IgnoreRequestBodySize = true,
-                ServicePaths = App.ServicePaths,
-                Routes = new Routes(),
-                InvokeNext = true
-            });
-
             //handle missing static files
             app.Use(async (context, next) => {
                 if (context.Response.StatusCode == 404 && context.Request.Path.Value.Contains("/content/"))
@@ -622,9 +610,28 @@ namespace Saber
                             context.Response.StatusCode = 200;
                             await context.Response.WriteAsync("");
                             break;
+                        default:
+                            await next(context);
+                            break;
                     }
                 }
-                next(context);
+                else
+                {
+                    await next(context);
+                }
+            });
+
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //run Datasilk Core MVC Middleware
+            App.ServicePaths = new string[] { "api", "gmail" };
+            app.UseDatasilkMvc(new MvcOptions()
+            {
+                IgnoreRequestBodySize = true,
+                ServicePaths = App.ServicePaths,
+                Routes = new Routes(),
+                InvokeNext = true,
+                AwaitInvoke = true
             });
 
             Console.WriteLine("Saber is ready! <(^.^<)");

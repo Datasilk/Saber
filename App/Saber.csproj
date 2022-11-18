@@ -2,10 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <StartupObject></StartupObject>
     <UserSecretsId>9a847bc6-13f3-4478-8479-dc34f3467551</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>
     <Authors>Mark Entingh</Authors>
     <Company>Datasilk</Company>
     <Description>A simple, straight-forward website builder.</Description>
@@ -20,22 +18,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Content\temp\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
     <Content Include="Content\website.*"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
-	  
     <Content Include="Views\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
-	  
     <None Include="wwwroot\**"></None>
     <Content Include="wwwroot\editor\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
     <Content Include="wwwroot\web.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
-    
 	  <Content Include="..\Release.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\README.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
   </ItemGroup>
@@ -55,10 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Query\Query.csproj" />
   </ItemGroup>
@@ -66,7 +50,12 @@
   <ItemGroup>
     <None Include="config.json" />
     <None Include="web.Release.config" />
-	<None Include="web.FolderProfile.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="web.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
