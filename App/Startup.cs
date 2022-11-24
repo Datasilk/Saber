@@ -422,10 +422,11 @@ namespace Saber
             var resetPass = Query.Users.HasPasswords();
             Server.HasAdmin = Query.Users.HasAdmin();
 
-            //set up Saber language support
-            App.Languages = new Dictionary<string, string>();
-            App.Languages.Add("en", "English"); //english should be the default language
-
+            //set up language support
+            App.Languages = new Dictionary<string, string>
+            {
+                { "en", "English" } //english should be the default language
+            };
             webconfig.Languages.ForEach((lang) => {
                 if (!App.Languages.ContainsKey(lang.Id)) {
                     App.Languages.Add(lang.Id, lang.Name);
@@ -593,7 +594,7 @@ namespace Saber
                 });
             }
 
-            //handle missing static files
+            //handle missing static files /////////////////////////////////////////////////////////////////////////////////
             app.Use(async (context, next) => {
                 if (context.Response.StatusCode == 404 && context.Request.Path.Value.Contains("/content/"))
                 {

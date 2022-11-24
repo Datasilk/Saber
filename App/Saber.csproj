@@ -48,7 +48,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="config.json" />
+    <Content Include="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="web.Release.config" />
   </ItemGroup>
 
