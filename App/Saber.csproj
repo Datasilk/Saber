@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>9a847bc6-13f3-4478-8479-dc34f3467551</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <Authors>Mark Entingh</Authors>
@@ -23,6 +25,8 @@
     <Content Include="Views\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
     <None Include="wwwroot\**"></None>
     <Content Include="wwwroot\editor\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
+    <None Remove="Content\temp\config - Copy.docker.json" />
+    <None Remove="Content\temp\config - Copy.json" />
     <Content Include="wwwroot\web.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\Release.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\README.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
@@ -31,15 +35,17 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="dotless.Core" Version="1.6.7" />
-    <PackageReference Include="MailKit" Version="3.3.0" />
-    <PackageReference Include="Markdig" Version="0.30.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.16.1" />
+    <PackageReference Include="MailKit" Version="3.4.3" />
+    <PackageReference Include="Markdig" Version="0.30.4" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-    <PackageReference Include="System.ServiceModel.Http" Version="4.9.0" />
-    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.9.0" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.10.0" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.10.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.10.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,13 +54,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="config.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="web.Release.config" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="config.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
     <None Update="web.config">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>

@@ -286,7 +286,7 @@ namespace Saber.Common.Platform
 
         public class ConsoleLogger : Logger
         {
-            public ConsoleLogger(LogLevel level) : base(level) { }
+            public ConsoleLogger(dotless.Core.Loggers.LogLevel level) : base(level) { }
 
             public ConsoleLogger(DotlessConfiguration config) : this(config.LogLevel)
             {

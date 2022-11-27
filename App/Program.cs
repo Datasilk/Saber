@@ -1,32 +1,25 @@
-﻿using System;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting.Server;
+﻿using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 
-namespace Saber
-{
-    public class Program
+IHost host = Host.CreateDefaultBuilder(args)
+    .ConfigureWebHostDefaults(webBuilder =>
     {
-        public static void Main(string[] args)
-        {
-            var host = CreateHostBuilder(args).Build();
-            host.Start();
-            var server = host.Services.GetRequiredService<IServer>();
-            var addressFeature = server.Features.Get<IServerAddressesFeature>();
-            foreach (var address in addressFeature.Addresses)
-            {
-                Console.WriteLine($"Listening to {address}");
-            }
-            host.WaitForShutdown();
-        }
+        webBuilder.UseStartup<Saber.Startup>();
+    })
+    .ConfigureServices(services =>
+    {
+        services.AddHostedService<WinService>();
+    })
+    .Build();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+host.Start();
+var server = host.Services.GetRequiredService<IServer>();
+var addressFeature = server.Features.Get<IServerAddressesFeature>();
+if(addressFeature != null)
+{
+    foreach (var address in addressFeature.Addresses)
+    {
+        Console.WriteLine($"Listening to {address}");
     }
 }
+host.WaitForShutdown();

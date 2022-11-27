@@ -44,6 +44,13 @@ namespace Saber
             //add SignalR
             services.AddSignalR();
 
+            //add Windows Service (if being registered as one)
+            App.Name = System.Environment.GetEnvironmentVariable("APP_NAME") ?? "Saber";
+            services.AddWindowsService((options) =>
+            {
+                options.ServiceName = App.Name;
+            });
+
             //add health checks
             services.AddHealthChecks();
 

@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 public static class Server
 {
@@ -17,4 +21,28 @@ public static class Server
 
     //other settings
     public static bool IsDocker { get; set; }
+}
+
+public class WinService : BackgroundService
+{
+    public WinService(ILoggerFactory loggerFactory)
+    {
+        Logger = loggerFactory.CreateLogger<WinService>();
+    }
+
+    public ILogger Logger { get; }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        Logger.LogInformation("Saber is starting.");
+
+        stoppingToken.Register(() => Logger.LogInformation("Saber is stopping."));
+
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1000), stoppingToken);
+        }
+
+        Logger.LogInformation("Saber has stopped.");
+    }
 }
