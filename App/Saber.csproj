@@ -17,6 +17,7 @@
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
     <PackageReleaseNotes>First official release into the wild</PackageReleaseNotes>
     <PackageProjectUrl>https://saber.datasilk.io</PackageProjectUrl>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,8 +26,6 @@
     <Content Include="Views\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
     <None Include="wwwroot\**"></None>
     <Content Include="wwwroot\editor\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
-    <None Remove="Content\temp\config - Copy.docker.json" />
-    <None Remove="Content\temp\config - Copy.json" />
     <Content Include="wwwroot\web.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\Release.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\README.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
