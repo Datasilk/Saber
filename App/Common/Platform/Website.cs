@@ -160,7 +160,7 @@ namespace Saber.Common.Platform
             }
             var dir = string.Join("/", paths.Take(paths.Length - 1));  //relative path
             var absdir = App.MapPath(dir);
-            var filepath = string.Join("/", paths); //relative filename & path
+            var filepath = "/" + string.Join("/", paths); //relative filename & path
             var file = paths[paths.Length - 1]; //filename only
             var ext = file.Split('.', 2)[1].ToLower(); //file extension only
             if(paths[0] == "/Content") { paths[0] = "content"; }
