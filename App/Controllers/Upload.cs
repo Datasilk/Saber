@@ -19,9 +19,9 @@ namespace Saber.Controllers
                 {
                     //save resources for page
                     var paths = PageInfo.GetRelativePath(Parameters["path"].ToString());
-                    var dir = string.Join("/", paths) + "/";
+                    var dir = "/" + string.Join("/", paths) + "/";
                     var pubdir = dir; //published directory
-                    if (paths[0].ToLower() == "/content/pages")
+                    if (paths[0] == "content" && paths[1] == "pages")
                     {
                         //loading resources for specific page
                         pubdir = "/wwwroot" + dir.ToLower();
