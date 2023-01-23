@@ -153,6 +153,16 @@ namespace Saber.Controllers
             {
                 view.Show("website-management");
             }
+            if (CheckSecurity("import"))
+            {
+                view.Show("import-export");
+                view.Show("import");
+            }
+            if (CheckSecurity("export"))
+            {
+                view.Show("import-export");
+                view.Show("export");
+            }
 
             //add page-specific references
             Scripts.Append(

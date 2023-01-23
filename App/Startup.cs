@@ -266,7 +266,7 @@ namespace Saber
             Console.WriteLine("Found " + Core.Vendors.EventHandlers.Count + " Vendor" + (Core.Vendors.EventHandlers.Count != 1 ? "s" : "") + " That listen to Saber Events");
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //get list of vendor classes that inherit InteralApis abstract class
+            //get list of vendor classes that inherit IVendorInteralApis abstract class
             foreach (var assembly in assemblies)
             {
                 //get a list of abstract classes from the assembly
@@ -282,6 +282,22 @@ namespace Saber
             Console.WriteLine("Found " + Core.Vendors.InternalApis.Count + " Vendor Internal API" + (Core.Vendors.InternalApis.Count != 1 ? "s" : ""));
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IVendorCorsPolicy interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of abstract classes from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorCorsPolicy).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Common.Vendors.GetCorsPoliciesFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorCorsPolicy interface
+            Common.Vendors.GetCorsPoliciesFromFileSystem();
+            Console.WriteLine("Found " + Core.Vendors.CorsPolicies.Count + " Vendor" + (Core.Vendors.CorsPolicies.Count != 1 ? "s" : "") + " that use CORS policies");
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorSignalR interface
             foreach (var assembly in assemblies)
             {
@@ -293,7 +309,7 @@ namespace Saber
                     Common.Vendors.GetSignalRFromType(type);
                 }
             }
-            //get list of DLLs that contain the IVendorInteralApis interface
+            //get list of DLLs that contain the IVendorSignalR interface
             Common.Vendors.GetSignalRFromFileSystem();
             Console.WriteLine("Found " + Core.Vendors.SignalR.Count + " Vendor" + (Core.Vendors.SignalR.Count != 1 ? "s" : "") + " that use SignalR");
 
@@ -500,13 +516,15 @@ namespace Saber
             Core.Delegates.DataSources.RenderOrderBy = DataSources.RenderOrderBy;
             Core.Delegates.DataSources.RenderOrderByList = DataSources.RenderOrderByList;
             Core.Delegates.DataSources.RenderPositionSettings = DataSources.RenderPositionSettings;
+            Core.Delegates.Website.ImportWebsite = Website.Import;
+            Core.Delegates.Website.ExportWebsite = Website.Export;
 
             //execute Configure method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)
             {
-                var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
                 try
                 {
+                    var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
                     vendor.Configure(app, env, config);
                     Console.WriteLine("Configured Startup for " + kv.Key);
                 }
@@ -559,13 +577,24 @@ namespace Saber
                 }
                 else
                 {
-                    //domaim list CORS
+                    //domain list CORS
                     app.UseCors(builder =>
                     {
                         builder.WithOrigins(origins)
                         .WithHeaders("GET", "POST", "OPTIONS")
                         .WithHeaders("*")
                         .AllowCredentials();
+                    });
+                }
+                if(Core.Vendors.CorsPolicies.Count > 0)
+                {
+                    //apply CORS policies from Vendor plugins
+                    app.UseCors(builder =>
+                    {
+                        foreach (var policy in Core.Vendors.CorsPolicies)
+                        {
+                            policy.ApplyCorsPolicies(builder);
+                        }
                     });
                 }
 

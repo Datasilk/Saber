@@ -24,6 +24,8 @@ namespace Saber
                     }
                 case "logout": return new Controllers.Logout();
                 case "upload": return new Controllers.Upload();
+                case "import": return new Controllers.Import();
+                case "export": return new Controllers.Export();
             }
             if (Core.Vendors.Controllers.ContainsKey(name))
             {

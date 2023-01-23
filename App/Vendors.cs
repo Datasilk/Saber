@@ -822,5 +822,36 @@ namespace Saber.Common
             details.SignalR.Add(instance);
         }
         #endregion
+
+        #region "CORS Policies"
+        public static void GetCorsPoliciesFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.Value.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorCorsPolicy")
+                        {
+                            GetCorsPoliciesFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetCorsPoliciesFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorCorsPolicy))) { return; }
+            var details = GetDetails(type);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
+            var instance = (IVendorCorsPolicy)Activator.CreateInstance(type);
+            Core.Vendors.CorsPolicies.Add(instance);
+            details.CorsPolicies.Add(instance);
+        }
+        #endregion
     }
 }

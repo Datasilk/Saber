@@ -26,6 +26,8 @@
     <Content Include="Views\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
     <None Include="wwwroot\**"></None>
     <Content Include="wwwroot\editor\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
+    <Content Remove="Views\ImportExport\export.html" />
+    <Content Remove="Views\ImportExport\import.html" />
     <Content Include="wwwroot\web.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\Release.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\README.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
