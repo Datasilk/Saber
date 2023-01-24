@@ -32,6 +32,7 @@ namespace Saber.Common.Platform.ContentField
             try
             {
                 var html = new StringBuilder();
+                var foundDataSrc = false;
                 if (data.IndexOf("data-src=") >= 0)
                 {
                     //use data source
@@ -49,6 +50,7 @@ namespace Saber.Common.Platform.ContentField
                     if (datasource != null)
                     {
                         //render data source filter form
+                        foundDataSrc = true;
                         var datasourceId = dataSourceKey.Replace(datasource.Helper.Prefix + "-", "");
                         viewlist.Show("has-datasource");
                         viewlist["filter-contents"] = DataSource.RenderFilters(request, datasource, mysettings?.Filters);
@@ -71,11 +73,11 @@ namespace Saber.Common.Platform.ContentField
                         }
                     }
                 }
-                else
+                if(foundDataSrc == false)
                 {
                     //use custom list items
                     viewlist.Show("no-lists");
-                    if (!string.IsNullOrEmpty(data))
+                    if (!string.IsNullOrEmpty(data) && data.IndexOf("data-src=") < 0)
                     {
                         var items = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(data);
                         var i = 1;

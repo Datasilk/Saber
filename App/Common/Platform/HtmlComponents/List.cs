@@ -21,6 +21,7 @@ namespace Saber.Common.Platform.HtmlComponents
                 {
                     Key = "list",
                     Name = "List",
+                    KeyIsPrefix = true,
                     Block = false,
                     Icon = "components/list.svg",
                     Description = "Generate a list of content using one or more partial views",
@@ -135,10 +136,13 @@ namespace Saber.Common.Platform.HtmlComponents
                             else
                             {
                                 //load settings from content field data
-                                settings = JsonSerializer.Deserialize<Dictionary<string, ListSettings>>(lists);
-                                data.Add(key + "-list-settings", settings);
+                                if (!string.IsNullOrEmpty(lists))
+                                {
+                                    settings = JsonSerializer.Deserialize<Dictionary<string, ListSettings>>(lists);
+                                    data.Add(key + "-list-settings", settings);
+                                }
                             }
-                            mysettings = settings.ContainsKey(dataSourceKey) ? settings[dataSourceKey] : null;
+                            mysettings = settings.ContainsKey(dataSourceKey) ? settings[dataSourceKey] : new ListSettings();
 
                             if(mysettings != null)
                             {
@@ -205,12 +209,12 @@ namespace Saber.Common.Platform.HtmlComponents
                                         data.Add(key + "-recordset", recordsets);
 
                                         //save filtered record set totals
-                                        data.Add(key + "-totals", datasource.Helper.FilterTotal(request, datasourceId, request.User.Language ?? "en", settings.ToDictionary(a => a.Key, a => a.Value.Filters), settings.ToDictionary(a => a.Key, a => a.Value.OrderBy), relationships.Select(a => a.ChildKey).ToArray()));
+                                        data.Add(key + "-totals", datasource.Helper.FilterTotal(request, datasourceId, request.User.Language ?? "en", settings.ToDictionary(a => a.Key, a => a.Value.Filters), relationships.Select(a => a.ChildKey).ToArray()));
                                     }
                                     else
                                     {
                                         records = datasource.Helper.Filter(request, dataSourceKey.Replace(datasource.Helper.Prefix + "-", ""), mysettings?.Position.Start ?? 1, mysettings?.Position.Length ?? 10, request.User.Language ?? "en", mysettings?.Filters, mysettings?.OrderBy);
-                                        total = datasource.Helper.FilterTotal(request, dataSourceKey.Replace(datasource.Helper.Prefix + "-", ""), request.User.Language ?? "en", mysettings?.Filters, mysettings?.OrderBy);
+                                        total = datasource.Helper.FilterTotal(request, dataSourceKey.Replace(datasource.Helper.Prefix + "-", ""), request.User.Language ?? "en", mysettings?.Filters);
                                     }
                                 }
                             }
@@ -446,9 +450,9 @@ namespace Saber.Common.Platform.HtmlComponents
 
         public class ListSettings
         {
-            public DataSource.PositionSettings Position { get; set; }
-            public List<DataSource.FilterGroup> Filters { get; set; }
-            public List<DataSource.OrderBy> OrderBy { get; set; }
+            public DataSource.PositionSettings Position { get; set; } = new DataSource.PositionSettings();
+            public List<DataSource.FilterGroup> Filters { get; set; } = new List<DataSource.FilterGroup>();
+            public List<DataSource.OrderBy> OrderBy { get; set; } = new List<DataSource.OrderBy>();
         }
     }
 }
