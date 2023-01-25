@@ -6,7 +6,7 @@ using System.Text.Json;
 using Saber.Core;
 using Saber.Vendor;
 
-namespace Saber.Common.Platform.HtmlComponents
+namespace Saber.Common.HtmlComponents
 {
     /// <summary>
     /// Define Saber-specific html variables
@@ -146,9 +146,6 @@ namespace Saber.Common.Platform.HtmlComponents
 
                             if(mysettings != null)
                             {
-                                start = mysettings.Position.Start;
-                                length = mysettings.Position.Length;
-
                                 //override list options from request parameters
                                 foreach(var group in mysettings.Filters)
                                 {
@@ -164,6 +161,8 @@ namespace Saber.Common.Platform.HtmlComponents
                                     int.TryParse(request.Parameters[mysettings.Position.LengthQuery], out var xlength);
                                     if(xlength > 0){mysettings.Position.Length = xlength; }
                                 }
+                                start = mysettings.Position.Start;
+                                length = mysettings.Position.Length;
                             }
 
                             //get records from data source
@@ -232,28 +231,34 @@ namespace Saber.Common.Platform.HtmlComponents
 #endregion
 
                         //get container elements
-                        View itemButton = null;
                         View pageButton = null;
-                        StringBuilder itemButtons = null;
+                        View nextButton = null;
+                        View backButton = null;
                         StringBuilder pageButtons = null;
                         if(container != null)
                         {
-                            itemButtons = new StringBuilder();
                             pageButtons = new StringBuilder();
 
                             //item-button
-                            var elemIndex = container.Elements.FindIndex(a => a.Name == "item-button");
+                            var elemIndex = container.Elements.FindIndex(a => a.Name == "page-button");
                             if(elemIndex >= 0)
                             {
                                 //render item button
-                                itemButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
+                                pageButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
                             }
                             
-                            //page-button
-                            elemIndex = container.Elements.FindIndex(a => a.Name == "page-button");
+                            //back-button
+                            elemIndex = container.Elements.FindIndex(a => a.Name == "back-button");
                             if(elemIndex >= 0)
                             {
-                                pageButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
+                                backButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
+                            }
+                            
+                            //next-button
+                            elemIndex = container.Elements.FindIndex(a => a.Name == "next-button");
+                            if(elemIndex >= 0)
+                            {
+                                nextButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
                             }
                         }
 
@@ -348,7 +353,9 @@ namespace Saber.Common.Platform.HtmlComponents
                                     }
                                 }
                             }
-                            var components = Render.HtmlComponents(partial, request, data);
+
+                            //render all components found within current list item partial
+                            var components = Platform.Render.HtmlComponents(partial, request, data);
                             if (components.Count > 0)
                             {
                                 foreach (var item in components)
@@ -358,13 +365,13 @@ namespace Saber.Common.Platform.HtmlComponents
                             }
 
                             //container-related rendering
-                            if(itemButton != null)
+                            if(pageButton != null)
                             {
-                                itemButton.Clear();
-                                itemButton["item-number"] = x.ToString();
-                                itemButton["item-key"] = keyColumn != "" && record.ContainsKey(keyColumn) ? record[keyColumn] : "";
-                                if(x == 1){itemButton.Show("selected"); }
-                                itemButtons.Append(itemButton.Render());
+                                pageButton.Clear();
+                                pageButton["page-number"] = x.ToString();
+                                pageButton["page-key"] = keyColumn != "" && record.ContainsKey(keyColumn) ? record[keyColumn] : "";
+                                if(x == 1){pageButton.Show("selected"); }
+                                pageButtons.Append(pageButton.Render());
                             }
                             partial.Show(x == 1 ? "is-first-item" : "not-first-item");
 
@@ -381,30 +388,44 @@ namespace Saber.Common.Platform.HtmlComponents
                             var lengthQuery = mysettings?.Position.LengthQuery ?? "";
                             var totalPages = Math.Floor((decimal)total / (decimal)length) + 1;
                             var currentPage = (Math.Floor((decimal)start / (decimal)length) + 1);
-                            if(startQuery != "")
+                            if(!string.IsNullOrEmpty(startQuery))
                             {
-                                for(var y = 1; y <= totalPages; y++)
+                                //back button
+                                var startIndex = start - length;
+                                backButton.Clear();
+                                backButton["page-number"] = startIndex.ToString();
+                                backButton["page-url"] = request.AlterUrl(new Dictionary<string, string>(){
+                                    { startQuery, startIndex.ToString() }
+                                });
+                                if(startIndex <= 0)
                                 {
-                                    pageButton.Clear();
-                                    pageButton["page-number"] = y.ToString();
-                                    pageButton["page-url"] = request.AlterUrl(new Dictionary<string, string>(){
-                                        { startQuery, (y * length).ToString() }
-                                    });
-                                    pageButtons.Append(pageButton.Render());
+                                    backButton.Show("disabled");
                                 }
-                                container["page-buttons"] = pageButtons.ToString();
+                                container["back-buttons"] = backButton.Render();
+
+                                //next button
+                                var nextIndex = start + length;
+                                nextButton.Clear();
+                                nextButton["page-number"] = nextIndex.ToString();
+                                nextButton["page-url"] = request.AlterUrl(new Dictionary<string, string>(){
+                                    { startQuery, nextIndex.ToString() }
+                                });
+                                if(nextIndex > total)
+                                {
+                                    nextButton.Show("disabled");
+                                }
+                                container["next-buttons"] = nextButton.Render();
                             }
                             else
                             {
-                                container["page-buttons"] = "<span title=\"You must set the Starting Record > URL Query String Parameter in your List component content field settings to display paging buttons\">Paging Buttons Error</span>";
+                                //error displaying paging buttons
+                                container["back-buttons"] = container["next-buttons"] = "<span title=\"You must set the \"Starting Record\" URL Query String Parameter & the \"Records Per Page\" URL Query String Parameter in your List component content field settings to display paging buttons\">Paging Buttons Error</span>";
                             }
 
-                            container["item-buttons"] = itemButtons.ToString();
+                            container["page-buttons"] = pageButtons.ToString();
                             container["current-page"] = currentPage.ToString();
                             container["total-pages"] = totalPages.ToString();
                             if( totalPages != 1){container.Show("is-plural"); }
-                            container.Show(start <= 1 ? "hide-back" : "show-back");
-                            container.Show(start + length >= total ? "hide-next" : "show-next");
                             container["back-url"] = request.AlterUrl(new Dictionary<string, string>(){
                                         { startQuery, (start - length).ToString() }
                                     });

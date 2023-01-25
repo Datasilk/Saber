@@ -7,7 +7,7 @@ using Saber.Core.Extensions.Strings;
 using Saber.Core;
 using Saber.Vendor;
 
-namespace Saber.Common.Platform.ContentField
+namespace Saber.Common.ContentField
 {
 
     [ContentField("list")]
@@ -17,7 +17,7 @@ namespace Saber.Common.Platform.ContentField
         {
             if (!args.ContainsKey("partial")) { return "You must provide the \"partial\" property for your mustache \"list\" component"; }
             //load provided partial view
-            var partials = (args["partial"].Contains("|") ? args["partial"].Split("|") : args["partial"].Split(",")).Select(a => a.Trim()).ToArray(); 
+            var partials = (args["partial"].Contains("|") ? args["partial"].Split("|") : args["partial"].Split(",")).Select(a => a.Trim()).ToArray();
             var viewlist = new View("/Views/ContentFields/list.html");
             var viewitem = new View("/Views/ContentFields/list-item.html");
             var fieldKey = args.ContainsKey("key") ? args["key"] : "";
@@ -59,21 +59,21 @@ namespace Saber.Common.Platform.ContentField
                         viewlist["orderby-contents"] = DataSource.RenderOrderByList(datasource, mysettings?.OrderBy);
                         viewlist["position-contents"] = DataSource.RenderPositionSettings(datasource, mysettings?.Position);
                         var relationships = datasource.Helper.Get(datasourceId).Relationships;
-                        if(relationships.Length == 0) 
-                        { 
+                        if (relationships.Length == 0)
+                        {
                             viewlist.Show("no-lists");
                         }
                         else
                         {
-                            viewlist["lists"] = "<option value=\"" + dataSourceKey + "\">" + key.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>" + 
-                                string.Join('\n', relationships.Select(a => "<option value=\"" + 
-                                Core.Vendors.DataSources.Where(b => b.Key == a.ChildKey).FirstOrDefault()?.Helper.Prefix + 
+                            viewlist["lists"] = "<option value=\"" + dataSourceKey + "\">" + key.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>" +
+                                string.Join('\n', relationships.Select(a => "<option value=\"" +
+                                Core.Vendors.DataSources.Where(b => b.Key == a.ChildKey).FirstOrDefault()?.Helper.Prefix +
                                 "-" + a.Child.Key + "\">" + a.ListComponent.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>"
                             ).ToArray());
                         }
                     }
                 }
-                if(foundDataSrc == false)
+                if (foundDataSrc == false)
                 {
                     //use custom list items
                     viewlist.Show("no-lists");
@@ -110,8 +110,8 @@ namespace Saber.Common.Platform.ContentField
                     });
                 }
             }
-            catch (Exception ex) 
-            { 
+            catch (Exception ex)
+            {
             }
             return viewlist.Render();
         }

@@ -2,7 +2,7 @@
 using Saber.Core;
 using Saber.Vendor;
 
-namespace Saber.Common.Platform.ContentField
+namespace Saber.Common.ContentField
 {
     [ContentField("#")]
     [ReplaceRow]
