@@ -232,33 +232,24 @@ namespace Saber.Common.HtmlComponents
 
                         //get container elements
                         View pageButton = null;
-                        View nextButton = null;
-                        View backButton = null;
-                        StringBuilder pageButtons = null;
+                        View itemButton = null;
+                        StringBuilder itemButtons = new StringBuilder();
+                        StringBuilder pageButtons = new StringBuilder();
                         if(container != null)
                         {
-                            pageButtons = new StringBuilder();
-
-                            //item-button
-                            var elemIndex = container.Elements.FindIndex(a => a.Name == "page-button");
+                            //item-button-template
+                            var elemIndex = container.Elements.FindIndex(a => a.Name == "item-button-template");
                             if(elemIndex >= 0)
                             {
-                                //render item button
+                                //get item button template block
+                                itemButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
+                            }
+                            //page-button-template
+                            elemIndex = container.Elements.FindIndex(a => a.Name == "page-button-template");
+                            if(elemIndex >= 0)
+                            {
+                                //get page button template block
                                 pageButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
-                            }
-                            
-                            //back-button
-                            elemIndex = container.Elements.FindIndex(a => a.Name == "back-button");
-                            if(elemIndex >= 0)
-                            {
-                                backButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
-                            }
-                            
-                            //next-button
-                            elemIndex = container.Elements.FindIndex(a => a.Name == "next-button");
-                            if(elemIndex >= 0)
-                            {
-                                nextButton = new View(new ViewOptions(){Html = container.GetBlock(elemIndex) });
                             }
                         }
 
@@ -364,14 +355,14 @@ namespace Saber.Common.HtmlComponents
                                 }
                             }
 
-                            //container-related rendering
-                            if(pageButton != null)
+                            //render each item button (if applicable)
+                            if(itemButton != null)
                             {
-                                pageButton.Clear();
-                                pageButton["page-number"] = x.ToString();
-                                pageButton["page-key"] = keyColumn != "" && record.ContainsKey(keyColumn) ? record[keyColumn] : "";
-                                if(x == 1){pageButton.Show("selected"); }
-                                pageButtons.Append(pageButton.Render());
+                                itemButton.Clear();
+                                itemButton["item-number"] = x.ToString();
+                                itemButton["item-key"] = keyColumn != "" && record.ContainsKey(keyColumn) ? record[keyColumn] : "";
+                                if(x == 1){itemButton.Show("selected"); }
+                                itemButtons.Append(itemButton.Render());
                             }
                             partial.Show(x == 1 ? "is-first-item" : "not-first-item");
 
@@ -392,46 +383,53 @@ namespace Saber.Common.HtmlComponents
                             {
                                 //back button
                                 var startIndex = start - length;
-                                backButton.Clear();
-                                backButton["page-number"] = startIndex.ToString();
-                                backButton["page-url"] = request.AlterUrl(new Dictionary<string, string>(){
+                                container["back-number"] = startIndex.ToString();
+                                container["back-url"] = request.AlterUrl(new Dictionary<string, string>(){
                                     { startQuery, startIndex.ToString() }
                                 });
                                 if(startIndex <= 0)
                                 {
-                                    backButton.Show("disabled");
+                                    container.Show("back-disabled");
                                 }
-                                container["back-buttons"] = backButton.Render();
 
                                 //next button
                                 var nextIndex = start + length;
-                                nextButton.Clear();
-                                nextButton["page-number"] = nextIndex.ToString();
-                                nextButton["page-url"] = request.AlterUrl(new Dictionary<string, string>(){
+                                container["next-number"] = nextIndex.ToString();
+                                container["next-url"] = request.AlterUrl(new Dictionary<string, string>(){
                                     { startQuery, nextIndex.ToString() }
                                 });
                                 if(nextIndex > total)
                                 {
-                                    nextButton.Show("disabled");
+                                    container.Show("next-disabled");
                                 }
-                                container["next-buttons"] = nextButton.Render();
+
+                                //page buttons
+                                if(pageButton != null)
+                                {
+                                    for(var p = 1; p <= totalPages; p++)
+                                    {
+                                        pageButton.Clear();
+                                        pageButton["page-number"] = p.ToString();
+                                        if(p == currentPage){pageButton.Show("selected"); }
+                                        pageButtons.Append(pageButton.Render());
+                                    }
+                                }
                             }
                             else
                             {
                                 //error displaying paging buttons
-                                container["back-buttons"] = container["next-buttons"] = "<span title=\"You must set the \"Starting Record\" URL Query String Parameter & the \"Records Per Page\" URL Query String Parameter in your List component content field settings to display paging buttons\">Paging Buttons Error</span>";
+                                container["back-button"] = container["next-buttons"] = "<span title=\"You must set the \"Starting Record\" URL Query String Parameter & the \"Records Per Page\" URL Query String Parameter in your List component content field settings to display paging buttons\">Paging Buttons Error</span>";
                             }
 
+                            container["item-buttons"] = itemButtons.ToString();
                             container["page-buttons"] = pageButtons.ToString();
                             container["current-page"] = currentPage.ToString();
                             container["total-pages"] = totalPages.ToString();
-                            if( totalPages != 1){container.Show("is-plural"); }
-                            container["back-url"] = request.AlterUrl(new Dictionary<string, string>(){
-                                        { startQuery, (start - length).ToString() }
-                                    });
-                            container["next-url"] = request.AlterUrl(new Dictionary<string, string>(){
-                                        { startQuery, (start + length).ToString() }
-                                    });
+                            container["total-results"] = total.ToString();
+                            container["starting-result"] = start.ToString();
+                            container["ending-result"] = (start + length).ToString();
+                            container["displayed-results"] = x.ToString();
+                            if( totalPages != 1) { container.Show("is-plural"); }
                             container["list"] = html.ToString();
 
                             //render container
