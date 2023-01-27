@@ -824,7 +824,7 @@ namespace Saber.Common
         #endregion
 
         #region "CORS Policies"
-        public static void GetCorsPoliciesFromFileSystem()
+        public static void GetPageResponseFromFileSystem()
         {
             foreach (var assembly in Assemblies)
             {
@@ -834,7 +834,7 @@ namespace Saber.Common
                     {
                         if (i.Name == "IVendorCorsPolicy")
                         {
-                            GetCorsPoliciesFromType(type);
+                            GetPageResponseFromType(type);
                             break;
                         }
                     }
@@ -842,15 +842,15 @@ namespace Saber.Common
             }
         }
 
-        public static void GetCorsPoliciesFromType(Type type)
+        public static void GetPageResponseFromType(Type type)
         {
             if (type == null) { return; }
-            if (type.Equals(typeof(IVendorCorsPolicy))) { return; }
+            if (type.Equals(typeof(IVendorPageResponse))) { return; }
             var details = GetDetails(type);
             if (MarkedForUninstall.Contains(details.Key)) { return; }
-            var instance = (IVendorCorsPolicy)Activator.CreateInstance(type);
-            Core.Vendors.CorsPolicies.Add(instance);
-            details.CorsPolicies.Add(instance);
+            var instance = (IVendorPageResponse)Activator.CreateInstance(type);
+            Core.Vendors.PageResponses.Add(instance);
+            details.PageResponses.Add(instance);
         }
         #endregion
     }

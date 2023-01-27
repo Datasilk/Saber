@@ -176,6 +176,15 @@ namespace Saber.Controllers
                     AddScript("/editor/js/iframe.js");
                 }
 
+                //intercept page response
+                if(Core.Vendors.PageResponses.Count > 0)
+                {
+                    foreach(var vendor in Core.Vendors.PageResponses)
+                    {
+                        vendor.Intercept(this, Context.Response);
+                    }
+                }
+
                 //log page request
                 var url = string.Join("/", PathParts) + (Context.Request.QueryString.HasValue ? "?" + Context.Request.QueryString.Value : "");
                 Query.Logs.LogUrl(url, Context.Connection.RemoteIpAddress.ToInt());

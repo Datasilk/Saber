@@ -35,9 +35,6 @@ namespace Saber
                 x.MultipartHeadersLengthLimit = int.MaxValue;
             });
 
-            //add session
-            //services.AddSession();
-
             //add SignalR
             services.AddSignalR();
 
@@ -122,7 +119,10 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorController interface
             Common.Vendors.GetControllersFromFileSystem();
-            Console.WriteLine("Found " + Core.Vendors.Controllers.Count + " Vendor Controller" + (Core.Vendors.Controllers.Count != 1 ? "s" : ""));
+            if(Core.Vendors.Controllers.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.Controllers.Count + " Vendor Controller" + (Core.Vendors.Controllers.Count != 1 ? "s" : ""));
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorService interface
@@ -138,7 +138,10 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorController interface
             Common.Vendors.GetServicesFromFileSystem();
-            Console.WriteLine("Found " + Core.Vendors.Services.Count + " Vendor Service" + (Core.Vendors.Services.Count != 1 ? "s" : ""));
+            if (Core.Vendors.Services.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.Services.Count + " Vendor Service" + (Core.Vendors.Services.Count != 1 ? "s" : ""));
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorViewRenderer interface
@@ -154,7 +157,10 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorViewRenderer interface
             Common.Vendors.GetViewRenderersFromFileSystem();
-            Console.WriteLine("Found " + Core.Vendors.ViewRenderers.Count + " Vendor View Renderer" + (Core.Vendors.ViewRenderers.Count != 1 ? "s" : ""));
+            if(Core.Vendors.ViewRenderers.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.ViewRenderers.Count + " Vendor View Renderer" + (Core.Vendors.ViewRenderers.Count != 1 ? "s" : ""));
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorHtmlComponent interface
@@ -172,7 +178,7 @@ namespace Saber
             Common.Vendors.GetHtmlComponentsFromFileSystem();
             Common.Vendors.GetHtmlComponentKeys();
             var totalcomponents = (Core.Vendors.HtmlComponents.Count - Core.Vendors.SpecialVars.Count);
-            Console.WriteLine("Found " + (Core.Vendors.HtmlComponents.Count - 1) + " Vendor HTML Component" + ((Core.Vendors.HtmlComponents.Count - 1) != 1 ? "s" : "") +
+            Console.WriteLine("Found " + (Core.Vendors.HtmlComponents.Count) + " Vendor HTML Component" + ((Core.Vendors.HtmlComponents.Count) != 1 ? "s" : "") +
                 " (" + totalcomponents + " component" + (totalcomponents > 1 ? "s" : "") + ", " +
                 Core.Vendors.SpecialVars.Count + " special variable" + (Core.Vendors.SpecialVars.Count > 1 ? "s" : "") + ")");
 
@@ -190,7 +196,10 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorContentField interface
             Common.Vendors.GetContentFieldsFromFileSystem();
-            Console.WriteLine("Found " + Core.Vendors.ContentFields.Count + " Vendor Content Field" + (Core.Vendors.ContentFields.Count != 1 ? "s" : ""));
+            if(Core.Vendors.ContentFields.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.ContentFields.Count + " Vendor Content Field" + (Core.Vendors.ContentFields.Count != 1 ? "s" : ""));
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorKeys interface
@@ -211,7 +220,10 @@ namespace Saber
             {
                 totalKeys += chain.Keys.Length;
             }
-            Console.WriteLine("Found " + Core.Vendors.Keys.Count + " Vendor" + (Core.Vendors.Keys.Count != 1 ? "s" : "") + " with Security Keys (" + totalKeys + " key" + (totalKeys != 1 ? "s" : "") + ")");
+            if(Core.Vendors.Keys.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.Keys.Count + " Vendor" + (Core.Vendors.Keys.Count != 1 ? "s" : "") + " with Security Keys (" + totalKeys + " key" + (totalKeys != 1 ? "s" : "") + ")");
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorEmailClient interface
@@ -227,7 +239,10 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorEmailClient interface
             Common.Vendors.GetEmailClientsFromFileSystem();
-            Console.WriteLine("Found " + Core.Vendors.EmailClients.Count + " Vendor Email Client" + (Core.Vendors.EmailClients.Count != 1 ? "s" : ""));
+            if(Core.Vendors.EmailClients.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.EmailClients.Count + " Vendor Email Client" + (Core.Vendors.EmailClients.Count != 1 ? "s" : ""));
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorWebsiteSettings interface
@@ -244,7 +259,10 @@ namespace Saber
             //get list of DLLs that contain the IVendorWebsiteSettings interface
             Common.Vendors.GetWebsiteSettingsFromFileSystem();
             Core.Vendors.WebsiteSettings = Core.Vendors.WebsiteSettings.OrderBy(a => a.Name).ToList();
-            Console.WriteLine("Found " + Core.Vendors.WebsiteSettings.Count + " Vendor Website Setting" + (Core.Vendors.WebsiteSettings.Count != 1 ? "s" : ""));
+            if(Core.Vendors.WebsiteSettings.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.WebsiteSettings.Count + " Vendor Website Setting" + (Core.Vendors.WebsiteSettings.Count != 1 ? "s" : ""));
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit SaberEvents abstract class
@@ -260,7 +278,10 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorKeys interface
             Common.Vendors.GetSaberEventsFromFileSystem();
-            Console.WriteLine("Found " + Core.Vendors.EventHandlers.Count + " Vendor" + (Core.Vendors.EventHandlers.Count != 1 ? "s" : "") + " That listen to Saber Events");
+            if(Core.Vendors.EventHandlers.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.EventHandlers.Count + " Vendor" + (Core.Vendors.EventHandlers.Count != 1 ? "s" : "") + " That listen to Saber Events");
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorInteralApis abstract class
@@ -276,23 +297,29 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorInteralApis interface
             Common.Vendors.GetInternalApisFromFileSystem();
-            Console.WriteLine("Found " + Core.Vendors.InternalApis.Count + " Vendor Internal API" + (Core.Vendors.InternalApis.Count != 1 ? "s" : ""));
+            if(Core.Vendors.InternalApis.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.InternalApis.Count + " Vendor Internal API" + (Core.Vendors.InternalApis.Count != 1 ? "s" : ""));
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //get list of vendor classes that inherit IVendorCorsPolicy interface
+            //get list of vendor classes that inherit IVendorPageResponse interface
             foreach (var assembly in assemblies)
             {
                 //get a list of abstract classes from the assembly
                 var types = assembly.GetTypes()
-                    .Where(type => typeof(Vendor.IVendorCorsPolicy).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                    .Where(type => typeof(Vendor.IVendorPageResponse).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
                 foreach (var type in types)
                 {
-                    Common.Vendors.GetCorsPoliciesFromType(type);
+                    Common.Vendors.GetPageResponseFromType(type);
                 }
             }
-            //get list of DLLs that contain the IVendorCorsPolicy interface
-            Common.Vendors.GetCorsPoliciesFromFileSystem();
-            Console.WriteLine("Found " + Core.Vendors.CorsPolicies.Count + " Vendor" + (Core.Vendors.CorsPolicies.Count != 1 ? "s" : "") + " that use CORS policies");
+            //get list of DLLs that contain the IVendorPageResponse interface
+            Common.Vendors.GetPageResponseFromFileSystem();
+            if(Core.Vendors.PageResponses.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.PageResponses.Count + " Vendor" + (Core.Vendors.PageResponses.Count != 1 ? "s" : "") + " that intercept page responses");
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorSignalR interface
@@ -308,34 +335,22 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorSignalR interface
             Common.Vendors.GetSignalRFromFileSystem();
-            Console.WriteLine("Found " + Core.Vendors.SignalR.Count + " Vendor" + (Core.Vendors.SignalR.Count != 1 ? "s" : "") + " that use SignalR");
+            if(Core.Vendors.SignalR.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.SignalR.Count + " Vendor" + (Core.Vendors.SignalR.Count != 1 ? "s" : "") + " that use SignalR");
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute ConfigureServices method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)
             {
                 var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
-                try
-                {
+                if(vendor != null) 
+                { 
                     vendor.ConfigureServices(services);
                     Console.WriteLine("Configured Services for " + kv.Key);
                 }
-                catch (Exception) { }
             }
-
-
-
-            //add CORS
-            services.AddCors(options =>
-            {
-                if(Core.Vendors.CorsPolicies.Count > 0)
-                {
-                    foreach(var policy in Core.Vendors.CorsPolicies)
-                    {
-                        policy.AddCorsOptions(options);
-                    }
-                }
-            });
         }
 
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime appLifetime)
@@ -494,17 +509,22 @@ namespace Saber
             }
             //get list of DLLs that contain the IVendorDataSources interface
             Common.Vendors.GetDataSourcesFromFileSystem();
+            if(Core.Vendors.DataSources.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.DataSources.Count + " Vendor Data Source" + (Core.Vendors.DataSources.Count != 1 ? "s" : ""));
 
-            Console.WriteLine("Found " + Core.Vendors.DataSources.Count + " Vendor Data Source" + (Core.Vendors.DataSources.Count != 1 ? "s" : ""));
-
-            //init all data sources
-            Console.WriteLine("Initialize all data sources...");
-            Common.Vendors.InitDataSources();
+                //init all data sources
+                Console.WriteLine("Initialize all data sources...");
+                Common.Vendors.InitDataSources();
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //Get list of all Public APIs
             var apis = PublicApi.GetList(assemblies);
-            Console.WriteLine("Found " + apis.Count + " Public API endpoints");
+            if(apis.Count > 0)
+            {
+                Console.WriteLine("Found " + apis.Count + " Public API endpoints");
+            }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //Run any services required after initializing all vendor plugins but before configuring vendor startup services
@@ -547,73 +567,6 @@ namespace Saber
 
             //copy temporary website (if neccessary) /////////////////////////////////////////////////////////////////////////
             Website.CopyTempWebsite();
-
-            //Set Up CORS ///////////////////////////////////////////////////////////////////////////////////////////////////
-            var origins = new string[] { };
-            var section = "";
-            try
-            {
-                switch (App.Environment)
-                {
-                    case Environment.development:
-                        section = "development";
-                        break;
-                    case Environment.production:
-                        section = "production";
-                        break;
-                    case Environment.staging:
-                        section = "staging";
-                        break;
-                }
-
-                origins = config.GetSection("cors:" + section).Get<string[]>().Where(a => a != "").ToArray();
-            }
-            catch (Exception)
-            {
-            }
-
-            if (origins.Length > 0)
-            {
-                Console.WriteLine("found CORS origins: " + string.Join("; ", origins));
-
-                if (origins.Contains("*"))
-                {
-                    //wildcard CORS
-                    app.UseCors(builder =>
-                    {
-                        builder.WithOrigins("*")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                    });
-                }
-                else
-                {
-                    //domain list CORS
-                    app.UseCors(builder =>
-                    {
-                        builder.WithOrigins(origins)
-                        .WithHeaders("GET", "POST", "OPTIONS")
-                        .WithHeaders("*")
-                        .AllowCredentials();
-                    });
-                }
-
-            }
-            else
-            {
-                Console.WriteLine("No CORS origins defined for " + section);
-            }
-            if (Core.Vendors.CorsPolicies.Count > 0)
-            {
-                //apply CORS policies from Vendor plugins
-                app.UseCors(builder =>
-                {
-                    foreach (var policy in Core.Vendors.CorsPolicies)
-                    {
-                        policy.ApplyCorsPolicies(builder);
-                    }
-                });
-            }
 
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
