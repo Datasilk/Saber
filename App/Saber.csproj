@@ -28,6 +28,7 @@
     <Content Include="wwwroot\editor\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
     <Content Remove="Views\ImportExport\export.html" />
     <Content Remove="Views\ImportExport\import.html" />
+    <None Remove="Views\ContentFields\readonly.html" />
     <Content Include="wwwroot\web.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\Release.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\README.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
