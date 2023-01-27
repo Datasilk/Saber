@@ -38,9 +38,6 @@ namespace Saber
             //add session
             //services.AddSession();
 
-            //add CORS
-            services.AddCors();
-
             //add SignalR
             services.AddSignalR();
 
@@ -325,6 +322,20 @@ namespace Saber
                 }
                 catch (Exception) { }
             }
+
+
+
+            //add CORS
+            services.AddCors(options =>
+            {
+                if(Core.Vendors.CorsPolicies.Count > 0)
+                {
+                    foreach(var policy in Core.Vendors.CorsPolicies)
+                    {
+                        policy.AddCorsOptions(options);
+                    }
+                }
+            });
         }
 
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime appLifetime)
@@ -586,28 +597,28 @@ namespace Saber
                         .AllowCredentials();
                     });
                 }
-                if(Core.Vendors.CorsPolicies.Count > 0)
-                {
-                    //apply CORS policies from Vendor plugins
-                    app.UseCors(builder =>
-                    {
-                        foreach (var policy in Core.Vendors.CorsPolicies)
-                        {
-                            policy.ApplyCorsPolicies(builder);
-                        }
-                    });
-                }
 
             }
             else
             {
                 Console.WriteLine("No CORS origins defined for " + section);
             }
+            if (Core.Vendors.CorsPolicies.Count > 0)
+            {
+                //apply CORS policies from Vendor plugins
+                app.UseCors(builder =>
+                {
+                    foreach (var policy in Core.Vendors.CorsPolicies)
+                    {
+                        policy.ApplyCorsPolicies(builder);
+                    }
+                });
+            }
 
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //set up SignalR hubs
-            if(Core.Vendors.SignalR.Count > 0)
+            if (Core.Vendors.SignalR.Count > 0)
             {
                 app.UseRouting();
                 app.UseEndpoints(endpoints =>
