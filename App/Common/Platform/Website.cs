@@ -401,7 +401,7 @@ namespace Saber.Common.Platform
             return fms.ToArray();
         }
 
-        public static void Import(Stream stream)
+        public static void Import(Stream stream, bool clean = false, string[] protectedFiles = null)
         {
             //read zip archive contents
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Read, true))
@@ -409,6 +409,25 @@ namespace Saber.Common.Platform
                 var contentFiles = new string[] { "json", "html", "less", "js" };
                 var buffer = new byte[512];
                 var bytesRead = default(int);
+
+                if(clean == true)
+                {
+                    //clean all existing files before importing new website
+                    ViewCache.Clear();
+                    var allfiles = Core.Website.AllFiles();
+                    if(protectedFiles != null && protectedFiles.Length > 0)
+                    {
+                        allfiles = allfiles.Where(a => !protectedFiles.Contains(a)).ToList();
+                    }
+                    foreach(var f in allfiles)
+                    {
+                        try
+                        {
+                            File.Delete(f);
+                        }
+                        catch (Exception) { }
+                    }
+                }
 
                 foreach (var entry in archive.Entries)
                 {
@@ -433,14 +452,14 @@ namespace Saber.Common.Platform
                                     case "content":
                                         if (extension != "js" && extension != "css")
                                         {
-                                            copyTo = string.Join("/", paths);
+                                            copyTo = "/" + string.Join("/", paths) + "/";
                                         }
                                         break;
                                     case "editor":
                                         break;
 
                                     default:
-                                        copyTo = string.Join("/", paths);
+                                        copyTo = "/" + string.Join("/", paths) + "/";
                                         break;
                                 }
                             }
@@ -474,6 +493,10 @@ namespace Saber.Common.Platform
 
                     if (copyTo != "")
                     {
+                        var fullpath = App.MapPath(copyTo + entry.Name);
+                        if (protectedFiles != null && protectedFiles.Contains(fullpath)) { 
+                            continue; 
+                        }
                         Console.WriteLine("copy to: " + copyTo + entry.Name);
                         if (!Directory.Exists(App.MapPath(copyTo)))
                         {
@@ -489,7 +512,7 @@ namespace Saber.Common.Platform
                                 fms.Write(buffer, 0, bytesRead);
                             bytes = fms.ToArray();
 
-                            File.WriteAllBytes(App.MapPath(copyTo + entry.Name), bytes);
+                            File.WriteAllBytes(fullpath, bytes);
                             if (extension == "less")
                             {
                                 //compile less file to public wwwroot folder
@@ -523,7 +546,6 @@ namespace Saber.Common.Platform
                             else if (root == "content" && extension == "js")
                             {
                                 //copy js file to public wwwroot folder
-                                Console.WriteLine("copying JS file: " + App.MapPath("/wwwroot/" + path.Replace("Content/", "content/") + entry.Name));
                                 File.WriteAllBytes(App.MapPath("/wwwroot/" + path.Replace("Content/", "content/") + entry.Name), bytes);
                             }
                         }
