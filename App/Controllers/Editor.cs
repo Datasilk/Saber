@@ -97,21 +97,25 @@ namespace Saber.Controllers
             AddScript("/editor/js/vendors-editor.js");
             AddCSS("/editor/css/views/editor/editor.css");
             AddCSS("/editor/css/vendors-editor.css");
-            if (EditorUsed != EditorType.Monaco)
-            {
-                Scripts.Append(
-                "<script language=\"javascript\">" +
-                    "S.editor.type = " + (int)EditorUsed + ";" +
-                "</script>");
-            }
+
+            //add extra variables from server into JavaScript
+            Scripts.Append(
+            "<script language=\"javascript\">" +
+                "S.editor.env = '" + (
+                    App.Environment == Environment.production ? "prod" :
+                    App.Environment == Environment.staging ? "stage" : "dev"
+                ) + "';" +
+            "</script>");
 
             if (CheckSecurity("code-editor"))
             {
                 Scripts.Append(
-            "<script language=\"javascript\">" +
-                "S.editor.useCodeEditor = true;" +
-                "S.editor.components.load();" +
-            "</script>");
+                "<script language=\"javascript\">" +
+                    "S.editor.useCodeEditor = true;" +
+                    (EditorUsed != EditorType.Monaco ? 
+                    ("S.editor.type = " + (int)EditorUsed + ";") : "") +
+                    "S.editor.components.load();" +
+                "</script>");
             }
                     
 
