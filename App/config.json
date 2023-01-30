@@ -1,0 +1,18 @@
+{
+  "sql": {
+    "active": "SqlServerTrusted",
+    "SqlServerTrusted": "server=.\\SQL2017; database=Saber; Trusted_Connection=true"
+  },
+  "encryption": {
+    "salt": "?",
+    "bcrypt_work_factor": "10"
+  },
+  "developer-keys": [
+    {
+      "client_id": "saber",
+      "key": "8jd8Hn3Pmd58aBrek$bvldQbXLk7je2p",
+      "host": "https://sabercms.com",
+      "redirect_uri": "https://sabercms.com/saber-auth"
+    }
+  ]
+}

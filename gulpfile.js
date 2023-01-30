@@ -631,6 +631,7 @@ function publishStep1() {
 
     gulp.src([
         //'App/wwwroot/**/*',
+        'App/web.config',
         'App/wwwroot/web.config',
         'App/wwwroot/editor/*',
         'App/wwwroot/editor/**',
