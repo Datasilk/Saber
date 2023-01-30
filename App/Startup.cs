@@ -530,6 +530,7 @@ namespace Saber
             Core.Delegates.Website.SaveLessFile = Website.SaveLessFile;
             Core.Delegates.Website.CopyTempWebsite = Website.CopyTempWebsite;
             Core.Delegates.Log.Error = Query.Logs.LogError;
+            Core.Delegates.ContentFields.GetFieldId = ContentFields.GetFieldId;
             Core.Delegates.ContentFields.GetFieldType = ContentFields.GetFieldType;
             Core.Delegates.ContentFields.RenderForm = ContentFields.RenderForm;
             Core.Delegates.DataSources.RenderFilter = DataSources.RenderFilter;
