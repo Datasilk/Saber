@@ -1,0 +1,19 @@
+{
+  "hostUri": "http://localhost:7070",
+  "sql": {
+    "active": "SqlServerTrusted",
+    "SqlServerTrusted": "Data Source=host.docker.internal,1433;Initial Catalog=Saber;Persist Security Info=False;User ID=docker;Password=test123;MultipleActiveResultSets=True;"
+  },
+  "encryption": {
+    "salt": "?",
+    "bcrypt_work_factor": "10"
+  },
+  "developer-keys": [
+    {
+      "client_id": "saber",
+      "key": "8jd8Hn3Pmd58aBrek$bvldQbXLk7je2p",
+      "host": "https://sabercms.com",
+      "redirect_uri": "https://sabercms.com/saber-auth"
+    }
+  ]
+}
