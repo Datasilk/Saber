@@ -624,15 +624,17 @@ gulp.task('watch', function () {
 });
 
 //publish task ////////////////////////////////////////////////////////////////////
-function publishStep1(platform) {
-    if (platform != null) { platform = '-' + platform + '/';}
+function publishStep1() {
     //copy data to publish folder
     gulp.src(['Publish/README.md'])
         .pipe(gulp.dest(paths.publish));
 
     gulp.src([
-        'App/wwwroot/**/*',
-        'App/wwwroot/*',
+        //'App/wwwroot/**/*',
+        'App/wwwroot/web.config',
+        'App/wwwroot/editor/*',
+        'App/wwwroot/editor/**',
+        '!App/wwwroot/editor/vendors/**',
         'App/Content/temp/*',
         'App/Content/temp/**',
         'App/Views/**/*.html',
@@ -640,13 +642,13 @@ function publishStep1(platform) {
     ], { base: 'App' })
         .pipe(gulp.dest(paths.publishapp));
 
-    gulp.src([paths.release + platform + 'Content/temp/config.prod.json'])
+    gulp.src([paths.release + 'Content/temp/config.prod.json'])
         .pipe(gulp.dest(paths.publishapp));
 
     return gulp.src([
-        paths.release + platform + '*',
-        paths.release + platform + '**'
-    ], { base: paths.release + platform })
+        paths.release + '*',
+        paths.release + '**'
+    ], { base: paths.release })
         .pipe(gulp.dest(paths.publishapp));
 }
 
@@ -674,8 +676,7 @@ gulp.task('publish:step-3', function () {
         paths.publishapp + 'wwwroot/**',
         '!' + paths.publishapp + 'wwwroot/editor',
         '!' + paths.publishapp + 'wwwroot/editor/**/*',
-        paths.publishapp + 'wwwroot/editor/js/vendors',
-        paths.publishapp + 'wwwroot/editor/css/vendors',
+        paths.publishapp + 'wwwroot/editor/vendors',
         paths.publishapp + 'Content/**',
         '!' + paths.publishapp + 'Content/temp',
         paths.publishapp + 'Content/temp/README.md',

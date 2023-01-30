@@ -389,15 +389,10 @@ namespace Saber
             Server.Config = config;
 
             //configure Server defaults
-            App.Host = config.GetSection("hostUri").Value ?? "http://localhost:7000";
             var servicepaths = config.GetSection("servicePaths").Value;
             if (servicepaths != null && servicepaths != "")
             {
                 Server.ServicePaths = servicepaths.Replace(" ", "").Split(',');
-            }
-            if (config.GetSection("version").Value != null)
-            {
-                Server.Version = config.GetSection("version").Value;
             }
 
             //configure Server database connection strings
@@ -414,14 +409,10 @@ namespace Saber
             //inject app lifetime
             Server.AppLifetime = appLifetime;
 
-            //configure cookie-based authentication
-            //var expires = !string.IsNullOrWhiteSpace(config.GetSection("Session:Expires").Value) ? int.Parse(config.GetSection("Session:Expires").Value) : 60;
-
-            //use session
-            //var sessionOpts = new SessionOptions();
-            //sessionOpts.Cookie.Name = "Saber";
-            //sessionOpts.IdleTimeout = TimeSpan.FromMinutes(expires);
-            //app.UseSession(sessionOpts);
+            //get version of Saber
+            Assembly saberAssembly = Assembly.GetExecutingAssembly();
+            System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(saberAssembly.Location);
+            Server.Version = fvi.FileVersion ?? "";
 
             //handle static files
             var provider = new FileExtensionContentTypeProvider();
@@ -635,7 +626,7 @@ namespace Saber
                 AwaitInvoke = true
             });
 
-            Console.WriteLine("Saber is ready! <(^.^<)");
+            Console.WriteLine($"Saber {Server.Version} is ready! <(^.^<)");
         }
 
         private string GetFileExtension(string filename)

@@ -9,7 +9,7 @@
     <Authors>Mark Entingh</Authors>
     <Company>Datasilk</Company>
     <Description>A simple, straight-forward website builder.</Description>
-    <Copyright>Datasilk 2021</Copyright>
+    <Copyright>Datasilk 2023</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/Datasilk/Saber</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
@@ -18,6 +18,8 @@
     <PackageReleaseNotes>First official release into the wild</PackageReleaseNotes>
     <PackageProjectUrl>https://saber.datasilk.io</PackageProjectUrl>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion> 1.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

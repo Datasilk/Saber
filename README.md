@@ -8,8 +8,8 @@ Saber gives software engineers the ability to focus on traditional web developme
 
 ## Requirements
 
-* Visual Studio 2019
-* ASP.NET Core 5.0
+* Visual Studio 2022
+* ASP.NET Core 6.0
 * SQL Server 2017 (or greater)
 * Node.js
 * Gulp
@@ -19,15 +19,17 @@ Saber gives software engineers the ability to focus on traditional web developme
 1. Clone the repository and get all submodules:
 
     ```
-    git clone --recurse-submodules http://github.com/Datasilk/Saber
+    git clone http://github.com/Datasilk/Saber
+    git submodule update --init
     git submodule foreach git checkout master
     git submodule foreach git submodule update --init
+    git submodule foreach git submodule foreach git checkout master
     ```
 
 2. Run command `npm install`
 3. Run command `gulp default`
 4. In Visual Studio, build then publish the **Sql** project to SQL Server
-5. Open `config.json` file and update the Sql connection string
+5. Copy `/Content/temp/config.json` to `config.json`, then open the file and update the Sql connection string
 6. Click Play in Visual Studio & navigate to https://localhost:7070
 
 #### Docker Support

@@ -1,5 +1,4 @@
 {
-  "hostUri": "https://localhost:7070",
   "sql": {
     "active": "SqlServerTrusted",
     "SqlServerTrusted": "server=.\\SQL2017; database=Saber; Trusted_Connection=true"
@@ -16,9 +15,5 @@
       "redirect_uri": "https://sabercms.com/saber-auth"
     }
   ],
-  "cors": {
-    "development": [ "https://sabercms.com"],
-    "staging": [ "https://sabercms.com" ],
-    "production": [ "https://sabercms.com" ]
-  }
+  "servicePaths": "api"
 }
