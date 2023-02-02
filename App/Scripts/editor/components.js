@@ -16,7 +16,6 @@
         var target = $(e.target);
         if (target.parents('.tab-button').length > 0) {
             var menu = $('.components-menu');
-            if (!menu.hasClass('hide')) { return; }
             menu.removeClass('hide');
             S.editor.components.resize();
             $(document.body).off(S.editor.components.hide).on('click', S.editor.components.hide);
