@@ -16,25 +16,32 @@
         var target = $(e.target);
         if (target.parents('.tab-button').length > 0) {
             var menu = $('.components-menu');
+            if (!menu.hasClass('hide')) { return; }
             menu.removeClass('hide');
             S.editor.components.resize();
             $(document.body).off(S.editor.components.hide).on('click', S.editor.components.hide);
         }
     },
 
-    hide: function () {
-        if ($(e.target).parents('.tab-components').length <= 0 &&
-            $(e.target).parents('.popup').length <= 0 &&
-            !$(e.target).hasClass('popup')) {
-            menu.addClass('hide');
+    hide: function (e) {
+        if (e != null) {
+            var target = $(e.target);
+            if (target.parents('.components-menu').length > 0 ||
+                target.hasClass('components-menu') ||
+                target.parents('.popup').length > 0 ||
+                target.hasClass('popup')) {
+                return;
+            }
         }
+        var menu = $('.components-menu');
+        menu.addClass('hide');
     },
 
     resize: function () {
         var menu = $('.components-menu');
         var win = S.window.pos();
         var pos = menu.offset();
-        menu.css({ 'max-height': (win.h - pos.top - 30) + 'px' });
+        menu.find('.scroller').css({ 'max-height': (win.h - pos.top - 30) + 'px' });
     },
 
     configure: {

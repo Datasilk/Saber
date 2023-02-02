@@ -444,10 +444,12 @@
                                 </div>
                             </div>
                             <div class="components-menu hide">
-                                <div class="components-list">
-                                    {{components-list}}
+                                <div class="scroller">
+                                    <div class="components-list">
+                                        {{components-list}}
+                                    </div>
+                                    <div class="component-configure hide"></div>
                                 </div>
-                                <div class="component-configure hide"></div>
                             </div>
                         </li>
                         {{/components}}
@@ -544,6 +546,7 @@
             {{page-content}}
             <div class="tab content-fields-section hide" data-simplebar>
                 <div class="scroller has-content-fields">
+                    <div class="messages"></div>
                     <div class="row">
                         <div class="col">
                             <div class="row hover lang">

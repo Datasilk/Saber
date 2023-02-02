@@ -36,6 +36,7 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
             var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
+            path = "/" + string.Join("/", paths);
             if(language == "") { language = "en"; }
             if (paths[1] == "partials")
             {
@@ -60,7 +61,7 @@ namespace Saber.Services
             {
                 var config = PageInfo.GetPageConfig(path);
                 var validated = new Dictionary<string, string>();
-                ValidateField(string.Join("/", paths) + ".html", fields, validated);
+                ValidateField(path + ".html", fields, validated);
                 ValidateField("/Content/partials/" + config.header, fields, validated);
                 ValidateField("/Content/partials/" + config.footer, fields, validated);
                 try
