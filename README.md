@@ -33,8 +33,10 @@ enterprise-level web application development.
 2. Run command `npm install`
 3. Run command `gulp default`
 4. In Visual Studio, build then publish the **Sql** project to SQL Server
-5. Copy `/Content/temp/config.json` to `config.json`, then open the file and update the Sql connection string
-6. Click Play in Visual Studio & navigate to https://localhost:7070
+5. If you are running **MS SQL Server** on the same PC, you can set up your database to use a trusted connection.
+    1. In SSMS, under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
+6. Copy `/App/Content/temp/config.json` to `/App/config.json`, then open the file and update the Sql connection string
+7. Click Play in Visual Studio & navigate to https://localhost:7070
 
 ## Installation (from release)
 
@@ -66,8 +68,8 @@ Saber now supports IIS natively (in-process & out-of-process)
 5. Copy `/Content/temp/config.prod.json` to `/config.prod.json`.
 6. Open `config.prod.json` and modify the database connection string
 7. If you are running **MS SQL Server** on the same PC as IIS, you can set up your database to use a trusted connection.
-    1. In SSMS, under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
-    2. Open `config.prod.json` and modify the database connection string, remove `User Id` and `Password` fields, then add `Trusted_Connection=true;`
+    *. In SSMS, under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
+    *. Open `config.prod.json` and modify the database connection string, remove `User Id` and `Password` fields, then add `Trusted_Connection=true;`
 8. Open a web browser and navigate to your new website. 
 
     > NOTE: If you receive an In-Process Start Failure, you may need to open `config.prod.json` and change your database connection string to point to the correct database. Make sure to restart your website in IIS after making changes to your config file.
