@@ -2,7 +2,7 @@
 
 # Saber
 
-A simple, straight forward CMS and IDE. 
+A simple, straight forward CMS and website builder. 
 
 Saber gives software engineers the ability to focus on traditional web development by writing HTML, CSS (LESS), and Javascript 
 in their respective file formats from an integrated development environment (IDE) within their Saber website.
