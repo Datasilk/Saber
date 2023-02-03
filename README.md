@@ -1,4 +1,4 @@
-![Saber Logo](http://www.markentingh.com/projects/saber/logo.png)
+![Saber Logo](http://www.markentingh.com/projects/saber/sword-logo.png)
 
 # Saber
 
