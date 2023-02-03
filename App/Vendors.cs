@@ -629,7 +629,6 @@ namespace Saber.Common
             var details = GetDetails(type, DLL);
             if (MarkedForUninstall.Contains(details.Key)) { return; }
             var instance = (IVendorEmailClient)Activator.CreateInstance(type);
-            if(instance.Key == "smtp") { return; } //skip internal email client
             details.EmailClients.Add(instance.Key, instance);
             Core.Vendors.EmailClients.Add(instance.Key, instance);
             instance.Init();
@@ -771,6 +770,7 @@ namespace Saber.Common
             foreach(var datasource in instance.List())
             {
                 Core.Vendors.DataSources.Add(new DataSourceInfo() { Key = (string.IsNullOrEmpty(instance.Prefix) ? "" : instance.Prefix + "-") + datasource.Key, Name = datasource.Value, Helper = instance });
+                Console.WriteLine("Found Data Source \"" + datasource.Value + "\"");
             }
         }
 

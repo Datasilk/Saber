@@ -90,7 +90,6 @@ namespace Saber.Services
             var clientoptions = new StringBuilder();
             var clientforms = new StringBuilder();
             var emailClients = new List<Vendor.IVendorEmailClient>();
-            emailClients.AddRange(Common.Platform.Email.Clients);
             emailClients.AddRange(Core.Vendors.EmailClients.Values.OrderBy(a => a.Name));
 
             foreach (var client in emailClients)
@@ -692,19 +691,11 @@ namespace Saber.Services
         public string SaveEmailClient(string id, Dictionary<string, string> parameters)
         {
             if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
-            if (id == "smtp")
+            //save vendor email client settings
+            var vendor = Core.Vendors.EmailClients.Where(a => a.Key == id).FirstOrDefault().Value;
+            if (vendor != null)
             {
-                //save default email client settings
-                Common.Platform.Email.Clients.Where(a => a.Key == "smtp").FirstOrDefault()?.SaveConfig(parameters);
-            }
-            else
-            {
-                //save vendor email client settings
-                var vendor = Core.Vendors.EmailClients.Where(a => a.Key == id).FirstOrDefault().Value;
-                if(vendor != null)
-                {
-                    vendor.SaveConfig(parameters);
-                }
+                vendor.SaveConfig(parameters);
             }
             return Success();
         }

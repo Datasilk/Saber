@@ -4,12 +4,14 @@ using Saber.Core.Extensions.Strings;
 
 namespace Saber.Common.DataSources
 {
-    public class Pages : IVendorDataSources
+    public class WebPages : IVendorDataSources
     {
         public string Vendor { get; set; } = "Web Pages";
         public string Prefix { get; set; } = "web-pages";
         public string Description { get; set; } = "A list of available web pages within your Saber website";
         public static List<Dictionary<string, string>> KnownPages = new List<Dictionary<string, string>>();
+
+        public void Init() { }
 
         public void Create(IRequest request, string key, Dictionary<string, string> columns)
         {
@@ -60,8 +62,6 @@ namespace Saber.Common.DataSources
                 }
             };
         }
-
-        public void Init(){}
 
         public List<KeyValuePair<string, string>> List()
         {

@@ -42,8 +42,6 @@ Saber gives software engineers the ability to focus on traditional web developme
         :setvar DatabaseName "Saber"
         :setvar DefaultFilePrefix "Saber"
         ```
-        * In SSMS, under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
-
     * To **Update an existing database**, use the file `Sql/Saber.dacpac`. In **Microsoft SQL Server Management Studio**, right-click your existing Saber database and select **Tasks > Upgrade Data-tier Application** and follow the upgrade wizard.
 
 #### Docker Support
@@ -54,14 +52,20 @@ Saber also supports Docker. In order for Saber to work with Docker in Windows, y
 #### IIS Support
 Saber now supports IIS natively (in-process & out-of-process)
 
-1.Install the [.NET Core Hosting Bundle](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/)
+1. Install the [.NET Core Hosting Bundle](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/)
 2. Create a new website in Internet Information Services (IIS)
     * Under **Sites**, right-click and select **Add Website..**
     * Under **Application Pools**, right-click the application pool associated with your new website and select **Basic Settings...**, then change **.NET CLR version** to **No Managed Code**
     * Under **Application Pools**, right-click the application pool associated with your new website and select **Advanced Settings...**, then change **Identity** to **NetworkService**
 3. Copy all files & folders from the `App` folder to your IIS website folder for Saber.
 4. Open `web.config` in your IIS website folder and change `hostingModel="OutOfProcess"` to `hostingModel="InProcess"`
-5. Open a web browser and navigate to your new website. If this is your first time running Saber, a `config.prod.json` file will be generated in your IIS website folder.
+5. Copy `/Content/temp/config.prod.json` to `/config.prod.json`.
+6. Open `config.prod.json` and modify the database connection string
+7. If you are running **MS SQL Server** on the same PC as IIS, you can set up your database to use a trusted connection.
+    1. In SSMS, under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
+    2. Open `config.prod.json` and modify the database connection string, remove `User Id` and `Password` fields, then add `Trusted_Connection=true;`
+8. Open a web browser and navigate to your new website. 
+
     > NOTE: If you receive an In-Process Start Failure, you may need to open `config.prod.json` and change your database connection string to point to the correct database. Make sure to restart your website in IIS after making changes to your config file.
 
 
@@ -105,26 +109,35 @@ You can upload image files & other resources for a specific web page or within t
 </form>
 ```
 
-#### Include partial HTML files
-Use *mustache* variables to include html files inside other html files and render robust web pages. 
+#### Use Partial Views
+Create HTML files as Partial Views within your website's `/partials` folder and then use *mustache* variables to 
+inject your partial views into web pages to render robust, dynamic content across your website.
 	
 For example:
 	
 ```
-{{header "partials/UI/header.html"}}
+{{sidebar "partials/UI/sidebar.html"}}
 ```
-`header` is a variable name and the relative file path is in quotes.
+`sidebar` is the mustache variable name and the relative file path is located within quotes.
 > Note: The relative path to all files are case-sensitive 
 
+#### List Component
+Create dynamic lists of content for your pages by combining a **Partial View** and a **Data Source**. For example, 
+you could use the *Web Pages* data source to display a filtered list of web pages on your blog sidebar. 
+You could also create a custom database of content using the [DataSets](https://www.github.com/Datasilk/Saber-DataSets) 
+plugin and utilize your datasets as a data source for the List component. You could also just manually create new items 
+for your list instead of using a data source.
+
 #### Template Web Pages
-You can create a template web page (e.g. `https://yoursite.com/support/template`) and design the template page to be used 
-as a starting point when creating new sub-pages. When navigating to a new URL within your website 
+You can create a template web page (e.g. `https://yoursite.com/support/template`) and design the template page to be 
+used as a starting point when creating new sub-pages. When navigating to a new URL within your website 
 (e.g. `https://yoursite.com/support/my-new-page`), Saber will copy & load the design & content from the associated 
-template web page when the URL is accessed for the first time. This is useful when managing complex websites such as a 
-wiki, blog, or storefront.
+template web page when the URL is accessed for the first time. Then, you can customize the content of your new page quickly
+and efficiently. This is useful when managing complex websites such as a wiki, blog, or storefront.
 
 #### Include Vendor Plugins
-Saber supports 3rd-party plugins, including a few plugins developed in-house. You can find a list of plugins @ [saber.datasilk.io](https://saber.datasilk.io/plugins.html).
+Saber supports 3rd-party plugins, including a few plugins developed [in-house](https://github.com/orgs/Datasilk/repositories?q=saber). 
+You can find a list of plugins @ [saber.datasilk.io](https://saber.datasilk.io/plugins.html).
 
 ##### Develop Vendor Plugins
 You can learn how to develop Vendor plugins and find a list of supported Vendor plugins and links to their repositories 
@@ -133,33 +146,30 @@ online at [saber.datasilk.io](https://saber.datasilk.io/developers.html) and [/V
 ##### Installing a Vendor Plugin
 All vendor plugins **must** be installed within the `/App/Vendors` folder. For example:
 
-```git clone https://github.com/Datasilk/Saber-CDataSets App/Vendors/DataSets```
+```git clone https://github.com/Datasilk/Saber-DataSets App/Vendors/DataSets```
 
 #### Code Editor
 Saber uses [Monaco](https://microsoft.github.io/monaco-editor/) as its code editor
 
 * Minimap next to scrollbar
 * Intellisense for HTML, CSS, LESS, & Javascript
-* Syntax Highlighting for HTML, CSS, LESS, & Javascript
+* Syntax Highlighting for HTML, CSS, LESS, Javascript, & `{{mustache}}`
 * Code Folding
-* Commands (F1)
-
-#### Shortcut Keys
-* Ctrl + S (save)
-* Escape (toggle editor / website preview)
-* F1 (Text Editor Command window)
-* F2 Page Content tab
-* F3 Page Settings tab
-* F4 Page Resouces tab
-* F6 Website Settings tab
-* F7 User Management tab
-* F8 Security Groups tab
-* F9 toggle File Browser
+* Commands (press F1)
 
 #### User Security
 Saber includes a robust security system so administrators can give users permissions to specific features & web pages.
-Create Security Groups to manage permissions to features within Saber, then assign users to your Security Groups. 
-Assign one or more Security Groups to a web page to make the page secure. All secure pages that are accessed by users without proper permissions will be shown `pages/access-denied.html` instead of the desired page.
+Create **Security Groups** to manage permissions to features within Saber, then assign users to your Security Groups. 
+Assign one or more Security Groups to a web page to make the page secure. All secure pages that are accessed by users 
+without proper permissions will be redirected to the `/access-denied` page.
+
+#### Email Clients & Actions
+Configure Saber to use an email client when emails need to be sent out to your users.
+Saber comes with an SMTP email client manager but you can always utilize a 3rd-party Vendor plugin (or develop your own plugin)
+that can send emails another way. For example, you could install the [SendGrid](https://www.github.com/Datasilk/Saber-SendGrid) plugin
+if your website uses [SendGrid](https://www.sendgrid.com) as a way to send emails to users.
+
+Saber will send emails to users based on various actions, such as new account signups or when the user requests to reset their password.
 
 ---
 
@@ -191,19 +201,30 @@ Upload images & other resources
 
 Generate form fields by writing HTML variables (e.g. `<h2>{{hero-title}}</h2>`) and use them to fill out content for your web pages
 
+#### Shortcut Keys
+* Ctrl + S (save)
+* Escape (toggle editor / website preview)
+* F1 (Text Editor Command window)
+* F2 Page Content tab
+* F3 Page Settings tab
+* F4 Page Resouces tab
+* F6 Website Settings tab
+* F7 User Management tab
+* F8 Security Groups tab
+* F9 toggle File Browser
+
 ### Even More Features!
 * Manage a list of acceptable meta title prefixes and suffixes to make sure your website has consistentpage titles
     * Select which prefix or suffix to add to individual web page titles & descriptions via the page settings
+* Manage a list of website icons to use viewed in a web browser, on Android, and on iOS respectively.
 * Create multiple headers & footers for your website and select which ones to use within each individual page's settings
 * Include custom Javascript & Stylesheet files on specific pages within your website or on every page within your website
-* Create lists of content on your web pages by using the List Component to select one or more partial views to render for your list items.
 
 ## Under The Hood
-Saber uses many technologies developed by [Mark Entingh](http://www.github.com/markentingh), including [Datasilk Core MVC](http://www.github.com/datasilk/core) as the MVC middleware for ASP.NET Core, [Tapestry](http://www.github.com/datasilk/tapestry) for frontend CSS UI design, [Datasilk Core JS](http://www.github.com/datasilk/corejs) as a frontend JavaScript framework, and [Selector](http://www.github.com/datasilk/selector) as a replacement for jQuery at only 5kb in size.
+Saber uses a few technologies developed by its creator, [Mark Entingh](http://www.github.com/markentingh), including [Datasilk Core MVC](http://www.github.com/datasilk/core) as the MVC middleware for ASP.NET Core, [Tapestry](http://www.github.com/datasilk/tapestry) for frontend CSS UI design, [Datasilk Core JS](http://www.github.com/datasilk/corejs) as a frontend JavaScript framework, and [Selector](http://www.github.com/datasilk/selector) as a replacement for jQuery at only 5kb in size.
 
 ## Future Development
-* Publish content using other formats besides HTML & CSS, such as uploading a PDF, DOC, DOCX, MP3 (for auto-transcribing), or Excel spreadsheet.
 * Upload a cover photo to use when sharing with Facebook, Twitter, and other social platform
-* Other optional meta data fields used within the page settings
+* Page-level meta data management
   * Fields from schema.org (JSON-LD)
   * product related fields (price, saleprice, colors, specs)

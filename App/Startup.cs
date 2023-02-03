@@ -400,7 +400,7 @@ namespace Saber
             //get version of Saber
             Assembly saberAssembly = Assembly.GetExecutingAssembly();
             System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(saberAssembly.Location);
-            Server.Version = fvi.FileVersion ?? "";
+            Server.Version = (fvi.FileVersion ?? "").Trim();
 
             //handle static files
             var provider = new FileExtensionContentTypeProvider();
@@ -490,11 +490,8 @@ namespace Saber
             Common.Vendors.GetDataSourcesFromFileSystem();
             if(Core.Vendors.DataSources.Count > 0)
             {
-                Console.WriteLine("Found " + Core.Vendors.DataSources.Count + " Vendor Data Source" + (Core.Vendors.DataSources.Count != 1 ? "s" : ""));
-
-                //init all data sources
-                Console.WriteLine("Initialize all data sources...");
                 Common.Vendors.InitDataSources();
+                Console.WriteLine("Found " + Core.Vendors.DataSources.Count + " Vendor Data Source" + (Core.Vendors.DataSources.Count != 1 ? "s" : ""));
             }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
