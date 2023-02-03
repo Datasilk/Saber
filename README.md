@@ -15,6 +15,7 @@ enterprise-level web application development.
 * Visual Studio 2022
 * ASP.NET Core 6.0
 * SQL Server 2017 (or greater)
+* SQL Server Management Studio (SSMS)
 * Node.js
 * Gulp
 
@@ -34,7 +35,7 @@ enterprise-level web application development.
 3. Run command `gulp default`
 4. In Visual Studio, build then publish the **Sql** project to SQL Server
 5. If you are running **MS SQL Server** on the same PC, you can set up your database to use a trusted connection.
-    1. In SSMS, under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
+    1. In **SSMS**, under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
 6. Copy `/App/Content/temp/config.json` to `/App/config.json`, then open the file and update the Sql connection string
 7. Click Play in Visual Studio & navigate to https://localhost:7070
 
@@ -43,7 +44,7 @@ enterprise-level web application development.
 1. Get the latest release of Saber at https://www.github.com/Datasilk/Saber/releases
 2. Extract the release **7z** zip file
 3. Create/Update your MSSQL Database
-    * To **Create a new database**, execute the file `Sql/Saber_Create.sql` using **Microsoft SQL Server Management Studio** (SSMS). You may want to open the file first and change the following lines to your own database name:
+    * To **Create a new database**, execute the file `Sql/Saber_Create.sql` using **SSMS**. You may want to open the file first and change the following lines to your own database name:
         ``` sql
         :setvar DatabaseName "Saber"
         :setvar DefaultFilePrefix "Saber"
@@ -68,7 +69,7 @@ Saber now supports IIS natively (in-process & out-of-process)
 5. Copy `/Content/temp/config.prod.json` to `/config.prod.json`.
 6. Open `config.prod.json` and modify the database connection string
 7. If you are running **MS SQL Server** on the same PC as IIS, you can set up your database to use a trusted connection.
-    *. In SSMS, under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
+    *. In **SSMS**, under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
     *. Open `config.prod.json` and modify the database connection string, remove `User Id` and `Password` fields, then add `Trusted_Connection=true;`
 8. Open a web browser and navigate to your new website. 
 
