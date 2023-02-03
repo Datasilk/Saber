@@ -21,10 +21,6 @@ namespace Saber
 
         public override void Init()
         {
-            if (App.Environment == Environment.development)
-            {
-                ViewCache.Clear();
-            }
             if (Server.DeveloperKeys.Count > 0 && Server.DeveloperKeys.Any(a => (Context.Request.Scheme + "://" + Context.Request.Host.Value).IndexOf(a.Host) == 0) || Parameters.ContainsKey("apikey"))
             {
                 //require a Public API developer key to continue

@@ -20,7 +20,6 @@ namespace Saber.Common.Platform
         public static string Page(string path, IRequest request, Models.Page.Settings config, string language = "en")
         {
             //translate root path to relative path
-            if (App.Environment == Environment.development) { ViewCache.Clear(); }
             var content = new View("/Views/Editor/content.html");
             var header = new View("/Content/partials/" + (config.header != "" ? config.header : "header.html"));
             var footer = new View("/Content/partials/" + (config.footer != "" ? config.footer : "footer.html"));

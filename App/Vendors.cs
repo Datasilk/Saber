@@ -40,11 +40,22 @@ namespace Saber.Common
 
         public static string[] LoadDLLs()
         {
+            //first, get all Vendors marked for uninstallation
+            GetVendorsMarkedForUninstall();
+
             //search Vendor folder for DLL files
             if (Directory.Exists(App.MapPath("/Vendors")))
             {
                 RecurseDirectories(App.MapPath("/Vendors"));
                 DLLs = DLLs.OrderBy(a => a).ToList();
+            }
+
+            if (MarkedForUninstall.Count > 0)
+            {
+                //remove all DLLs found in Vendor folders marked for uninstall
+                DLLs = DLLs.Where(a => !MarkedForUninstall.Any(b => 
+                    a.IndexOf("/Vendors/" + b + "/") >= 0 || a.IndexOf("\\Vendors\\" + b + "\\") >= 0
+                )).ToList();
             }
 
             //load assemblies from DLL files
@@ -107,19 +118,42 @@ namespace Saber.Common
             {
                 try
                 {
-                    Uninstalled.Add(vendor);
+                    var failed = false;
                     //execute uninstall.sql
                     if(File.Exists(App.MapPath("/Vendors/" + vendor + "/Sql/uninstall.sql")))
                     {
                         Query.Script.Execute(App.MapPath("/Vendors/" + vendor + "/Sql/uninstall.sql"));
                         Console.WriteLine("Executed /Vendors/" + vendor + "/Sql/uninstall.sql");
                     }
-                    Directory.Delete(App.MapPath("/Vendors/" + vendor), true);
-                    Console.WriteLine("Uninstalled Vendor " + vendor);
+                    var dir = new DirectoryInfo(App.MapPath("/Vendors/" + vendor));
+                    var files = dir.GetFiles("*", SearchOption.AllDirectories);
+                    foreach(var file in files)
+                    {
+                        try
+                        {
+                            File.Delete(file.FullName);
+                        }
+                        catch (Exception) { }
+                    }
+                    try
+                    {
+                        Directory.Delete(App.MapPath("/Vendors/" + vendor), true);
+                    }
+                    catch (Exception) { 
+                        failed = true;
+                    }
+                    Uninstalled.Add(vendor);
+                    Console.WriteLine("Uninstalled Vendor " + vendor + (failed == true ? 
+                        (" but could not delete folder " + App.MapPath("/Vendors/" + vendor)) : ""
+                    ));
                 }
                 catch (Exception ex) {
                     Console.WriteLine(ex.InnerException.Message);
                 }
+            }
+            if(vendors.Count > 0)
+            {
+                ConcatVendorsEditorJs();
             }
         }
         #endregion
@@ -281,7 +315,6 @@ namespace Saber.Common
                     if(versions.Any(a => a.Assembly == "Saber.Vendors." + vendor))
                     {
                         versions.Remove(versions.Where(a => a.Assembly == "Saber.Vendors." + vendor).FirstOrDefault());
-                        versionsChanged = true;
                     }
                 }
             }
@@ -299,11 +332,21 @@ namespace Saber.Common
         public static void ConcatVendorsEditorJs()
         {
             var vendorsPath = new DirectoryInfo(App.MapPath("/Vendors/"));
-            var files = vendorsPath.GetFiles("editor.js", SearchOption.AllDirectories);
+            var files = vendorsPath.GetFiles("editor.js", SearchOption.AllDirectories).Select(a => a.FullName);
+
+
+            if (MarkedForUninstall.Count > 0)
+            {
+                //remove all DLLs found in Vendor folders marked for uninstall
+                files = files.Where(a => !MarkedForUninstall.Any(b =>
+                    a.IndexOf("/Vendors/" + b + "/") >= 0 || a.IndexOf("\\Vendors\\" + b + "\\") >= 0
+                )).ToList();
+            }
+
             var jsparts = new StringBuilder();
             foreach (var f in files)
             {
-                jsparts.Append(File.ReadAllText(f.FullName));
+                jsparts.Append(File.ReadAllText(f));
             }
             //gzip vendors-eitor.js
             Utility.Compression.GzipCompress(string.Join("\n", jsparts), "/wwwroot/editor/js/vendors-editor.js");

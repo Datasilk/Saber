@@ -197,8 +197,8 @@
                             }
                             if (id && id != '' && value && value != '') {
                                 mustache += (paramlen > 0 ? ',' : '') + ' ' + id + ':"' + value + '"';
+                                paramlen++;
                             }
-                            paramlen++;
                         }
                         mustache += '}}';
                     }

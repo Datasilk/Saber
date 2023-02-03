@@ -24,10 +24,10 @@ namespace Saber.Services
             var pubdir = dir; //published directory
             var noResources = true;
 
-            if (paths[0].ToLower() == "/content/pages")
+            if (paths[0] == "content" && paths[1] == "pages")
             {
                 //loading resources for specific page
-                pubdir = "/wwwroot" + dir;
+                pubdir = "/wwwroot/" + dir;
                 view.Show("for-page");
                 view["for-type"] = "Page";
             }
@@ -272,10 +272,10 @@ namespace Saber.Services
                 paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
                 var dir = string.Join("/", paths).ToLower() + "/";
                 var pubdir = dir; //published directory
-                if (paths[0].ToLower() == "/content/pages")
+                if (paths[0] == "content" && paths[1] == "pages")
                 {
                     //loading resources for specific page
-                    pubdir = "/wwwroot" + dir;
+                    pubdir = "/wwwroot/" + dir;
                 }
 
                 //check for special files that cannot be deleted
@@ -289,6 +289,7 @@ namespace Saber.Services
                         //delete file from disk
                         File.Delete(App.MapPath(pubdir + file));
                     }
+                    //check for thumbnails
                     var ext = file.GetFileExtension();
                     switch (ext.ToLower())
                     {

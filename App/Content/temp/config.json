@@ -1,7 +1,7 @@
 {
   "sql": {
     "active": "SqlServerTrusted",
-    "SqlServerTrusted": "server=.\\SQL2017; database=Saber; Trusted_Connection=true"
+    "SqlServerTrusted": "server=.\\SQL2017; database=Saber; Trusted_Connection=true; Encrypt=false;"
   },
   "encryption": {
     "salt": "?",

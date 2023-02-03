@@ -14,7 +14,7 @@ Saber gives software engineers the ability to focus on traditional web developme
 * Node.js
 * Gulp
 
-## Installation
+## Installation (from source code)
 
 1. Clone the repository and get all submodules:
 
@@ -32,13 +32,45 @@ Saber gives software engineers the ability to focus on traditional web developme
 5. Copy `/Content/temp/config.json` to `config.json`, then open the file and update the Sql connection string
 6. Click Play in Visual Studio & navigate to https://localhost:7070
 
+## Installation (from release)
+
+1. Get the latest release of Saber at https://www.github.com/Datasilk/Saber/releases
+2. Extract the release **7z** zip file
+3. Create/Update your MSSQL Database
+    * To **Create a new database**, execute the file `Sql/Saber_Create.sql` using **Microsoft SQL Server Management Studio** (SSMS). You may want to open the file first and change the following lines to your own database name:
+        ``` sql
+        :setvar DatabaseName "Saber"
+        :setvar DefaultFilePrefix "Saber"
+        ```
+        * In SSMS, under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
+
+    * To **Update an existing database**, use the file `Sql/Saber.dacpac`. In **Microsoft SQL Server Management Studio**, right-click your existing Saber database and select **Tasks > Upgrade Data-tier Application** and follow the upgrade wizard.
+
 #### Docker Support
 Saber also supports Docker. In order for Saber to work with Docker in Windows, you must first install and run [Docker Desktop](https://docs.docker.com/docker-for-windows/). 
 1. Copy `/App/Content/temp/config.docker.json` to `/App` folder and open the file to update the Sql connection string Initial Catalog along with the User ID & Password you've created in Sql Server that has access to your Saber database
 2. Click **Play** in Visual Studio after selecting the **Docker** launch command from the drop down
 
 #### IIS Support
-Saber now supports IIS natively
+Saber now supports IIS natively (in-process & out-of-process)
+
+1.Install the [.NET Core Hosting Bundle](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/)
+2. Create a new website in Internet Information Services (IIS)
+    * Under **Sites**, right-click and select **Add Website..**
+    * Under **Application Pools**, right-click the application pool associated with your new website and select **Basic Settings...**, then change **.NET CLR version** to **No Managed Code**
+    * Under **Application Pools**, right-click the application pool associated with your new website and select **Advanced Settings...**, then change **Identity** to **NetworkService**
+3. Copy all files & folders from the `App` folder to your IIS website folder for Saber.
+4. Open `web.config` in your IIS website folder and change `hostingModel="OutOfProcess"` to `hostingModel="InProcess"`
+5. Open a web browser and navigate to your new website. If this is your first time running Saber, a `config.prod.json` file will be generated in your IIS website folder.
+    > NOTE: If you receive an In-Process Start Failure, you may need to open `config.prod.json` and change your database connection string to point to the correct database. Make sure to restart your website in IIS after making changes to your config file.
+
+
+#### Windows Support
+Saber can be run from PowerShell with the following command `./Saber.exe`
+
+#### Linux Support
+Saber can be run with the following command `./saber`
+
 ----
 
 ![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-file.jpg)
@@ -51,7 +83,7 @@ Build web pages from within your web browser using a built-in IDE for editing HT
 Convert any URL within your website to a valid web page simply by navigating to the URL and writing some HTML, CSS, & JavaScript within the built-in IDE. The editor initially opens 3 files (HTML, LESS, & JS) that are associated with the web page being viewed.
 
 #### Create & Modify Website Resources
-Use the **file browser** within the built-in IDE to open website resources (HTML, CSS, LESS, & JS files) in new tabs. Use the *File* drop down menu to open the file browser or create new files & folders. The initial folder structure is described below: 
+Use the **file browser** within the built-in IDE to open website resources (HTML, CSS, LESS, & JS files) in new tabs. Use the *View* drop down menu to open the file browser and the **File** drop down menu to create new files & folders. The initial folder structure is described below: 
 
 * **wwwroot** is a public-facing folder where you can upload files & images to utilize within your website
 * **pages** is a protected folder used to store all pages belonging to your website. Clicking on an HTML page in the file browser will navigate to that page within your website for editing.
@@ -69,7 +101,7 @@ You can upload image files & other resources for a specific web page or within t
 * Display a language selection drop down list on your website by adding the following HTML code:
 ```
 <form id="changelang" method="post">
-	<select name="lang" onchange="changelang.submit()">{{languages.options}}</select>
+	<select name="lang" onchange="changelang.submit()">{{language-options}}</select>
 </form>
 ```
 
@@ -79,33 +111,29 @@ Use *mustache* variables to include html files inside other html files and rende
 For example:
 	
 ```
-{{header "Partials/UI/header.html"}}
+{{header "partials/UI/header.html"}}
 ```
 `header` is a variable name and the relative file path is in quotes.
 > Note: The relative path to all files are case-sensitive 
 
 #### Template Web Pages
-You can create a template web page (e.g. `https://yoursite.com/support/template`) and design the template page to be used as a starting point when creating new sub-pages. When navigating to a new URL within your website (e.g. `https://yoursite.com/support/my-new-page`), Saber will copy & load the design & content from the associated template web page when the URL is accessed for the first time. This is useful when managing complex websites such as a wiki, blog, or storefront.
+You can create a template web page (e.g. `https://yoursite.com/support/template`) and design the template page to be used 
+as a starting point when creating new sub-pages. When navigating to a new URL within your website 
+(e.g. `https://yoursite.com/support/my-new-page`), Saber will copy & load the design & content from the associated 
+template web page when the URL is accessed for the first time. This is useful when managing complex websites such as a 
+wiki, blog, or storefront.
 
 #### Include Vendor Plugins
-Use *mustache* variables to load a custom vendor plugin within your web page.
-	
-For example:
-
-```
-{{page-list (path:"blog", length:"4")}}
-```
-The above example will display a list of blog pages that exists within your website. 
-
-Before this can be achieved, though, you must install the [PageList](https://github.com/Datasilk/Saber-PageList/) plugin into the `/App/Vendors` folder.
+Saber supports 3rd-party plugins, including a few plugins developed in-house. You can find a list of plugins @ [saber.datasilk.io](https://saber.datasilk.io/plugins.html).
 
 ##### Develop Vendor Plugins
-You can learn how to develop Vendor plugins and find a list of supported Vendor plugins and links to their repositories online at [saber.datasilk.io](https://saber.datasilk.io/developers.html) and [/Vendor/README.md](Vendor/README.md).
+You can learn how to develop Vendor plugins and find a list of supported Vendor plugins and links to their repositories 
+online at [saber.datasilk.io](https://saber.datasilk.io/developers.html) and [/Vendor/README.md](Vendor/README.md).
 
 ##### Installing a Vendor Plugin
 All vendor plugins **must** be installed within the `/App/Vendors` folder. For example:
 
-```git clone https://github.com/Datasilk/Saber-CORS App/Vendors/CORS```
+```git clone https://github.com/Datasilk/Saber-CDataSets App/Vendors/DataSets```
 
 #### Code Editor
 Saber uses [Monaco](https://microsoft.github.io/monaco-editor/) as its code editor

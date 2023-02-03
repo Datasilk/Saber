@@ -8,6 +8,11 @@ namespace Saber.Common.Platform
 {
     public static class DataSources
     {
+        public static void Add(DataSourceInfo datasource)
+        {
+            Core.Vendors.DataSources.Add(datasource);
+        }
+
         #region "Filters"
         public static string RenderFilters(IRequest request, DataSourceInfo datasource, List<Vendor.DataSource.FilterGroup> filters = null)
         {

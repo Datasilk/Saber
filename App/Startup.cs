@@ -1,16 +1,6 @@
-using System;
-using System.Linq;
-using System.IO;
-using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Datasilk.Core.Extensions;
 using Saber.Common.Platform;
 
@@ -23,6 +13,7 @@ namespace Saber
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
+
             //set up Server-side memory cache
             services.AddDistributedMemoryCache();
             services.AddMemoryCache();
@@ -50,9 +41,6 @@ namespace Saber
 
             //check if app is running in Docker Container
             App.IsDocker = System.Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
-
-            //get list of vendors marked for uninstallation
-            Common.Vendors.GetVendorsMarkedForUninstall();
 
             //get list of assemblies for Vendor related functionality
             if (!assemblies.Contains(Assembly.GetExecutingAssembly()))
@@ -533,6 +521,7 @@ namespace Saber
             Core.Delegates.ContentFields.GetFieldId = ContentFields.GetFieldId;
             Core.Delegates.ContentFields.GetFieldType = ContentFields.GetFieldType;
             Core.Delegates.ContentFields.RenderForm = ContentFields.RenderForm;
+            Core.Delegates.DataSources.Add = DataSources.Add;
             Core.Delegates.DataSources.RenderFilter = DataSources.RenderFilter;
             Core.Delegates.DataSources.RenderFilters = DataSources.RenderFilters;
             Core.Delegates.DataSources.RenderFilterGroups = DataSources.RenderFilterGroups;
