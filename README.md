@@ -105,16 +105,10 @@ Use the **file browser** within the built-in IDE to open website resources (HTML
 You can upload image files & other resources for a specific web page or within the **wwwroot** folder to be used globally. Manage your uploads within an image-gallery style file browser.
 
 #### Multi-lingual Page Content
-* Generate text fields by adding *mustache* variables to your HTML page (e.g. `<div>{{article-title}}</div>`)
+* Generate a form that contains text fields by adding *mustache* variables to your HTML page (e.g. `<div>{{article-title}}</div>`)
 * Fill out the text fields with your content, which will replace the variables in the HTML page. (e.g. `Insert Article Title Here`)
 * Select which language the content will be written in and allow visitors to change their desired language 
-* Use Markdown syntax in text fields that will later be rendered as HTML
-* Display a language selection drop down list on your website by adding the following HTML code:
-```
-<form id="changelang" method="post">
-	<select name="lang" onchange="changelang.submit()">{{language-options}}</select>
-</form>
-```
+* Write content using Markdown syntax  that will later be rendered as HTML
 
 #### Use Partial Views
 Create HTML files as Partial Views within your website's `/partials` folder and then use *mustache* variables to 
@@ -184,31 +178,31 @@ Saber will send emails to users based on various actions, such as new account si
 
 ---
 
-![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-closeup.jpg)
+![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-closeup-2.jpg)
 
 Edit page resources for any URL within your domain name
 
 ---
 
-![Saber IDE](http://www.markentingh.com/projects/saber/saber-file-browser.jpg)
+![Saber IDE](http://www.markentingh.com/projects/saber/saber-file-browser-2.jpg)
 
 Browse server-side files and edit them via the IDE within Saber
 
 ---
 
-![Saber IDE](http://www.markentingh.com/projects/saber/saber-scrollbar.jpg)
+![Saber IDE](http://www.markentingh.com/projects/saber/saber-scrollbar-2.jpg)
 
 Use a minimap to scroll through your code faster than ever
 
 ---
 
-![Saber IDE](http://www.markentingh.com/projects/saber/saber-photo-gallery.jpg)
+![Saber IDE](http://www.markentingh.com/projects/saber/saber-photo-gallery-2.jpg)
 
 Upload images & other resources
 
 ---
 
-![Saber IDE](http://www.markentingh.com/projects/saber/saber-content-fields.jpg)
+![Saber IDE](http://www.markentingh.com/projects/saber/saber-content-fields-2.jpg)
 
 Generate form fields by writing HTML variables (e.g. `<h2>{{hero-title}}</h2>`) and use them to fill out content for your web pages
 
@@ -232,7 +226,13 @@ Generate form fields by writing HTML variables (e.g. `<h2>{{hero-title}}</h2>`) 
 * Include custom Javascript & Stylesheet files on specific pages within your website or on every page within your website
 
 ## Under The Hood
-Saber uses a few technologies developed by its creator, [Mark Entingh](http://www.github.com/markentingh), including [Datasilk Core MVC](http://www.github.com/datasilk/core) as the MVC middleware for ASP.NET Core, [Tapestry](http://www.github.com/datasilk/tapestry) for frontend CSS UI design, [Datasilk Core JS](http://www.github.com/datasilk/corejs) as a frontend JavaScript framework, and [Selector](http://www.github.com/datasilk/selector) as a replacement for jQuery at only 5kb in size.
+Saber uses a few technologies developed by its creator, [Mark Entingh](http://www.github.com/markentingh), including: 
+
+* [Datasilk Core MVC](http://www.github.com/datasilk/core) as the MVC middleware for ASP.NET Core
+* [Saber Core](http://www.github.com/datasilk/saber-core) as a business logic layer for the Vendor plugin systen
+* [Tapestry](http://www.github.com/datasilk/tapestry) for frontend CSS UI design
+* [Datasilk Core JS](http://www.github.com/datasilk/corejs) as a frontend JavaScript framework
+* [Selector](http://www.github.com/datasilk/selector) as a replacement for jQuery at only 5kb in size
 
 ## Future Development
 * Upload a cover photo to use when sharing with Facebook, Twitter, and other social platform
