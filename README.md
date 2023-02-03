@@ -84,7 +84,7 @@ Saber can be run with the following command `./saber`
 
 ----
 
-![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-file.jpg)
+![Saber IDE](http://www.markentingh.com/projects/saber/saber-html-file-2.jpg)
 *Screenshot of Saber's Editor UI*
 
 ## Features
