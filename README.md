@@ -7,6 +7,9 @@ A simple, straight forward CMS and website builder.
 Saber gives software engineers the ability to focus on traditional web development by writing HTML, CSS (LESS), and Javascript 
 in their respective file formats from an integrated development environment (IDE) within their Saber website.
 
+Saber is lightweight, blazing fast, with a "zero footprint" policy, and has a very robust plugin system. Saber is meant for 
+enterprise-level web application development.
+
 ## Requirements
 
 * Visual Studio 2022
@@ -121,6 +124,10 @@ For example:
 ```
 `sidebar` is the mustache variable name and the relative file path is located within quotes.
 > Note: The relative path to all files are case-sensitive 
+
+#### Zero Footprint
+When users visit your website, Saber will only render content that you've developed. Your users will not have to
+download any resources related to Saber's platform or IDE and so your website will truly feel like it was hand-crafted.
 
 #### List Component
 Create dynamic lists of content for your pages by combining a **Partial View** and a **Data Source**. For example, 
