@@ -247,7 +247,7 @@ namespace Saber.Common.Platform
                                             }
 
                                             break;
-                                        case "src":
+                                        case "src": case "data-src":
                                             if (tagName == "img")
                                             {
                                                 return Core.ContentFields.FieldType.image;
