@@ -91,7 +91,7 @@ S.editor.fields = {
                 //set up event for image selection buttons
                 $(container + ' .select-image button').on('click', (e) => {
                     e.preventDefault();
-                    S.editor.resources.select(file ? 'wwwroot/images' : S.editor.path, '.jpg, .png, .gif', true, "Select An Image", "Select Image", (results) => {
+                    S.editor.resources.select(file ? 'wwwroot/images' : S.editor.path, 'images', true, "Select An Image", "Select Image", (results) => {
                         var parent = $(e.target).parents('.content-field');
                         var field = parent.find('.input-field');
                         var newpath = file ? '/images/' : S.editor.path + '/';

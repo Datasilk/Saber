@@ -13,7 +13,7 @@ enterprise-level web application development.
 ## Requirements
 
 * Visual Studio 2022
-* ASP.NET Core 6.0
+* ASP.NET 6.0
 * SQL Server 2017 (or greater)
 * SQL Server Management Studio (SSMS)
 * Node.js
@@ -50,6 +50,7 @@ enterprise-level web application development.
         :setvar DefaultFilePrefix "Saber"
         ```
     * To **Update an existing database**, use the file `Sql/Saber.dacpac`. In **Microsoft SQL Server Management Studio**, right-click your existing Saber database and select **Tasks > Upgrade Data-tier Application** and follow the upgrade wizard.
+4. Choose which platform you wish use Saber on below (Docker, IIS, Windows, or Linux)
 
 #### Docker Support
 Saber also supports Docker. In order for Saber to work with Docker in Windows, you must first install and run [Docker Desktop](https://docs.docker.com/docker-for-windows/). 

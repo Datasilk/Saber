@@ -629,9 +629,12 @@ function publishStep1() {
     gulp.src(['Publish/README.md'])
         .pipe(gulp.dest(paths.publish));
 
+    //copy data to publish/App folder
+    gulp.src(['Publish/web.config'])
+        .pipe(gulp.dest(paths.publishapp));
+
+    //copy Content & wwwroot files
     gulp.src([
-        //'App/wwwroot/**/*',
-        'App/web.config',
         'App/wwwroot/web.config',
         'App/wwwroot/editor/*',
         'App/wwwroot/editor/**',
@@ -642,12 +645,14 @@ function publishStep1() {
     ], { base: 'App' })
         .pipe(gulp.dest(paths.publishapp));
 
+    //copy production config file
     gulp.src([paths.release + 'Content/temp/config.prod.json'])
         .pipe(gulp.dest(paths.publishapp));
 
     return gulp.src([
         paths.release + '*',
-        paths.release + '**'
+        paths.release + '**',
+        "!" + paths.release + "publish"
     ], { base: paths.release })
         .pipe(gulp.dest(paths.publishapp));
 }
@@ -670,6 +675,7 @@ gulp.task('publish:step-2', function () {
 gulp.task('publish:step-3', function () {
     //delete unwanted files from release folder
     return del([
+        paths.publishapp + 'publish',
         paths.publishapp + 'Vendors/*',
         paths.publishapp + 'Vendors/**',
         '!' + paths.publishapp + 'Vendors/README.md',
@@ -684,6 +690,8 @@ gulp.task('publish:step-3', function () {
         paths.publishapp + 'CSS',
         paths.publishapp + 'Scripts',
         paths.publishapp + 'config.json',
+        paths.publishapp + 'README.md',
+        paths.publishapp + 'Release.md',
         paths.publishapp + 'web.*.config',
     ]);
 });

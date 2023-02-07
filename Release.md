@@ -8,5 +8,5 @@
 2. Build Sql Project using the *Release* configuration (**optional**)
 3. Run `gulp publish`, or run 'gulp publish-nosql' if you did not build your Sql project.
 
-This will publish a version of Saber that does not contain any files related to the website you currently have installed,
-and it also ignores any Vendor plugin files that you may have installed as well. 
+This will publish a version of Saber in `/App/bin/Release/Saber` that does not contain any files related to the 
+website you currently have installed and it also ignores any Vendor plugin files that you may have installed as well. 

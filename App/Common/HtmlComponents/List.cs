@@ -365,7 +365,7 @@ namespace Saber.Common.HtmlComponents
                             {
                                 itemButton.Clear();
                                 itemButton["item-number"] = x.ToString();
-                                itemButton["item-key"] = keyColumn != "" && record.ContainsKey(keyColumn) ? record[keyColumn] : "";
+                                itemButton["item-label"] = keyColumn != "" && record.ContainsKey(keyColumn) ? record[keyColumn] : "";
                                 if(x == 1){itemButton.Show("selected"); }
                                 itemButtons.Append(itemButton.Render());
                             }
