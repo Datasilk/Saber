@@ -468,14 +468,11 @@ namespace Saber.Common.Platform
                         case "content":
                             if (paths.Length > 1)
                             {
-                                if (contentFiles.Contains(extension))
+                                if (paths[1].ToLower() != "temp")
                                 {
-                                    if (paths[1].ToLower() != "temp")
-                                    {
-                                        //copy any folder found within the Content folder (excluding temp)
-                                        copyTo = path;
-                                        break;
-                                    }
+                                    //copy any folder found within the Content folder (excluding temp)
+                                    copyTo = path;
+                                    break;
                                 }
                             }
                             else
@@ -522,7 +519,7 @@ namespace Saber.Common.Platform
                                     case "content":
                                         if (entry.Name.ToLower() == "website.less")
                                         {
-                                            lesspath = "/wwwroot/css/";
+                                            lesspath = "";
                                         }
                                         else
                                         {
@@ -532,14 +529,14 @@ namespace Saber.Common.Platform
                                 }
                                 if (!string.IsNullOrEmpty(lesspath))
                                 {
-                                    Console.WriteLine("compiling LESS file: " + App.MapPath(lesspath + entry.Name.Replace(".less", ".css")));
-
-                                    if (!Directory.Exists(App.MapPath(lesspath)))
-                                    {
-                                        Directory.CreateDirectory(App.MapPath(lesspath));
-                                    }
-                                    var data = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                                    Core.Website.SaveLessFile(data, lesspath + entry.Name.Replace(".less", ".css"), copyTo);
+                                    //Console.WriteLine("compiling LESS file: " + App.MapPath(lesspath + entry.Name.Replace(".less", ".css")));
+                                    //
+                                    //if (!Directory.Exists(App.MapPath(lesspath)))
+                                    //{
+                                    //    Directory.CreateDirectory(App.MapPath(lesspath));
+                                    //}
+                                    //var data = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+                                    //Core.Website.SaveLessFile(data, lesspath + entry.Name.Replace(".less", ".css"), copyTo);
                                 }
 
                             }
@@ -553,7 +550,7 @@ namespace Saber.Common.Platform
                 }
 
                 //finally, recompile website.css
-                Core.Website.SaveLessFile(File.ReadAllText(App.MapPath("/Content/website.less")), "/wwwroot/css/website.css", "/Content");
+                //Core.Website.SaveLessFile(File.ReadAllText(App.MapPath("/Content/website.less")), "/wwwroot/css/website.css", "/Content");
             }
         }
 
