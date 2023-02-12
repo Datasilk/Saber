@@ -5,6 +5,32 @@
         <strong>website.less</strong>, <strong>website.css</strong>, <strong>website.js</strong>, 
         and all user content from <strong>wwwroot</strong>.
     </p>
+    <div class="row pad-top">
+        <div class="col six">
+            <div class="row input checkbox hover">
+                <input type="checkbox" id="export_webpages" checked="checked" />
+                <label for="export_webpages">Include web page files (html/css/less/js)</label>
+            </div>
+        </div>
+        <div class="col six">
+            <div class="row input checkbox hover">
+                <input type="checkbox" id="export_images" checked="checked" />
+                <label for="export_images">Include image files</label>
+            </div>
+        </div>
+        <div class="col six">
+            <div class="row input checkbox hover">
+                <input type="checkbox" id="export_other" />
+                <label for="export_other">Include all other files</label>
+            </div>
+        </div>
+        <div class="col six">
+            <div class="row hover">
+                <div class="col field">Last modified</div>
+                <div class="col input"><input type="date" id="export_lastmodified" /></div>
+            </div>
+        </div>
+    </div>
     <div class="row text-center pad-top">
         <a href="/Export" target="_blank" class="button export-content" onclick="S.editor.export.hide()">Export Content</a>
     </div>

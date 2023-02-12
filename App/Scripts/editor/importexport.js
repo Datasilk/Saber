@@ -37,7 +37,23 @@ S.editor.export = {
         S.editor.dropmenu.hide();
         S.ajax.post('ImportExport/RenderExport', {}, function (d) {
             S.popup.show('Export Website', d, { width: 600 });
+            $('.import-export input').on('input', S.editor.export.updateForm);
+            S.editor.export.updateForm();
         });
+    },
+
+    updateForm: function () {
+        var data = {
+            webpages: export_webpages.checked == true ? 1 : 0,
+            images: export_images.checked == true ? 1 : 0,
+            other: export_other.checked == true ? 1 : 0,
+            modified: typeof export_lastmodified.value != 'undefined' && export_lastmodified.value != '' ? export_lastmodified.value.replace(/\-/g, '/') : null
+        };
+        $('a.export-content').attr('href', "/Export" +
+            '?webpages=' + data.webpages +
+            '&images=' + data.images +
+            '&other=' + data.other +
+            (data.modified != null ? '&modified=' + data.modified : ''));
     },
 
     hide: function () {

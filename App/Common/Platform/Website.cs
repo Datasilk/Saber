@@ -376,7 +376,7 @@ namespace Saber.Common.Platform
             }
         }
 
-        public static byte[] Export()
+        public static byte[] Export(bool includeWebPages = true, bool includeImages = true, bool includeOtherFiles = true, DateTime? lastModified = null)
         {
             //generate zip archive in memory
             var fms = new MemoryStream();
@@ -385,10 +385,49 @@ namespace Saber.Common.Platform
                 using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
                 {
                     var files = Core.Website.AllFiles();
-                    var root = App.MapPath("/") + (App.IsDocker ? "/" : "\\");
+                    var slash = (App.IsDocker ? "/" : "\\");
+                    var root = App.MapPath("/") + slash;
+                    var include = new List<string>();
+                    if (includeWebPages == true)
+                    {
+                        include.AddRange(new string[]
+                        {
+                            slash + "Content" + slash + "pages" + slash,
+                            slash + "Content" + slash + "partials" + slash,
+                            slash + "Content" + slash + "website.js",
+                            slash + "Content" + slash + "website.less",
+                            slash + "wwwroot" + slash + "content" + slash + "pages" + slash,
+                            slash + "wwwroot" + slash + "content" + slash + "partials" + slash,
+                            slash + "wwwroot" + slash + "js" + slash,
+                            slash + "wwwroot" + slash + "css" + slash
+                        });
+                    }
                     foreach (var file in files)
                     {
+                        var ext = file.GetFileExtension();
+                        if (includeImages == false && Image.Extensions.Contains("." + ext))
+                        {
+                            //ignore images
+                            continue;
+                        }else if(includeOtherFiles == false && !include.Any(a => file.Contains(a)))
+                        {
+                            //ignore other files
+                            continue;
+                        }
+                        //check if file exists
                         if (!File.Exists(file)) { continue; }
+
+                        if(lastModified != null)
+                        {
+                            var modified = File.GetLastWriteTime(file);
+                            if(modified.CompareTo(lastModified) <= 0) 
+                            { 
+                                //file is too old
+                                continue; 
+                            }
+                        }
+
+                        //add file to zip archive
                         archive.CreateEntryFromFile(file, file.Replace(root, ""), CompressionLevel.Fastest);
                     }
                 }

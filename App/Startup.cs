@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.StaticFiles;
 using Datasilk.Core.Extensions;
 using Saber.Common.Platform;
+using Saber.Common.Utility;
 
 namespace Saber
 {
@@ -527,6 +528,8 @@ namespace Saber
             Core.Delegates.DataSources.RenderPositionSettings = DataSources.RenderPositionSettings;
             Core.Delegates.Website.ImportWebsite = Website.Import;
             Core.Delegates.Website.ExportWebsite = Website.Export;
+            Core.Delegates.Image.Shrink = Image.Shrink;
+            Core.Delegates.Image.ConvertPngToJpg = Image.ConvertPngToJpg;
 
             //execute Configure method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)

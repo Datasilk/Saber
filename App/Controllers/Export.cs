@@ -10,7 +10,12 @@ namespace Saber.Controllers
             try
             {
                 var filename = "SaberExport.zip";
-                var content = new ByteArrayContent(Common.Platform.Website.Export());
+                var includeWebPages = Parameters.ContainsKey("webpages") && Parameters["webpages"] != "1" ? false : true;
+                var includeImages = Parameters.ContainsKey("images") && Parameters["images"] != "1" ? false : true;
+                var includeOtherFiles = Parameters.ContainsKey("other") && Parameters["other"] == "1" ? true : false;
+                var modified = Parameters.ContainsKey("modified") && Parameters["modified"].Split("/").Length > 2 ? Parameters["modified"].Split("/") : new string[0];
+                DateTime? lastModified = Parameters.ContainsKey("modified") && Parameters["modified"].Split("/").Length > 2 ? new DateTime(int.Parse(modified[0]), int.Parse(modified[1]), int.Parse(modified[2])) : null;
+                var content = new ByteArrayContent(Common.Platform.Website.Export(includeWebPages, includeImages, includeOtherFiles, lastModified));
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
                 content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
                 content.Headers.ContentDisposition.FileName = filename;

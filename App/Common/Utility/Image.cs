@@ -53,5 +53,19 @@ namespace Saber.Common.Utility
                 fs.Dispose();
             }
         }
+
+        public static void ConvertPngToJpg(string filename, string outfile, int quality = 100)
+        {
+            using (var fs = File.OpenRead(App.MapPath(filename)))
+            {
+                var image = SixLabors.ImageSharp.Image.Load(fs);
+
+                image.Save(App.MapPath(outfile), new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder()
+                {
+                    Quality = quality
+                });
+                fs.Dispose();
+            }
+        }
     }
 }
