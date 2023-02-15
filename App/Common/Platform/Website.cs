@@ -449,10 +449,9 @@ namespace Saber.Common.Platform
                 var buffer = new byte[512];
                 var bytesRead = default(int);
 
-                if(clean == true)
+                if (clean == true)
                 {
                     //clean all existing files before importing new website
-                    ViewCache.Clear();
                     var allfiles = Core.Website.AllFiles();
                     if(protectedFiles != null && protectedFiles.Length > 0)
                     {
@@ -468,6 +467,7 @@ namespace Saber.Common.Platform
                     }
                 }
 
+                //copy all files from zip archive into appropriate folders
                 foreach (var entry in archive.Entries)
                 {
                     if (entry.Name == "") { continue; }
@@ -566,17 +566,17 @@ namespace Saber.Common.Platform
                                         }
                                         break;
                                 }
-                                if (!string.IsNullOrEmpty(lesspath))
-                                {
-                                    //Console.WriteLine("compiling LESS file: " + App.MapPath(lesspath + entry.Name.Replace(".less", ".css")));
-                                    //
-                                    //if (!Directory.Exists(App.MapPath(lesspath)))
-                                    //{
-                                    //    Directory.CreateDirectory(App.MapPath(lesspath));
-                                    //}
-                                    //var data = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                                    //Core.Website.SaveLessFile(data, lesspath + entry.Name.Replace(".less", ".css"), copyTo);
-                                }
+                                //if (!string.IsNullOrEmpty(lesspath))
+                                //{
+                                //    //compile LESS file into CSS
+                                //    Console.WriteLine("compiling LESS file: " + App.MapPath(lesspath + entry.Name.Replace(".less", ".css")));
+                                //    if (!Directory.Exists(App.MapPath(lesspath)))
+                                //    {
+                                //        Directory.CreateDirectory(App.MapPath(lesspath));
+                                //    }
+                                //    var data = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+                                //    Core.Website.SaveLessFile(data, lesspath + entry.Name.Replace(".less", ".css"), copyTo);
+                                //}
 
                             }
                             else if (root == "content" && extension == "js")
@@ -587,6 +587,10 @@ namespace Saber.Common.Platform
                         }
                     }
                 }
+
+                //clear all cache within Saber
+                ViewCache.Clear();
+                Cache.Store.Clear();
 
                 //finally, recompile website.css
                 //Core.Website.SaveLessFile(File.ReadAllText(App.MapPath("/Content/website.less")), "/wwwroot/css/website.css", "/Content");

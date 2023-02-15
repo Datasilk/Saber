@@ -1,6 +1,7 @@
-﻿S.editor.dropmenu.add('.menu-bar .menu-item-website > .drop-menu > .menu', 'market', 'Marketplace', '#icon-market', true, () => {
+﻿console.log('add Marketplace menu item');
+S.editor.dropmenu.add('.menu-bar .menu-item-website > .drop-menu > .menu', 'market', 'Marketplace', '#icon-market', true, () => {
     //show market tab
-    var host = 'http://www.sabercms.com/'; //S.editor.env == 'prod' ? 'https://www.sabercms.com/' : 'http://localhost:7071/';
+    var host = 'https://www.sabercms.com/'; //S.editor.env == 'prod' ? 'https://www.sabercms.com/' : 'http://localhost:7071/';
     $('.editor .sections > .tab').addClass('hide');
 
     if ($('.tab.market-section').length == 0) {

@@ -13,18 +13,24 @@
             {
                 return Error("Import file must be a compressed zip file.");
             }
-            //create backup of website
-            //var copyTo = App.MapPath("Content/backups/");
-            //if (!Directory.Exists(copyTo))
-            //{
-            //    Directory.CreateDirectory(copyTo);
-            //}
-            //File.WriteAllBytes(copyTo + "latest.zip", Common.Platform.Website.Export());
+            var createBackup = Parameters.ContainsKey("backup") && Parameters["backup"] != "1" ? false : true;
+            var deleteExisting = Parameters.ContainsKey("delete") && Parameters["delete"] == "1" ? true : false;
+
+            if (createBackup == true)
+            {
+                //create backup of website
+                var copyTo = App.MapPath("Content/backups/");
+                if (!Directory.Exists(copyTo))
+                {
+                    Directory.CreateDirectory(copyTo);
+                }
+                File.WriteAllBytes(copyTo + "latest.zip", Common.Platform.Website.Export());
+            }
 
             //open uploaded zip file
             try
             {
-                Common.Platform.Website.Import(Parameters.Files["zip"]);
+                Common.Platform.Website.Import(Parameters.Files["zip"], deleteExisting);
             }
             catch(Exception ex)
             {

@@ -383,16 +383,22 @@ namespace Saber
             {
                 Server.ServicePaths = servicepaths.Replace(" ", "").Split(',');
             }
+            //configure Cookies
+            if(config.GetSection("cookies:samesite").Value == "none")
+            {
+                App.CookiesUseSameSiteNone = true;
+            }
+            Core.Session.CookieName = config.GetSection("cookies:name")?.Value ?? "Saber";
 
             //configure Server database connection strings
             Query.Sql.ConnectionString = config.GetSection("sql:" + config.GetSection("sql:Active").Value).Value;
 
             //configure Server security
-            Server.BcryptWorkfactor = int.Parse(config.GetSection("encryption:bcrypt_work_factor").Value);
-            Server.Salt = config.GetSection("encryption:salt").Value;
+            Server.BcryptWorkfactor = int.Parse(config.GetSection("encryption:bcrypt_work_factor")?.Value ?? "10");
+            Server.Salt = config.GetSection("encryption:salt")?.Value ?? "saber";
 
             //configure Public API developer key
-            Server.DeveloperKeys = config.GetSection("developer-keys").Get<List<Models.ApiKey>>();
+            Server.DeveloperKeys = config.GetSection("developer-keys").Get<List<Models.ApiKey>>() ?? new List<Models.ApiKey>();
             Core.Service.ApiKeys = Server.DeveloperKeys;
 
             //inject app lifetime
@@ -415,8 +421,10 @@ namespace Saber
                 {
                     var headers = context.Context.Response.Headers;
                     var contentType = headers["Content-Type"].ToString();
-                    if ((context.File.PhysicalPath.Contains("wwwroot\\editor") ||
-                    context.File.PhysicalPath.Contains("wwwroot/editor")) && context.File.Name.EndsWith(".js"))
+                    if (!string.IsNullOrEmpty(context.File.PhysicalPath) && 
+                    (context.File.PhysicalPath.Contains("wwwroot\\editor") ||
+                    context.File.PhysicalPath.Contains("wwwroot/editor")) && 
+                    context.File.Name.EndsWith(".js"))
                     {
                         contentType = "application/javascript";
                         headers.Add("Content-Encoding", "gzip");
@@ -536,9 +544,12 @@ namespace Saber
             {
                 try
                 {
-                    var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
-                    vendor.Configure(app, env, config);
-                    Console.WriteLine("Configured Startup for " + kv.Key);
+                    if (kv.Value != null)
+                    {
+                        var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
+                        vendor.Configure(app, env, config);
+                        Console.WriteLine("Configured Startup for " + kv.Key);
+                    }
                 }
                 catch (Exception ex) {
                     Console.WriteLine("Vendor startup error: " + ex.Message);

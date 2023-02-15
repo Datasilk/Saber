@@ -879,7 +879,7 @@ namespace Saber.Common
                 {
                     foreach (var i in type.GetInterfaces())
                     {
-                        if (i.Name == "IVendorCorsPolicy")
+                        if (i.Name == "IVendorPageResponse")
                         {
                             GetPageResponseFromType(type);
                             break;

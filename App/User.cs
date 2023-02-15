@@ -112,8 +112,13 @@ namespace Saber
                 var auth = Query.Users.CreateAuthToken(UserId);
                 var options = new CookieOptions()
                 {
-                    Expires = DateTime.Now.AddMonths(1)
+                    Expires = DateTime.Now.AddMonths(1),
                 };
+                if (App.CookiesUseSameSiteNone == true)
+                {
+                    options.SameSite = SameSiteMode.None;
+                    options.Secure = true;
+                }
 
                 Context.Response.Cookies.Append("authId", auth, options);
             }
