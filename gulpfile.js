@@ -627,11 +627,19 @@ gulp.task('watch', function () {
 //publish task ////////////////////////////////////////////////////////////////////
 function publishStep1() {
     //copy data to publish folder
-    gulp.src(['Publish/README.md'])
+    gulp.src([
+        'Publish/README.md',
+        'Publish/Dockerfile',
+        'Publish/docker-compose.yml'
+        ])
         .pipe(gulp.dest(paths.publish));
 
     //copy data to publish/App folder
-    gulp.src(['Publish/web.config'])
+    gulp.src([
+        'Publish/web.config',
+        'Publish/appsettings.json',
+        'App/appsettings.Production.json'
+        ])
         .pipe(gulp.dest(paths.publishapp));
 
     //copy Content & wwwroot files

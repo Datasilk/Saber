@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using Saber.Core.Extensions.Strings;
@@ -7,6 +8,21 @@ namespace Saber.Common.Utility
 {
     public static class FileSystem
     {
+        /// <summary>
+        /// Create a directory within the file system
+        /// </summary>
+        /// <param name="path">The relative path</param>
+        public static void CreateDirectory(string path)
+        {
+            try
+            {
+                Directory.CreateDirectory(App.MapPath(path));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
+            }
+        }
 
         public static void CopyDirectoryContents(string targetFolder, string outputFolder, string[] extensions = null)
         {
@@ -18,7 +34,10 @@ namespace Saber.Common.Utility
                 {
                     Directory.CreateDirectory(path.Replace(targetFolder, outputFolder));
                 }
-                catch (Exception) { }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
+                }
             }
 
             //next, copy all files in sub directories
@@ -30,7 +49,10 @@ namespace Saber.Common.Utility
                 {
                     File.Copy(path, path.Replace(targetFolder, outputFolder), true);
                 }
-                catch (Exception) { }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
+                }
             }
         }
 

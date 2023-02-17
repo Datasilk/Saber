@@ -3,34 +3,34 @@
     .import-export.import li{padding-bottom:10px;}
     .import-export.import li b{line-height:1.6;}
 </style>
-<div class="row import-export import pad-bottom">
-    <div class="col nine tablet-twelve">
-        <div class="row">
-            <p>
-                Add content to your website, including HTML, CSS, LESS, & Javascript. Make sure
-                the zip file you upload contains files within the following folder structure. Include
-                at least one of the folders below within your zip file, or simply import a zip file 
-                that was <b>exported</b> from Saber. You can learn more by reading the 
-                <a href="https://saber.datasilk.io/support/import-export.html" target="_blank">documentation</a>.
-            </p>
-        </div>
-        <div class="row pad-top">
-            <div class="col six">
-                <div class="row input checkbox hover">
-                    <input type="checkbox" id="export_webpages" checked="checked" />
-                    <label for="export_webpages">Include web page files (html/css/less/js)</label>
-                </div>
+<div class="row import-export import">
+    <div class="row">
+        <p>
+            Add content to your website, including HTML, CSS, LESS, & Javascript. Make sure
+            the zip file you upload contains files within the following folder structure. Include
+            at least one of the folders below within your zip file, or simply import a zip file 
+            that was <b>exported</b> from Saber. You can learn more by reading the 
+            <a href="https://saber.datasilk.io/support/import-export.html" target="_blank">documentation</a>.
+        </p>
+    </div>
+    <div class="row pad-top pad-bottom">
+        <div class="col six">
+            <div class="row input checkbox hover">
+                <input type="checkbox" id="import_backup" />
+                <label for="import_backup">Create Backup (latest.zip)</label>
             </div>
-            <div class="col six">
-                <div class="row input checkbox hover">
-                    <input type="checkbox" id="export_images" checked="checked" />
-                    <label for="export_images">Include image files</label>
-                </div>
+        </div>
+        <div class="col six">
+            <div class="row input checkbox hover">
+                <input type="checkbox" id="import_delete" />
+                <label for="import_delete">Delete existing files</label>
             </div>
         </div>
     </div>
-    <div class="col three tablet-twelve right">
-        <div class="text-right"><button>Import Content</button></div>
-        <input type="file" id="import_zip" class="hidden-button" />
+    <div class="row text-center">
+        <div class="col">
+            <div><button>Import Content</button></div>
+            <input type="file" id="import_zip" class="hidden-button" />
+        </div>
     </div>
 </div>

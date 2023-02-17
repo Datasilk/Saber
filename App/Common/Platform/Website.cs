@@ -285,8 +285,6 @@ namespace Saber.Common.Platform
             Directory.SetCurrentDirectory(App.MapPath("/"));
         }
 
-
-
         public class ConsoleLogger : Logger
         {
             public ConsoleLogger(dotless.Core.Loggers.LogLevel level) : base(level) { }
@@ -308,28 +306,29 @@ namespace Saber.Common.Platform
             {
                 Console.WriteLine("Copying template website to live website...");
                 //copy default website since none exists yet
-                Directory.CreateDirectory(App.MapPath("/wwwroot/content/"));
-                Directory.CreateDirectory(App.MapPath("/wwwroot/content/pages/"));
-                Directory.CreateDirectory(App.MapPath("/wwwroot/fonts/"));
-                Directory.CreateDirectory(App.MapPath("/wwwroot/images/"));
-                Directory.CreateDirectory(App.MapPath("/wwwroot/js/"));
-                Directory.CreateDirectory(App.MapPath("/wwwroot/css/"));
-                Directory.CreateDirectory(App.MapPath("/Content/pages/"));
-                Directory.CreateDirectory(App.MapPath("/Content/partials/"));
-                Directory.CreateDirectory(App.MapPath("/Content/emails/"));
+                CreateDirectory("/wwwroot/content/");
+                CreateDirectory("/wwwroot/content/pages/");
+                CreateDirectory("/wwwroot/fonts/");
+                CreateDirectory("/wwwroot/images/");
+                CreateDirectory("/wwwroot/js/");
+                CreateDirectory("/wwwroot/css/");
+                CreateDirectory("/Content/pages/");
+                CreateDirectory("/Content/partials/");
+                CreateDirectory("/Content/emails/");
 
                 //copy all temp folders into wwwroot
                 var dir = new DirectoryInfo(App.MapPath("/Content/temp"));
                 var exclude = new string[]
                 {
-                    "\\pages",
-                    "\\partials",
-                    "\\emails",
-                    "\\app-css"
+                    "/pages",
+                    "/partials",
+                    "/emails",
+                    "/app-css"
                 };
                 foreach (var d in dir.GetDirectories())
                 {
-                    if (!exclude.Any(a => d.FullName.Contains(a)))
+                    var p = d.FullName.Replace("\\", "/");
+                    if (!exclude.Any(a => p.Contains(a)))
                     {
                         Utility.FileSystem.CopyDirectoryContents(d.FullName, App.MapPath("/wwwroot/" + d.Name));
                     }
@@ -365,15 +364,20 @@ namespace Saber.Common.Platform
                     var filename = file.GetFilename();
                     var ext = "." + file.GetFileExtension().ToLower();
                     if (excluded.Contains(ext)) { continue; }
-                    var folder = App.MapPath("/wwwroot/content/" + file.Replace(contentFolder, "").Replace(filename, ""));
-                    if (!Directory.Exists(folder))
+                    var folder = "/wwwroot/content/" + file.Replace(contentFolder, "").Replace(filename, "");
+                    if (!Directory.Exists(App.MapPath(folder)))
                     {
-                        Directory.CreateDirectory(folder);
+                        CreateDirectory(folder);
                     }
                     var workingDir = file.Replace(contentFolder, "");
-                    File.Copy(file, folder + filename, true);
+                    File.Copy(file, App.MapPath(folder) + filename, true);
                 }
             }
+        }
+
+        private static void CreateDirectory(string path)
+        {
+            Utility.FileSystem.CreateDirectory(path);
         }
 
         public static byte[] Export(bool includeWebPages = true, bool includeImages = true, bool includeOtherFiles = true, DateTime? lastModified = null)

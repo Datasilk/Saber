@@ -12,6 +12,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{850D4D03-BB79-423C-9A19-7669CD737CF6}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		Publish\appsettings.json = Publish\appsettings.json
+		Publish\Dockerfile = Publish\Dockerfile
 		gulpfile.js = gulpfile.js
 		install.js = install.js
 		LICENSE = LICENSE
