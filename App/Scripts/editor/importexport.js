@@ -14,11 +14,17 @@
                 var file = $('#import_zip')[0].files[0];
                 var xhr = new XMLHttpRequest();
                 var fd = new FormData();
-                xhr.open("POST", "/Import", true);
+                var data = {
+                    backup: import_backup.checked == true ? 1 : 0,
+                    delete: import_delete.checked == true ? 1 : 0
+                };
+                xhr.open('POST', '/Import?backup=' + data.backup + '&delete=' + data.delete, true);
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == 4 && xhr.status == 200) {
                         S.popup.hide();
-                        alert("Imported website content successfully after generating a zip backup file (/backups/" + xhr.responseText + ').\n Please "hard" refresh this page (Ctrl + F5) to see the changes made to your website.')
+                        alert('Imported website content successfully' +
+                            (data.backup == 1 ? ' after generating a zip backup file (/backups/latest.zip)' : '') +
+                            '.\n Please "hard" refresh this page (Ctrl + F5) to see the changes made to your website.');
                     }
                 };
                 xhr.onerror = function (err) {

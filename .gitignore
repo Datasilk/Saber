@@ -22,6 +22,8 @@
 /Sql/dbo/Vendor
 /Vendors/**
 /AWS/
+/cypress/videos
+/cypress/screenshots
 compose.bat
 PublishProfiles
 **/Sql.publish*.xml
@@ -30,6 +32,7 @@ PublishProfiles
 *.bak
 *.jfm
 *.sh
+
 .vs
 *.pubxml*
 *.prod.json

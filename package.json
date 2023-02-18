@@ -6,6 +6,7 @@
     "@babel/core": "^7.13.1",
     "@babel/preset-env": "^7.13.5",
     "child_process": "^1.0.2",
+    "cypress": "^12.6.0",
     "del": "^6.0.0",
     "google-closure-compiler-js": "^20170218.0.0",
     "gulp": "^4.0.0",
@@ -25,6 +26,7 @@
     "into-stream": "^3.1.0"
   },
   "scripts": {
-    "install": "node install.js"
+    "install": "node install.js",
+    "cypress:open": "cypress open"
   }
 }
