@@ -11,7 +11,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d27733f6-2297-417b-8dbf-685bfe001459</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>app.js</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -28,9 +29,19 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="app.js" />
-    <Content Include="package.json" />
-    <Content Include="README.md" />
+    <Folder Include="downloads\" />
+    <Folder Include="e2e\" />
+    <Folder Include="fixtures\" />
+    <Folder Include="support\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="e2e\all.cy.js" />
+    <Content Include="e2e\create-admin.cy.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="fixtures\example.json" />
+    <Content Include="support\commands.js" />
+    <Content Include="support\e2e.js" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
 </Project>
