@@ -1,7 +1,7 @@
 # Saber Release
 #### A comprehensive guide to creating a release for Saber
 
-### Release for Windows
+### Release for Windows, Linux, & Docker
 1. Remove all Vendor plugins located in the `App/Vendors` folder
 2. Build Sql Project using the **Release** configuration
 3. If you don't already have a local database named **Saber-Test**, create one by publishing the *Sql* project
