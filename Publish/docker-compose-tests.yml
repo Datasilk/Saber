@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  saber:
+    container_name: saber-runtests
+    build: .
+    image: saber-runtests
+    ports:
+      - 7070:80
+      - 7090:443
+    environment:
+      - RUNTESTS=1

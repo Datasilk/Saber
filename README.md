@@ -42,7 +42,7 @@ enterprise-level web application development.
 ## Installation (from release)
 
 1. Get the latest release of Saber at https://www.github.com/Datasilk/Saber/releases
-2. Extract the release **7z** zip file
+2. Extract the release zip file
 3. Create/Update your MSSQL Database
     * To **Create a new database**, execute the file `Sql/Saber_Create.sql` using **SSMS**. You may want to open the file first and change the following lines to your own database name:
         ``` sql
@@ -54,13 +54,16 @@ enterprise-level web application development.
 
 #### Docker Support
 Saber also supports Docker. In order for Saber to work with Docker in Windows, you must first install and run [Docker Desktop](https://docs.docker.com/docker-for-windows/). 
-1. Copy `/App/Content/temp/config.docker.json` to `/App` folder and open the file to update the Sql connection string Initial Catalog along with the User ID & Password you've created in Sql Server that has access to your Saber database
-2. Click **Play** in Visual Studio after selecting the **Docker** launch command from the drop down
+* Running Docker from Visual Studio:
+    1. Copy `/App/Content/temp/config.docker.json` to `/App` folder and open the file to update the Sql connection string Initial Catalog along with the User ID & Password you've created in Sql Server that has access to your Saber database
+    2. Click **Play** in Visual Studio after selecting the **Docker** launch command from the drop down
+* Running Docker from Release:
+    1. execute `docker compose up` to run Saber after extracting the contents of the release zip file
 
 #### IIS Support
 Saber now supports IIS natively (in-process & out-of-process)
 
-1. Install the [.NET Core Hosting Bundle](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/)
+1. Install the [.NET Core Hosting Bundle](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/) to allow IIS to support .NET Core applications
 2. Create a new website in Internet Information Services (IIS)
     * Under **Sites**, right-click and select **Add Website..**
     * Under **Application Pools**, right-click the application pool associated with your new website and select **Basic Settings...**, then change **.NET CLR version** to **No Managed Code**
@@ -78,10 +81,10 @@ Saber now supports IIS natively (in-process & out-of-process)
 
 
 #### Windows Support
-Saber can be run from PowerShell with the following command `./Saber.exe`
+Saber can be run from PowerShell with the following command `./Saber.exe` from the release `App` folder
 
 #### Linux Support
-Saber can be run with the following command `./saber`
+Saber can be run with the following command `./saber` from the release `App` folder
 
 ----
 

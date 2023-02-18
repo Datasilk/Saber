@@ -3,7 +3,6 @@ services:
   saber:
     container_name: saber-docker
     build: .
-    image: saber-1.0
     ports:
       - 7070:80
       - 7090:443

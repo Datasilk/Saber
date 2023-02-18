@@ -391,7 +391,20 @@ namespace Saber
             Core.Session.CookieName = config.GetSection("cookies:name")?.Value ?? "Saber";
 
             //configure Server database connection strings
-            Query.Sql.ConnectionString = config.GetSection("sql:" + config.GetSection("sql:Active").Value).Value;
+            Query.Sql.ConnectionString = config.GetSection("sql:" + config.GetSection("sql:Active").Value)?.Value ?? "";
+            var envars = System.Environment.GetEnvironmentVariables();
+            if (envars.Contains("RUNTESTS"))
+            {
+                //use the test database instead
+                Console.WriteLine("Changing connection string database to \"Saber-Test\" for running tests");
+                if (Query.Sql.ConnectionString.Contains("Saber"))
+                {
+                    Query.Sql.ConnectionString = Query.Sql.ConnectionString.Replace("Saber", "Saber-Test");
+                    Console.WriteLine("Resetting Saber-Test database (Sequences & Tables)");
+                    Query.Sql.ExecuteNonQuery("ResetDatabase");
+                }
+                
+            }
 
             //configure Server security
             Server.BcryptWorkfactor = int.Parse(config.GetSection("encryption:bcrypt_work_factor")?.Value ?? "10");

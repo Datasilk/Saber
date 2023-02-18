@@ -22,6 +22,8 @@
 /Sql/dbo/Vendor
 /Vendors/**
 /AWS/
+/Core/Properties
+/Query/Properties
 /cypress/videos
 /cypress/screenshots
 compose.bat

@@ -138,6 +138,7 @@
     <Build Include="dbo\Stored Procedures\Sessions\Session_Get.sql" />
     <Build Include="dbo\Stored Procedures\Sessions\Session_Set.sql" />
     <Build Include="dbo\Functions\SplitArray.sql" />
+    <Build Include="dbo\Stored Procedures\Utility\ResetDatabase.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />
