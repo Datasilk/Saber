@@ -1,1 +1,1 @@
-import './create-admin.cy.js';
+import './001-create-admin.cy.js';
