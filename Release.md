@@ -11,5 +11,6 @@
 3. Run `runtests.bat`
 4. If all Cypress tests pass after executing `runtests.bat`, compress the contents of `/App/bin/Release/Saber`
 into a zip file named `Saber-{version}.zip`, where `{version}` is replaced with the current version of Saber.
-5. Create a new release in GitHub titled *Saber {version}* and include a list of features & bug fixes in the description.
+5. Create a new release in GitHub titled "*Saber {version}*" and include a list of features & bug fixes in the description along with the zip file you created.
+6. Tell the world that you released a new version of Saber!
 
