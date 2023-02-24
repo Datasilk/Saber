@@ -397,11 +397,28 @@ namespace Saber
             {
                 //use the test database instead
                 Console.WriteLine("Changing connection string database to \"Saber-Test\" for running tests");
-                if (Query.Sql.ConnectionString.Contains("Saber"))
+                if (Query.Sql.ConnectionString.Contains("database"))
                 {
-                    Query.Sql.ConnectionString = Query.Sql.ConnectionString.Replace("Saber", "Saber-Test");
-                    Console.WriteLine("Resetting Saber-Test database (Sequences & Tables)");
-                    Query.Sql.ExecuteNonQuery("ResetDatabase");
+                    var connparts = Query.Sql.ConnectionString.Split(";", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                    var connstr = "";
+                    var found_database = false;
+                    foreach(var part in connparts)
+                    {
+                        var parts = part.Split("=", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                        if (parts[0] == "database")
+                        {
+                            parts[1] = "Saber-Test";
+                            found_database = true;
+                        }
+                        connstr += parts[0] + "=" + parts[1] + ";";
+                    }
+
+                    if(connstr != "" && found_database == true)
+                    {
+                        Query.Sql.ConnectionString = connstr;
+                        Console.WriteLine("Resetting Saber-Test database (Sequences & Tables)");
+                        Query.Sql.ExecuteNonQuery("ResetDatabase");
+                    }
                 }
                 
             }

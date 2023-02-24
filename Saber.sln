@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		Publish\appsettings.json = Publish\appsettings.json
+		cypress.config.js = cypress.config.js
 		Publish\docker-compose-tests.yml = Publish\docker-compose-tests.yml
 		Publish\docker-compose.yml = Publish\docker-compose.yml
 		Publish\Dockerfile = Publish\Dockerfile
@@ -25,6 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Publish\README.md = Publish\README.md
 		Release.md = Release.md
 		runtests.bat = runtests.bat
+		RunTests.md = RunTests.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{5F1BFE59-6C7F-4358-A061-B21E89B8E529}"

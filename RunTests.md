@@ -15,7 +15,8 @@ an `import` for that spec within the `cypress/e2e/all.cy.js` file so that your t
 test all features for Saber before the next release.
 
 ### Testing your Spec
-You can test your spec at any time by running the command `npx cypress run --spec cypress/e2e/path/to/my-spec.cy.js`.
+You can test your spec at any time by running the command `npx cypress open` to manually run any of your test,
+or execute `npx cypress run --spec cypress/e2e/path/to/my-spec.cy.js` to run your test without a GUI.
 You should make sure that Saber is running on port `7070`.
 
 If you run Saber with the `RUNTESTS=1` environment variable, Saber will utilize the **Saber-Test** database and

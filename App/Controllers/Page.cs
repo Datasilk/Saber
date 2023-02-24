@@ -79,7 +79,6 @@ namespace Saber.Controllers
                 );
                 if (Parameters.ContainsKey("live"))
                 {
-                    Footer = new StringBuilder();
                     Footer.Append(Cache.LoadFile("/Views/Editor/live-preview-min.html"));
                 }
 

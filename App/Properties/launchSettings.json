@@ -15,6 +15,15 @@
       "applicationUrl": "https://localhost:7090;http://localhost:7009",
       "hotReloadEnabled": false
     },
+    "Run Tests": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "RUNTESTS": "1"
+      },
+      "applicationUrl": "https://localhost:7090;http://localhost:7009",
+      "hotReloadEnabled": false
+    },
     "Docker": {
       "commandName": "Docker",
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
