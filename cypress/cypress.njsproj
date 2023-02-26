@@ -35,8 +35,9 @@
     <Folder Include="support\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="e2e\002-getting-started.cy.js" />
     <Content Include="e2e\all.cy.js" />
-    <Content Include="e2e\001-create-admin.cy.js">
+    <Content Include="e2e\001-new-admin.cy.js">
       <SubType>Code</SubType>
     </Content>
     <Content Include="fixtures\example.json" />

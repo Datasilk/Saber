@@ -1,6 +1,6 @@
-describe('Login As Administrator & View Saber Editor', () => {
+describe('New Admin', () => {
     it('Create Administrator Account', () => {
-        cy.visit('http://localhost:7070/login');
+        cy.visit('/login');
         cy.get('#name').type('Cypress Tester');
         cy.get('#email').type('tester@test.com');
         cy.get('#password').type('test123456');
@@ -8,9 +8,5 @@ describe('Login As Administrator & View Saber Editor', () => {
         cy.intercept('POST', '/api/User/CreateAdminAccount').as('create-admin-account');
         cy.get('#btncreate').click();
         cy.get('#loginform');
-    });
-    it("View Saber's Editor", () => {
-        cy.login();
-        cy.toggleEditor();
     });
 })
