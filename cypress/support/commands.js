@@ -35,6 +35,30 @@ Cypress.Commands.add('getEditor', () => {
         .then(cy.wrap);
 });
 
+
+//get editor Window object (which contains S.editor object)
+Cypress.Commands.add('Saber', (callback) => {
+    cy.get('#editor-iframe').then(a => {
+        callback(a[0].contentWindow);
+    });
+});
+
+//get Monaco editor instance from Saber current selected tab
+Cypress.Commands.add('monaco', (callback) => {
+    cy.Saber((saber) => {
+        callback(saber.S.editor.instance);
+    });
+});
+
+//write code in the Monaco editor
+Cypress.Commands.add('writeCode', (text) => {
+    cy.monaco((editor) => {
+        const range = editor.getModel().getFullModelRange();
+        editor.setSelection(range);
+        editor.getModel().setValue(text);
+    });
+});
+
 //toggle file browser
 Cypress.Commands.add('toggleBrowser', () => {
     cy.getEditor().find('.menu-item-view > .row').click();
@@ -68,14 +92,25 @@ Cypress.Commands.add('newFolder', (name, path) => {
     });
 });
 
-//navigate folder
+function getPathId(path) {
+    return path.replace(/\//g, '_').replace(/\./g, '_');
+}
+
+//open file
+Cypress.Commands.add('openFile', (path) => {
+    cy.getEditor().find('.row.type-file[data-path="' + path + '"]').click();
+    var path_id = getPathId(path);
+    cy.getEditor().find('.tab-' + path_id).should('have.class', 'selected');
+});
+
+//open folder
 Cypress.Commands.add('viewFolder', (path) => {
     cy.getEditor().find('.row.type-folder[data-path="' + path + '"]').click();
     cy.getEditor().find('.file-browser .browser-path').should('contains.text', path);
 });
 
 //previous folder
-Cypress.Commands.add('prevFolder', (path) => {
+Cypress.Commands.add('prevFolder', () => {
     cy.getEditor().find('.row.fileid-goback').click();
 });
 
@@ -85,6 +120,8 @@ Cypress.Commands.add('deleteFile', (path) => {
     cy.getEditor().find('.row.type-file[data-path="' + path + '"] .delete-btn').click();
     cy.wait('@delete-file').then((s) => {
         expect(s.response.statusCode).to.eq(200);
+        var path_id = getPathId(path);
+        cy.getEditor().find('.tab-' + path_id).should('not.exist');
     });
 });
 
@@ -97,9 +134,11 @@ Cypress.Commands.add('deleteFolder', (path) => {
     });
 });
 
-
-
-
-
-
-
+//save file contents
+Cypress.Commands.add('saveFile', () => {
+    cy.intercept('POST', '/api/Files/SaveFile').as('save-file');
+    cy.getEditor().type('{ctrl+s}');
+    cy.wait('@save-file').then((s) => {
+        expect(s.response.statusCode).to.eq(200);
+    });
+});

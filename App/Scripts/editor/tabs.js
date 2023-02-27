@@ -136,6 +136,7 @@ S.editor.tabs = {
     close: function (id, path, callback) {
         var tab = $('.tab-' + id);
         var sibling = tab.prev().find('.row.hover');
+        console.log(['remove tab', id, tab]);
         tab.remove();
         S.editor.sessions.remove(id);
 
@@ -160,9 +161,9 @@ S.editor.tabs = {
         var tabs = $('.edit-tabs li > div').filter((i, a) => $(a).attr('data-path') && $(a).attr('data-path').indexOf(path) >= 0);
         if (tabs.length > 0) {
             var tab = $(tabs[0]);
-            var id = tab.parent()[0].className.replace('tab-', '');
+            var id = tab.parent()[0].className.replace('tab-', '').split(' ')[0];
             var tpath = $(tab).attr('data-path');
-            S.editor.tabs.close(id, tpath, () => { S.editor.tabs.closeFromPath(path) });
+            S.editor.tabs.close(id, tpath);
         }
     }
 };
