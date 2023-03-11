@@ -42,7 +42,7 @@ S.editor.folder = {
     },
 
     delete: (path) => {
-        if (confirm('Do you really want to delete the folder "' + path + '"? This cannot be undone.')) {
+        if (window.parent.confirm('Do you really want to delete the folder "' + path + '"? This cannot be undone.')) {
             S.ajax.post('Files/DeleteFolder', { path: path },
                 function (d) {
                     //reload file browser

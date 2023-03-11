@@ -59,6 +59,17 @@ Cypress.Commands.add('writeCode', (text) => {
     });
 });
 
+//write code in the Monaco editor
+Cypress.Commands.add('insertCode', (text) => {
+    cy.monaco((editor) => {
+        const range = editor.getModel().getFullModelRange();
+        range.startColumn = range.endColumn;
+        range.startLineNumber = range.endLineNumber;
+        editor.setSelection(range);
+        editor.getModel().setValue();
+    });
+});
+
 //toggle file browser
 Cypress.Commands.add('toggleBrowser', () => {
     cy.getEditor().find('.menu-item-view > .row').click();
@@ -141,4 +152,11 @@ Cypress.Commands.add('saveFile', () => {
     cy.wait('@save-file').then((s) => {
         expect(s.response.statusCode).to.eq(200);
     });
+});
+
+//select tab
+Cypress.Commands.add('selectTab', (path) => {
+    var path_id = getPathId(path);
+    cy.getEditor().find('.tab-' + path_id + ' > .row.hover').click();
+    cy.getEditor().find('.tab-' + path_id).should('have.class', 'selected');
 });

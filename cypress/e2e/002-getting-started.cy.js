@@ -25,7 +25,34 @@ describe('Getting Started', () => {
 `<div class="gallery">
     <div class="lg-img"></div>
     {{list}}
-</div>`
+    {{item-buttons}}
+</div>
+
+<div class="paging-buttons">
+    <div class="back-button {{back-disabled}}disabled{{/back-disabled}}">
+        <a href="{{back-url}}" title="Previous Page">{{back-number}}</a>
+    </div>
+    {{page-buttons}}
+    <div class="next-button {{next-disabled}}disabled{{/next-disabled}}">
+        <a href="{{next-url}}" title="Next Page">{{next-number}}</a>
+    </div>
+</div>
+<div class="paging-info">
+    Found {{total-results}} total results.
+    Displaying {{displayed-results}} results, starting at {{starting-result}} thru {{ending-result}}.
+    Currently on page {{current-page}} of {{total-pages}} total pages
+</div>
+{{item-button-template}}
+    <div class="item-button item-{{item-number}} {{selected}}selected{{/selected}}">
+        {{item-label}}
+    </div>
+{{/item-button-template}}
+{{page-button-template}}
+    <div class="page-button page-{{page-number}} {{selected}}selected{{/selected}}">
+        <a href="{{page-url}}" title="Jump to Page {{page-number}}">{{page-number}}</a>
+    </div>
+{{/page-button-template}}
+`
         );
         //save gallery.html
         cy.saveFile();
@@ -42,6 +69,8 @@ describe('Getting Started', () => {
         cy.saveFile();
 
         //add list item to bottom of home page
+        cy.selectTab('content/pages/home.html');
+        cy.insertCode('{{list}}');
 
 
         //remove files & folders related to test

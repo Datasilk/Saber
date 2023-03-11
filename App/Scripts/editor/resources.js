@@ -119,7 +119,7 @@ S.editor.resources = {
     },
 
     delete: function (file, elem, path) {
-        if (!confirm('Do you really want to delete the file "' + file + '"? This cannot be undone.')) { return; }
+        if (!window.parent.confirm('Do you really want to delete the file "' + file + '"? This cannot be undone.')) { return; }
         S.ajax.post('PageResources/Delete', { path: path ?? S.editor.resources.path, file: file },
             function (d) {
                 $(elem).parents('li').first().remove();

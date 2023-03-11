@@ -146,7 +146,7 @@
         },
 
         delete: (id, name) => {
-            if (confirm('Do you really want to delete the security group "' + name + '"? This cannot be undone.')) {
+            if (window.parent.confirm('Do you really want to delete the security group "' + name + '"? This cannot be undone.')) {
                 S.ajax.post('Security/DeleteGroup', { groupId: id },
                     () => {
                         //remove section

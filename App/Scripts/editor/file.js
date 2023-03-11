@@ -42,7 +42,7 @@ S.editor.file = {
     },
 
     delete: (path) => {
-        if (confirm('Do you really want to delete the file "' + path + '"? This cannot be undone.')) {
+        if (window.parent.confirm('Do you really want to delete the file "' + path + '"? This cannot be undone.')) {
             S.ajax.post('Files/DeleteFile', { path: path },
                 function (d) {
                     //reload file browser
