@@ -69,9 +69,12 @@ describe('Getting Started', () => {
         cy.saveFile();
 
         //add list item to bottom of home page
+        var homehtml = '';
         cy.selectTab('content/pages/home.html');
-        cy.insertCode('{{list}}');
-
+        cy.insertCode('{{list}}', (val) => {
+            homehtml = val;
+        });
+        cy.saveFile();
 
         //remove files & folders related to test
         cy.deleteFile('content/partials/lists/gallery.html');
@@ -79,5 +82,12 @@ describe('Getting Started', () => {
         cy.prevFolder();
         cy.deleteFolder('content/partials/lists');
         cy.prevFolder();
+
+        console.log('select home.html tab');
+
+        //set homepage back to original source code
+        cy.selectTab('content/pages/home.html');
+        console.log('home html = ' + homehtml);
+        cy.writeCode('wtf is going on?');
     });
 })

@@ -59,14 +59,20 @@ Cypress.Commands.add('writeCode', (text) => {
     });
 });
 
-//write code in the Monaco editor
-Cypress.Commands.add('insertCode', (text) => {
+//get all code from Monaco editor
+Cypress.Commands.add('getCode', (callback) => {
     cy.monaco((editor) => {
-        const range = editor.getModel().getFullModelRange();
-        range.startColumn = range.endColumn;
-        range.startLineNumber = range.endLineNumber;
-        editor.setSelection(range);
-        editor.getModel().setValue();
+        callback(editor.getModel().getValue());
+    });
+});
+
+//write code in the Monaco editor at the bottom of existing code
+Cypress.Commands.add('insertCode', (text, callback) => {
+    cy.monaco((editor) => {
+        cy.getCode((value) => {
+            editor.getModel().setValue(value + '\n' + text);
+            if (callback) { callback(value); }
+        });
     });
 });
 

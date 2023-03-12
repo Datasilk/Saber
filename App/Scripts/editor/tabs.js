@@ -136,7 +136,6 @@ S.editor.tabs = {
     close: function (id, path, callback) {
         var tab = $('.tab-' + id);
         var sibling = tab.prev().find('.row.hover');
-        console.log(['remove tab', id, tab]);
         tab.remove();
         S.editor.sessions.remove(id);
 
