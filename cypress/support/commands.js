@@ -37,22 +37,22 @@ Cypress.Commands.add('getEditor', () => {
 
 
 //get editor Window object (which contains S.editor object)
-Cypress.Commands.add('Saber', (callback) => {
-    cy.get('#editor-iframe').then(a => {
-        callback(a[0].contentWindow);
-    });
+Cypress.Commands.add('Saber', () => {
+    return cy.get('#editor-iframe').then(a => {
+        return a[0].contentWindow;
+    }).then(cy.wrap);
 });
 
 //get Monaco editor instance from Saber current selected tab
-Cypress.Commands.add('monaco', (callback) => {
-    cy.Saber((saber) => {
-        callback(saber.S.editor.instance);
-    });
+Cypress.Commands.add('monaco', () => {
+    return cy.Saber().then((saber) => {
+        return saber.S.editor.instance;
+    }).then(cy.wrap);
 });
 
 //write code in the Monaco editor
 Cypress.Commands.add('writeCode', (text) => {
-    cy.monaco((editor) => {
+    cy.monaco().then((editor) => {
         const range = editor.getModel().getFullModelRange();
         editor.setSelection(range);
         editor.getModel().setValue(text);
@@ -60,18 +60,31 @@ Cypress.Commands.add('writeCode', (text) => {
 });
 
 //get all code from Monaco editor
-Cypress.Commands.add('getCode', (callback) => {
-    cy.monaco((editor) => {
-        callback(editor.getModel().getValue());
-    });
+Cypress.Commands.add('getCode', () => {
+    return cy.monaco().then((editor) => {
+        return editor.getModel().getValue();
+    }).then(cy.wrap);
 });
 
-//write code in the Monaco editor at the bottom of existing code
-Cypress.Commands.add('insertCode', (text, callback) => {
-    cy.monaco((editor) => {
-        cy.getCode((value) => {
-            editor.getModel().setValue(value + '\n' + text);
-            if (callback) { callback(value); }
+//inject code in the Monaco editor at a specific line
+Cypress.Commands.add('insertCode', (text, line, callback) => {
+    cy.monaco().then((editor) => {
+        cy.getCode().then((code) => {
+            if (line != null) {
+                var lines = code.split('\n');
+                var writer = '';
+                for (var x = 0; x < line; x++) {
+                    writer += lines[x] + '\n';
+                }
+                writer += text + '\n';
+                for (var x = line; x < lines.length; x++) {
+                    writer += lines[x] + '\n';
+                }
+                editor.getModel().setValue(writer);
+            } else {
+                editor.getModel().setValue(code + '\n' + text);
+            }
+            callback(code);
         });
     });
 });
