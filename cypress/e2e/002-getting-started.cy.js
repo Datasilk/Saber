@@ -76,12 +76,13 @@ describe('Getting Started', () => {
         cy.getCode().then((homehtml) => {
             cy.monaco().then((editor) => {
                 var lines = editor.getModel().getLineCount();
+                var listname = 'test';
                 editor.revealLine(lines);
                 editor.setPosition({ column: 1, lineNumber: lines });
                 cy.getEditor().type('{end}{enter}');
                 cy.getEditor().find('.tab-components').click();
                 cy.getEditor().find('.component-item[data-key="list"]').click();
-                cy.getEditor().find('#component_id').type('test');
+                cy.getEditor().find('#component_id').type(listname);
                 cy.intercept('POST', '/api/Files/Dir').as('select-partial');
                 //select partial container
                 cy.getEditor().find('.param-container .select-partial button').click();
@@ -109,7 +110,16 @@ describe('Getting Started', () => {
 
                 //navigate to page content tab
                 cy.getEditor().find('.tab-content-fields').click();
-                cy.wait(60000);
+
+                //add list item #1 (upload image, set title)
+                cy.intercept('POST', '/api/ContentFields/Render').as('render-fields');
+                cy.getEditor().find('.field_list-' + listname + ' .add-list-item > div').click();
+                cy.wait('@render-fields').then((s) => {
+                    expect(s.response.statusCode).to.eq(200);
+                });
+                cy.getEditor().find('.popup.show .field_image button').click();
+
+                
 
                 //remove files & folders related to test
                 cy.deleteFile('content/partials/lists/gallery.html');
