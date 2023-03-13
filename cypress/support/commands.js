@@ -145,22 +145,29 @@ Cypress.Commands.add('prevFolder', () => {
 });
 
 //delete file
-Cypress.Commands.add('deleteFile', (path) => {
+Cypress.Commands.add('deleteFile', (path, ignore) => {
     cy.intercept('POST', '/api/Files/DeleteFile').as('delete-file');
-    cy.getEditor().find('.row.type-file[data-path="' + path + '"] .delete-btn').click();
-    cy.wait('@delete-file').then((s) => {
-        expect(s.response.statusCode).to.eq(200);
-        var path_id = getPathId(path);
-        cy.getEditor().find('.tab-' + path_id).should('not.exist');
-    });
+    var el = cy.getEditor().find('.row.type-file[data-path="' + path + '"] .delete-btn');
+    if (el.length > 0 || !ignore) {
+        el.click();
+        cy.wait('@delete-file').then((s) => {
+            expect(s.response.statusCode).to.eq(200);
+            var path_id = getPathId(path);
+            cy.getEditor().find('.tab-' + path_id).should('not.exist');
+        });
+    }
 });
 
 //delete folder
-Cypress.Commands.add('deleteFolder', (path) => {
+Cypress.Commands.add('deleteFolder', (path, ignore) => {
     cy.intercept('POST', '/api/Files/DeleteFolder').as('delete-folder');
-    cy.getEditor().find('.row.type-folder[data-path="' + path + '"] .delete-btn').click();
-    cy.wait('@delete-folder').then((s) => {
-        expect(s.response.statusCode).to.eq(200);
+    cy.getEditor().then(editor => {
+        if (editor.find('.row.type-folder[data-path="' + path + '"] .delete-btn').length > 0 || !ignore) {
+            cy.getEditor().find('.row.type-folder[data-path="' + path + '"] .delete-btn').click();
+            cy.wait('@delete-folder').then((s) => {
+                expect(s.response.statusCode).to.eq(200);
+            });
+        }
     });
 });
 

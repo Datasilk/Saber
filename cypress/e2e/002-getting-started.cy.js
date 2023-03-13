@@ -10,6 +10,7 @@ describe('Getting Started', () => {
 
         //open partials folder
         cy.viewFolder('content/partials');
+        cy.deleteFolder('content/partials/lists', true);
 
         //create new partial files for list container & items
         cy.newFolder('lists', 'content/partials');
@@ -21,8 +22,8 @@ describe('Getting Started', () => {
         //open gallery.html and write code
         path = 'content/partials/lists/gallery.html';
         cy.openFile(path);
-        cy.writeCode('' + 
-`<div class="gallery">
+        cy.writeCode('' +
+            `<div class="gallery">
     <div class="lg-img"></div>
     {{list}}
     {{item-buttons}}
@@ -61,29 +62,75 @@ describe('Getting Started', () => {
         path = 'content/partials/lists/gallery-item.html';
         cy.openFile(path);
         cy.writeCode('' +
-`<div class="gallery-item">
+            `<div class="gallery-item">
     <img data-src="{{image}}" alt="{{title}}" title="{{title}}">
 </div>`
         );
         //save gallery-item.html
         cy.saveFile();
 
-        //add list item to bottom of home page
+        //add list item to bottom of home page /////////////////////////////////////
         cy.selectTab('content/pages/home.html');
-        cy.insertCode('{{list}}', null, (homehtml) => {
-            cy.saveFile();
 
-            //remove files & folders related to test
-            cy.deleteFile('content/partials/lists/gallery.html');
-            cy.deleteFile('content/partials/lists/gallery-item.html');
-            cy.prevFolder();
-            cy.deleteFolder('content/partials/lists');
-            cy.prevFolder();
+        //select last line of code
+        cy.getCode().then((homehtml) => {
+            cy.monaco().then((editor) => {
+                var lines = editor.getModel().getLineCount();
+                editor.revealLine(lines);
+                editor.setPosition({ column: 1, lineNumber: lines });
+                cy.getEditor().type('{end}{enter}');
+                cy.getEditor().find('.tab-components').click();
+                cy.getEditor().find('.component-item[data-key="list"]').click();
+                cy.getEditor().find('#component_id').type('test');
+                cy.intercept('POST', '/api/Files/Dir').as('select-partial');
+                //select partial container
+                cy.getEditor().find('.param-container .select-partial button').click();
+                cy.wait('@select-partial').then((s) => {
+                    expect(s.response.statusCode).to.eq(200);
+                });
+                var pathId = getPathId('Content/partials/lists');
+                cy.getEditor().find('.modal-browser .fileid-' + pathId).click();
+                pathId = getPathId('Content/partials/lists/gallery.html');
+                cy.getEditor().find('.modal-browser .fileid-' + pathId).click();
 
-            //set homepage back to original source code
-            cy.selectTab('content/pages/home.html');
-            cy.writeCode(homehtml);
-            cy.saveFile();
+                //select partial view
+                cy.getEditor().find('.param-partial .add-list-item a').click();
+                cy.wait('@select-partial').then((s) => {
+                    expect(s.response.statusCode).to.eq(200);
+                });
+                pathId = getPathId('Content/partials/lists');
+                cy.getEditor().find('.modal-browser .fileid-' + pathId).click();
+                pathId = getPathId('Content/partials/lists/gallery-item.html');
+                cy.getEditor().find('.modal-browser .fileid-' + pathId).click();
+
+                //generate list
+                cy.getEditor().find('.component-configure .save-component').click();
+                cy.saveFile();
+
+                //navigate to page content tab
+                cy.getEditor().find('.tab-content-fields').click();
+                cy.wait(60000);
+
+                //remove files & folders related to test
+                cy.deleteFile('content/partials/lists/gallery.html');
+                cy.deleteFile('content/partials/lists/gallery-item.html');
+                cy.prevFolder();
+                cy.deleteFolder('content/partials/lists');
+                cy.prevFolder();
+
+                //set homepage back to original source code
+                cy.selectTab('content/pages/home.html');
+                cy.writeCode(homehtml);
+                cy.saveFile();
+            });
         });
+
+        //////////////////////////////////////////////////////////////////////////
     });
-})
+});
+
+
+
+function getPathId(path) {
+    return path.replace(/\//g, '_').replace(/\./g, '_');
+}

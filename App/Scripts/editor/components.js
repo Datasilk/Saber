@@ -73,6 +73,7 @@
                         var field = param.List == true ? htmlparamlist.replace('##add-list-item##', param.AddItemJs != '' ? ' onclick="' + param.AddItemJs + '"' : '').replace('##id##', id)
                             : htmlparam;
                         field = field.replace('##name##', param.Name)
+                            .replace('##param-key##', 'param-' + param.Key)
                             .replace('##required##', !required ? '<span class="faded">optional</span>' : '');
                         switch (param.DataType) {
                             case 0: //text
