@@ -113,13 +113,19 @@ describe('Getting Started', () => {
 
                 //add list item #1 (upload image, set title)
                 cy.intercept('POST', '/api/ContentFields/Render').as('render-fields');
+                cy.intercept('POST', '/api/PageResources/Render').as('render-uploads');
+                cy.intercept('POST', '/Upload/Resources').as('upload-file');
                 cy.getEditor().find('.field_list-' + listname + ' .add-list-item > div').click();
-                cy.wait('@render-fields').then((s) => {
-                    expect(s.response.statusCode).to.eq(200);
-                });
+                cy.wait('@render-fields').then((s) => {expect(s.response.statusCode).to.eq(200);});
                 cy.getEditor().find('.popup.show .field_image button').click();
-
-                
+                cy.uploadFiles('cypress/uploads/list/01.jpg');
+                cy.wait('@upload-file').then((s) => {expect(s.response.statusCode).to.eq(200);});
+                cy.wait('@render-uploads').then((s) => { expect(s.response.statusCode).to.eq(200); });
+                cy.getEditor().find('.popup.show img[alt="image 01.jpg"]').click();
+                cy.getEditor().find('.popup.show input.button.apply').click();
+                cy.getEditor().find('.popup.show #field_title').type('Nissan Frontier @ Nimbus backyard');
+                cy.getEditor().find('.popup.show .has-content-fields button.apply').click();
+                cy.wait(60 * 1000);
 
                 //remove files & folders related to test
                 cy.deleteFile('content/partials/lists/gallery.html');

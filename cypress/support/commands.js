@@ -186,3 +186,15 @@ Cypress.Commands.add('selectTab', (path) => {
     cy.getEditor().find('.tab-' + path_id + ' > .row.hover').click();
     cy.getEditor().find('.tab-' + path_id).should('have.class', 'selected');
 });
+
+//upload file(s)
+Cypress.Commands.add('uploadFiles', (files) => {
+    cy.Saber().then((saber) => {
+        var uploader = saber.S.editor.resources.uploader.id;
+        cy.getEditor().find('#' + uploader).selectFile(files, { force: true });
+    })
+});
+
+
+
+

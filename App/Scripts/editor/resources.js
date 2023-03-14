@@ -97,7 +97,7 @@ S.editor.resources = {
                 resizeResources();
 
                 //initialize uploader
-                var uploader = launchPad({
+                var uploader = S.editor.resources.uploader = launchPad({
                     url: '/Upload/Resources',
                     onUploadStart: function (files, xhr, data) {
                         data.append('path', path);
