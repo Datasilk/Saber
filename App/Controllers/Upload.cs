@@ -61,6 +61,10 @@ namespace Saber.Controllers
                             case "jpg":
                             case "jpeg":
                             case "png":
+                            case "webp":
+                            case "pbm":
+                            case "tiff":
+                            case "tga":
                                 //create a thumbnail image to display in the page resources section of the editor
                                 if (!Directory.Exists(App.MapPath(pubdir + thumbdir)))
                                 {
@@ -79,6 +83,7 @@ namespace Saber.Controllers
                                     }
                                 }
                                 break;
+
                         }
                     }
                 }

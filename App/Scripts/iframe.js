@@ -39,12 +39,12 @@
                 case 'Escape': //escape key
                     if (container.style.display == 'block') {
                         container.style.display = 'none';
-                        iframe.contentWindow.S.editor.filebar.preview.show();
+                        iframe.contentWindow.S.editor.preview.show();
                     } else {
                         loadEditor();
                         container.style.display = 'block';
                         if (iframe.contentWindow.S) {
-                            iframe.contentWindow.S.editor.filebar.preview.hide();
+                            iframe.contentWindow.S.editor.preview.hide();
                         }
                         resizeIframe();
                     }

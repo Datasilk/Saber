@@ -25,14 +25,18 @@ Cypress.Commands.add('loadEditor', () => {
 
 //toggle the editor
 Cypress.Commands.add('toggleEditor', () => {
-    cy.get('body').type('{esc}');
+    cy.get('.editor-iframe').then(editor => {
+        if (!editor.is(':visible')) {
+            cy.get('body').type('{esc}');
+        } else {
+            cy.getEditor().type('{esc}');
+        }
+    });
 });
 
 //get editor iframe window
 Cypress.Commands.add('getEditor', () => {
-    return cy.get('#editor-iframe')
-        .its('0.contentDocument.body').should('not.be.empty')
-        .then(cy.wrap);
+    return cy.get('#editor-iframe').its('0.contentDocument.body').then(cy.wrap);
 });
 
 
@@ -122,29 +126,25 @@ Cypress.Commands.add('newFolder', (name, path) => {
     });
 });
 
-function getPathId(path) {
-    return path.replace(/\//g, '_').replace(/\./g, '_');
-}
-
-//open file
+//open file (that is displayed within file browser)
 Cypress.Commands.add('openFile', (path) => {
     cy.getEditor().find('.row.type-file[data-path="' + path + '"]').click();
     var path_id = getPathId(path);
     cy.getEditor().find('.tab-' + path_id).should('have.class', 'selected');
 });
 
-//open folder
+//open folder (that is displayed within file browser)
 Cypress.Commands.add('viewFolder', (path) => {
     cy.getEditor().find('.row.type-folder[data-path="' + path + '"]').click();
     cy.getEditor().find('.file-browser .browser-path').should('contains.text', path);
 });
 
-//previous folder
+//previous folder (displayed within file browser)
 Cypress.Commands.add('prevFolder', () => {
     cy.getEditor().find('.row.fileid-goback').click();
 });
 
-//delete file
+//delete file (that is displayed within file browser)
 Cypress.Commands.add('deleteFile', (path, ignore) => {
     cy.intercept('POST', '/api/Files/DeleteFile').as('delete-file');
     var el = cy.getEditor().find('.row.type-file[data-path="' + path + '"] .delete-btn');
@@ -158,7 +158,7 @@ Cypress.Commands.add('deleteFile', (path, ignore) => {
     }
 });
 
-//delete folder
+//delete folder (that is displayed within file browser)
 Cypress.Commands.add('deleteFolder', (path, ignore) => {
     cy.intercept('POST', '/api/Files/DeleteFolder').as('delete-folder');
     cy.getEditor().then(editor => {
@@ -171,11 +171,32 @@ Cypress.Commands.add('deleteFolder', (path, ignore) => {
     });
 });
 
+//delete media (that is displayed within file browser media window)
+Cypress.Commands.add('deleteMedia', (file, ignore) => {
+    cy.intercept('POST', '/api/PageResources/Delete').as('delete-media');
+    var el = cy.getEditor().find('li.file-' + getMediaId(file) + ' .close-btn');
+    if (el.length > 0 || !ignore) {
+        el.click({ force: true });
+        cy.wait('@delete-media').then((s) => {
+            expect(s.response.statusCode).to.eq(200);
+        });
+    }
+});
+
 //save file contents
 Cypress.Commands.add('saveFile', () => {
     cy.intercept('POST', '/api/Files/SaveFile').as('save-file');
     cy.getEditor().type('{ctrl+s}');
     cy.wait('@save-file').then((s) => {
+        expect(s.response.statusCode).to.eq(200);
+    });
+});
+
+//save page content
+Cypress.Commands.add('savePageContent', () => {
+    cy.intercept('POST', '/api/ContentFields/Save').as('save-content');
+    cy.getEditor().type('{ctrl+s}');
+    cy.wait('@save-content').then((s) => {
         expect(s.response.statusCode).to.eq(200);
     });
 });
@@ -195,6 +216,26 @@ Cypress.Commands.add('uploadFiles', (files) => {
     })
 });
 
+//open website.js
+Cypress.Commands.add('openWebsiteJs', (files) => {
+    cy.getEditor().find('.menu-item-view').click();
+    cy.getEditor().find('.menu-item-view .drop-menu .item-website-js').click();
+});
 
+//open website.less
+Cypress.Commands.add('openWebsiteLess', (files) => {
+    cy.getEditor().find('.menu-item-view').click();
+    cy.getEditor().find('.menu-item-view .drop-menu .item-website-less').click();
+});
+
+// helper functions ///////////////////////////////////////////////////////////////
+
+function getPathId(path) {
+    return path.replace(/\//g, '_').replace(/\./g, '_');
+}
+
+function getMediaId(file) {
+    return file.replace(/\!\@\#\$\%\^\&\*\(\)\=\+\[\]\{\}\,\?\<\>\;\|\'\"/g, '').replace(/\-/g, '_').replace(/\./g, '_');
+}
 
 

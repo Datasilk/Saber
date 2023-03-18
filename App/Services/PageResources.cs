@@ -106,6 +106,10 @@ namespace Saber.Services
                             case "jpg":
                             case "jpeg":
                             case "gif":
+                            case "webp":
+                            case "pbm":
+                            case "tiff":
+                            case "tga":
                                 type = "image";
                                 item.Show("img");
                                 item["svg"] = "";
@@ -233,6 +237,7 @@ namespace Saber.Services
                                 break;
                         }
                         item["file-type"] = type;
+                        item["file-id"] = f.Name.ReplaceAll("", new string[] {"@#$%^&*()+=|[]{};'\",<>?~"}).ReplaceAll("_", new string[] {"-", "." }).ToLower();
                         item["filename"] = f.Name;
                         if (type == "file")
                         {

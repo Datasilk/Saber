@@ -192,7 +192,7 @@ S.editor.fields = {
         S.editor.fields.resize(e);
     },
     saveThenPreview: function () {
-        S.editor.fields.save(S.editor.filebar.preview.show);
+        S.editor.fields.save(S.editor.preview.show);
         
     },
     listeners: {
@@ -331,7 +331,6 @@ S.editor.fields = {
                     data.splice(index, 1);
                     hidden.val(JSON.stringify(data));
                     li.remove();
-                    S.editor.fields.save();
                 }
                 field.find('.tab-list-items .icon-counter').html(data.length);
 
@@ -340,6 +339,7 @@ S.editor.fields = {
                 for (var y = 0; y < items.length; y++) {
                     $(items[y]).attr('data-index', y + 1);
                 }
+                S.editor.fields.change();
             }, 
             add: function (e, title, key, partial, lang, container, renderApi) {
                 return S.editor.fields.custom.list.update(e, title, key, partial, lang, container, null, null, renderApi);
@@ -372,7 +372,8 @@ S.editor.fields = {
                         //add list item to data source
                         var datafields = hidden.val().split('|!|');
                         var datasrc = datafields.filter(a => a.indexOf('data-src=') == 0)[0].replace('data-src=', '');
-                        S.ajax.post('DataSources/AddRecord', {datasource:datasrc, columns:fields}, (response) => {});
+                        S.ajax.post('DataSources/AddRecord', { datasource: datasrc, columns: fields }, (response) => { });
+                        S.editor.fields.change();
                     } else {
                         //add list item directly to list component hidden field
                         var data = S.editor.fields.custom.list.parse(hidden);
@@ -384,9 +385,7 @@ S.editor.fields = {
                         field.find('.tab-list-items .icon-counter').html(data.length);
                         hidden.val(JSON.stringify(data));
                         field.find('.list-items .accordion').addClass('expanded');
-                    }
 
-                    if (!hasDataSource) {
                         //add item to list in content fields tab
                         var i = (index != null ? parseInt(index) : field.find('.list-items li').length) + 1;
                         var ul = field.find('.list-items ul');
@@ -413,8 +412,6 @@ S.editor.fields = {
                         }
                         S.editor.fields.change();
                         S.editor.fields.save();
-                    } else {
-                        S.editor.fields.change();
                     }
                     S.popup.hide(popup);
                     S.editor.fields.custom.list.init(container);

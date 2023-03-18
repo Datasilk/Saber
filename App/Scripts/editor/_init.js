@@ -283,7 +283,7 @@ S.editor.init = function () {
     $('.tab-file-code').on('click', S.editor.filebar.code.show);
     $('.tab-page-settings').on('click', S.editor.filebar.settings.show);
     $('.tab-page-resources').on('click', S.editor.filebar.resources.show);
-    $('.tab-preview').on('click', S.editor.filebar.preview.show);
+    $('.tab-preview').on('click', S.editor.preview.show);
     $('.edit-bar').on('mousedown', function (e) {
         if (e.target != $('.edit-bar')[0]) { return; }
         if (S.editor.Rhino) {
@@ -345,21 +345,21 @@ S.editor.init = function () {
             S.editor.Rhino = Rhino;
 
             //change color scheme of Rhino window
-            S.editor.filebar.preview.hide();
+            S.editor.preview.hide();
         })();
     }
 
-    S.editor.filebar.preview.hide();
+    S.editor.preview.hide();
 };
 
 //set up editor tab
-$('.editor-tab').on('click', S.editor.filebar.preview.hide);
+$('.editor-tab').on('click', S.editor.preview.hide);
+
+//save fields if user previews web page
+S.editor.hotkey.addListener.keyESC(S.editor.fields.saveThenPreview);
 
 //register hotkeys for preview mode
 S.editor.hotkey.addListener.keyESC(() => {
     //show website preview
     S.editor.filebar.preview.toggle();
 });
-
-//save fields if user previews web page
-S.editor.hotkey.addListener.keyESC(S.editor.fields.saveThenPreview);
