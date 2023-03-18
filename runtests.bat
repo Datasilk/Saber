@@ -42,6 +42,7 @@ cmd /c npx cypress run --browser chrome --spec "cypress/e2e/all.cy.js"
 echo -------------------------------------------------------------------------------------------
 echo Cleaning up (shutting down Docker container and removing Docker image)
 echo -------------------------------------------------------------------------------------------
+echo|set/p="Press <ENTER> to continue.."&runas/u: "">NUL
 cd "App\bin\Release\Saber"
 cmd /c docker compose down --rmi "all"
 cd "..\..\..\..\"

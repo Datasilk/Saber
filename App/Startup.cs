@@ -397,15 +397,16 @@ namespace Saber
             {
                 //use the test database instead
                 Console.WriteLine("Changing connection string database to \"Saber-Test\" for running tests");
-                if (Query.Sql.ConnectionString.Contains("database"))
+                var connstr = Query.Sql.ConnectionString.ToLower();
+                if (connstr.Contains("database") || connstr.Contains("initial catalog"))
                 {
                     var connparts = Query.Sql.ConnectionString.Split(";", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-                    var connstr = "";
+                    connstr = "";
                     var found_database = false;
                     foreach(var part in connparts)
                     {
                         var parts = part.Split("=", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-                        if (parts[0] == "database")
+                        if (parts[0].ToLower() == "database" || parts[0].ToLower() == "initial catalog")
                         {
                             parts[1] = "Saber-Test";
                             found_database = true;
