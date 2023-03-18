@@ -273,6 +273,7 @@ S.editor.init = function () {
     $('.top-menu .menu-bar .item-web-pass').on('click', () => { S.editor.websettings.show('password-settings'); });
     $('.top-menu .menu-bar .item-web-dev-keys').on('click', () => { S.editor.websettings.show('dev-keys'); });
     $('.top-menu .menu-bar .item-web-public-apis').on('click', () => { S.editor.websettings.show('public-apis'); });
+    $('.top-menu .menu-bar .item-web-restart').on('click', () => { S.editor.websettings.show('restart'); });
     $('.top-menu .menu-bar .item-web-plugins').on('click', () => { S.editor.websettings.show('plugins'); });
     $('.top-menu .menu-bar .item-import').on('click', S.editor.import.show);
     $('.top-menu .menu-bar .item-export').on('click', S.editor.export.show);

@@ -260,6 +260,16 @@ namespace Saber.Services
             accordion["contents"] = viewPublicApis.Render();
             accordions.Append(accordion.Render());
 
+            //load restart app feature
+            var viewRestart = new View("/Views/WebsiteSettings/restart.html");
+
+            //render restart accordion
+            accordion.Clear();
+            accordion["id"] = "restart";
+            accordion["title"] = "Restart Website";
+            accordion["contents"] = viewRestart.Render();
+            accordions.Append(accordion.Render());
+
             //render plugins management accordion
             var viewPlugin = new View("/Views/WebsiteSettings/plugin-item.html");
             var viewFeature = new View("/Views/WebsiteSettings/plugin-feature.html");
@@ -801,6 +811,15 @@ namespace Saber.Services
             {
                 return Error("Error reading image file");
             }
+            return Success();
+        }
+        #endregion
+
+        #region "Restart"
+        public string Restart()
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            Common.Platform.Website.Restart();
             return Success();
         }
         #endregion

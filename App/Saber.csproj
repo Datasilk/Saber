@@ -32,6 +32,7 @@
     <Content Remove="Views\ImportExport\import.html" />
     <Content Remove="Views\Market\toolbar.html" />
     <None Remove="Views\ContentFields\readonly.html" />
+    <None Remove="Views\WebsiteSettings\restart.html" />
     <Content Include="wwwroot\web.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\Release.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\README.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>

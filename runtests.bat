@@ -13,6 +13,7 @@ echo Publishing Saber release
 echo -------------------------------------------------------------------------------------------
 cmd /c gulp publish
 
+if "%1" == "no-tests" goto done
 :check_docker
 docker-compose ls >nul 2>nul
 if %errorlevel%==0 goto start_docker
@@ -48,5 +49,6 @@ cmd /c docker compose down --rmi "all"
 cd "..\..\..\..\"
 RM "App\bin\Release\Saber\docker-compose.yml"
 COPY "Publish\docker-compose.yml" "App\bin\Release\Saber\"
+:done
 echo Done!
 :finish

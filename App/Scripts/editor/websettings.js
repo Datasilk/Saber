@@ -30,6 +30,10 @@ S.editor.websettings = {
                     S.ajax.inject(data);
                     S.editor.resize.window();
                     S.editor.websettings._loaded = true;
+                    $('.web-settings .btn-restart').on('click', () => {
+                        S.ajax.post('WebsiteSettings/Restart', {}, () => { });
+                        alert("Command sent to end the web application process. Please refresh this web page to start the Saber application again.");
+                    });
                     getSection();
                 }
             );
