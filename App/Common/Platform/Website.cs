@@ -588,23 +588,30 @@ namespace Saber.Common.Platform
 
         public static void Restart()
         {
-            //open web.config
-            var file = App.MapPath("/web.config");
-            var webconfig = File.ReadAllText(file);
-            if(webconfig.Contains("name=\"RESTART\" value=\"0\""))
+            if(Server.AppLifetime != null)
             {
-                webconfig.Replace("name=\"RESTART\" value=\"0\"", "name=\"RESTART\" value=\"1\"");
-            }
-            else if (webconfig.Contains("name=\"RESTART\" value=\"1\""))
-            {
-                webconfig.Replace("name=\"RESTART\" value=\"1\"", "name=\"RESTART\" value=\"0\"");
+                Server.AppLifetime.StopApplication();
             }
             else
             {
-                //add environment variable
-                webconfig.Replace("<environmentVariables>", "<environmentVariables>\n          <environmentVariable name=\"RESTART\" value=\"0\" />");
+                //open web.config & update to force IIS to restart app pool process
+                var file = App.MapPath("/web.config");
+                var webconfig = File.ReadAllText(file);
+                if (webconfig.Contains("name=\"RESTART\" value=\"0\""))
+                {
+                    webconfig.Replace("name=\"RESTART\" value=\"0\"", "name=\"RESTART\" value=\"1\"");
+                }
+                else if (webconfig.Contains("name=\"RESTART\" value=\"1\""))
+                {
+                    webconfig.Replace("name=\"RESTART\" value=\"1\"", "name=\"RESTART\" value=\"0\"");
+                }
+                else
+                {
+                    //add environment variable
+                    webconfig.Replace("<environmentVariables>", "<environmentVariables>\n          <environmentVariable name=\"RESTART\" value=\"0\" />");
+                }
+                File.WriteAllText(file, webconfig);
             }
-            File.WriteAllText(file, webconfig);
         }
 
         #region "Helper Classes"

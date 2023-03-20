@@ -44,8 +44,8 @@ S.editor.isResource = function (path, type) {
         return relpath == S.editor.path;
     } else if (type == 'website.css') {
         switch (dir + fileparts.join('.')) {
-            case 'content/partials/header.less':
-            case 'content/partials/footer.less':
+            case 'partials/header.less':
+            case 'partials/footer.less':
             case 'website.less':
                 return true;
         }
@@ -56,8 +56,8 @@ S.editor.isResource = function (path, type) {
         }
     } else if (type == 'partial') {
         switch (dir + fileparts.join('.')) {
-            case 'content/partials/header.html':
-            case 'content/partials/footer.html':
+            case 'partials/header.html':
+            case 'partials/footer.html':
                 return true;
         }
     }

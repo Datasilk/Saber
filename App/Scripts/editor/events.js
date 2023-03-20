@@ -3,7 +3,6 @@
     list: [],
 
     listen: function (event, func) {
-        //console.log('listen to ' + event);
         var events = S.editor.events.listeners.filter(a => a.event == event);
         if (events.length >= 1) {
             events[0].func = func;
@@ -13,7 +12,6 @@
     },
 
     add: function (event) {
-        //console.log('add ' + event + ' listener');
         if (S.editor.events.list.filter(a => a.event == event).length == 0) {
             S.editor.events.list.push(event);
         }
@@ -25,7 +23,6 @@
     },
 
     broadcast: function (event) {
-        //console.log('broadcast for ' + event);
         var item = S.editor.events.list.filter(a => a.event == event);
         if (item && item.length > 0) {
             var listeners = S.editor.events.listeners.filter(a => a.event == event);

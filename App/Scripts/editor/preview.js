@@ -3,8 +3,6 @@ S.editor.preview = {
         //display live preview of website
         var iframe = window.parent.document.getElementsByClassName('editor-iframe')[0];
         var doc = window.parent.document;
-        console.log('show preview...');
-        console.log(doc);
         var tagcss = doc.getElementById('page_css');
         var tagjs = doc.getElementById('page_js');
         var css = '/' + S.editor.path + '.css';
@@ -33,7 +31,6 @@ S.editor.preview = {
         if (S.editor.files.html.changed == true || S.editor.files.content.changed == true) {
             S.editor.files.html.changed = false;
             S.editor.files.content.changed = false;
-            console.log('window.parent.location.search = ' + window.parent.location.search);
             var search = window.parent.location.search;
             if (search != '') {
                 var parts = search.substr(1).split('&');
@@ -44,13 +41,10 @@ S.editor.preview = {
                     }
                 });
                 if (search.length > 1) { search = search.substr(0, search.length - 2); } else { search = ''; }
-                console.log('search = ' + search);
             }
             S.ajax.post('Page/Render' + search, { path: S.editor.path + '.html', language: window.language || 'en' },
                 function (d) {
                     var website = doc.getElementsByClassName('website')[0];
-                    console.log(d);
-                    console.log(website);
                     website.innerHTML = d.html;
                     if (d.javascript) {
                         window.parent.addScript(d.javascript);

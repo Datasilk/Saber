@@ -82,7 +82,6 @@ S.editor.save = function (path, content) {
             //S.editor.explorer.open(path);
         },
         function (d) {
-            console.log(d);
             S.editor.error('', d.responseText);
             tab.find('.loader').remove();
         }

@@ -121,7 +121,7 @@
                         <li class="menu-item-view">
                             <div class="row hover"><span>View</span></div>
                             <div class="drop-menu hide">
-                                <ul class="menu" style="max-width:275px">
+                                <ul class="menu" style="width:275px">
                                     {{file-browser}}
                                     <li>
                                         <div class="row hover item item-browse">
@@ -196,12 +196,12 @@
                                             <div class="col text">footer.less</div>
                                         </div>
                                     </li>
-                                    <li>
+                                    <li class="row">
                                         <div class="row line">&nbsp;</div>
                                     </li>
                                     {{/file-browser}}
                                     {{page-content}}
-                                    <li>
+                                    <li class="row">
                                         <div class="row hover item item-content-fields">
                                             <div class="col icon">
                                                 <svg viewBox="0 0 32 32">
@@ -213,7 +213,7 @@
                                     </li>
                                     {{/page-content}}
                                     {{page-resources}}
-                                    <li>
+                                    <li class="row">
                                         <div class="row hover item item-page-resources">
                                             <div class="col icon">
                                                 <svg viewBox="0 0 32 32">
@@ -226,7 +226,7 @@
                                     {{/page-resources}}
 
                                     {{page-settings}}
-                                    <li>
+                                    <li class="row">
                                         <div class="row hover item item-page-settings">
                                             <div class="col icon">
                                                 <svg viewBox="0 0 32 32">
@@ -237,7 +237,7 @@
                                         </div>
                                     </li>
                                     {{/page-settings}}
-                                    <li>
+                                    <li class="row">
                                         <div class="row line">&nbsp;</div>
                                     </li>
                                     {{website-settings}}
@@ -256,7 +256,17 @@
                                         <div class="row line">&nbsp;</div>
                                     </li>-->
                                     {{/website-settings}}
-                                    <li>
+                                    <li class="col six">
+                                        <div class="row hover item item-preview" onclick="S.editor.preview.show()">
+                                            <div class="col icon">
+                                                <svg viewBox="0 0 32 32">
+                                                    <use xlink:href="#icon-preview" x="0" y="0" width="32" height="32"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="col text">Preview</div>
+                                        </div>
+                                    </li>
+                                    <li class="col six">
                                         <div class="row hover item item-live-preview">
                                             <a href="about:blank" target="_parent" title="Inspect a live preview of this web page which will not contain any Saber editor resources">
                                                 <div class="col icon">

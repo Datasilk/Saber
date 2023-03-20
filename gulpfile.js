@@ -455,10 +455,6 @@ gulp.task('file', function () {
     var dir = pathlist.join('/').replace(file,'');
     var ext = file.split('.', 2)[1];
     var outputDir = paths.webroot + dir;
-    console.log(path);
-    console.log(file);
-    console.log(ext);
-    console.log(outputDir);
     var p = gulp.src('./App/' + path, { base: './App/' + dir });
     if (prod == true && ext == 'js') { p = p.pipe(uglify()); }
     if (ext == 'less') { p = p.pipe(less()); }

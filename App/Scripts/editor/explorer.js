@@ -115,7 +115,6 @@ S.editor.explorer = {
                 }
                 url += '/';
                 if (url == 'content/pages/') { url = '/'; }
-                //console.log(url);
                 $('.browser-path').html(url);
                 if (path.indexOf('wwwroot') == 0) {
                     //load resources section

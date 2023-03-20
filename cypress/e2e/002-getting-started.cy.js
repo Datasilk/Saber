@@ -82,8 +82,6 @@ describe('Getting Started', () => {
                 let imgurl = img.getAttribute('data-src');
                 img.src = imgurl;
                 if(x == 0){
-                    console.log(img);
-                    console.log(imgurl);
                     mainimg.src = imgurl;
                 }
                 img.onclick = function(e){

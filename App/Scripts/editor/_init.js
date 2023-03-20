@@ -265,6 +265,7 @@ S.editor.init = function () {
     $('.top-menu .menu-bar .item-new-folder').on('click', S.editor.folder.create.show);
     $('.top-menu .menu-bar .item-new-window').on('click', S.editor.newWindow);
     $('.top-menu .menu-bar .item-new-tab a').attr('href', path);
+    $('.top-menu .menu-bar .item-preview').on('click', S.editor.preview.show);
     $('.top-menu .menu-bar .item-live-preview a').attr('href', path + '?live');
     $('.top-menu .menu-bar .item-web-stylesheets').on('click', () => { S.editor.websettings.show('stylesheets'); });
     $('.top-menu .menu-bar .item-web-scripts').on('click', () => { S.editor.websettings.show('scripts'); });
