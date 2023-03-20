@@ -21,7 +21,6 @@ S.editor.save = function (path, content) {
 
         }
         else if ($('.tab-page-settings-section').hasClass('selected')) {
-            console.log('save page settings...');
             //save page settings ///////////////////////////////////////////////////////////////////////////////
             var settings = self.pagesettings;
             var saved = false;
@@ -85,15 +84,30 @@ S.editor.save = function (path, content) {
                 S.editor.files.js.changed = true;
             } else if(path.indexOf('partials/' >= 0)) {
                 //check if file is a partial and if partial content fields tab is loaded
-                //var fieldstab = $('.tab-' + self.fileId(path.replace('content/partials/', 'content-fields-')));
-                //if (fieldstab.length > 0) {
-                //    S.editor.fields.load(path, false);
-                //}
-                //S.editor.files.content.changed = true;
+                var fields_tab = $('.tab-' + self.fileId(path.replace('content/partials/', 'content-fields-')));
+                if (fields_tab.length > 0) {
+                    S.editor.fields.load(path, false);
+                }
+                S.editor.files.content.changed = true;
+            }
+
+            //check if file is a stylesheet
+            if (path.indexOf('.css') > 0 || path.indexOf('.less') > 0) {
+                var newpath = '/' + path.replace('.less', '.css');
+                if (S.editor.pageStylesheets.indexOf(newpath) >= 0) {
+                    S.editor.files.pagecss.push(newpath);
+                }
+            }
+
+            //check if file is a script
+            if (path.indexOf('.js') > 0) {
+                var newpath = '/' + path;
+                if (S.editor.pageScripts.indexOf(newpath) >= 0) {
+                    S.editor.files.pagescripts.push(newpath);
+                }
             }
             tab.find('.loader').remove();
             self.unChanged(path);
-            //S.editor.explorer.open(path);
         },
         function (d) {
             S.editor.error('', d.responseText);

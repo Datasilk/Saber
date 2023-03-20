@@ -27,6 +27,22 @@ S.editor.preview = {
             doc.getElementById('website_css').setAttribute('href', '/css/website.css?r=' + rnd);
         }
 
+        if (S.editor.files.pagecss.length > 0) {
+            //reload page-specific stylesheets
+            S.editor.files.pagecss.forEach(css => {
+                doc.querySelectorAll('link[href^="' + css + '"]')[0].setAttribute('href', css + '?r=' + rnd);
+            });
+            S.editor.files.pagecss = [];
+        }
+
+        if (S.editor.files.pagescripts.length > 0) {
+            //reload page-specific scripts
+            S.editor.files.pagescripts.forEach(js => {
+                doc.querySelectorAll('script[src^="' + js + '"]')[0].setAttribute('src', js + '?r=' + rnd);
+            });
+            S.editor.files.pagescripts = [];
+        }
+
         //next, reload rendered HTML
         if (S.editor.files.html.changed == true || S.editor.files.content.changed == true) {
             S.editor.files.html.changed = false;

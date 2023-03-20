@@ -56,5 +56,7 @@ S.editor.files = {
         js: { changed: false }
     },
     content: { changed: false },
-    partials: {} // e.g. { "header.html":false, "footer.html":true }
+    partials: {}, // e.g. { "header.html":false, "footer.html":true }
+    pagecss: [],
+    pagescripts: []
 };

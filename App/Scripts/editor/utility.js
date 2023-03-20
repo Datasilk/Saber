@@ -54,12 +54,6 @@ S.editor.isResource = function (path, type) {
             case 'website.js':
                 return true;
         }
-    } else if (type == 'partial') {
-        switch (dir + fileparts.join('.')) {
-            case 'partials/header.html':
-            case 'partials/footer.html':
-                return true;
-        }
     }
 };
 

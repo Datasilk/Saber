@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Linq;
 using Datasilk.Core.Web;
 using Saber.Core;
+using System.IO;
 
 namespace Saber.Controllers
 {
@@ -50,7 +51,7 @@ namespace Saber.Controllers
                 //load components list
                 var viewComponent = new View("/Views/Components/list-item.html");
                 var html = new StringBuilder();
-                var htmlVars = Core.Vendors.HtmlComponentKeys;
+                var htmlVars = Vendors.HtmlComponentKeys;
 
                 //add custom component for generating Partial Views
                 viewComponent["icon"] = "/editor/components/partial-view.svg";
@@ -117,7 +118,19 @@ namespace Saber.Controllers
                     "S.editor.components.load();" +
                 "</script>");
             }
-                    
+            if (CheckSecurity("page-settings"))
+            {
+                Scripts.Append(
+                "<script language=\"javascript\">" +
+                    "S.editor.pageStylesheets = [" +
+                    string.Join(",", config.stylesheets.Select(a => "'" + a + "'")) +
+                    "];" +
+                    "S.editor.pageScripts = [" +
+                    string.Join(",", config.scripts.Select(a => "'" + a + "'")) +
+                    "];" +
+                "</script>");
+            }
+
 
             //check security permissions in order to show certain features
             var websiteSecurity = false;

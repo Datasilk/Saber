@@ -245,6 +245,7 @@ S.editor.pagesettings = {
                     S.editor.files.less.changed = true;
                     $('.page-settings .styles-list > ul').html(list);
                     S.editor.pagesettings.styles.init();
+                    S.editor.pageStylesheets.push(data.file);
                     S.popup.hide();
                 });
             }
@@ -254,10 +255,15 @@ S.editor.pagesettings = {
             var target = $(S.target.findByClassName(e, 'close-btn'));
             var data = { file: target.attr('data-path'), path: S.editor.path };
             S.ajax.post('PageSettings/RemoveStylesheetFromPage', data, (list) => {
-                //add script to page
+                //remove script from page
                 S.editor.files.less.changed = true;
                 $('.page-settings .styles-list > ul').html(list);
                 S.editor.pagesettings.styles.init();
+                var arr = [];
+                S.editor.pageStylesheets.forEach(css => {
+                    if (css != data.file) { arr.push(css); }
+                });
+                S.editor.pageStylesheets = arr;
             });
         },
 
@@ -292,7 +298,6 @@ S.editor.pagesettings = {
                         html.push('<option value="' + list[x] + '">' + list[x] + '</option>');
                     }
                     $('#available_scripts').html(html.join('\n'));
-
                 });
             },
 
@@ -306,6 +311,7 @@ S.editor.pagesettings = {
                     S.editor.files.js.changed = true;
                     $('.page-settings .scripts-list > ul').html(list);
                     S.editor.pagesettings.scripts.init();
+                    S.editor.pageScripts.push(data.file);
                     S.popup.hide();
                 });
             }
@@ -315,10 +321,15 @@ S.editor.pagesettings = {
             var target = $(S.target.findByClassName(e, 'close-btn'));
             var data = { file: target.attr('data-path'), path: S.editor.path };
             S.ajax.post('PageSettings/RemoveScriptFromPage', data, (list) => {
-                //add script to page
+                //remove script from page
                 S.editor.files.js.changed = true;
                 $('.page-settings .scripts-list > ul').html(list);
                 S.editor.pagesettings.scripts.init();
+                var arr = [];
+                S.editor.pageScripts.forEach(css => {
+                    if (css != data.file) { arr.push(css); }
+                });
+                S.editor.pageScripts = arr;
             });
         },
 
