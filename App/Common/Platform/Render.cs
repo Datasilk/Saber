@@ -160,7 +160,9 @@ namespace Saber.Common.Platform
         {
             var results = new List<KeyValuePair<string, string>>();
             var prefix = "";
-            for(var x = -1; x < view.Partials.Count; x++)
+            var components = Core.Vendors.HtmlComponents;
+
+            for (var x = -1; x < view.Partials.Count; x++)
             {
                 if(x >= 0)
                 {
@@ -169,17 +171,13 @@ namespace Saber.Common.Platform
                 }
 
                 //get HTML components from vendors
-                var components = Core.Vendors.HtmlComponents;
                 foreach (var component in components)
                 {
                     var fields = view.Fields.Where(a => {
-                        if(component.Value.KeyIsPrefix == true)
+                        if(component.Value.KeyIsPrefix == true && a.Key.IndexOf(prefix + component.Key) == 0)
                         {
-                            //check for component that uses key as a prefix
-                            if(a.Key.IndexOf(prefix + component.Key) == 0)
-                            {
-                                return true;
-                            }
+                            //component uses key as a prefix
+                            return true;
                         }
                         return a.Key == prefix + component.Key;
                     });

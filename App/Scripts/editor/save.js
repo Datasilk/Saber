@@ -20,29 +20,43 @@ S.editor.save = function (path, content) {
             return;
 
         }
-        else if ($('.tab-page-settings').hasClass('selected')) {
+        else if ($('.tab-page-settings-section').hasClass('selected')) {
+            console.log('save page settings...');
             //save page settings ///////////////////////////////////////////////////////////////////////////////
             var settings = self.pagesettings;
+            var saved = false;
 
-            //save title
+
+            function saveDescription() {
+                //then, save description
+                if (settings.description.changed == true) {
+                    saved = true;
+                    settings.description.save(savePartials);
+                } else {
+                    savePartials();
+                }
+            }
+
+            function savePartials() {
+                //finally, save header & footer with fields
+                if (settings.partials.changed == true) {
+                    saved = true;
+                    settings.partials.save(showmsg);
+                } else if (saved == true) {
+                    showmsg();
+                }
+            }
+
+            //first, save title
             if (settings.title.changed == true) {
-                settings.title.save(showmsg);
-                return;
-            }
-
-            //save description
-            if (settings.description.changed == true) {
-                settings.description.save(showmsg);
-                return;
-            }
-
-            //save header & footer with fields
-            if (settings.partials.changed == true) {
-                settings.partials.save(showmsg);
-                return;
+                saved = true;
+                settings.title.save(saveDescription);
+            } else {
+                saveDescription();
             }
 
             function showmsg() {
+                //last, show message
                 S.message.show('.page-settings .messages', 'confirm', 'Page settings have been updated successfully');
             }
 
@@ -69,13 +83,13 @@ S.editor.save = function (path, content) {
             } else if (self.isResource(path, 'website.js')) {
                 S.editor.files.website.js.changed = true;
                 S.editor.files.js.changed = true;
-            } else if(path.indexOf('/partials/' >= 0)) {
+            } else if(path.indexOf('partials/' >= 0)) {
                 //check if file is a partial and if partial content fields tab is loaded
                 //var fieldstab = $('.tab-' + self.fileId(path.replace('content/partials/', 'content-fields-')));
                 //if (fieldstab.length > 0) {
                 //    S.editor.fields.load(path, false);
                 //}
-                S.editor.files.content.changed = true;
+                //S.editor.files.content.changed = true;
             }
             tab.find('.loader').remove();
             self.unChanged(path);
