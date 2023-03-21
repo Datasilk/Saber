@@ -252,7 +252,7 @@ namespace Saber.Services
             var ext = paths[paths.Length - 1].Split(".")[1].ToLower();
             switch (ext)
             {
-                case "html": return WebUtility.HtmlEncode("<p>Write content using HTML & CSS</p>");
+                case "html": return WebUtility.HtmlEncode(Settings.DefaultHtml);
                 case "css": return WebUtility.HtmlEncode(".website { }");
                 case "less": return WebUtility.HtmlEncode(".website {\n    p { }\n}");
                 case "js": return WebUtility.HtmlEncode("(function(){\n    //do stuff\n})();");

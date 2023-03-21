@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using Saber.Common.Platform;
-using Saber.Core.Extensions.Strings;
 
 namespace Saber.Services
 {
@@ -111,7 +106,7 @@ namespace Saber.Services
             view["page-description"] = config.description;
             view["page-header-list"] = headerList.ToString();
             view["page-footer-list"] = footerList.ToString();
-            view["page-template"] = path.Replace("content/", "/") + "/template";
+            view["page-template"] = path.Replace("content/pages/", "/") + "/template";
             view["styles-list"] = RenderStylesheetsList(config);
             view["scripts-list"] = RenderScriptsList(config);
             view["security-list"] = RenderSecurityGroupsList(config);
@@ -232,6 +227,13 @@ namespace Saber.Services
                 config.header = header;
                 config.footer = footer;
                 Core.PageInfo.SavePageConfig(path, config);
+                //check if page HTML file exists
+                //var paths = Core.PageInfo.GetRelativePath(path);
+                //var relpath = string.Join("/", paths);
+                //if(!File.Exists(App.MapPath(relpath + ".html")))
+                //{
+                //    File.WriteAllText(App.MapPath(relpath + ".html"), Settings.DefaultHtml);
+                //}
                 return Success();
             }
             catch (Exception)
@@ -258,6 +260,7 @@ namespace Saber.Services
                 foreach (var style in config.stylesheets)
                 {
                     styleItem["style"] = style;
+                    styleItem["style-path"] = style.Replace("/content/", "");
                     styles.Append(styleItem.Render());
                 }
             }
@@ -381,6 +384,7 @@ namespace Saber.Services
                 foreach (var script in config.scripts)
                 {
                     scriptItem["script"] = script;
+                    scriptItem["script-path"] = script.Replace("/content/", "");
                     scripts.Append(scriptItem.Render());
                 }
             }

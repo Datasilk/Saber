@@ -228,7 +228,7 @@ S.editor.pagesettings = {
                     var html = [];
                     list = JSON.parse(list);
                     for (var x = 0; x < list.length; x++) {
-                        html.push('<option value="' + list[x] + '">' + list[x] + '</option>');
+                        html.push('<option value="' + list[x] + '">' + list[x].replace('/content/', '') + '</option>');
                     }
                     $('#available_styles').html(html.join('\n'));
 
@@ -295,7 +295,7 @@ S.editor.pagesettings = {
                     var html = [];
                     list = JSON.parse(list);
                     for (var x = 0; x < list.length; x++) {
-                        html.push('<option value="' + list[x] + '">' + list[x] + '</option>');
+                        html.push('<option value="' + list[x] + '">' + list[x].replace('/content/', '') + '</option>');
                     }
                     $('#available_scripts').html(html.join('\n'));
                 });

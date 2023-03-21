@@ -60,7 +60,7 @@ namespace Saber.Common.Platform
                 else
                 {
                     //try to load template page from parent
-                    view.HTML = "<p>Write content using HTML & CSS</p>";
+                    view.HTML = Settings.DefaultHtml;
                 }
             }
 

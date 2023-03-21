@@ -24,7 +24,7 @@ namespace Saber.Services
             var pubdir = dir; //published directory
             var noResources = true;
 
-            if (paths[0] == "content" && paths[1] == "pages")
+            if (paths[0].ToLower() == "content" && paths[1] == "pages")
             {
                 //loading resources for specific page
                 pubdir = "/wwwroot/" + dir;
@@ -277,7 +277,7 @@ namespace Saber.Services
                 paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
                 var dir = string.Join("/", paths).ToLower() + "/";
                 var pubdir = dir; //published directory
-                if (paths[0] == "content" && paths[1] == "pages")
+                if (paths[0].ToLower() == "content" && paths[1] == "pages")
                 {
                     //loading resources for specific page
                     pubdir = "/wwwroot/" + dir;
