@@ -142,9 +142,31 @@
         <h5>Subpage Template</h5>
         <p>
             <a href="{{page-template}}" target="_blank">Modify</a> the template page that will be used to generate new sub-pages with.
-                <a href="https://saber.datasilk.io/support/page-settings.html#template" target="_blank">Learn More</a>
+            <a href="https://saber.datasilk.io/support/page-settings.html#template" target="_blank">Learn More</a>
         </p>
     </div>
+    {{uses-page-template}}
+        <div class="col">
+            <h5>Using A Template</h5>
+            <p><a href="{{parent-template}}" target="_blank">Modify</a> the page template that was used to generate this page with.</p>
+            {{uses-live-template}}
+                <p>
+                    The content for this page is generated using a <b>Live Template</b>. 
+                    <a href="https://saber.datasilk.io/support/page-settings.html#live-template" target="_blank">Learn More</a>
+                </p>
+            {{/uses-live-template}}
+        </div>
+        {{/use-live-template}}
+        <div class="col right">
+            <button class="button btn-add-group">Use Live Template</button>
+        </div>
+        {{/use-live-template}}
+        {{/no-live-template}}
+        <div class="col right">
+            <button class="button btn-add-group">Disconnect Live Template</button>
+        </div>
+        {{/no-live-template}}
+    {{/uses-page-template}}
 </div>
 
 <hr />
