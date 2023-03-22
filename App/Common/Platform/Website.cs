@@ -11,6 +11,14 @@ namespace Saber.Common.Platform
 {
     public static class Website
     {
+        #region "Files & Folders"
+
+        public static List<string> SystemPages { get; } = new List<string>()
+        {
+            "access-denied", "forgotpass", "forgotpass-complete", "home", "login", "passwordreset",
+            "resetpass", "resetpass-complete", "signup", "signup-complete"
+        };
+
         public static void NewFile(string path, string filename)
         {
             //check for valid path & filename
@@ -281,85 +289,70 @@ namespace Saber.Common.Platform
             Directory.SetCurrentDirectory(App.MapPath("/"));
         }
 
-        public static void CopyTempWebsite()
-        {
-            if (!File.Exists(App.MapPath("/Content/pages/home.html")))
-            {
-                Console.WriteLine("Copying template website to live website...");
-                //copy default website since none exists yet
-                CreateDirectory("/wwwroot/content/");
-                CreateDirectory("/wwwroot/content/pages/");
-                CreateDirectory("/wwwroot/fonts/");
-                CreateDirectory("/wwwroot/images/");
-                CreateDirectory("/wwwroot/js/");
-                CreateDirectory("/wwwroot/css/");
-                CreateDirectory("/Content/pages/");
-                CreateDirectory("/Content/partials/");
-                CreateDirectory("/Content/emails/");
-
-                //copy all temp folders into wwwroot
-                var dir = new DirectoryInfo(App.MapPath("/Content/temp"));
-                var exclude = new string[]
-                {
-                    "/pages",
-                    "/partials",
-                    "/emails",
-                    "/app-css"
-                };
-                foreach (var d in dir.GetDirectories())
-                {
-                    var p = d.FullName.Replace("\\", "/");
-                    if (!exclude.Any(a => p.Contains(a)))
-                    {
-                        Utility.FileSystem.CopyDirectoryContents(d.FullName, App.MapPath("/wwwroot/" + d.Name));
-                    }
-                }
-
-                //copy Content folders
-                Utility.FileSystem.CopyDirectoryContents(App.MapPath("/Content/temp/pages/"), App.MapPath("/Content/pages/"), new string[] { ".html", ".js", ".json", ".less" });
-                Utility.FileSystem.CopyDirectoryContents(App.MapPath("/Content/temp/partials/"), App.MapPath("/Content/partials/"), new string[] { ".html", ".js", ".json", ".less" });
-                Utility.FileSystem.CopyDirectoryContents(App.MapPath("/Content/temp/emails/"), App.MapPath("/Content/emails/"), new string[] { ".html", ".js", ".json", ".less" });
-
-                File.Copy(App.MapPath("/Content/temp/app-css/website.less"), App.MapPath("/Content/website.less"), true);
-
-                //compile website.less
-                SaveLessFile(File.ReadAllText(App.MapPath("/Content/website.less")), "/wwwroot/css/website.css", "/Content/");
-
-                //compile all LESS files for all pages & partials
-                var contentFolder = App.MapPath("/Content/");
-                var files = Utility.FileSystem.GetAllFiles("/Content/", true, "*.less", new string[] { "/temp/", "/emails/", "website.less" });
-                foreach (var file in files)
-                {
-                    var filename = file.GetFilename();
-                    var ext = "." + file.GetFileExtension();
-                    var cssfile = file.Replace(contentFolder, "").Replace(ext, ".css");
-                    var workingDir = file.Replace(App.RootPath, "").Replace(filename, "");
-                    SaveLessFile(File.ReadAllText(file), "/wwwroot/content/" + cssfile, workingDir);
-                }
-
-                //copy all JavaScript files (and media files) for pages & partials into wwwroot
-                files = Utility.FileSystem.GetAllFiles("/Content/", true, "*.*", new string[] { "/temp/", "/emails/" });
-                var excluded = new string[] { ".html", ".less", ".css", ".json" };
-                foreach(var file in files)
-                {
-                    var filename = file.GetFilename();
-                    var ext = "." + file.GetFileExtension().ToLower();
-                    if (excluded.Contains(ext)) { continue; }
-                    var folder = "/wwwroot/content/" + file.Replace(contentFolder, "").Replace(filename, "");
-                    if (!Directory.Exists(App.MapPath(folder)))
-                    {
-                        CreateDirectory(folder);
-                    }
-                    var workingDir = file.Replace(contentFolder, "");
-                    File.Copy(file, App.MapPath(folder) + filename, true);
-                }
-            }
-        }
-
         private static void CreateDirectory(string path)
         {
             Utility.FileSystem.CreateDirectory(path);
         }
+
+        public static List<string> AllFiles(string[]? include = null)
+        {
+            var list = new List<string>();
+            var allfolders = AllFolders();
+            foreach (var folder in allfolders)
+            {
+                RecurseDirectories(list, folder.Replace("\\", "/").Replace(App.RootPath, ""));
+            }
+
+            //RecurseDirectories(list, "/Content/partials");
+            list.Add(App.MapPath("/Content/website.less"));
+            list.Add(App.MapPath("/Content/website.json"));
+            list.Add(App.MapPath("/Content/website.js"));
+            RecurseDirectories(list, "/wwwroot", new string[] { App.IsDocker ? "/content/" : "\\content\\", App.IsDocker ? "/editor/" : "\\editor\\", "web.config", "website.css" });
+            RecurseDirectories(list, "/wwwroot/content");
+            if (include != null && include.Length > 0)
+            {
+                foreach (var i in include)
+                {
+                    RecurseDirectories(list, i);
+                }
+            }
+            return list;
+        }
+
+        public static List<string> AllFolders()
+        {
+            var list = new List<string>();
+            list.AddRange(Directory.GetDirectories(App.MapPath("/Content/"), "*", SearchOption.AllDirectories)
+                .Where(a => !a.Replace("\\", "/").Contains("/Content/temp")));
+            list.AddRange(Directory.GetDirectories(App.MapPath("/wwwroot/"), "*", SearchOption.AllDirectories)
+                .Where(a => !a.Replace("\\", "/").Contains("/wwwroot/editor")));
+            return list;
+        }
+
+        public static List<string> AllRootFolders()
+        {
+            var root = App.MapPath("/");
+            return Directory.GetDirectories(App.MapPath("/Content/"), "", SearchOption.TopDirectoryOnly)
+                .Where(a => !a.Replace("\\", "/").Contains("/Content/temp"))
+                .Select(a => a.Replace(root, "").Replace("\\", "/")).ToList();
+        }
+
+        private static void RecurseDirectories(List<string> list, string path, string[] ignore = null)
+        {
+            var parent = new DirectoryInfo(App.MapPath(path));
+            if (!parent.Exists) { return; }
+            var dirs = parent.GetDirectories().Where(a => ignore != null ? ignore.Where(b => a.FullName.IndexOf(b) >= 0).Count() == 0 : true);
+            list.AddRange(parent.GetFiles().Select(a => a.FullName).Where(a => ignore != null ? ignore.Where(b => a.IndexOf(b) >= 0).Count() == 0 : true));
+            foreach (var dir in dirs)
+            {
+                var subpath = dir.FullName.Replace("\\", "/");
+                subpath = "/" + subpath.Replace(App.RootPath, "");
+                RecurseDirectories(list, subpath, ignore);
+            }
+        }
+        #endregion
+
+        #region "Import & Export"
 
         public static byte[] Export(bool includeWebPages = true, bool includeImages = true, bool includeOtherFiles = true, DateTime? lastModified = null)
         {
@@ -580,6 +573,98 @@ namespace Saber.Common.Platform
                 //finally, recompile website.css
                 //Core.Website.SaveLessFile(File.ReadAllText(App.MapPath("/Content/website.less")), "/wwwroot/css/website.css", "/Content");
             }
+        }
+
+        #endregion
+
+        #region "Copy Temp Website"
+        public static void CopyTempWebsite()
+        {
+            if (!File.Exists(App.MapPath("/Content/pages/home.html")))
+            {
+                Console.WriteLine("Copying template website to live website...");
+                //copy default website since none exists yet
+                CreateDirectory("/wwwroot/content/");
+                CreateDirectory("/wwwroot/content/pages/");
+                CreateDirectory("/wwwroot/fonts/");
+                CreateDirectory("/wwwroot/images/");
+                CreateDirectory("/wwwroot/js/");
+                CreateDirectory("/wwwroot/css/");
+                CreateDirectory("/Content/pages/");
+                CreateDirectory("/Content/partials/");
+                CreateDirectory("/Content/emails/");
+
+                //copy all temp folders into wwwroot
+                var dir = new DirectoryInfo(App.MapPath("/Content/temp"));
+                var exclude = new string[]
+                {
+                    "/pages",
+                    "/partials",
+                    "/emails",
+                    "/app-css"
+                };
+                foreach (var d in dir.GetDirectories())
+                {
+                    var p = d.FullName.Replace("\\", "/");
+                    if (!exclude.Any(a => p.Contains(a)))
+                    {
+                        Utility.FileSystem.CopyDirectoryContents(d.FullName, App.MapPath("/wwwroot/" + d.Name));
+                    }
+                }
+
+                //copy Content folders
+                Utility.FileSystem.CopyDirectoryContents(App.MapPath("/Content/temp/pages/"), App.MapPath("/Content/pages/"), new string[] { ".html", ".js", ".json", ".less" });
+                Utility.FileSystem.CopyDirectoryContents(App.MapPath("/Content/temp/partials/"), App.MapPath("/Content/partials/"), new string[] { ".html", ".js", ".json", ".less" });
+                Utility.FileSystem.CopyDirectoryContents(App.MapPath("/Content/temp/emails/"), App.MapPath("/Content/emails/"), new string[] { ".html", ".js", ".json", ".less" });
+
+                File.Copy(App.MapPath("/Content/temp/app-css/website.less"), App.MapPath("/Content/website.less"), true);
+
+                //compile website.less
+                SaveLessFile(File.ReadAllText(App.MapPath("/Content/website.less")), "/wwwroot/css/website.css", "/Content/");
+
+                //compile all LESS files for all pages & partials
+                var contentFolder = App.MapPath("/Content/");
+                var files = Utility.FileSystem.GetAllFiles("/Content/", true, "*.less", new string[] { "/temp/", "/emails/", "website.less" });
+                foreach (var file in files)
+                {
+                    var filename = file.GetFilename();
+                    var ext = "." + file.GetFileExtension();
+                    var cssfile = file.Replace(contentFolder, "").Replace(ext, ".css");
+                    var workingDir = file.Replace(App.RootPath, "").Replace(filename, "");
+                    SaveLessFile(File.ReadAllText(file), "/wwwroot/content/" + cssfile, workingDir);
+                }
+
+                //copy all JavaScript files (and media files) for pages & partials into wwwroot
+                files = Utility.FileSystem.GetAllFiles("/Content/", true, "*.*", new string[] { "/temp/", "/emails/" });
+                var excluded = new string[] { ".html", ".less", ".css", ".json" };
+                foreach (var file in files)
+                {
+                    var filename = file.GetFilename();
+                    var ext = "." + file.GetFileExtension().ToLower();
+                    if (excluded.Contains(ext)) { continue; }
+                    var folder = "/wwwroot/content/" + file.Replace(contentFolder, "").Replace(filename, "");
+                    if (!Directory.Exists(App.MapPath(folder)))
+                    {
+                        CreateDirectory(folder);
+                    }
+                    var workingDir = file.Replace(contentFolder, "");
+                    File.Copy(file, App.MapPath(folder) + filename, true);
+                }
+            }
+        }
+        #endregion
+
+        public static void ResetCache(string path, string language = "en")
+        {
+            var paths = PageInfo.GetRelativePath(path);
+            var filepath = "/" + string.Join("/", paths);
+            var filename = Core.ContentFields.ContentFile(path, language);
+            Console.WriteLine("Reset cache for " + filename);
+            Cache.Remove(filepath + ".json");
+            Cache.Remove(filename);
+            Console.WriteLine("Reset View cache for " + filepath + ".html");
+            ViewCache.Remove(filepath + ".html");
+            ViewCache.Remove(filename);
         }
 
         public static void Restart()

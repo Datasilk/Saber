@@ -137,9 +137,10 @@
 
 <hr />
 
+{{subpage-template}}
 <div class="row pad-top template-info">
     <div class="col six">
-        <h5>Subpage Template</h5>
+        <h5>Sub-Page Template</h5>
         <p>
             <a href="{{page-template}}" target="_blank">Modify</a> the template page that will be used to generate new sub-pages with.
             <a href="https://saber.datasilk.io/support/page-settings.html#template" target="_blank">Learn More</a>
@@ -156,12 +157,12 @@
                 </p>
             {{/uses-live-template}}
         </div>
-        {{/use-live-template}}
+        {{use-live-template}}
         <div class="col right">
             <button class="button btn-add-group">Use Live Template</button>
         </div>
         {{/use-live-template}}
-        {{/no-live-template}}
+        {{no-live-template}}
         <div class="col right">
             <button class="button btn-add-group">Disconnect Live Template</button>
         </div>
@@ -170,6 +171,33 @@
 </div>
 
 <hr />
+{{/subpage-template}}
+
+{{is-template}}
+<div class="row pad-top template-info">
+    <div class="col six tablet-twelve pad-right pad-bottom">
+        <h5>Template</h5>
+        <p>
+            This page is a template that can be used to generate content for new sub-pages
+            <a href="https://saber.datasilk.io/support/page-settings.html#template" target="_blank">Learn More</a>
+        </p>
+    </div>
+    {{is-live-template}}
+        <div class="col six tablet-twelve pad-right pad-bottom">
+            <h5>Live Template</h5>
+            <p>This page is a Live Template that is used to render the content of existing sub-pages</p>
+            <a href="https://saber.datasilk.io/support/page-settings.html#live-template" target="_blank">Learn More</a>
+        </div>
+    {{/is-live-template}}
+    {{convert-live-template}}
+    <div class="col right">
+        <button class="button btn-add-group" onclick="S.editor.pagesettings.template.convertToLive()">Convert to Live Template</button>
+    </div>
+    {{/convert-live-template}}
+</div>
+
+<hr />
+{{/is-template}}
 
 <script language="text/html" id="template_pagetitle_newprefix">
     <form>

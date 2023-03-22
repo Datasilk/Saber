@@ -390,5 +390,13 @@ S.editor.pagesettings = {
                 $('.editor .security-list .close-btn').on('click', S.editor.pagesettings.security.remove);
             });
         }
+    },
+
+    template: {
+        convertToLive: function () {
+            if (window.parent.confirm("This will update all sub-pages & their settings to use this live template and they will no longer render their own content but use the live template instead. Are you sure that you want to do this?")) {
+                S.ajax.post('PageSettings/ConvertToLiveTemplate', { path: S.editor.path }, S.editor.pagesettings.load);
+            }
+        }
     }
 };

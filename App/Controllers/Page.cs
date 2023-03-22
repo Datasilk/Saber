@@ -35,7 +35,7 @@ namespace Saber.Controllers
             {
                 uselayout = false;
             }
-            var config = PageInfo.GetPageConfig("content/pages/" + pathname);
+            var config = Common.Platform.PageInfo.GetPageConfig("content/pages/" + pathname);
             var webconfig = Common.Platform.Website.Settings.Load();
 
             if (uselayout)
@@ -58,8 +58,8 @@ namespace Saber.Controllers
                 }
 
                 //load page layout
-                Title = config.title.prefix + config.title.body + config.title.suffix;
-                Description = config.description;
+                Title = config.Title.prefix + config.Title.body + config.Title.suffix;
+                Description = config.Description;
                 UsePlatform = false;
 
                 if (User.UserId >= 1 && !Parameters.ContainsKey("live"))
@@ -94,7 +94,7 @@ namespace Saber.Controllers
                 AddCSS("/css/website.css", "website_css");
 
                 //add all custom page styles before loading page style
-                foreach (var style in config.stylesheets)
+                foreach (var style in config.Stylesheets)
                 {
                     AddCSS(style, "custom_css_" + styleIndex);
                     styleIndex++;
@@ -112,14 +112,26 @@ namespace Saber.Controllers
                 AddScript("/js/website.js", "website_js");
 
                 //add all custom page scripts before loading page script
-                foreach (var script in config.scripts)
+                foreach (var script in config.Scripts)
                 {
                     AddScript(script, "custom_js_" + scriptIndex);
                     scriptIndex++;
                 }
+
+                if(config.HtmlExists == false)
+                {
+                    if(File.Exists(App.MapPath(rpath + rfile + ".html")))
+                    {
+                        //update cached page
+                        config.HtmlExists = true;
+                        var configpath = Common.Platform.PageInfo.ConfigFilePath(rpath + rfile);
+                        Common.Platform.PageInfo.Configs[configpath] = config;
+                    }
+                }
+
                 try
                 {
-                    if (File.Exists(App.MapPath(rpath + rfile + ".html")))
+                    if (config.UsesLiveTemplate == true || config.HtmlExists == true)
                     {
                         //page exists
                         html.Append(Common.Platform.Render.Page("content/pages/" + pathname + ".html", this, config, lang));
@@ -132,7 +144,7 @@ namespace Saber.Controllers
                         Context.Response.StatusCode = 404;
                         if (File.Exists(App.MapPath("content/pages/404.html")))
                         {
-                            config = PageInfo.GetPageConfig("content/pages/404");
+                            config = Common.Platform.PageInfo.GetPageConfig("content/pages/404");
                             html.Append(Common.Platform.Render.Page("content/pages/404.html", this, config, lang));
                             AddCSS("/content/pages/404.css", "page_css");
                             AddScript("/content/pages/404.js", "page_js");
@@ -145,7 +157,7 @@ namespace Saber.Controllers
                     else if (File.Exists(App.MapPath(rpath + "/template.html")))
                     {
                         //page does not exist, try to load template page from parent
-                        var templatePath = string.Join('/', PathParts.Take(PathParts.Length - 1).ToArray());
+                        var templatePath = string.Join('/', PathParts.Take(PathParts.Length - 1));
                         html.Append(Common.Platform.Render.Page("content/pages/" + templatePath + "/template.html", this, config, lang));
                         AddCSS(rpath.ToLower() + "template.css", "page_css");
                         AddScript(rpath.ToLower() + "template.js", "page_js");

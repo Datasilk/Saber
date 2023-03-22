@@ -13,11 +13,11 @@ namespace Saber.Services
     {
         private class DirItem
         {
-            public bool isDir { get; set; }
-            public string Label { get; set; }
-            public string Path { get; set; }
-            public string Filename { get; set; }
-            public string Extension { get; set; }
+            public bool IsDir { get; set; }
+            public string Label { get; set; } = "";
+            public string Path { get; set; } = "";
+            public string Filename { get; set; } = "";
+            public string Extension { get; set; } = "";
         }
         public string Dir(string path, string fileTypes = "", bool showDelete = true)
         {
@@ -31,7 +31,7 @@ namespace Saber.Services
 
             //translate root path to relative path
             if(path == "content") { path = "root"; }
-            var paths = Core.PageInfo.GetRelativePath(path);
+            var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
             var rpath = string.Join("/", paths) + "/";
 
@@ -44,7 +44,7 @@ namespace Saber.Services
             var canEdit = CheckSecurity("code-editor");
             var canDeleteFiles = showDelete == false ? false : CheckSecurity("delete-files");
             var canDeletePages = showDelete == false ? false : CheckSecurity("delete-pages");
-            var extensions = new string[] { };
+            var extensions = Array.Empty<string>();
             if (!string.IsNullOrEmpty(fileTypes))
             {
                 extensions = fileTypes.Split(",", StringSplitOptions.TrimEntries);
@@ -83,7 +83,7 @@ namespace Saber.Services
                     {
                         if (dir.Name.IndexOfAny(new char[] { '.', '_' }) != 0 && !exclude.Contains(dir.Name.ToLower()))
                         {
-                            items.Add(new DirItem() { Label = dir.Name, Path = dir.Name, isDir = true });
+                            items.Add(new DirItem() { Label = dir.Name, Path = dir.Name, IsDir = true });
                         }
                     }
 
@@ -161,11 +161,11 @@ namespace Saber.Services
                 html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root"));
             }
 
-            foreach (var i in items.OrderBy(a => !a.isDir).ThenBy(a => a.Path))
+            foreach (var i in items.OrderBy(a => !a.IsDir).ThenBy(a => a.Path))
             {
                 //add directories and files
                 var icon = "folder";
-                if (!i.isDir)
+                if (!i.IsDir)
                 {
                     icon = "file-" + i.Extension;
                 }
@@ -186,7 +186,7 @@ namespace Saber.Services
                     canDelete = canDeleteFiles;
                 }
 
-                html.Append(RenderBrowserItem(item, rid + "_" + i.Path.Replace(".", "_").ToLower(), i.Label, icon, (pid != "" ? pid + "/" : "") + i.Path, i.isDir, canDelete));
+                html.Append(RenderBrowserItem(item, rid + "_" + i.Path.Replace(".", "_").ToLower(), i.Label, icon, (pid != "" ? pid + "/" : "") + i.Path, i.IsDir, canDelete));
             }
             return html.ToString();
         }
@@ -229,7 +229,7 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("code-editor")) { return AccessDenied(); }
 
             //translate root path to relative path
-            var paths = Core.PageInfo.GetRelativePath(path);
+            var paths = PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
             if (File.Exists(App.MapPath(string.Join("/", paths))))
             {
@@ -363,7 +363,7 @@ namespace Saber.Services
         {
             
             if (IsPublicApiRequest || !CheckSecurity()) { return AccessDenied(); }
-            var paths = Core.PageInfo.GetRelativePath(path);
+            var paths = PageInfo.GetRelativePath(path);
             if(paths[0] == "/pages" || paths[0] == "/partials")
             {
                 if (!CheckSecurity("delete-pages"))
@@ -389,7 +389,7 @@ namespace Saber.Services
         public string DeleteFolder(string path)
         {
             if (IsPublicApiRequest || !CheckSecurity()) { return AccessDenied(); }
-            var paths = Core.PageInfo.GetRelativePath(path);
+            var paths = PageInfo.GetRelativePath(path);
             if (paths[0] == "/pages" || paths[0] == "/partials")
             {
                 if (paths.Length > 1 && !CheckSecurity("delete-pages"))

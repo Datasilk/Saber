@@ -6,17 +6,10 @@ namespace Saber.Services
 {
     public class PageSettings : Service
     {
-        private enum TemplateFileType
-        {
-            none = 0,
-            header = 1,
-            footer = 2
-        }
-
         public string Render(string path)
         {
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
-            var config = Core.PageInfo.GetPageConfig(path);
+            var config = PageInfo.GetPageConfig(path);
             var webconfig = Website.Settings.Load();
             var view = new View("/Views/PageSettings/pagesettings.html");
             var fieldView = new View("/Views/PageSettings/partial-field.html");
@@ -31,11 +24,11 @@ namespace Saber.Services
             {
                 if (t.Type == Models.Website.PageTitleType.Prefix)
                 {
-                    prefixes.Append("<option value=\"" + t.Value + "\"" + (config.title.prefix == t.Value ? " selected" : "") + ">" + t.Value + "</option>\n");
+                    prefixes.Append("<option value=\"" + t.Value + "\"" + (config.Title.prefix == t.Value ? " selected" : "") + ">" + t.Value + "</option>\n");
                 }
                 else
                 {
-                    suffixes.Append("<option value=\"" + t.Value + "\"" + (config.title.suffix == t.Value ? " selected" : "") + ">" + t.Value + "</option>\n");
+                    suffixes.Append("<option value=\"" + t.Value + "\"" + (config.Title.suffix == t.Value ? " selected" : "") + ">" + t.Value + "</option>\n");
                 }
             }
 
@@ -55,26 +48,13 @@ namespace Saber.Services
                 var filename = paths[paths.Count - 1];
 
                 //get list of fields within html template
-                TemplateFileType filetype = TemplateFileType.none;
                 if (filename.IndexOf("header") >= 0 || filepath.IndexOf("header") > 0)
                 {
-                    filetype = TemplateFileType.header;
+                    headers.Add(filepath.Replace("/Content/partials/", ""));
                 }
                 else if (filename.IndexOf("footer") >= 0 || filepath.IndexOf("footer") > 0)
                 {
-                    filetype = TemplateFileType.footer;
-                }
-                if (filetype > 0)
-                {
-                    switch (filetype)
-                    {
-                        case TemplateFileType.header:
-                            headers.Add(filepath.Replace("/Content/partials/", ""));
-                            break;
-                        case TemplateFileType.footer:
-                            footers.Add(filepath.Replace("/Content/partials/", ""));
-                            break;
-                    }
+                    footers.Add(filepath.Replace("/Content/partials/", ""));
                 }
 
             }
@@ -88,28 +68,59 @@ namespace Saber.Services
             foreach (var header in headers)
             {
                 headerList.Append("<option value=\"" + header + "\"" +
-                    (config.header == header || config.header == "" ? " selected" : "") +
+                    (config.Header == header || config.Header == "" ? " selected" : "") +
                     ">" + header + "</option>\n");
             }
 
             foreach (var footer in footers)
             {
                 footerList.Append("<option value=\"" + footer + "\"" +
-                    (config.footer == footer || config.footer == "" ? " selected" : "") +
+                    (config.Footer == footer || config.Footer == "" ? " selected" : "") +
                     ">" + footer + "</option>\n");
             }
 
             //render various elements
-            view["page-title"] = config.title.body;
+            view["page-title"] = config.Title.body;
             view["page-title-prefixes"] = prefixes.ToString();
             view["page-title-suffixes"] = suffixes.ToString();
-            view["page-description"] = config.description;
+            view["page-description"] = config.Description;
             view["page-header-list"] = headerList.ToString();
             view["page-footer-list"] = footerList.ToString();
-            view["page-template"] = path.Replace("content/pages/", "/") + "/template";
             view["styles-list"] = RenderStylesheetsList(config);
             view["scripts-list"] = RenderScriptsList(config);
             view["security-list"] = RenderSecurityGroupsList(config);
+            view["page-template"] = path.Replace("content/pages/", "/") + "/template";
+
+            if (config.Paths[^1] == "template")
+            {
+                view.Show("is-template");
+                if (config.IsLiveTemplate)
+                {
+                    view.Show("is-live-template");
+                }
+                else
+                {
+                    view.Show("convert-live-template");
+                }
+            }
+            else
+            {
+                view.Show("subpage-template");
+                if (config.IsFromTemplate || config.UsesLiveTemplate || config.FromLiveTemplate)
+                {
+                    view.Show("uses-page-template");
+                    view["parent-template"] = "/" + string.Join("/", config.Paths.Take(config.Paths.Length - 1)).Replace("Content/pages/", "") + "/template";
+                    if (config.UsesLiveTemplate)
+                    {
+                        view.Show("uses-live-template");
+                        view.Show("no-live-template");
+                    }
+                    else if (config.FromLiveTemplate)
+                    {
+                        view.Show("use-live-template");
+                    }
+                }
+            }
 
             //build JSON Response object
             return JsonResponse(
@@ -130,11 +141,11 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
-                var config = Core.PageInfo.GetPageConfig(path);
-                config.title.body = title;
-                config.title.prefix = prefix;
-                config.title.suffix = suffix;
-                Core.PageInfo.SavePageConfig(path, config);
+                var config = PageInfo.GetPageConfig(path);
+                config.Title.body = title;
+                config.Title.prefix = prefix;
+                config.Title.suffix = suffix;
+                PageInfo.SavePageConfig(path, config);
                 return Success();
             }
             catch (Exception)
@@ -207,9 +218,9 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
-                var config = Core.PageInfo.GetPageConfig(path);
-                config.description = description;
-                Core.PageInfo.SavePageConfig(path, config);
+                var config = PageInfo.GetPageConfig(path);
+                config.Description = description;
+                PageInfo.SavePageConfig(path, config);
                 return Success();
             }
             catch (Exception)
@@ -223,12 +234,12 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
-                var config = Core.PageInfo.GetPageConfig(path);
-                config.header = header;
-                config.footer = footer;
-                Core.PageInfo.SavePageConfig(path, config);
+                var config = PageInfo.GetPageConfig(path);
+                config.Header = header;
+                config.Footer = footer;
+                PageInfo.SavePageConfig(path, config);
                 //check if page HTML file exists
-                //var paths = Core.PageInfo.GetRelativePath(path);
+                //var paths = PageInfo.GetRelativePath(path);
                 //var relpath = string.Join("/", paths);
                 //if(!File.Exists(App.MapPath(relpath + ".html")))
                 //{
@@ -247,7 +258,7 @@ namespace Saber.Services
         public string RenderStylesheetsList(string path)
         {
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
-            var config = Core.PageInfo.GetPageConfig(path);
+            var config = PageInfo.GetPageConfig(path);
             return RenderStylesheetsList(config);
         }
 
@@ -255,9 +266,9 @@ namespace Saber.Services
         {
             var styleItem = new View("/Views/PageSettings/style-item.html");
             var styles = new StringBuilder();
-            if (config.stylesheets.Count > 0)
+            if (config.Stylesheets.Count > 0)
             {
-                foreach (var style in config.stylesheets)
+                foreach (var style in config.Stylesheets)
                 {
                     styleItem["style"] = style;
                     styleItem["style-path"] = style.Replace("/content/", "");
@@ -315,12 +326,12 @@ namespace Saber.Services
             try
             {
                 if(file == "") { return Error(); }
-                var config = Core.PageInfo.GetPageConfig(path);
-                if (!config.stylesheets.Contains(file))
+                var config = PageInfo.GetPageConfig(path);
+                if (!config.Stylesheets.Contains(file))
                 {
-                    config.stylesheets.Add(file);
+                    config.Stylesheets.Add(file);
                 }
-                Core.PageInfo.SavePageConfig(path, config);
+                PageInfo.SavePageConfig(path, config);
                 return RenderStylesheetsList(config);
             }
             catch (Exception)
@@ -334,12 +345,12 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
-                var config = Core.PageInfo.GetPageConfig(path);
-                if (config.stylesheets.Contains(file))
+                var config = PageInfo.GetPageConfig(path);
+                if (config.Stylesheets.Contains(file))
                 {
-                    config.stylesheets.Remove(file);
+                    config.Stylesheets.Remove(file);
                 }
-                Core.PageInfo.SavePageConfig(path, config);
+                PageInfo.SavePageConfig(path, config);
                 return RenderStylesheetsList(config);
             }
             catch (Exception)
@@ -353,9 +364,9 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
-                var config = Core.PageInfo.GetPageConfig(path);
-                config.stylesheets = stylesheets;
-                Core.PageInfo.SavePageConfig(path, config);
+                var config = PageInfo.GetPageConfig(path);
+                config.Stylesheets = stylesheets;
+                PageInfo.SavePageConfig(path, config);
                 return RenderStylesheetsList(config);
             }
             catch (Exception)
@@ -371,7 +382,7 @@ namespace Saber.Services
         public string RenderScriptsList(string path)
         {
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
-            var config = Core.PageInfo.GetPageConfig(path);
+            var config = PageInfo.GetPageConfig(path);
             return RenderScriptsList(config);
         }
 
@@ -379,9 +390,9 @@ namespace Saber.Services
         {
             var scriptItem = new View("/Views/PageSettings/script-item.html");
             var scripts = new StringBuilder();
-            if (config.scripts.Count > 0)
+            if (config.Scripts.Count > 0)
             {
-                foreach (var script in config.scripts)
+                foreach (var script in config.Scripts)
                 {
                     scriptItem["script"] = script;
                     scriptItem["script-path"] = script.Replace("/content/", "");
@@ -444,12 +455,12 @@ namespace Saber.Services
             try
             {
                 if(file == "") { return Error(); }
-                var config = Core.PageInfo.GetPageConfig(path);
-                if (!config.scripts.Contains(file))
+                var config = PageInfo.GetPageConfig(path);
+                if (!config.Scripts.Contains(file))
                 {
-                    config.scripts.Add(file);
+                    config.Scripts.Add(file);
                 }
-                Core.PageInfo.SavePageConfig(path, config);
+                PageInfo.SavePageConfig(path, config);
                 return RenderScriptsList(config);
             }
             catch (Exception)
@@ -463,12 +474,12 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
-                var config = Core.PageInfo.GetPageConfig(path);
-                if (config.scripts.Contains(file))
+                var config = PageInfo.GetPageConfig(path);
+                if (config.Scripts.Contains(file))
                 {
-                    config.scripts.Remove(file);
+                    config.Scripts.Remove(file);
                 }
-                Core.PageInfo.SavePageConfig(path, config);
+                PageInfo.SavePageConfig(path, config);
                 return RenderScriptsList(config);
             }
             catch (Exception)
@@ -482,9 +493,9 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
-                var config = Core.PageInfo.GetPageConfig(path);
-                config.scripts = scripts;
-                Core.PageInfo.SavePageConfig(path, config);
+                var config = PageInfo.GetPageConfig(path);
+                config.Scripts = scripts;
+                PageInfo.SavePageConfig(path, config);
                 return RenderScriptsList(config);
             }
             catch (Exception)
@@ -500,7 +511,7 @@ namespace Saber.Services
         public string RenderSecurityGroupsList(string path)
         {
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
-            var config = Core.PageInfo.GetPageConfig(path);
+            var config = PageInfo.GetPageConfig(path);
             return RenderSecurityGroupsList(config);
         }
 
@@ -508,9 +519,9 @@ namespace Saber.Services
         {
             var groupItem = new View("/Views/PageSettings/group-item.html");
             var html = new StringBuilder();
-            if (config.security.groups.Length > 0)
+            if (config.Security.groups.Length > 0)
             {
-                var groups = Query.Security.Groups.GetListByIds(config.security.groups);
+                var groups = Query.Security.Groups.GetListByIds(config.Security.groups);
                 if (groups != null && groups.Count > 0)
                 {
                     foreach(var group in groups)
@@ -541,14 +552,14 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
-                var config = Core.PageInfo.GetPageConfig(path);
-                if (!config.security.groups.Contains(groupId))
+                var config = PageInfo.GetPageConfig(path);
+                if (!config.Security.groups.Contains(groupId))
                 {
-                    var groups = config.security.groups.ToList();
+                    var groups = config.Security.groups.ToList();
                     groups.Add(groupId);
-                    config.security.groups = groups.ToArray();
+                    config.Security.groups = groups.ToArray();
                 }
-                Core.PageInfo.SavePageConfig(path, config);
+                PageInfo.SavePageConfig(path, config);
                 return RenderSecurityGroupsList(config);
             }
             catch (Exception)
@@ -562,14 +573,14 @@ namespace Saber.Services
             if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
             try
             {
-                var config = Core.PageInfo.GetPageConfig(path);
-                if (config.security.groups.Contains(groupId))
+                var config = PageInfo.GetPageConfig(path);
+                if (config.Security.groups.Contains(groupId))
                 {
-                    var groups = config.security.groups.ToList();
+                    var groups = config.Security.groups.ToList();
                     groups.Remove(groupId);
-                    config.security.groups = groups.ToArray();
+                    config.Security.groups = groups.ToArray();
                 }
-                Core.PageInfo.SavePageConfig(path, config);
+                PageInfo.SavePageConfig(path, config);
                 return RenderSecurityGroupsList(config);
             }
             catch (Exception)
@@ -578,6 +589,34 @@ namespace Saber.Services
             }
         }
 
+        #endregion
+
+        #region "Live Template"
+        public string ConvertToLiveTemplate(string path)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("page-settings")) { return AccessDenied(); }
+            try
+            {
+                var config = PageInfo.GetPageConfig(path);
+                config.IsLiveTemplate = true;
+                config.Save();
+
+                //update all sub-pages to use live template
+                var dir = new DirectoryInfo(string.Join("/", config.Paths.Take(config.Paths.Length - 1)));
+                foreach (var file in dir.GetFiles("*.html"))
+                {
+                    config = PageInfo.GetPageConfig(file.FullName.Replace("\\", "/").Replace(App.RootPath, "").Replace(".html", ""));
+                    config.UsesLiveTemplate = true;
+                    config.FromLiveTemplate = true;
+                    config.Save();
+                }
+            }
+            catch (Exception)
+            {
+                return Error();
+            }
+            return Success();
+        }
         #endregion
     }
 }

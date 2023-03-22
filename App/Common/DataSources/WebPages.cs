@@ -95,9 +95,9 @@ namespace Saber.Common.DataSources
                 KnownPages.Add(new Dictionary<string, string>()
                 {
                     {"file", file },
-                    {"title", info != null ? info.title.body : parent + name.Replace("-", " ").Capitalize() },
-                    {"description", info != null ? info.description : "" },
-                    {"datecreated", info != null ? info.datecreated.ToString("yyyy-MM-dd HH:mm") : "" }
+                    {"title", info != null ? info.Title.body : parent + name.Replace("-", " ").Capitalize() },
+                    {"description", info != null ? info.Description : "" },
+                    {"datecreated", info != null ? info.DateCreated.ToString("yyyy-MM-dd HH:mm") : "" }
                 });
             }
         }

@@ -123,10 +123,10 @@ namespace Saber.Controllers
                 Scripts.Append(
                 "<script language=\"javascript\">" +
                     "S.editor.pageStylesheets = [" +
-                    string.Join(",", config.stylesheets.Select(a => "'" + a + "'")) +
+                    string.Join(",", config.Stylesheets.Select(a => "'" + a + "'")) +
                     "];" +
                     "S.editor.pageScripts = [" +
-                    string.Join(",", config.scripts.Select(a => "'" + a + "'")) +
+                    string.Join(",", config.Scripts.Select(a => "'" + a + "'")) +
                     "];" +
                 "</script>");
             }

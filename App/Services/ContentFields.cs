@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using Saber.Core;
-
-namespace Saber.Services
+﻿namespace Saber.Services
 {
     public class ContentFields : Service
     {
         public string Render(string path, string language, string container, bool showlang = false, Dictionary<string, string> data = null, List<string> exclude = null)
         {
             if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
-            var paths = PageInfo.GetRelativePath(path);
+            var config = Common.Platform.PageInfo.GetPageConfig(path);
+            var paths = config.Paths;
             var fields = data != null && data.Keys.Count > 0 ? data : Core.ContentFields.GetPageContent(path, language);
-            var view = new View(string.Join("/", paths) + (path.Contains(".html") ? "" : ".html"));
+            var view = new View(string.Join("/", paths) + ".html");
+            if (config.IsLiveTemplate)
+            {
+                if (exclude == null) { exclude = new List<string>(); }
+                if (!exclude.Contains("content")) { exclude.Add("content"); }
+            }
             var result = Common.Platform.ContentFields.RenderForm(this, "", view, language, container, fields, exclude?.ToArray());
             
             if (string.IsNullOrWhiteSpace(result))
@@ -21,6 +21,16 @@ namespace Saber.Services
                 var nofields = new View("/Views/ContentFields/nofields.html");
                 nofields["filename"] = paths[paths.Length - 1];
                 return Response(nofields.Render());
+            }
+            else
+            {
+                if (config.UsesLiveTemplate)
+                {
+                    view = new View(string.Join("/", paths.Take(paths.Length - 1)) + "/template.html");
+                    if (exclude == null) { exclude = new List<string>(); }
+                    if (!exclude.Contains("content")) { exclude.Add("content"); }
+                    result = Common.Platform.ContentFields.RenderForm(this, "", view, language, container, fields, exclude?.ToArray()) + "\n\n" + result;
+                }
             }
             if (showlang == true)
             {
@@ -34,7 +44,7 @@ namespace Saber.Services
         public string Save(string path, string language, Dictionary<string, string> fields)
         {
             if (IsPublicApiRequest || !CheckSecurity("edit-content")) { return AccessDenied(); }
-            var paths = PageInfo.GetRelativePath(path);
+            var paths = Common.Platform.PageInfo.GetRelativePath(path);
             if (paths.Length == 0) { return Error(); }
             path = "/" + string.Join("/", paths);
             if(language == "") { language = "en"; }
@@ -48,7 +58,7 @@ namespace Saber.Services
                     var json = Core.ContentFields.Serialize(validated);
                     File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                     //reset view cache for page
-                    Website.ResetCache(path, language);
+                    Common.Platform.Website.ResetCache(path, language);
                 }
                 catch (Exception ex)
                 {
@@ -59,18 +69,22 @@ namespace Saber.Services
             }
             else
             {
-                var config = PageInfo.GetPageConfig(path);
+                var config = Common.Platform.PageInfo.GetPageConfig(path);
                 var validated = new Dictionary<string, string>();
                 ValidateField(path + ".html", fields, validated);
-                ValidateField("/Content/partials/" + config.header, fields, validated);
-                ValidateField("/Content/partials/" + config.footer, fields, validated);
+                ValidateField("/Content/partials/" + config.Header, fields, validated);
+                ValidateField("/Content/partials/" + config.Footer, fields, validated);
+                if (config.UsesLiveTemplate)
+                {
+                    ValidateField(string.Join("/", paths.Take(paths.Length - 1)) + "/template.html", fields, validated);
+                }
                 try
                 {
                     //save fields as json
                     var json = Core.ContentFields.Serialize(validated);
                     File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                     //reset view cache for page
-                    Website.ResetCache(path, language);
+                    Common.Platform.Website.ResetCache(path, language);
                 }
                 catch (Exception ex)
                 {

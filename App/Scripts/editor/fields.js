@@ -94,7 +94,7 @@ S.editor.fields = {
                     S.editor.resources.select(file ? 'wwwroot/images' : S.editor.path, 'images', true, "Select An Image", "Select Image", (results) => {
                         var parent = $(e.target).parents('.content-field');
                         var field = parent.find('.input-field');
-                        var newpath = file ? '/images/' : S.editor.path + '/';
+                        var newpath = file ? '/images/' : '/' + S.editor.path + '/';
                         var src = newpath + results[0];
                         parent.find('.img').html('<div><img src="' + src + '"/></div>');
                         parent.find('.img').css({ 'background-image': 'url(' + src + ')' });

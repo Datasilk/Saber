@@ -21,9 +21,9 @@ namespace Saber.Common.Platform
         {
             //translate root path to relative path
             var content = new View("/Views/Editor/content.html");
-            var header = new View("/Content/partials/" + (config.header != "" ? config.header : "header.html"));
-            var footer = new View("/Content/partials/" + (config.footer != "" ? config.footer : "footer.html"));
-            var paths = PageInfo.GetRelativePath(path);
+            var header = new View("/Content/partials/" + (config.Header != "" ? config.Header : "header.html"));
+            var footer = new View("/Content/partials/" + (config.Footer != "" ? config.Footer : "footer.html"));
+            var paths = path.Split("/");
             var relpath = "/" + string.Join("/", paths);
             if (paths.Length == 0)
             {
@@ -40,6 +40,11 @@ namespace Saber.Common.Platform
             if (request.Parameters.ContainsKey("nolayout"))
             {
                 uselayout = false;
+            }
+            if (config.UsesLiveTemplate)
+            {
+                //load live template instead
+                relpath = "/" + string.Join("/", config.Paths.Take(config.Paths.Length - 1)) + "/template.html";
             }
             var view = new View(relpath);
             if (view.Elements.Count == 0)
@@ -62,12 +67,12 @@ namespace Saber.Common.Platform
                     //try to load template page from parent
                     view.HTML = Settings.DefaultHtml;
                 }
-            }
+            } 
 
             //check security
-            if (config.security.groups.Length > 0)
+            if (config.Security.groups.Length > 0)
             {
-                if (!request.CheckSecurity() || (request.User.IsAdmin == false && !config.security.groups.Any(a => request.User.Groups.Contains(a))))
+                if (!request.CheckSecurity() || (request.User.IsAdmin == false && !config.Security.groups.Any(a => request.User.Groups.Contains(a))))
                 {
                     throw new ServiceDeniedException("You do not have access to this page");
                 }
@@ -76,50 +81,100 @@ namespace Saber.Common.Platform
             //load user content from json file, depending on selected language
             var data = Core.ContentFields.GetPageContent(path, language).ToDictionary(a => a.Key, a => (object)a.Value);
 
-            if (data.Count > 0)
+            if(view.Elements.Count > 0)
             {
-                //get view blocks
-                var blocks = view.Elements.Where(a => a.Name.StartsWith("/")).Select(a => a.Name.Substring(1));
-                foreach (var item in data)
+                if (data.Count > 0)
                 {
-                    var value = (string)item.Value;
-                    if (blocks.Contains(item.Key))
+                    //get view blocks
+                    var blocks = view.Elements.Where(a => a.Name.StartsWith("/")).Select(a => a.Name.Substring(1));
+                    foreach (var item in data)
                     {
-                        if (value == "1")
+                        var value = (string)item.Value;
+                        if (blocks.Contains(item.Key))
                         {
-                            view.Show(item.Key);
-                        }
-                    }
-                    else
-                    {
-                        if (value.Contains('\n'))
-                        {
-                            view[item.Key] = Markdown.ToHtml(value, markdownPipeline);
+                            if (value == "1")
+                            {
+                                view.Show(item.Key);
+                            }
                         }
                         else
                         {
-                            view[item.Key] = value;
+                            if (value.Contains('\n'))
+                            {
+                                view[item.Key] = Markdown.ToHtml(value, markdownPipeline);
+                            }
+                            else
+                            {
+                                view[item.Key] = value;
+                            }
                         }
+                    }
+                }
+
+                //load platform-specific data into view
+                var results = HtmlComponents(view, request, data);
+                if (results.Count > 0)
+                {
+                    foreach (var item in results)
+                    {
+                        view[item.Key] = item.Value;
                     }
                 }
             }
             
-
-            //load platform-specific data into view template
-            var results = HtmlComponents(view, request, data);
-            if (results.Count > 0)
+            if (config.UsesLiveTemplate && view.Elements.Any(a => a.Name == "content"))
             {
-                foreach (var item in results)
+                //load sub-page view into Live Template
+                var pageview = new View("/" + string.Join("/", paths));
+                if(pageview.Elements.Count > 0)
                 {
-                    view[item.Key] = item.Value;
+                    if (data.Count > 0)
+                    {
+                        //get view blocks
+                        var blocks = pageview.Elements.Where(a => a.Name.StartsWith("/")).Select(a => a.Name.Substring(1));
+                        foreach (var item in data)
+                        {
+                            var value = (string)item.Value;
+                            if (blocks.Contains(item.Key))
+                            {
+                                if (value == "1")
+                                {
+                                    pageview.Show(item.Key);
+                                }
+                            }
+                            else
+                            {
+                                if (value.Contains('\n'))
+                                {
+                                    pageview[item.Key] = Markdown.ToHtml(value, markdownPipeline);
+                                }
+                                else
+                                {
+                                    pageview[item.Key] = value;
+                                }
+                            }
+                        }
+                    }
+
+                    //load platform-specific data into sub-page view
+                    var results = HtmlComponents(pageview, request, data);
+                    if (results.Count > 0)
+                    {
+                        foreach (var item in results)
+                        {
+                            pageview[item.Key] = item.Value;
+                        }
+                    }
                 }
+                view["content"] = pageview.Render();
             }
 
-            if(uselayout)
+
+            if (uselayout)
             {
                 //render all content
-                var data2 = Core.ContentFields.GetPageContent("/Content/partials/" + config.header, language).ToDictionary(a => a.Key, a => (object)a.Value); ;
-                results = HtmlComponents(header, request, data2);
+                var data2 = Core.ContentFields.GetPageContent("/Content/partials/" + config.Header, language).ToDictionary(a => a.Key, a => (object)a.Value); ;
+                var results = HtmlComponents(header, request, data2);
 
                 foreach (var item in results)
                 {
@@ -132,7 +187,7 @@ namespace Saber.Common.Platform
                         header[item.Key] = (string)item.Value;
                     }
                 }
-                data2 = Core.ContentFields.GetPageContent("/Content/partials/" + config.footer, language).ToDictionary(a => a.Key, a => (object)a.Value);
+                data2 = Core.ContentFields.GetPageContent("/Content/partials/" + config.Footer, language).ToDictionary(a => a.Key, a => (object)a.Value);
                 results = HtmlComponents(footer, request, data2);
                 foreach (var item in results)
                 {
@@ -144,7 +199,6 @@ namespace Saber.Common.Platform
                     {
                         footer[item.Key] = (string)item.Value;
                     }
-                    
                 }
                 content["content"] = view.Render();
                 return header.Render() + content.Render() + footer.Render();

@@ -552,8 +552,15 @@ namespace Saber
             Core.Delegates.Service.CheckSecurity = Common.Platform.Service.CheckSecurity;
             Core.Delegates.Service.GetUser = Common.Platform.Service.GetUser;
             Core.Delegates.Email.Send = Email.Send;
+            Core.Delegates.Website.AllFiles = Website.AllFiles;
+            Core.Delegates.Website.AllFolders = Website.AllFolders;
+            Core.Delegates.Website.AllRootFolders = Website.AllRootFolders;
+            Core.Delegates.Website.ResetCache = Website.ResetCache;
             Core.Delegates.Website.SaveLessFile = Website.SaveLessFile;
             Core.Delegates.Website.CopyTempWebsite = Website.CopyTempWebsite;
+            Core.Delegates.Website.ImportWebsite = Website.Import;
+            Core.Delegates.Website.ExportWebsite = Website.Export;
+            Core.Delegates.Website.Restart = Website.Restart;
             Core.Delegates.Log.Error = Query.Logs.LogError;
             Core.Delegates.ContentFields.GetFieldId = ContentFields.GetFieldId;
             Core.Delegates.ContentFields.GetFieldType = ContentFields.GetFieldType;
@@ -565,10 +572,14 @@ namespace Saber
             Core.Delegates.DataSources.RenderOrderBy = DataSources.RenderOrderBy;
             Core.Delegates.DataSources.RenderOrderByList = DataSources.RenderOrderByList;
             Core.Delegates.DataSources.RenderPositionSettings = DataSources.RenderPositionSettings;
-            Core.Delegates.Website.ImportWebsite = Website.Import;
-            Core.Delegates.Website.ExportWebsite = Website.Export;
             Core.Delegates.Image.Shrink = Image.Shrink;
             Core.Delegates.Image.ConvertPngToJpg = Image.ConvertPngToJpg;
+            Core.Delegates.PageInfo.GetRelativePath = PageInfo.GetRelativePath;
+            Core.Delegates.PageInfo.ConfigFilePath = PageInfo.ConfigFilePath;
+            Core.Delegates.PageInfo.GetPageConfig = PageInfo.GetPageConfig;
+            Core.Delegates.PageInfo.NameFromFile = PageInfo.NameFromFile;
+            Core.Delegates.PageInfo.SavePageConfig = PageInfo.SavePageConfig;
+            Core.Delegates.PageInfo.ClearCache = PageInfo.ClearCache;
 
             //execute Configure method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)
