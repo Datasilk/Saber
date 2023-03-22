@@ -44,7 +44,7 @@ namespace Saber.Common.Platform
             if (config.UsesLiveTemplate)
             {
                 //load live template instead
-                relpath = "/" + string.Join("/", config.Paths.Take(config.Paths.Length - 1)) + "/template.html";
+                relpath = config.TemplatePath + ".html";
             }
             var view = new View(relpath);
             if (view.Elements.Count == 0)

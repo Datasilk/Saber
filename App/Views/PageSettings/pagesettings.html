@@ -3,7 +3,7 @@
     <div class="col title-prefix pad-right-sm">
         <div class="row field faded">
             <span>Prefix</span>
-            <div class="col right pad-left-lg icon small">
+            <div class="col right icon small">
                 <a href="javascript:">
                     <svg viewBox="0 0 32 32">
                         <use xlink:href="#icon-add-sm" x="0" y="0" width="32" height="32"></use>
@@ -24,7 +24,7 @@
     <div class="col title-suffix pad-right-sm">
         <div class="row field faded">
             <span>Suffix</span>
-            <div class="col right pad-left-lg icon small">
+            <div class="col right icon small">
                 <a href="javascript:">
                     <svg viewBox="0 0 32 32">
                         <use xlink:href="#icon-add-sm" x="0" y="0" width="32" height="32"></use>
@@ -139,34 +139,43 @@
 
 {{subpage-template}}
 <div class="row pad-top template-info">
-    <div class="col six">
+    <div class="col six tablet-twelve pad-bottom pad-right">
         <h5>Sub-Page Template</h5>
         <p>
-            <a href="{{page-template}}" target="_blank">Modify</a> the template page that will be used to generate new sub-pages with.
+            Modify the template page that will be used to generate new sub-pages with.
             <a href="https://saber.datasilk.io/support/page-settings.html#template" target="_blank">Learn More</a>
         </p>
+        {{page-template}}
     </div>
     {{uses-page-template}}
-        <div class="col">
+        <div class="col six tablet-twelve pad-bottom pad-right">
             <h5>Using A Template</h5>
-            <p><a href="{{parent-template}}" target="_blank">Modify</a> the page template that was used to generate this page with.</p>
+            <p>
+                Modify the page template that was used to generate this page with.
+            </p>
+            <div class="row pad-bottom">{{parent-template}}</div>
             {{uses-live-template}}
                 <p>
                     The content for this page is generated using a <b>Live Template</b>. 
                     <a href="https://saber.datasilk.io/support/page-settings.html#live-template" target="_blank">Learn More</a>
                 </p>
+                {{use-live-template}}
+                <div class="row pad-height">
+                    <div class="col right">
+                        <button class="button btn-add-group">Use Live Template</button>
+                    </div>
+                </div>
+                {{/use-live-template}}
+                {{no-live-template}}
+                <div class="row pad-height">
+                    <div class="col right">
+                        <button class="button btn-add-group">Disconnect Live Template</button>
+                    </div>
+                </div>
+                {{/no-live-template}}
+                {{live-styles-scripts}}
             {{/uses-live-template}}
         </div>
-        {{use-live-template}}
-        <div class="col right">
-            <button class="button btn-add-group">Use Live Template</button>
-        </div>
-        {{/use-live-template}}
-        {{no-live-template}}
-        <div class="col right">
-            <button class="button btn-add-group">Disconnect Live Template</button>
-        </div>
-        {{/no-live-template}}
     {{/uses-page-template}}
 </div>
 

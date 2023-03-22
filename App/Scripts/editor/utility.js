@@ -22,7 +22,6 @@ S.editor.fileId = function (path) {
 
 S.editor.fileExt = function (path) {
     var paths = path.split('/');
-    var file = paths[paths.length - 1];
     var fileparts = paths[paths.length - 1].split('.', 2);
     if (fileparts.length > 1) { return fileparts[fileparts.length - 1]; }
     return '';
@@ -41,7 +40,7 @@ S.editor.isResource = function (path, type) {
     var fileparts = paths[paths.length - 1].split('.', 2);
     var relpath = dir + fileparts[0];
     if (typeof type == 'undefined') {
-        return relpath == S.editor.path;
+        return relpath.toLowerCase() == S.editor.path.toLowerCase();
     } else if (type == 'website.css') {
         switch (dir + fileparts.join('.')) {
             case 'partials/header.less':

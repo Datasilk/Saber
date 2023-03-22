@@ -60,18 +60,19 @@ namespace Saber.Common.Platform
                 //get config from cache
                 return Configs[filename];
             }
-            //get config from file system
 
+            //get config from file system
             var contents = File.Exists(App.MapPath(filename)) ? File.ReadAllText(App.MapPath(filename)) : "";
             var paths = GetRelativePath(path);
-            var templatePath = string.Join('/', paths.Take(paths.Length - 1).ToArray()) + "/template.json";
             Models.Page.Settings config;
 
             if (!string.IsNullOrEmpty(contents))
             {
+                //deserialize page config file
                 config = JsonSerializer.Deserialize<Models.Page.Settings>(contents);
                 if(config != null)
                 {
+                    //update config properties
                     if (string.IsNullOrEmpty(config.Header))
                     {
                         config.Header = "header.html";
@@ -80,65 +81,134 @@ namespace Saber.Common.Platform
                     {
                         config.Footer = "footer.html";
                     }
-                    if (File.Exists(App.MapPath(templatePath)))
-                    {
-                        config.IsFromTemplate = true;
-                    }
                     config.Paths = paths;
+
+                    //see if page uses a template
+                    for (var x = paths.Length - 1; x > 1; x--)
+                    {
+                        var templatePath = string.Join('/', paths.Take(x).ToArray()) + "/template";
+                        if (File.Exists(templatePath + ".html"))
+                        {
+                            config.TemplatePath = templatePath;
+                            config.IsFromTemplate = true;
+                            if(File.Exists(templatePath + ".json"))
+                            {
+                                //load template config
+                                Models.Page.Settings tempconfig = null;
+                                if (Configs.ContainsKey(templatePath + ".json"))
+                                {
+                                    //load from cache
+                                    tempconfig = Configs[templatePath + ".json"];
+                                }
+                                else
+                                {
+                                    contents = File.ReadAllText(App.MapPath(templatePath + ".json"));
+                                    if (!string.IsNullOrEmpty(contents))
+                                    {
+                                        tempconfig = JsonSerializer.Deserialize<Models.Page.Settings>(contents);
+                                    }
+                                }
+                                if(tempconfig != null && tempconfig.IsLiveTemplate)
+                                {
+                                    //add stylesheets & scripts from live template into page config
+                                    if(tempconfig.Stylesheets.Count > 0)
+                                    {
+                                        config.LiveStylesheets.AddRange(tempconfig.Stylesheets);
+                                    }
+                                    if (tempconfig.Scripts.Count > 0)
+                                    {
+                                        config.LiveScripts.AddRange(tempconfig.Scripts);
+                                    }
+                                    config.Header = tempconfig.Header;
+                                    config.Footer = tempconfig.Footer;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    //add config to cache
                     Configs.Add(filename, config);
                     return config;
                 }
             }
 
-            //try to get the template config
-            var file = paths[^1];
-            if (Configs.ContainsKey(templatePath))
+            //try to get the template config by traversing sub-folders backwards
+            var foundTemplate = string.Empty;
+            for(var x = paths.Length -1; x > 1; x--)
             {
-                //clone template config from cached object
-                var template = Configs[templatePath];
-                config = new Models.Page.Settings()
+                var templatePath = string.Join('/', paths.Take(x).ToArray()) + "/template";
+                if (File.Exists(templatePath + ".html"))
                 {
-                    Title = template.Title,
-                    Description = template.Description,
-                    Thumbnail = template.Thumbnail,
-                    DateCreated = template.DateCreated,
-                    Security = new Models.Page.Security()
+                    foundTemplate = templatePath;
+                    if (Configs.ContainsKey(templatePath + ".json"))
                     {
-                        groups = template.Security.groups
-                    },
-                    Header = template.Header,
-                    Footer = template.Footer,
-                    Stylesheets = template.Stylesheets.ToArray().ToList(),
-                    Scripts = template.Scripts.ToArray().ToList(),
-                    FromLiveTemplate = template.IsLiveTemplate,
-                    UsesLiveTemplate = template.IsLiveTemplate,
-                    IsLiveTemplate = false,
-                    Paths = paths
-                };
-                Configs.Add(filename, config);
-                return config;
-            }
-            else
-            {
-                //load template config from file system
-                contents = File.Exists(App.MapPath(templatePath)) ? File.ReadAllText(App.MapPath(templatePath)) : "";
-                if (!string.IsNullOrEmpty(contents))
-                {
-                    config = JsonSerializer.Deserialize<Models.Page.Settings>(contents);
-                    if (config != null)
-                    {
-                        config.FromLiveTemplate = config.IsLiveTemplate;
-                        config.UsesLiveTemplate = config.IsLiveTemplate;
-                        config.IsFromTemplate = true;
-                        config.IsLiveTemplate = false; //set to false after using config.IsLiveTemplate above
-                        config.Paths = paths;
+                        //clone template config from cached object to use for new page config
+                        var template = Configs[templatePath + ".json"];
+                        config = new Models.Page.Settings()
+                        {
+                            Title = template.Title,
+                            Description = template.Description,
+                            Thumbnail = template.Thumbnail,
+                            DateCreated = template.DateCreated,
+                            Security = new Models.Page.Security()
+                            {
+                                groups = template.Security.groups
+                            },
+                            Header = template.Header,
+                            Footer = template.Footer,
+                            FromLiveTemplate = template.IsLiveTemplate,
+                            UsesLiveTemplate = template.IsLiveTemplate,
+                            IsLiveTemplate = false,
+                            Paths = paths,
+                            TemplatePath = foundTemplate
+                        };
+                        if (template.IsLiveTemplate)
+                        {
+                            config.LiveStylesheets = template.Stylesheets.ToArray().ToList();
+                            config.LiveScripts = template.Scripts.ToArray().ToList();
+                        }
+                        else
+                        {
+                            config.Stylesheets = template.Stylesheets.ToArray().ToList();
+                            config.Scripts = template.Scripts.ToArray().ToList();
+                        }
                         Configs.Add(filename, config);
-                        return config; 
+                        return config;
                     }
+                    else if(File.Exists(App.MapPath(templatePath + ".json")))
+                    {
+                        //load template config from file system to use for new page config
+                        contents = File.ReadAllText(App.MapPath(templatePath + ".json"));
+                        if (!string.IsNullOrEmpty(contents))
+                        {
+                            config = JsonSerializer.Deserialize<Models.Page.Settings>(contents);
+                            if (config != null)
+                            {
+                                config.FromLiveTemplate = config.IsLiveTemplate;
+                                config.UsesLiveTemplate = config.IsLiveTemplate;
+                                config.IsFromTemplate = true;
+                                if (config.IsLiveTemplate)
+                                {
+                                    config.LiveStylesheets = config.Stylesheets;
+                                    config.LiveScripts = config.Scripts;
+                                    config.Stylesheets = new List<string>();
+                                    config.Scripts = new List<string>();
+                                }
+                                config.IsLiveTemplate = false; //set to false after using config.IsLiveTemplate above
+                                config.Paths = paths;
+                                config.TemplatePath = foundTemplate;
+                                Configs.Add(filename, config);
+                                return config;
+                            }
+                        }
+                    }
+                    break;
                 }
             }
 
             //all else fails, generate a new page settings object
+            var file = paths[^1];
             config = new Models.Page.Settings()
             {
                 Title = new Models.Page.Title()
@@ -153,7 +223,9 @@ namespace Saber.Common.Platform
                 {
                     groups = Array.Empty<int>()
                 },
-                Paths = paths
+                Paths = paths,
+                IsFromTemplate = !string.IsNullOrEmpty(foundTemplate),
+                TemplatePath = foundTemplate
             };
             Configs.Add(filename, config);
             return config;

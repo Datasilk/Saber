@@ -26,7 +26,7 @@
             {
                 if (config.UsesLiveTemplate)
                 {
-                    view = new View(string.Join("/", paths.Take(paths.Length - 1)) + "/template.html");
+                    view = new View(config.TemplatePath + ".html");
                     if (exclude == null) { exclude = new List<string>(); }
                     if (!exclude.Contains("content")) { exclude.Add("content"); }
                     result = Common.Platform.ContentFields.RenderForm(this, "", view, language, container, fields, exclude?.ToArray()) + "\n\n" + result;
@@ -76,12 +76,16 @@
                 ValidateField("/Content/partials/" + config.Footer, fields, validated);
                 if (config.UsesLiveTemplate)
                 {
-                    ValidateField(string.Join("/", paths.Take(paths.Length - 1)) + "/template.html", fields, validated);
+                    ValidateField(config.TemplatePath + ".html", fields, validated);
                 }
                 try
                 {
                     //save fields as json
                     var json = Core.ContentFields.Serialize(validated);
+                    if (!Directory.Exists(App.MapPath(path)))
+                    {
+                        Directory.CreateDirectory(App.MapPath(path));
+                    }
                     File.WriteAllText(App.MapPath(Core.ContentFields.ContentFile(path, language)), json);
                     //reset view cache for page
                     Common.Platform.Website.ResetCache(path, language);

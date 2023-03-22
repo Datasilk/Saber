@@ -93,6 +93,13 @@ namespace Saber.Controllers
                 //add website css
                 AddCSS("/css/website.css", "website_css");
 
+                //add all custom live template styles before loading page style
+                foreach (var style in config.LiveStylesheets)
+                {
+                    AddCSS(style, "custom_css_" + styleIndex);
+                    styleIndex++;
+                }
+
                 //add all custom page styles before loading page style
                 foreach (var style in config.Stylesheets)
                 {
@@ -110,6 +117,13 @@ namespace Saber.Controllers
 
                 //add website.js after custom website scripts
                 AddScript("/js/website.js", "website_js");
+
+                //add all custom live template scripts before loading page script
+                foreach (var script in config.LiveScripts)
+                {
+                    AddScript(script, "custom_js_" + scriptIndex);
+                    scriptIndex++;
+                }
 
                 //add all custom page scripts before loading page script
                 foreach (var script in config.Scripts)
@@ -154,13 +168,12 @@ namespace Saber.Controllers
                             html.Append(Common.Platform.Render.Page("content/pages/404.html", this, config, lang));
                         }
                     }
-                    else if (File.Exists(App.MapPath(rpath + "/template.html")))
+                    else if (!string.IsNullOrEmpty(config.TemplatePath + ".json") && File.Exists(App.MapPath(config.TemplatePath + ".json")))
                     {
                         //page does not exist, try to load template page from parent
-                        var templatePath = string.Join('/', PathParts.Take(PathParts.Length - 1));
-                        html.Append(Common.Platform.Render.Page("content/pages/" + templatePath + "/template.html", this, config, lang));
-                        AddCSS(rpath.ToLower() + "template.css", "page_css");
-                        AddScript(rpath.ToLower() + "template.js", "page_js");
+                        html.Append(Common.Platform.Render.Page(config.TemplatePath + ".html", this, config, lang));
+                        AddCSS(config.TemplatePath.ToLower() + ".css", "page_css");
+                        AddScript(config.TemplatePath.ToLower() + ".js", "page_js");
                     }
                     else
                     {
