@@ -28,21 +28,18 @@
   },
   "devDependencies": {
     "cheerio": "0.*",
-    "connect": "^3.1.0",
-    "gm": "^1.16.0",
     "gulp": "^3.9.1",
     "gulp-cheerio": "^0.4.0",
     "gulp-inject": "^1.0.1",
-    "gulp-mocha": "^0.5.2",
-    "gulp-replace": "^0.5.4",
-    "serve-static": "^1.4.3",
-    "tmp": "0.0.24",
-    "wd": "^0.3.4"
+    "gulp-replace": "^0.5.4"
   },
   "keywords": [
     "gulpplugin",
     "svg",
     "icon",
     "sprite"
-  ]
+  ],
+  "overrides": {
+    "graceful-fs": "^4.2.10"
+  }
 }

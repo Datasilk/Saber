@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using System.Text.Json;
-using MimeKit;
 using Saber.Common.Platform;
 
 namespace Saber.Services

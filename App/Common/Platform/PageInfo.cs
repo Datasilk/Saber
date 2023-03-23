@@ -83,8 +83,15 @@ namespace Saber.Common.Platform
                     }
                     config.Paths = paths;
 
+                    var pathx = paths.Length - 1;
+                    if (paths[^1] == "template")
+                    {
+                        //find template in parent folder (since this page is also a template)
+                        pathx -= 1;
+                    }
+
                     //see if page uses a template
-                    for (var x = paths.Length - 1; x > 1; x--)
+                    for (var x = pathx; x > 1; x--)
                     {
                         var templatePath = string.Join('/', paths.Take(x).ToArray()) + "/template";
                         if (File.Exists(templatePath + ".html"))
