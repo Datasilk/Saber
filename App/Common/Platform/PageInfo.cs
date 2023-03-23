@@ -21,6 +21,8 @@ namespace Saber.Common.Platform
             {
                 switch (paths[0].ToLower())
                 {
+                    case "wwwroot":
+                        return paths;
                     case "root":
                         return new string[] { "" };
                     case "temp":

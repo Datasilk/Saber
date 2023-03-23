@@ -24,7 +24,7 @@ namespace Saber.Common.Platform
             var header = new View("/Content/partials/" + (config.Header != "" ? config.Header : "header.html"));
             var footer = new View("/Content/partials/" + (config.Footer != "" ? config.Footer : "footer.html"));
             var paths = path.Split("/");
-            var relpath = "/" + string.Join("/", paths);
+            var relpath = "/" + string.Join("/", PageInfo.GetRelativePath(path));
             if (paths.Length == 0)
             {
                 throw new ServiceErrorException("No path specified");

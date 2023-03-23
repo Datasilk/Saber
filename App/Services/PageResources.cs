@@ -20,14 +20,14 @@ namespace Saber.Services
             var item = new View("/Views/PageResources/resource-item.html");
             var paths = PageInfo.GetRelativePath(path);
             paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
-            var dir = string.Join("/", paths).ToLower() + "/";
+            var dir = "/" + string.Join("/", paths).ToLower() + "/";
             var pubdir = dir; //published directory
             var noResources = true;
 
             if (paths[0].ToLower() == "content" && paths[1] == "pages")
             {
                 //loading resources for specific page
-                pubdir = "/wwwroot/" + dir;
+                pubdir = "/wwwroot" + dir;
                 view.Show("for-page");
                 view["for-type"] = "Page";
             }

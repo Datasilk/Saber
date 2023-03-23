@@ -61,7 +61,7 @@ namespace Saber.Services
                 {
                     //get list of directories
                     var info = new DirectoryInfo(App.MapPath(rpath));
-                    if (paths[0] == "/wwwroot")
+                    if (paths[0] == "wwwroot")
                     {
                         if (paths.Length == 1)
                         {
@@ -89,7 +89,7 @@ namespace Saber.Services
 
                     //get list of files
                     exclude = new List<string>() { "gulpfile.js" };
-                    if (paths[0] == "/wwwroot" && paths.Length > 1 && paths[1] == "css")
+                    if (paths[0] == "wwwroot" && paths.Length > 1 && paths[1] == "css")
                     {
                         exclude = new List<string>() { "website.css" };
                     }
@@ -114,7 +114,7 @@ namespace Saber.Services
                 }
             }
 
-            if (paths[0] == "/Content")
+            if (paths[0].ToLower() == "content")
             {
                 if (paths.Length == 2)
                 {
@@ -156,7 +156,7 @@ namespace Saber.Services
 
                 html.Append(RenderBrowserItem(item, "website.less", "website.less", "file", "content/website.less"));
             }
-            else if (paths[0] == "/wwwroot")
+            else if (paths[0] == "wwwroot")
             {
                 html.Append(RenderBrowserItem(item, "goback", "..", "folder-back", "root"));
             }
@@ -175,8 +175,8 @@ namespace Saber.Services
                     canDelete = canDeletePages;
                 }
                 else if (
-                    (paths.Length == 1 && paths[0] == "/wwwroot" && exclude_wwwroot.Any(a => a == i.Label)) ||
-                    (paths.Length > 1 && paths[0] == "/wwwroot" && paths[1] == "js" && exclude_wwwroot_js.Any(a => a == i.Label))
+                    (paths.Length == 1 && paths[0] == "wwwroot" && exclude_wwwroot.Any(a => a == i.Label)) ||
+                    (paths.Length > 1 && paths[0] == "wwwroot" && paths[1] == "js" && exclude_wwwroot_js.Any(a => a == i.Label))
                     )
                 {
                     canDelete = false;
