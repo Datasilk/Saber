@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
-using System.Linq;
+﻿using System.Text;
 using Datasilk.Core.Web;
 using Saber.Core;
-using System.IO;
 
 namespace Saber.Controllers
 {
@@ -51,7 +47,7 @@ namespace Saber.Controllers
                 //load components list
                 var viewComponent = new View("/Views/Components/list-item.html");
                 var html = new StringBuilder();
-                var htmlVars = Vendors.HtmlComponentKeys;
+                var htmlVars = Core.Vendors.HtmlComponentKeys;
 
                 //add custom component for generating Partial Views
                 viewComponent["icon"] = "/editor/components/partial-view.svg";

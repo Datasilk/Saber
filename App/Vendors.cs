@@ -228,7 +228,7 @@ namespace Saber.Common
                                 File.Copy(f.FullName, App.MapPath(vendorPath + Path.GetFileName(f.FullName)), true);
                                 break;
                             case ".less":
-                                Platform.Website.SaveLessFile(f.OpenText().ReadToEnd(), vendorPath + Path.GetFileName(f.FullName), f.FullName.Replace(f.Name, ""));
+                                Platform.Website.SaveLessFile(f.OpenText().ReadToEnd(), vendorPath + Path.GetFileName(f.FullName).Replace(".less", ".css"), f.FullName.Replace(f.Name, ""));
                                 break;
                             default:
                                 if (Core.Image.Extensions.Any(a => a == f.Extension))
@@ -326,6 +326,8 @@ namespace Saber.Common
 
                 //concat all editor.js files into "/wwwroot/editor/js/vendors-editor.js"
                 ConcatVendorsEditorJs();
+                //concat all editor.css files into "/wwwroot/editor/css/vendors-editor.css"
+                ConcatVendorsEditorCss();
             }
         }
 
@@ -334,12 +336,11 @@ namespace Saber.Common
             var vendorsPath = new DirectoryInfo(App.MapPath("/Vendors/"));
             var files = vendorsPath.GetFiles("editor.js", SearchOption.AllDirectories).Select(a => a.FullName);
 
-
             if (MarkedForUninstall.Count > 0)
             {
-                //remove all DLLs found in Vendor folders marked for uninstall
+                //remove all files found in Vendor folders marked for uninstall
                 files = files.Where(a => !MarkedForUninstall.Any(b =>
-                    a.IndexOf("/Vendors/" + b + "/") >= 0 || a.IndexOf("\\Vendors\\" + b + "\\") >= 0
+                    a.IndexOf("/vendors/" + b.ToLower() + "/") >= 0 || a.IndexOf("\\vendors\\" + b.ToLower() + "\\") >= 0
                 )).ToList();
             }
 
@@ -350,6 +351,28 @@ namespace Saber.Common
             }
             //gzip vendors-eitor.js
             Utility.Compression.GzipCompress(string.Join("\n", jsparts), "/wwwroot/editor/js/vendors-editor.js");
+        }
+
+        public static void ConcatVendorsEditorCss()
+        {
+            var vendorsPath = new DirectoryInfo(App.MapPath("/wwwroot/editor/vendors/"));
+            var files = vendorsPath.GetFiles("editor.css", SearchOption.AllDirectories).Select(a => a.FullName);
+
+            if (MarkedForUninstall.Count > 0)
+            {
+                //remove all files found in Vendor folders marked for uninstall
+                files = files.Where(a => !MarkedForUninstall.Any(b =>
+                    a.IndexOf("/vendors/" + b.ToLower() + "/") >= 0 || a.IndexOf("\\vendors\\" + b.ToLower() + "\\") >= 0
+                )).ToList();
+            }
+
+            var cssparts = new StringBuilder();
+            foreach (var f in files)
+            {
+                cssparts.Append(File.ReadAllText(f));
+            }
+            //gzip vendors-eitor.js
+            File.WriteAllText("/wwwroot/editor/css/vendors-editor.css", string.Join("\n", cssparts));
         }
         #endregion
 

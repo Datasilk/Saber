@@ -49,27 +49,56 @@ namespace Saber.Common.ContentField
                     if (!canadd) { viewlist.Show("hide-add-list-item"); }
                     if (datasource != null)
                     {
-                        //render data source filter form
                         foundDataSrc = true;
-                        var datasourceId = dataSourceKey.Replace(datasource.Helper.Prefix + "-", "");
-                        viewlist.Show("has-datasource");
-                        viewlist["filter-contents"] = DataSource.RenderFilters(request, datasource, mysettings?.Filters);
+                        viewlist["datasource"] = (datasource.Helper.Vendor != "" ? datasource.Helper.Vendor + " - " : "") + datasource.Name;viewlist.Show(locked ? "locked" : "not-locked");
                         viewlist.Show(locked ? "locked" : "not-locked");
-                        viewlist["datasource"] = (datasource.Helper.Vendor != "" ? datasource.Helper.Vendor + " - " : "") + datasource.Name;
-                        viewlist["orderby-contents"] = DataSource.RenderOrderByList(datasource, mysettings?.OrderBy);
-                        viewlist["position-contents"] = DataSource.RenderPositionSettings(datasource, mysettings?.Position);
-                        var relationships = datasource.Helper.Get(datasourceId).Relationships;
-                        if (relationships.Length == 0)
+                        viewlist.Show("has-datasource");
+                        var datasourceId = dataSourceKey.Replace(datasource.Helper.Prefix + "-", "");
+                        if (parts.Contains("single"))
                         {
+                            //render select options for single selection
+                            viewlist.Show("single-selection");
                             viewlist.Show("no-lists");
+                            var colkey = fieldKey;
+                            if (string.IsNullOrEmpty(fieldKey))
+                            {
+                                //get first string column from data source
+                                var info = datasource.Helper.Get(datasourceId);
+                                colkey = info.Columns.Where(a => a.DataType == DataSource.DataType.Text).FirstOrDefault()?.Name ?? "";
+                            }
+                            if(colkey == "")
+                            {
+                                viewlist["list-items-options"] = "<option value=\"\">[Err: No text column found for list!]</option>";
+                            }
+                            else
+                            {
+                                var results = datasource.Helper.Filter(request, datasourceId, 1, 1000).ToList();
+                                viewlist["list-items-options"] = string.Join("\n", results.Select(a =>
+                                {
+                                    return "<option value=\"" + a[colkey] + "\">" + a[colkey] + "</option>";
+                                }));
+                            }
                         }
                         else
                         {
-                            viewlist["lists"] = "<option value=\"" + dataSourceKey + "\">" + key.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>" +
-                                string.Join('\n', relationships.Select(a => "<option value=\"" +
-                                Core.Vendors.DataSources.Where(b => b.Key == a.ChildKey).FirstOrDefault()?.Helper.Prefix +
-                                "-" + a.Child.Key + "\">" + a.ListComponent.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>"
-                            ).ToArray());
+                            //render data source filter form
+                            viewlist.Show("can-filter");
+                            viewlist["filter-contents"] = DataSource.RenderFilters(request, datasource, mysettings?.Filters);
+                            viewlist["orderby-contents"] = DataSource.RenderOrderByList(datasource, mysettings?.OrderBy);
+                            viewlist["position-contents"] = DataSource.RenderPositionSettings(datasource, mysettings?.Position);
+                            var relationships = datasource.Helper.Get(datasourceId).Relationships;
+                            if (relationships.Length == 0)
+                            {
+                                viewlist.Show("no-lists");
+                            }
+                            else
+                            {
+                                viewlist["lists"] = "<option value=\"" + dataSourceKey + "\">" + key.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>" +
+                                    string.Join('\n', relationships.Select(a => "<option value=\"" +
+                                    Core.Vendors.DataSources.Where(b => b.Key == a.ChildKey).FirstOrDefault()?.Helper.Prefix +
+                                    "-" + a.Child.Key + "\">" + a.ListComponent.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>"
+                                ).ToArray());
+                            }
                         }
                     }
                 }

@@ -286,6 +286,9 @@ S.editor.fields = {
                 //event listener for list drop down
                 section.find('.list-lists select').off().on('input', S.editor.fields.custom.list.select);
 
+                //event listener for single selection drop down
+                section.find('.single-selection select').off().on('input', S.editor.fields.custom.list.single.select);
+
                 //drag & sort event listeners
                 S.drag.sort.add(container + ' .list-items ul', container + ' .list-items li', (e) => {
                     //update list
@@ -455,6 +458,15 @@ S.editor.fields = {
                     contents.html(response);
                     S.drag.sort.add(contents, contents.find('.orderby'), S.editor.fields.custom.list.orderby.sorted);
                 });
+            },
+            single: {
+                select: function (e) {
+                    var target = $(e.target);
+                    var container = target.parents('.content-field').first();
+                    var selected = container.find('.single-selection select').val();
+                    var key = S.editor.fields.custom.list.datasource.key(container);
+                    S.editor.fields.custom.list.datasource.save(container);
+                }
             },
             datasource: {
                 list: function(e, title) {

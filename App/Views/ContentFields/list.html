@@ -1,5 +1,10 @@
 ﻿<div class="row list-component-field {{id}}">
     <div class="row">
+        {{single-selection}}
+        <div class="col input single-selection">
+            <select>{{list-items-options}}</select>
+        </div>
+        {{/single-selection}}
         <div class="col datasource-name pad-right" {{no-datasource}}style="display:none"{{/no-datasource}}>
             <div class="row hover">
                 <div class="col text cursor pad-left-lg pad-right change-data-source" style="margin:7px 0 0 7px;">
@@ -7,6 +12,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col right pad-sm">
             {{not-locked}}
             <div class="col right change-data-source pad-left-sm">
@@ -38,6 +44,7 @@
                     </div>
                 </div>
             </div>
+            {{can-filter}}
             <div class="col right tab-item tab-filters pad-left-sm" {{no-datasource}}style="display:none"{{/no-datasource}}>
                 <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.tab('filters', event);">
                     <div class="icon small" title="Filter your List Items">
@@ -65,7 +72,9 @@
                     </div>
                 </div>
             </div>
+            {{/can-filter}}
         </div>
+
         <div class="col right input list-lists" {{no-lists}}style="display:none"{{/no-lists}}>
             <input type="hidden" value="{{lists-key}}"/>
             <select>{{lists}}</select>
