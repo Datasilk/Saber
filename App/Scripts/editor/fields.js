@@ -436,24 +436,24 @@ S.editor.fields = {
 
                 //load settings for list
                 var settings = S.editor.fields.custom.list.datasource.settings(container);
-                var list = settings[selected] ?? { Filter: [], OrderBy: [] };
+                var list = settings[selected] ?? { p: {}, f: [], o: [] }; //position, filters, orderby
 
                 //populate posiion settings
-                var pos = list.Position;
+                var pos = list.p;
                 if (!pos) {
-                    pos = { Start: 1, Length: 10, StartQuery: '', LengthQuery: '' };
+                    pos = { s: 1, l: 10, sq: '', lq: '' };
                 }
-                container.find('.input-pos-start input').val(pos.Start);
-                container.find('.input-pos-start-query input').val(pos.StartQuery);
-                container.find('.input-pos-length input').val(pos.Length);
-                container.find('.input-pos-length-query input').val(pos.LengthQuery);
+                container.find('.input-pos-start input').val(pos.s);
+                container.find('.input-pos-start-query input').val(pos.sq);
+                container.find('.input-pos-length input').val(pos.l);
+                container.find('.input-pos-length-query input').val(pos.lq);
 
                 //load filters, orderby, and position values
-                S.ajax.post('DataSources/RenderFilters', { key: key, filters: list.Filters }, (form) => {
+                S.ajax.post('DataSources/RenderFilters', { key: key, filters: list.f }, (form) => {
                     //update list data with new data source
                     container.find('.filter-settings .contents').html(form);
                 });
-                S.ajax.post('DataSources/RenderOrderByList', { key: key, orderby: list.OrderBy }, (response) => {
+                S.ajax.post('DataSources/RenderOrderByList', { key: key, orderby: list.o }, (response) => {
                     var contents = container.find('.orderby-settings .contents');
                     contents.html(response);
                     S.drag.sort.add(contents, contents.find('.orderby'), S.editor.fields.custom.list.orderby.sorted);
@@ -464,7 +464,19 @@ S.editor.fields = {
                     var target = $(e.target);
                     var container = target.parents('.content-field').first();
                     var selected = container.find('.single-selection select').val();
-                    var key = S.editor.fields.custom.list.datasource.key(container);
+                    var input = container.find('input.input-field');
+                    var parts = input.val().split('|!|');
+                    var newparts = [];
+                    for (var x = 0; x < parts.length; x++) {
+                        if (parts[x].indexOf('lists=') >= 0 ||
+                            parts[x] == 'add' ||
+                            parts[x].indexOf('selected=') == 0) {
+                        } else {
+                            newparts.push(parts[x]);
+                        }
+                    }
+                    newparts.push('selected=' + selected);
+                    input.val(newparts.filter(a => a != '').join('|!|'));
                     S.editor.fields.custom.list.datasource.save(container);
                 }
             },
@@ -579,14 +591,14 @@ S.editor.fields = {
                     return {};
                 },
                 save: function (form) {
-                    var lists = form.find('.list-component-field');
+                    var list_elems = form.find('.list-component-field');
 
                     function collectFilters(container, elem) {
                         //generate FilterGroup object
                         var result = {
-                            Match: parseInt(container.find('.match-type select').val() ?? '0'),
-                            Elements: [],
-                            Groups: []
+                            m: parseInt(container.find('.match-type select').val() ?? '0'), //match
+                            e: [], //elements
+                            g: [] //groups
                         };
                         var subgroups = elem.find('.sub-groups').first().children();
                         var filters = elem.find('.filters').first().children();
@@ -614,22 +626,22 @@ S.editor.fields = {
                             }
                             var column = filter.attr('data-column');
                             if (column == null) { continue; }
-                            result.Elements.push({
-                                Column: filter.attr('data-column'),
-                                Match: parseInt(filter.find('.filter-match select').val() ?? '0'),
-                                Value: val,
-                                QueryName: filter.find('.filter-queryname input').val() ?? ''
+                            result.e.push({
+                                c: filter.attr('data-column'), //column
+                                m: parseInt(filter.find('.filter-match select').val() ?? '0'), //match
+                                v: val, //value
+                                qn: filter.find('.filter-queryname input').val() ?? '' //query name
                             });
                         }
                         for (var x = 0; x < subgroups.length; x++) {
-                            result.Groups.push(collectFilters(container, $(subgroups[x])));
+                            result.g.push(collectFilters(container, $(subgroups[x]))); //groups
                         }
                         return result;
                     }
 
-                    for (var i = 0; i < lists.length; i++) {
+                    for (var i = 0; i < list_elems.length; i++) {
                         //find lists that use data sources
-                        var container = $(lists[i]).parents('.content-field').first();
+                        var container = $(list_elems[i]).parents('.content-field').first();
                         if (container.find('.list-items')[0].style.display != 'none') { continue; }
 
                         //generate serialized object for list hidden field
@@ -637,41 +649,46 @@ S.editor.fields = {
                         var input = container.find('.input-field');
                         var lists = {};
                         var list = {};
+                        var singleselect = container.find('.single-selection select');
 
-                        //get filter data
-                        var filters = [];
-                        var groups = container.find('.filter-groups').children();
-                        for (var y = 0; y < groups.length; y++) {
-                            var filter = collectFilters(container, $(groups[y]));
-                            if (filter.Elements.length > 0 || filter.Groups.length > 0) {
-                                filters.push(filter);
+                        //get list type
+                        if (singleselect.length == 0) {
+                            console.log('process position settings, filters, & sorting');
+                            //get filter data for list
+                            var filters = [];
+                            var groups = container.find('.filter-groups').children();
+                            for (var y = 0; y < groups.length; y++) {
+                                var filter = collectFilters(container, $(groups[y]));
+                                if (filter.e.length > 0 || filter.g.length > 0) {
+                                    filters.push(filter);
+                                }
                             }
-                        }
-                        list.Filters = filters;
+                            list.f = filters;
 
-                        //get orderby data
-                        list.OrderBy = container.find('.orderby-settings .orderby').map((i, a) => {
-                            var orderby = $(a);
-                            return {
-                                Column: orderby.attr('data-column'),
-                                Direction: parseInt(orderby.find('.orderby-direction select').val())
+                            //get orderby data
+                            list.o = container.find('.orderby-settings .orderby').map((i, a) => {
+                                var orderby = $(a);
+                                return {
+                                    c: orderby.attr('data-column'), //column
+                                    d: parseInt(orderby.find('.orderby-direction select').val()) //direction
+                                };
+                            });
+
+                            //get position data
+                            list.p = {
+                                s: parseInt(container.find('.input-pos-start input').val()), //start
+                                sq: container.find('.input-pos-start-query input').val(), //start query
+                                l: parseInt(container.find('.input-pos-length input').val()), //length
+                                lq: container.find('.input-pos-length-query input').val() //length query
                             };
-                        });
-
-                        //get position data
-                        list.Position = {
-                            Start: parseInt(container.find('.input-pos-start input').val()),
-                            StartQuery: container.find('.input-pos-start-query input').val(),
-                            Length: parseInt(container.find('.input-pos-length input').val()),
-                            LengthQuery: container.find('.input-pos-length-query input').val()
-                        };
-                        if (list.Position.Start == null) { list.Position.Start = 1; }
-                        if (list.Position.Length == null) { list.Position.Length = 10; }
-
+                            if (list.p.s == null) { list.p.s = 1; }
+                            if (list.p.l == null) { list.p.l = 10; }
+                        }
                         if (input.val().indexOf('data-src=') >= 0) {
                             //save parts to hidden input
                             var parts = input.val().split('|!|');
                             var found = false;
+                            newparts = [];
                             for (var x = 0; x < parts.length; x++) {
                                 if (parts[x].indexOf('lists=') >= 0) {
                                     lists = JSON.parse(parts[x].replace('lists=', ''));
@@ -680,11 +697,21 @@ S.editor.fields = {
                                 } else if (parts[x].indexOf('data-src=') >= 0) {
                                 } else { parts[x] = '';}
                             }
-                            lists[key] = list;
-                            if (found) {
-                                parts[x] = 'lists=' + JSON.stringify(lists);
+                            if (singleselect.length > 0) {
+                                //remove lists object
+                                if (found) { parts[x] = ''; }
+                                //add single select value
+                                parts.push('single');
+                                parts.push('selected=' + singleselect.val());
+
                             } else {
-                                parts.push('lists=' + JSON.stringify(lists));
+                                //add list settings for data source & all relationships
+                                lists[key] = list;
+                                if (found) {
+                                    parts[x] = 'lists=' + JSON.stringify(lists);
+                                } else {
+                                    parts.push('lists=' + JSON.stringify(lists));
+                                }
                             }
                             input.val(parts.filter(a => a != '').join('|!|'));
                         }
@@ -720,7 +747,7 @@ S.editor.fields = {
                         container = target.parents('.filter-settings').find('.filter-groups').first();
                         target.parents('.filter-settings').find('.no-filtergroups').remove();
                     }
-                    S.ajax.post('DataSources/RenderFilterGroups', { key: key, groups: [{ Elements: [], Groups: [] }], depth:depth }, (response) => {
+                    S.ajax.post('DataSources/RenderFilterGroups', { key: key, groups: [{ e: [], g: [] }], depth:depth }, (response) => {
                         container.append(response);
                         var children = container.children();
                         var newgroup = $(children[children.length - 1]);
@@ -738,9 +765,10 @@ S.editor.fields = {
                 add: function (key, e) {
                     var target = $(e.target);
                     var container = target.parents('.filter-group').first();
-                    S.editor.fields.custom.list.datasource.select(key, "Select Column to Filter By", (response) => {
+                    var dskey = target.parents('.vendor-input').find('.list-lists select').val() ?? key;
+                    S.editor.fields.custom.list.datasource.select(dskey, "Select Column to Filter By", (response) => {
                         if (response == true) {
-                            S.ajax.post('DataSources/RenderFilter', { key: key, column: datasource_column.value }, (response) => {
+                            S.ajax.post('DataSources/RenderFilter', { key: dskey, column: datasource_column.value }, (response) => {
                                 var parent = container.find('.filters').first();
                                 parent.append(response);
                                 var children = parent.children();
@@ -771,9 +799,10 @@ S.editor.fields = {
                     var target = $(e.target);
                     var container = target.parents('.orderby-settings .contents').first();
                     container.find('.no-orderby').remove();
-                    S.editor.fields.custom.list.datasource.select(key, "Select Column to Sort By", (response) => {
+                    var dskey = target.parents('.vendor-input').find('.list-lists select').val() ?? key;
+                    S.editor.fields.custom.list.datasource.select(dskey, "Select Column to Sort By", (response) => {
                         if (response == true) {
-                            S.ajax.post('DataSources/RenderOrderBy', { key: key, column: datasource_column.value }, (response) => {
+                            S.ajax.post('DataSources/RenderOrderBy', { key: dskey, column: datasource_column.value }, (response) => {
                                 container.append(response);
                                 var children = container.children();
                                 var neworderby = $(children[children.length - 1]);

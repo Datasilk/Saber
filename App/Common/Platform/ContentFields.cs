@@ -15,7 +15,7 @@ namespace Saber.Common.Platform
         /// <param name="container">CSS selector of the HTML container that this form will be injected into. This field is passed into all vendor HTML Components found in the partial view.</param>
         /// <param name="fields">The values associated with each mustache variable in the partial view.</param>
         /// <returns>An HTML string representing the content fields form</returns>
-        public static string RenderForm(Core.IRequest request, string title, View view, string language, string container, Dictionary<string, string> fields, string[] excludedFields = null, Dictionary<string, Core.ContentFields.FieldType> fieldTypes = null, Dictionary<string, Dictionary<string, string>> extraVars = null)
+        public static string RenderForm(Core.IRequest request, string title, View view, string language, string container, Dictionary<string, string> fields, string[] excludedFields = null, Dictionary<string, Core.ContentFields.FieldType> fieldTypes = null, Dictionary<string, Dictionary<string, string>> extraArgs = null)
         {
             var section = new View("/Views/ContentFields/section.html");
             var fieldText = new View("/Views/ContentFields/text.html");
@@ -153,10 +153,10 @@ namespace Saber.Common.Platform
                             fieldVendor["value"] = fieldValueHtml;
                             var args = elem.Vars != null ? new Dictionary<string, string>(elem.Vars) :
                                 new Dictionary<string, string>() { { "var", elem.Var } };
-                            if(extraVars != null && extraVars.ContainsKey(elem.Name))
+                            if(extraArgs != null && extraArgs.ContainsKey(elem.Name))
                             {
-                                //add all related extra variables to HTML Component args
-                                foreach(var kv in extraVars[elem.Name])
+                                //add all related extra arguments to HTML Component args
+                                foreach(var kv in extraArgs[elem.Name])
                                 {
                                     args.Add(kv.Key, kv.Value);
                                 }

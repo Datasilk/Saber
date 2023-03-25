@@ -26,7 +26,7 @@
             </div>
             {{/not-locked}}
             <div class="col right tab-item tab-list-items pad-left-sm" {{has-datasource}}style="display:none"{{/has-datasource}}>
-                <div class="row hover light pad-sm text-center" style="height:30px" onclick="S.editor.fields.custom.list.tab('list-items', event);">
+                <div class="row hover light pad-sm text-center" style="height:30px" onclick="{{list-items-click}}">
                     <div class="icon small" title="View your List Items">
                         <svg viewBox="0 0 32 32">
                             <use xlink:href="#icon-menu" x="0" y="0" width="32" height="32"></use>
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="col right add-list-item pad-left-sm""{{hide-add-list-item}} style="display:none"{{/hide-add-list-item}}>
-                <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.add(event, '{{title}}', '{{field-key}}', '{{partial}}', '{{lang}}', '{{container}}', {{renderapi}})">
+                <div class="row hover light pad-sm" onclick="S.editor.fields.custom.list.add(event, '{{title}}', '{{field-key}}', '{{partial}}', '{{lang}}', '{{container}}', {{render-api}})">
                     <div class="icon small" title="Add a new item to your List">
                         <svg viewBox="0 0 32 32">
                             <use xlink:href="#icon-add" x="0" y="0" width="32" height="32"></use>

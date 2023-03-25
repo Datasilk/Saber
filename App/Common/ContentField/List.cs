@@ -14,16 +14,22 @@ namespace Saber.Common.ContentField
         {
             if (!args.ContainsKey("partial")) { return "You must provide the \"partial\" property for your mustache \"list\" component"; }
             //load provided partial view
-            var partials = (args["partial"].Contains("|") ? args["partial"].Split("|") : args["partial"].Split(",")).Select(a => a.Trim()).ToArray();
+            var partials = (args["partial"].Contains("|") ? args["partial"].Split("|") : 
+                args["partial"].Split(",")).Select(a => a.Trim()).ToArray();
             var viewlist = new View("/Views/ContentFields/list.html");
             var viewitem = new View("/Views/ContentFields/list-item.html");
             var fieldKey = args.ContainsKey("key") ? args["key"] : "";
+            var listItemsClick = args.ContainsKey("list-click") ? args["list-click"] :
+                "S.editor.fields.custom.list.tab('list-items', event);";
+
+            //bind view data
             viewlist["title"] = key.Replace("-", " ").Replace("_", " ").Capitalize();
             viewlist["field-key"] = fieldKey;
             viewlist["partial"] = partials[0];
             viewlist["lang"] = lang;
             viewlist["container"] = container;
-            viewlist["renderapi"] = args.ContainsKey("renderapi") ? "'" + args["renderapi"] + "'" : "null";
+            viewlist["render-api"] = args.ContainsKey("render-api") ? "'" + args["render-api"] + "'" : "null";
+            viewlist["list-items-click"] = listItemsClick;
 
             //get list items
             try
@@ -39,17 +45,19 @@ namespace Saber.Common.ContentField
                     var listsPart = parts.Where(a => a.IndexOf("lists=") == 0).FirstOrDefault();
                     var lists = listsPart != null ? listsPart.Replace("lists=", "") : "{}";
                     var settings = JsonSerializer.Deserialize<Dictionary<string, HtmlComponents.List.ListSettings>>(lists);
-                    var mysettings = settings.ContainsKey(dataSourceKey) ? settings[dataSourceKey] : null;
+                    var mysettings = settings != null && settings.ContainsKey(dataSourceKey) ? settings[dataSourceKey] : null;
                     var datasource = Core.Vendors.DataSources.Where(a => a.Key == dataSourceKey).FirstOrDefault();
                     var locked = parts.Contains("locked");
                     var canadd = parts.Contains("add");
+                    var canfilter = !args.ContainsKey("hide-filter");
                     if (!canadd) { viewlist.Show("hide-add-list-item"); }
                     if (datasource != null)
                     {
                         foundDataSrc = true;
-                        viewlist["datasource"] = (datasource.Helper.Vendor != "" ? datasource.Helper.Vendor + " - " : "") + datasource.Name;viewlist.Show(locked ? "locked" : "not-locked");
+                        viewlist["datasource"] = (datasource.Helper.Vendor != "" ? datasource.Helper.Vendor + " - " : "") + 
+                            datasource.Name;viewlist.Show(locked ? "locked" : "not-locked");
                         viewlist.Show(locked ? "locked" : "not-locked");
-                        viewlist.Show("has-datasource");
+                        if (!args.ContainsKey("list-click")) { viewlist.Show("has-datasource"); }
                         var datasourceId = dataSourceKey.Replace(datasource.Helper.Prefix + "-", "");
                         if (parts.Contains("single"))
                         {
@@ -57,6 +65,7 @@ namespace Saber.Common.ContentField
                             viewlist.Show("single-selection");
                             viewlist.Show("no-lists");
                             var colkey = fieldKey;
+                            var selected = parts.Where(a => a.IndexOf("selected=") == 0).FirstOrDefault()?.Replace("selected=", "") ?? "";
                             if (string.IsNullOrEmpty(fieldKey))
                             {
                                 //get first string column from data source
@@ -72,17 +81,22 @@ namespace Saber.Common.ContentField
                                 var results = datasource.Helper.Filter(request, datasourceId, 1, 1000).ToList();
                                 viewlist["list-items-options"] = string.Join("\n", results.Select(a =>
                                 {
-                                    return "<option value=\"" + a[colkey] + "\">" + a[colkey] + "</option>";
+                                    return "<option value=\"" + a[colkey] + "\"" + (selected == a[colkey] ? " selected" : "") + ">" + 
+                                    a[colkey] + "</option>";
                                 }));
                             }
                         }
                         else
                         {
                             //render data source filter form
-                            viewlist.Show("can-filter");
-                            viewlist["filter-contents"] = DataSource.RenderFilters(request, datasource, mysettings?.Filters);
-                            viewlist["orderby-contents"] = DataSource.RenderOrderByList(datasource, mysettings?.OrderBy);
-                            viewlist["position-contents"] = DataSource.RenderPositionSettings(datasource, mysettings?.Position);
+                            if (canfilter)
+                            {
+                                viewlist.Show("can-filter");
+                                viewlist["filter-contents"] = DataSource.RenderFilters(request, datasource, mysettings?.Filters);
+                                viewlist["orderby-contents"] = DataSource.RenderOrderByList(datasource, mysettings?.OrderBy);
+                                viewlist["position-contents"] = DataSource.RenderPositionSettings(datasource, mysettings?.Position);
+                            }
+                            
                             var relationships = datasource.Helper.Get(datasourceId).Relationships;
                             if (relationships.Length == 0)
                             {
@@ -90,11 +104,12 @@ namespace Saber.Common.ContentField
                             }
                             else
                             {
-                                viewlist["lists"] = "<option value=\"" + dataSourceKey + "\">" + key.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>" +
+                                viewlist["lists"] = "<option value=\"" + dataSourceKey + "\">" + 
+                                    key.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>" +
                                     string.Join('\n', relationships.Select(a => "<option value=\"" +
                                     Core.Vendors.DataSources.Where(b => b.Key == a.ChildKey).FirstOrDefault()?.Helper.Prefix +
-                                    "-" + a.Child.Key + "\">" + a.ListComponent.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>"
-                                ).ToArray());
+                                    "-" + a.Child.Key + "\">" + a.ListComponent.Replace("list-", "").Replace("-", " ").Capitalize() + 
+                                    "</option>").ToArray());
                             }
                         }
                     }

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Saber.Core;
 using Saber.Vendor;
 
@@ -474,8 +472,11 @@ namespace Saber.Common.HtmlComponents
 
         public class ListSettings
         {
+            [JsonPropertyName("p")]
             public DataSource.PositionSettings Position { get; set; } = new DataSource.PositionSettings();
+            [JsonPropertyName("f")]
             public List<DataSource.FilterGroup> Filters { get; set; } = new List<DataSource.FilterGroup>();
+            [JsonPropertyName("o")]
             public List<DataSource.OrderBy> OrderBy { get; set; } = new List<DataSource.OrderBy>();
         }
     }
