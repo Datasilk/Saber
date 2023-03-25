@@ -1,5 +1,3 @@
-using System.Linq;
-using Microsoft.AspNetCore.Http;
 using Saber.Core;
 
 namespace Saber
@@ -70,40 +68,7 @@ namespace Saber
 
         public override bool CheckSecurity(string key = "")
         {
-            if (User.IsAdmin) { return true; }
-            if(User.PublicApi == true)
-            {
-                //using Public API
-                if(User.UserId > 0)
-                {
-                    //user is logged in
-                    if (key != "")
-                    {
-                        //check if user has access to specific key
-                        return Query.Security.Users.Check(User.UserId, key);
-                    }
-                    else
-                    {
-                        //key not specified
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                //using private API (origin domain)
-                if (key != "" && User.UserId > 0 && User.Keys.Any(a => a.Key == key && a.Value == true))
-                {
-                    //user has access to specified security key 
-                    return true;
-                }
-                else if (key == "" && User.UserId > 0)
-                {
-                    //user is logged in
-                    return true;
-                }
-            }
-            return false;
+            return Common.Platform.Service.CheckSecurity(User, key);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Saber.Common.Platform
         /// <param name="container">CSS selector of the HTML container that this form will be injected into. This field is passed into all vendor HTML Components found in the partial view.</param>
         /// <param name="fields">The values associated with each mustache variable in the partial view.</param>
         /// <returns>An HTML string representing the content fields form</returns>
-        public static string RenderForm(Core.IRequest request, string title, View view, string language, string container, Dictionary<string, string> fields, string[] excludedFields = null, Dictionary<string, Core.ContentFields.FieldType> fieldTypes = null)
+        public static string RenderForm(Core.IRequest request, string title, View view, string language, string container, Dictionary<string, string> fields, string[] excludedFields = null, Dictionary<string, Core.ContentFields.FieldType> fieldTypes = null, Dictionary<string, Dictionary<string, string>> extraVars = null)
         {
             var section = new View("/Views/ContentFields/section.html");
             var fieldText = new View("/Views/ContentFields/text.html");
@@ -151,7 +151,17 @@ namespace Saber.Common.Platform
                             fieldVendor["title"] = (fieldTitleKey != "" ? fieldTitleKey + ": " : "") + fieldTitleId.Trim().Capitalize();
                             fieldVendor["id"] = fieldId;
                             fieldVendor["value"] = fieldValueHtml;
-                            fieldVendor["content"] = vendor.Value.ContentField.Render(request, elem.Vars ?? new Dictionary<string, string>() { ["var"] = elem.Var}, fieldValue, fieldId, prefix, elemName, language, container);
+                            var args = elem.Vars != null ? new Dictionary<string, string>(elem.Vars) :
+                                new Dictionary<string, string>() { { "var", elem.Var } };
+                            if(extraVars != null && extraVars.ContainsKey(elem.Name))
+                            {
+                                //add all related extra variables to HTML Component args
+                                foreach(var kv in extraVars[elem.Name])
+                                {
+                                    args.Add(kv.Key, kv.Value);
+                                }
+                            }
+                            fieldVendor["content"] = vendor.Value.ContentField.Render(request, args, fieldValue, fieldId, prefix, elemName, language, container);
                             html.Append(fieldVendor.Render());
                         }
                         break;
@@ -237,7 +247,9 @@ namespace Saber.Common.Platform
                                             //style parsing support to check if field exists in
                                             //background or background-image CSS property
                                             if (htmElem.IndexOf("background-image:url(") == htmElem.Length - 21 ||
-                                                htmElem.IndexOf("background-image: url(") == htmElem.Length - 22)
+                                                htmElem.IndexOf("background-image: url(") == htmElem.Length - 22 ||
+                                                htmElem.IndexOf("background:url(") == htmElem.Length - 15 ||
+                                                htmElem.IndexOf("background: url(") == htmElem.Length - 16)
                                             {
                                                 return Core.ContentFields.FieldType.image;
                                             }

@@ -1,4 +1,6 @@
 ﻿
+using Saber.Core;
+
 namespace Saber.Common.Platform
 {
     public static class Service
@@ -28,16 +30,42 @@ namespace Saber.Common.Platform
         /// <param name="service"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static bool CheckSecurity(Core.Service service, string key = "")
+        public static bool CheckSecurity(IUser User, string key = "")
         {
-            var newservice = new Saber.Service()
+            if (User.IsAdmin) { return true; }
+            if (User.PublicApi == true)
             {
-                Context = service.Context,
-                Parameters = service.Parameters,
-                Path = service.Path,
-                PathParts = service.PathParts
-            };
-            return newservice.CheckSecurity(key);
+                //using Public API
+                if (User.UserId > 0)
+                {
+                    //user is logged in
+                    if (key != "")
+                    {
+                        //check if user has access to specific key
+                        return Query.Security.Users.Check(User.UserId, key);
+                    }
+                    else
+                    {
+                        //key not specified
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+                //using private API (origin domain)
+                if (key != "" && User.UserId > 0 && User.Keys.Any(a => a.Key == key && a.Value == true))
+                {
+                    //user has access to specified security key 
+                    return true;
+                }
+                else if (key == "" && User.UserId > 0)
+                {
+                    //user is logged in
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static Core.IUser GetUser(Core.Service service)

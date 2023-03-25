@@ -63,7 +63,7 @@ namespace Saber.Common.Platform
                 else
                 {
                     //try to load template page from parent
-                    view.HTML = Settings.DefaultHtml;
+                    view = new View(new ViewOptions() { Html = Settings.DefaultHtml });
                 }
             } 
 
@@ -237,7 +237,9 @@ namespace Saber.Common.Platform
                         foreach(var field in fields)
                         {
                             var elem = view.Elements[field.Value[0]];
-                            var args = elem.Vars ?? new Dictionary<string, string>();
+                            //clone ViewElement.Vars into args object
+                            Dictionary<string, string> args = elem.Vars != null ? 
+                                new Dictionary<string, string>(elem.Vars) : new Dictionary<string, string>();
                             //run the Data Binder callback method
                             var range = component.Value.Render(view, request, args, data, prefix, elem.Name);
                             if (range.Count > 0)
