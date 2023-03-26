@@ -3,6 +3,7 @@ using System.Text.Json;
 using Saber.Core.Extensions.Strings;
 using Saber.Core;
 using Saber.Vendor;
+using Saber.Vendors.DataSets;
 
 namespace Saber.Common.ContentField
 {
@@ -72,7 +73,7 @@ namespace Saber.Common.ContentField
                                 var info = datasource.Helper.Get(datasourceId);
                                 colkey = info.Columns.Where(a => a.DataType == DataSource.DataType.Text).FirstOrDefault()?.Name ?? "";
                             }
-                            if(colkey == "")
+                            if (colkey == "")
                             {
                                 viewlist["list-items-options"] = "<option value=\"\">[Err: No text column found for list!]</option>";
                             }
@@ -81,7 +82,8 @@ namespace Saber.Common.ContentField
                                 var results = datasource.Helper.Filter(request, datasourceId, 1, 1000).ToList();
                                 viewlist["list-items-options"] = string.Join("\n", results.Select(a =>
                                 {
-                                    return "<option value=\"" + a[colkey] + "\"" + (selected == a[colkey] ? " selected" : "") + ">" + 
+                                    var id = a.ContainsKey("Id") ? a["Id"] : a[colkey];
+                                    return "<option value=\"" + id + "\"" + (id == selected ? " selected" : "") + ">" + 
                                     a[colkey] + "</option>";
                                 }));
                             }

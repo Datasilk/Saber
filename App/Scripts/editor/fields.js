@@ -312,6 +312,9 @@ S.editor.fields = {
                 //S.drag.sort.add(container + ' .filter-settings .filter-groups, .filter-settings .sub-groups', container + ' .filter-settings .filter-group', S.editor.fields.custom.list.filters.sorted);
                 //S.drag.sort.add(container + ' .filter-settings .filters', container + ' .filter-settings .filter', S.editor.fields.custom.list.filters.sorted);
                 S.drag.sort.add(container + ' .orderby-settings .contents', container + ' .orderby', S.editor.fields.custom.list.orderby.sorted);
+
+                //initialize all single selection select inputs
+                S.editor.fields.custom.list.single.init();
             },
             parse: function (hidden) {
                 var data = hidden.val();
@@ -478,6 +481,12 @@ S.editor.fields = {
                     newparts.push('selected=' + selected);
                     input.val(newparts.filter(a => a != '').join('|!|'));
                     S.editor.fields.custom.list.datasource.save(container);
+                },
+                init: function () {
+                    $('.list-component-field .single-selection select').each((i, a) => {
+                        a.dispatchEvent(new Event('input')); //force single.select(e) method call
+                    })
+
                 }
             },
             datasource: {
