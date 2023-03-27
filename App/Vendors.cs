@@ -372,7 +372,7 @@ namespace Saber.Common
                 cssparts.Append(File.ReadAllText(f));
             }
             //gzip vendors-eitor.js
-            File.WriteAllText("/wwwroot/editor/css/vendors-editor.css", string.Join("\n", cssparts));
+            File.WriteAllText(App.MapPath("/wwwroot/editor/css/vendors-editor.css"), string.Join("\n", cssparts));
         }
         #endregion
 
