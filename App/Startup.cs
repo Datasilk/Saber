@@ -461,6 +461,7 @@ namespace Saber
                         headers.Add("Content-Encoding", "gzip");
                         headers["Content-Type"] = contentType;
                     }
+                    headers["Cache-Control"] = "public, max-age: 604800";
                 }
             };
 

@@ -638,11 +638,13 @@ namespace Saber.Services
                 var config = PageInfo.GetPageConfig(path);
                 config.IsLiveTemplate = true;
                 config.Save();
+                var newpath = string.Join("/", config.Paths);
 
                 //update all sub-pages to use live template
                 var dir = new DirectoryInfo(string.Join("/", config.Paths.Take(config.Paths.Length - 1)));
-                foreach (var file in dir.GetFiles("*.html"))
+                foreach (var file in dir.GetFiles("*.html", SearchOption.AllDirectories))
                 {
+                    if (file.FullName.Replace("\\", "/").Contains(newpath + "/template.html")) { continue; }
                     config = PageInfo.GetPageConfig(file.FullName.Replace("\\", "/").Replace(App.RootPath, "").Replace(".html", ""));
                     config.UsesLiveTemplate = true;
                     config.FromLiveTemplate = true;

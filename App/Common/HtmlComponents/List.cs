@@ -97,7 +97,7 @@ namespace Saber.Common.HtmlComponents
                                 if (!string.IsNullOrEmpty(myData.DataSource))
                                 {
                                     //get other settings
-                                    myData.Settings = JsonSerializer.Deserialize<Dictionary<string, ListSettings>>(parts.Where(a => a.Contains("lists=")).FirstOrDefault()?.Split("=")[1] ?? "{}") ?? new Dictionary<string, ListSettings>();
+                                    myData.Settings = JsonSerializer.Deserialize<Dictionary<string, ListSettings>>(parts.Where(a => a.Contains("lists=")).FirstOrDefault()?.Split("=", 2)[1] ?? "{}") ?? new Dictionary<string, ListSettings>();
                                 }
                             }
                         }
