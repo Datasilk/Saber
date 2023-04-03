@@ -131,6 +131,11 @@ S.editor.fields = {
             S.popup.resize();
             popup.find('form').on('submit', (e) => {
                 e.preventDefault();
+
+                //make sure to presave all lists before saving
+                S.editor.fields.presave();
+
+                //populate form fields to submit
                 var fields = {};
                 var texts = popup.find('form .input-field');
                 texts.each(function (i, txt) {
@@ -193,7 +198,6 @@ S.editor.fields = {
     },
     saveThenPreview: function () {
         S.editor.fields.save(S.editor.preview.show);
-        
     },
     listeners: {
         save: {
@@ -527,7 +531,6 @@ S.editor.fields = {
                     var name = option.html();
                     template.find('span').first().html(name);
                     var list = container.find('.list-items ul.list');
-                    console.log([template, option, name, value, list, template.html()]);
                     list.append('<li data-index="' + value + '">' + template.html() + '</li>');
                     list.find('.close-btn').off('click').on('click', S.editor.fields.custom.list.multiselect.remove);
                     //finally, remove option
@@ -545,7 +548,6 @@ S.editor.fields = {
                         for (var x = 0; x < options.length; x++) {
                             if (parseInt($(options[x]).val()) > id) { break; }
                         }
-                        console.log([item, id, name, x, options.length, $(options[x])]);
                         if (x == options.length) {
                             $(options[x - 1]).after('<option value="' + id + '">' + name + '</option>');
                         } else {
@@ -753,7 +755,6 @@ S.editor.fields = {
 
                         //get list type
                         if (singleselect.length == 0) {
-                            console.log('process position settings, filters, & sorting');
                             //get filter data for list
                             var filters = [];
                             var groups = container.find('.filter-groups').children();
@@ -873,6 +874,7 @@ S.editor.fields = {
                     var target = $(e.target);
                     var container = target.parents('.filter-group').first();
                     var dskey = target.parents('.vendor-input').find('.list-lists select').val() ?? key;
+                    if (dskey == '') { dskey = key; }
                     S.editor.fields.custom.list.datasource.select(dskey, "Select Column to Filter By", (response) => {
                         if (response == true) {
                             S.ajax.post('DataSources/RenderFilter', { key: dskey, column: datasource_column.value }, (response) => {

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using Saber.Core;
 using Saber.Vendor;
 
@@ -140,26 +141,23 @@ namespace Saber.Common.HtmlComponents
                             //data = data.ToDictionary(a => a.Key, a => a.Value);
                             mysettings = myData.Settings.ContainsKey(myData.DataSource) ? myData.Settings[myData.DataSource] : new ListSettings();
 
-                            if(mysettings != null)
+                            //override list options from request parameters
+                            foreach(var group in mysettings.Filters)
                             {
-                                //override list options from request parameters
-                                foreach(var group in mysettings.Filters)
-                                {
-                                    OverrideFilterGroupValues(request, group);
-                                }
-                                if(mysettings.Position.StartQuery != "" && request.Parameters.ContainsKey(mysettings.Position.StartQuery))
-                                {
-                                    int.TryParse(request.Parameters[mysettings.Position.StartQuery], out var xstart);
-                                    if(xstart > 0){mysettings.Position.Start = xstart; }
-                                }
-                                if(mysettings.Position.LengthQuery != "" && request.Parameters.ContainsKey(mysettings.Position.LengthQuery))
-                                {
-                                    int.TryParse(request.Parameters[mysettings.Position.LengthQuery], out var xlength);
-                                    if(xlength > 0){mysettings.Position.Length = xlength; }
-                                }
-                                start = mysettings.Position.Start;
-                                length = mysettings.Position.Length;
+                                OverrideFilterGroupValues(request, group);
                             }
+                            if(mysettings.Position.StartQuery != "" && request.Parameters.ContainsKey(mysettings.Position.StartQuery))
+                            {
+                                int.TryParse(request.Parameters[mysettings.Position.StartQuery], out var xstart);
+                                if(xstart > 0){mysettings.Position.Start = xstart; }
+                            }
+                            if(mysettings.Position.LengthQuery != "" && request.Parameters.ContainsKey(mysettings.Position.LengthQuery))
+                            {
+                                int.TryParse(request.Parameters[mysettings.Position.LengthQuery], out var xlength);
+                                if(xlength > 0){mysettings.Position.Length = xlength; }
+                            }
+                            start = mysettings.Position.Start;
+                            length = mysettings.Position.Length;
 
                             //get records from data source
                             datasource = Core.Vendors.DataSources.Where(a => a.Key == myData.DataSource).FirstOrDefault();
@@ -179,8 +177,30 @@ namespace Saber.Common.HtmlComponents
                                             records = myData.RecordSets[myData.Relationship.ChildKey.Replace(datasource.Helper.Prefix + "-", "")].Where(a => a["Id"] == selectionId).ToList() ?? new List<Dictionary<string, string>>();
                                         }
                                     }
+                                    else if(myData.Relationship.Type == DataSource.RelationshipType.MultiSelection)
+                                    {
+                                        //display all records associated with multi-selection IDs
+                                        var parentRecord = myData.Record;
+                                        var listVal = parentRecord[myData.Relationship.ListComponent];
+                                        var selectionIds = listVal.Contains("selected=") ? listVal.Split("selected=")[1] : "";
+                                        if (!string.IsNullOrEmpty(selectionIds))
+                                        {
+                                            var ids = selectionIds.Split(",");
+                                            records = myData.RecordSets[myData.Relationship.ChildKey.Replace(datasource.Helper.Prefix + "-", "")].Where(a => ids.Contains(a["Id"])).ToList() ?? new List<Dictionary<string, string>>();
+                                        }
+                                    }
+                                    else if(myData.Relationship.Type == DataSource.RelationshipType.FilteredList)
+                                    {
+                                        //filter list based on filter settings afterwards
+                                        records = myData.RecordSets.ContainsKey(datasourceId) ? myData.RecordSets[datasourceId].ToList() : new List<Dictionary<string, string>>();
+                                        //get settings from parent record
+                                        var parts = myData.Record[myData.Relationship.ListComponent].Split("|!|");
+                                        var settings = JsonSerializer.Deserialize<Dictionary<string, ListSettings>>(parts.Where(a => a.Contains("lists=")).FirstOrDefault()?.Split("=", 2)[1] ?? "{}") ?? new Dictionary<string, ListSettings>();
+                                        records = FilterRecords(settings.ContainsKey(myData.Relationship.ChildKey) ? settings[myData.Relationship.ChildKey].Filters : new List<DataSource.FilterGroup>(), records);
+                                    }
                                     else
                                     {
+                                        //get records based on relationship
                                         records = myData.RecordSets.ContainsKey(datasourceId) ? myData.RecordSets[datasourceId].Where(a => a[myData.Relationship.ChildColumn] == myData.Record["Id"]).ToList() : new List<Dictionary<string, string>>();
                                     }
                                     
@@ -264,11 +284,6 @@ namespace Saber.Common.HtmlComponents
                                                 Settings = myData.Settings
                                             };
                                             data.Add(relationship.ListComponent, listData);
-                                            //"data-src=" + relationship.ChildKey +
-                                            //    "|!|recordset=" + key + "|!|" + (
-                                            //    relationship.Type == DataSource.RelationshipType.SingleSelection ? 
-                                            //    ("selection=" + relationship.Key + "|!|list=" + relationship.ListComponent)  : 
-                                            //    "column=" + relationship.ChildColumn));
                                        }
                                     }
                                     else
@@ -518,6 +533,121 @@ namespace Saber.Common.HtmlComponents
             {
                 OverrideFilterGroupValues(request, sub);
             }
+        }
+
+        private List<Dictionary<string, string>> FilterRecords(List<DataSource.FilterGroup> filters, List<Dictionary<string, string>> records)
+        {
+            if (filters.Count == 0){ return records; }
+            var filtered = new List<Dictionary<string, string>>();
+            foreach(var record in records)
+            {
+                foreach (var filter in filters)
+                {
+                    if(CheckFilter(filter, record))
+                    {
+                        filtered.Add(record);
+                        break;
+                    }
+                }
+            }
+            return filtered;
+        }
+
+        private bool CheckFilter(DataSource.FilterGroup filter, Dictionary<string, string> record)
+        {
+            if (filter.Match == DataSource.GroupMatchType.All)
+            {
+                //if any filters do NOT match, return false
+                foreach (var elem in filter.Elements)
+                {
+                    if (!CheckFilterElement(elem, record))
+                    {
+                        return false;
+                    }
+                }
+                //check all subgroups
+                foreach (var group in filter.Groups)
+                {
+                    if (!CheckFilter(group, record))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else if (filter.Match == DataSource.GroupMatchType.Any)
+            {
+                foreach (var elem in filter.Elements)
+                {
+                    if (CheckFilterElement(elem, record))
+                    {
+                        return true;
+                    }
+                }
+                //check all subgroups
+                foreach (var group in filter.Groups)
+                {
+                    if (CheckFilter(group, record))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return true;
+        }
+
+
+        private bool CheckFilterElement(DataSource.FilterElement filter, Dictionary<string, string> record)
+        {
+            if (record.ContainsKey(filter.Column))
+            {
+                //try to match string values
+                var val = record[filter.Column].ToLower();
+                var filterVal = filter.Value.ToLower();
+                switch (filter.Match)
+                {
+                    case DataSource.FilterMatchType.Contains:
+                        if (val.Contains(filterVal)) { return true; }
+                        break;
+                    case DataSource.FilterMatchType.EndsWith:
+                        if (val.EndsWith(filterVal)) { return true; }
+                        break;
+                    case DataSource.FilterMatchType.Equals:
+                        if (val == filterVal) { return true; }
+                        break;
+                    case DataSource.FilterMatchType.StartsWith:
+                        if (val.StartsWith(filterVal)) { return true; }
+                        break;
+                    default:
+                        //try to get numerical values and match values
+                        var a = double.TryParse(val, out var valnum);
+                        var b = double.TryParse(filterVal, out var filternum);
+                        if(a && b)
+                        {
+                            switch (filter.Match)
+                            {
+                                case DataSource.FilterMatchType.GreaterEqualTo:
+                                    if (valnum >= filternum) { return true; }
+                                    break;
+                                case DataSource.FilterMatchType.GreaterThan:
+                                    if (valnum > filternum) { return true; }
+                                    break;
+                                case DataSource.FilterMatchType.LessThanEqualTo:
+                                    if (valnum <= filternum) { return true; }
+                                    break;
+                                case DataSource.FilterMatchType.LessThan:
+                                    if (valnum < filternum) { return true; }
+                                    break;
+                            }
+                        }
+                        break;
+
+                }
+
+                
+            }
+            return false;
         }
 
         #endregion
