@@ -59,7 +59,7 @@ namespace Saber.Common.ContentField
                         viewlist["datasource"] = (datasource.Helper.Vendor != "" ? datasource.Helper.Vendor + " - " : "") + 
                             datasource.Name;viewlist.Show(locked ? "locked" : "not-locked");
                         viewlist.Show(locked ? "locked" : "not-locked");
-                        if (!args.ContainsKey("list-click")) { viewlist.Show("has-datasource"); }
+                        if (!args.ContainsKey("list-click") && !isMultiselect) { viewlist.Show("no-list-items"); }
                         var datasourceId = dataSourceKey.Replace(datasource.Helper.Prefix + "-", "");
                         if (isSingle || isMultiselect)
                         {
@@ -85,6 +85,31 @@ namespace Saber.Common.ContentField
                                 var ids = selected.Split(",");
                                 if (isMultiselect)
                                 {
+
+                                    //load list based on selected items
+                                    var items = results.Where(a =>
+                                    {
+                                        var id = a.ContainsKey("Id") ? a["Id"] : a[colkey];
+                                        return ids.Contains(id);
+                                    }).ToList();
+
+                                    //add hidden list item to use when adding list items via javascript
+                                    viewitem.Clear();
+                                    viewitem["attrs"] = "class=\"template\" style=\"display:none\"";
+                                    html.Append(viewitem.Render());
+
+                                    var i = 0;
+                                    foreach (var item in items)
+                                    {
+                                        viewitem.Clear();
+                                        viewitem["label"] = colkey != "" ? item[colkey] : "List Item #" + i;
+                                        viewitem["index"] = item["Id"].ToString();
+                                        viewitem["onclick"] = "";
+                                        html.Append(viewitem.Render());
+                                    }
+                                    viewlist["list-contents"] = "<ul class=\"list\">" + html.ToString() + "</ul>";
+                                    viewlist["item-count"] = items.Count.ToString();
+
                                     //remove items from list that are already selected
                                     results = results.Where(a =>
                                     {
@@ -138,13 +163,13 @@ namespace Saber.Common.ContentField
                         var i = 1;
                         foreach (var item in items)
                         {
+                            viewitem.Clear();
                             viewitem["label"] = fieldKey != "" ? item[fieldKey] : "List Item #" + i;
                             viewitem["index"] = i.ToString();
                             viewitem["onclick"] = "S.editor.fields.custom.list.edit(event, '" + viewlist["title"] +
                                 "', '" + fieldKey +
                                 "', '" + viewlist["partial"].Split(",")[0].Trim() + "', '" + lang + "', '" + container + "')";
                             html.Append(viewitem.Render());
-                            viewitem.Clear();
                             i++;
                         }
                         viewlist["item-count"] = items.Count.ToString();

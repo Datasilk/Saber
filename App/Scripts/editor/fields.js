@@ -280,36 +280,21 @@ S.editor.fields = {
                     S.editor.fields.change();
                 });
 
-                //event listener for close button
-                section.find('.list-items li .close-btn').off('click').on('click', S.editor.fields.custom.list.remove);
-
                 //event listener for list drop down
                 section.find('.list-lists select').off().on('input', S.editor.fields.custom.list.select);
 
                 //event listener for single selection drop down
                 if (section.find('.multi-selection').length == 0) {
                     section.find('.single-selection select').off().on('input', S.editor.fields.custom.list.single.select);
+                    //event listener for list close button
+                    section.find('.list-items li .close-btn').off('click').on('click', S.editor.fields.custom.list.remove);
+                } else {
+                    section.find('li[draggable="true"]').removeAttr('onclick').removeAttr('draggable');
+                    section.find('.list-items ul.list .close-btn').off('click').on('click', S.editor.fields.custom.list.multiselect.remove);
                 }
 
                 //drag & sort event listeners
-                S.drag.sort.add(container + ' .list-items ul', container + ' .list-items li', (e) => {
-                    //update list
-                    var target = $(e.target);
-                    var field = target.parents('.content-field').first();
-                    var items = field.find('.list-items li');
-                    let hidden = field.find('input.input-field');
-                    var data = S.editor.fields.custom.list.parse(hidden);
-                    var newdata = [];
-                    for (var x = 0; x < items.length; x++) {
-                        var item = $(items[x]);
-                        var i = parseInt(item.attr('data-index')) - 1;
-                        newdata[x] = data[i];
-                        item.attr('data-index', x + 1);
-                    }
-                    hidden.val(JSON.stringify(newdata));
-                    S.editor.fields.change();
-                    S.editor.fields.save();
-                });
+                S.drag.sort.add(container + ' .list-items ul', container + ' .list-items li[draggable]', S.editor.fields.custom.list.drag);
 
                 //S.drag.sort.add(container + ' .filter-settings .filter-groups, .filter-settings .sub-groups', container + ' .filter-settings .filter-group', S.editor.fields.custom.list.filters.sorted);
                 //S.drag.sort.add(container + ' .filter-settings .filters', container + ' .filter-settings .filter', S.editor.fields.custom.list.filters.sorted);
@@ -427,6 +412,24 @@ S.editor.fields = {
                 }, null, renderApi);
                 return false;
             },
+            drag: function (e) {
+                //update list
+                var target = $(e.target);
+                var field = target.parents('.content-field').first();
+                var items = field.find('.list-items li');
+                let hidden = field.find('input.input-field');
+                var data = S.editor.fields.custom.list.parse(hidden);
+                var newdata = [];
+                for (var x = 0; x < items.length; x++) {
+                    var item = $(items[x]);
+                    var i = parseInt(item.attr('data-index')) - 1;
+                    newdata[x] = data[i];
+                    item.attr('data-index', x + 1);
+                }
+                hidden.val(JSON.stringify(newdata));
+                S.editor.fields.change();
+                S.editor.fields.save();
+            },
             select: function (e) {
                 //used when list component contains one or more list components within the partial view used by your list component
                 //select list component from drop down and update content field sections based on selected list key
@@ -499,7 +502,8 @@ S.editor.fields = {
                     e.preventDefault();
                     var target = $(e.target);
                     var container = target.parents('.content-field').first();
-                    var selected = container.find('.single-selection select').val();
+                    var select = container.find('.single-selection select');
+                    var value = select.val();
                     var input = container.find('input.input-field');
                     var parts = input.val().split('|!|');
                     var newparts = [];
@@ -513,11 +517,66 @@ S.editor.fields = {
                             newparts.push(parts[x]);
                         }
                     }
-                    allIds.push(selected);
+                    allIds.push(value);
                     newparts.push('selected=' + allIds.join(','));
                     input.val(newparts.filter(a => a != '').join('|!|'));
                     S.editor.fields.custom.list.datasource.save(container);
-                    container.find('.single-selection option[value="' + selected + '"]').remove();
+                    //add selected item to list
+                    var template = container.find('li.template');
+                    var option = select.find('option[value="' + value + '"]');
+                    var name = option.html();
+                    template.find('span').first().html(name);
+                    var list = container.find('.list-items ul.list');
+                    console.log([template, option, name, value, list, template.html()]);
+                    list.append('<li data-index="' + value + '">' + template.html() + '</li>');
+                    list.find('.close-btn').off('click').on('click', S.editor.fields.custom.list.multiselect.remove);
+                    //finally, remove option
+                    container.find('.single-selection option[value="' + value + '"]').remove();
+                },
+                remove: function (e) {
+                    var target = $(e.target);
+                    var container = target.parents('.content-field').first();
+                    var item = target.parents('li').first();
+                    var id = parseInt(item.attr('data-index'));
+                    var name = item.find('span').html();
+                    var options = container.find('.single-selection option');
+                    if (options.length > 0) {
+                        //add option in correct position within select list
+                        for (var x = 0; x < options.length; x++) {
+                            if (parseInt($(options[x]).val()) > id) { break; }
+                        }
+                        console.log([item, id, name, x, options.length, $(options[x])]);
+                        if (x == options.length) {
+                            $(options[x - 1]).after('<option value="' + id + '">' + name + '</option>');
+                        } else {
+                            $(options[x]).before('<option value="' + id + '">' + name + '</option>');
+                        }
+                    } else {
+                        //add option into empty select
+                        container.find('.single-selection select').append('<option value="' + id + '">' + name + '</option>');
+                    }
+                    item.remove();
+                    //remove item from hidden field
+                    var input = container.find('input.input-field');
+                    var parts = input.val().split('|!|');
+                    var newparts = [];
+                    var allIds = [];
+                    for (var x = 0; x < parts.length; x++) {
+                        if (parts[x].indexOf('lists=') >= 0 ||
+                            parts[x] == 'add') {
+                        } else if (parts[x].indexOf('selected=') == 0) {
+                            allIds = parts[x].replace('selected=', '').split(',');
+                        } else {
+                            newparts.push(parts[x]);
+                        }
+                    }
+                    var newIds = [];
+                    for (var x = 0; x < allIds.length; x++) {
+                        if (allIds[x] != id.toString()) { newIds.push(allIds[x]); }
+                    }
+                    newparts.push('selected=' + newIds.join(','));
+                    input.val(newparts.filter(a => a != '').join('|!|'));
+                    S.editor.fields.custom.list.datasource.save(container);
                 }
             },
             datasource: {
