@@ -396,7 +396,8 @@ gulp.task('vendors:resources', function () {
             path.dirname = path.dirname.toLowerCase().replace('/app/', '/App/');
             path.basename = path.basename.toLowerCase();
             path.extname = path.extname.toLowerCase();
-        }));
+        }))
+        .pipe(gulp.dest(paths.compiled.vendors, { overwrite: true }));
 
     var p = gulp.src(paths.working.vendors.resources.js)
         .pipe(rename(function (path) {

@@ -287,7 +287,9 @@ S.editor.fields = {
                 section.find('.list-lists select').off().on('input', S.editor.fields.custom.list.select);
 
                 //event listener for single selection drop down
-                section.find('.single-selection select').off().on('input', S.editor.fields.custom.list.single.select);
+                if (section.find('.multi-selection').length == 0) {
+                    section.find('.single-selection select').off().on('input', S.editor.fields.custom.list.single.select);
+                }
 
                 //drag & sort event listeners
                 S.drag.sort.add(container + ' .list-items ul', container + ' .list-items li', (e) => {
@@ -484,9 +486,38 @@ S.editor.fields = {
                 },
                 init: function () {
                     $('.list-component-field .single-selection select').each((i, a) => {
+                        var container = $(a).parents('.content-field').first();
+                        if (container.find('.multi-selection').length > 0) { return; }
                         a.dispatchEvent(new Event('input')); //force single.select(e) method call
                     })
 
+                }
+            },
+            multiselect: {
+                add: function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    var target = $(e.target);
+                    var container = target.parents('.content-field').first();
+                    var selected = container.find('.single-selection select').val();
+                    var input = container.find('input.input-field');
+                    var parts = input.val().split('|!|');
+                    var newparts = [];
+                    var allIds = [];
+                    for (var x = 0; x < parts.length; x++) {
+                        if (parts[x].indexOf('lists=') >= 0 ||
+                            parts[x] == 'add') {
+                        } else if (parts[x].indexOf('selected=') == 0) {
+                            allIds = parts[x].replace('selected=', '').split(',');
+                        } else {
+                            newparts.push(parts[x]);
+                        }
+                    }
+                    allIds.push(selected);
+                    newparts.push('selected=' + allIds.join(','));
+                    input.val(newparts.filter(a => a != '').join('|!|'));
+                    S.editor.fields.custom.list.datasource.save(container);
+                    container.find('.single-selection option[value="' + selected + '"]').remove();
                 }
             },
             datasource: {
@@ -659,6 +690,7 @@ S.editor.fields = {
                         var lists = {};
                         var list = {};
                         var singleselect = container.find('.single-selection select');
+                        var multiselect = container.find('.multi-selection').length > 0;
 
                         //get list type
                         if (singleselect.length == 0) {
@@ -696,6 +728,7 @@ S.editor.fields = {
                         if (input.val().indexOf('data-src=') >= 0) {
                             //save parts to hidden input
                             var parts = input.val().split('|!|');
+                            var selected = '';
                             var found = false;
                             newparts = [];
                             for (var x = 0; x < parts.length; x++) {
@@ -704,15 +737,21 @@ S.editor.fields = {
                                     found = true;
                                     break;
                                 } else if (parts[x].indexOf('data-src=') >= 0) {
+                                } else if (parts[x].indexOf('selected=') >= 0) {
+                                    selected = parts[x].split('selected=')[1];
+                                    parts[x] = '';
                                 } else { parts[x] = '';}
                             }
                             if (singleselect.length > 0) {
                                 //remove lists object
                                 if (found) { parts[x] = ''; }
                                 //add single select value
-                                parts.push('single');
-                                parts.push('selected=' + singleselect.val());
-
+                                if (!multiselect) {
+                                    parts.push('single');
+                                    parts.push('selected=' + singleselect.val());
+                                } else {
+                                    parts.push('selected=' + selected);
+                                }
                             } else {
                                 //add list settings for data source & all relationships
                                 lists[key] = list;

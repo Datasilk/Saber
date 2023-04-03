@@ -5,6 +5,11 @@
             <select>{{list-items-options}}</select>
         </div>
         {{/single-selection}}
+        {{multi-selection}}
+        <div class="col input multi-selection">
+            <button class="apply" onclick="S.editor.fields.custom.list.multiselect.add(event)">Add</button>
+        </div>
+        {{/multi-selection}}
         <div class="col datasource-name pad-right" {{no-datasource}}style="display:none"{{/no-datasource}}>
             <div class="row hover">
                 <div class="col text cursor pad-left-lg pad-right change-data-source" style="margin:7px 0 0 7px;">

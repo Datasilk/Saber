@@ -50,6 +50,8 @@ namespace Saber.Common.ContentField
                     var locked = parts.Contains("locked");
                     var canadd = parts.Contains("add");
                     var canfilter = !args.ContainsKey("hide-filter");
+                    var isSingle = parts.Contains("single");
+                    var isMultiselect = parts.Contains("multi");
                     if (!canadd) { viewlist.Show("hide-add-list-item"); }
                     if (datasource != null)
                     {
@@ -59,10 +61,11 @@ namespace Saber.Common.ContentField
                         viewlist.Show(locked ? "locked" : "not-locked");
                         if (!args.ContainsKey("list-click")) { viewlist.Show("has-datasource"); }
                         var datasourceId = dataSourceKey.Replace(datasource.Helper.Prefix + "-", "");
-                        if (parts.Contains("single"))
+                        if (isSingle || isMultiselect)
                         {
                             //render select options for single selection
                             viewlist.Show("single-selection");
+                            if (isMultiselect){ viewlist.Show("multi-selection"); }
                             viewlist.Show("no-lists");
                             var colkey = fieldKey;
                             var selected = parts.Where(a => a.IndexOf("selected=") == 0).FirstOrDefault()?.Replace("selected=", "") ?? "";
@@ -79,10 +82,20 @@ namespace Saber.Common.ContentField
                             else
                             {
                                 var results = datasource.Helper.Filter(request, datasourceId, 1, 1000).ToList();
+                                var ids = selected.Split(",");
+                                if (isMultiselect)
+                                {
+                                    //remove items from list that are already selected
+                                    results = results.Where(a =>
+                                    {
+                                        var id = a.ContainsKey("Id") ? a["Id"] : a[colkey];
+                                        return !ids.Contains(id);
+                                    }).ToList();
+                                }
                                 viewlist["list-items-options"] = string.Join("\n", results.Select(a =>
                                 {
                                     var id = a.ContainsKey("Id") ? a["Id"] : a[colkey];
-                                    return "<option value=\"" + id + "\"" + (id == selected ? " selected" : "") + ">" + 
+                                    return "<option value=\"" + id + "\"" + (ids.Contains(id) ? " selected" : "") + ">" + 
                                     a[colkey] + "</option>";
                                 }));
                             }
