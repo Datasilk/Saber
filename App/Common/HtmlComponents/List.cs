@@ -141,7 +141,7 @@ namespace Saber.Common.HtmlComponents
                             //data = data.ToDictionary(a => a.Key, a => a.Value);
                             mysettings = myData.Settings.ContainsKey(myData.DataSource) ? myData.Settings[myData.DataSource] : new ListSettings();
 
-                            //override list options from request parameters
+                            //override list options (filter, position, sort) from request parameters
                             foreach(var group in mysettings.Filters)
                             {
                                 OverrideFilterGroupValues(request, group);

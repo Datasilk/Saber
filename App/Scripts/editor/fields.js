@@ -535,6 +535,7 @@ S.editor.fields = {
                     list.find('.close-btn').off('click').on('click', S.editor.fields.custom.list.multiselect.remove);
                     //finally, remove option
                     container.find('.single-selection option[value="' + value + '"]').remove();
+                    container.find('.icon-counter').html(allIds.length);
                 },
                 remove: function (e) {
                     var target = $(e.target);
@@ -558,6 +559,7 @@ S.editor.fields = {
                         container.find('.single-selection select').append('<option value="' + id + '">' + name + '</option>');
                     }
                     item.remove();
+
                     //remove item from hidden field
                     var input = container.find('input.input-field');
                     var parts = input.val().split('|!|');
@@ -579,6 +581,7 @@ S.editor.fields = {
                     newparts.push('selected=' + newIds.join(','));
                     input.val(newparts.filter(a => a != '').join('|!|'));
                     S.editor.fields.custom.list.datasource.save(container);
+                    container.find('.icon-counter').html(newIds.length);
                 }
             },
             datasource: {
