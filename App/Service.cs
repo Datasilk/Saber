@@ -21,6 +21,8 @@ namespace Saber
         {
             if (Server.DeveloperKeys.Count > 0 && Server.DeveloperKeys.Any(a => (Context.Request.Scheme + "://" + Context.Request.Host.Value).IndexOf(a.Host) == 0) || Parameters.ContainsKey("apikey"))
             {
+                Console.WriteLine("authenticating user based on API key");
+                Console.WriteLine("request host = " + Context.Request.Scheme + "://" + Context.Request.Host.Value);
                 //require a Public API developer key to continue
                 if (!Parameters.ContainsKey("apikey"))
                 {
@@ -53,7 +55,7 @@ namespace Saber
                     else
                     {
                         var apiInfo = GetApiKeyInfo(Parameters["apikey"]);
-                        if(apiInfo.UserId.HasValue == true)
+                        if(apiInfo != null && apiInfo.UserId.HasValue == true)
                         {
                             var user = Query.Users.GetDetails(apiInfo.UserId.Value);
                             User.LogIn(user.userId, user.email, user.name, user.datecreated, user.photo, user.isadmin, true);

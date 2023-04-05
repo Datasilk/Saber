@@ -421,8 +421,8 @@ namespace Saber
                         Query.Sql.ExecuteNonQuery("ResetDatabase");
                     }
                 }
-                
             }
+            Console.WriteLine("\nUsing SQL connection string: " + Query.Sql.ConnectionString + "\n");
 
             //configure Server security
             Server.BcryptWorkfactor = int.Parse(config.GetSection("encryption:bcrypt_work_factor")?.Value ?? "10");
@@ -431,6 +431,12 @@ namespace Saber
             //configure Public API developer key
             Server.DeveloperKeys = config.GetSection("developer-keys").Get<List<Models.ApiKey>>() ?? new List<Models.ApiKey>();
             Core.Service.ApiKeys = Server.DeveloperKeys;
+
+            foreach(var devkeys in Server.DeveloperKeys)
+            {
+                Console.WriteLine("Found developer key: clientId=\"" + devkeys.Client_ID + "\", key=\"" + devkeys.Key + "\", host=\"" + devkeys.Host + "\", redirect_uri=\"" + devkeys.Redirect_URI + "\"");
+            }
+            if(Server.DeveloperKeys.Count > 0) { Console.WriteLine(""); }
 
             //inject app lifetime
             Server.AppLifetime = appLifetime;
@@ -488,8 +494,15 @@ namespace Saber
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             //set up database
-            var resetPass = Query.Users.HasPasswords();
-            Server.HasAdmin = Query.Users.HasAdmin();
+            try
+            {
+                Query.Users.HasPasswords();
+                Server.HasAdmin = Query.Users.HasAdmin();
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message + "\n\n" + ex.StackTrace);
+                return; //cancel startup if Saber cannot connect to SQL database
+            }
 
             //set up language support
             App.Languages = new Dictionary<string, string>
