@@ -37,7 +37,7 @@ namespace Saber.Controllers
                         var ext = filename.GetFileExtension().ToLower();
                         try
                         {
-                            Console.WriteLine("saving file to " + App.MapPath(pubdir + filename));
+                            //Console.WriteLine("saving file to " + App.MapPath(pubdir + filename));
                             using (var ms = new FileStream(App.MapPath(pubdir + filename), FileMode.Create))
                             {
                                 file.CopyTo(ms);

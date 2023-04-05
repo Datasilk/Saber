@@ -302,8 +302,6 @@ namespace Saber.Common.Platform
             {
                 RecurseDirectories(list, folder.Replace("\\", "/").Replace(App.RootPath, ""));
             }
-
-            //RecurseDirectories(list, "/Content/partials");
             list.Add(App.MapPath("/Content/website.less"));
             list.Add(App.MapPath("/Content/website.json"));
             list.Add(App.MapPath("/Content/website.js"));
@@ -342,7 +340,13 @@ namespace Saber.Common.Platform
             var parent = new DirectoryInfo(App.MapPath(path));
             if (!parent.Exists) { return; }
             var dirs = parent.GetDirectories().Where(a => ignore != null ? ignore.Where(b => a.FullName.IndexOf(b) >= 0).Count() == 0 : true);
-            list.AddRange(parent.GetFiles().Select(a => a.FullName).Where(a => ignore != null ? ignore.Where(b => a.IndexOf(b) >= 0).Count() == 0 : true));
+            var range = parent.GetFiles().Select(a => a.FullName)
+                .Where(a => ignore != null ? ignore.Where(b => a.IndexOf(b) >= 0).Count() == 0 : true)
+                .Where(a => !list.Contains(a));
+            if(range.Count() > 0)
+            {
+                list.AddRange(range);
+            }
             foreach (var dir in dirs)
             {
                 var subpath = dir.FullName.Replace("\\", "/");
@@ -362,7 +366,7 @@ namespace Saber.Common.Platform
             {
                 using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
                 {
-                    var files = Core.Website.AllFiles();
+                    var files = AllFiles();
                     var slash = (App.IsDocker ? "/" : "\\");
                     var root = App.MapPath("/") + slash;
                     var include = new List<string>();
@@ -390,7 +394,10 @@ namespace Saber.Common.Platform
                         }else if(includeOtherFiles == false && !include.Any(a => file.Contains(a)))
                         {
                             //ignore other files
-                            continue;
+                            if(!(includeImages == true && Image.Extensions.Contains("." + ext)))
+                            {
+                                continue;
+                            }
                         }
                         //check if file exists
                         if (!File.Exists(file)) { continue; }
@@ -466,12 +473,6 @@ namespace Saber.Common.Platform
                             {
                                 switch (paths[1].ToLower())
                                 {
-                                    case "content":
-                                        if (extension != "js" && extension != "css")
-                                        {
-                                            copyTo = "/" + string.Join("/", paths) + "/";
-                                        }
-                                        break;
                                     case "editor":
                                         break;
 
@@ -488,7 +489,7 @@ namespace Saber.Common.Platform
                                 if (paths[1].ToLower() != "temp")
                                 {
                                     //copy any folder found within the Content folder (excluding temp)
-                                    copyTo = path;
+                                    copyTo = "/" + string.Join("/", paths) + "/";
                                     break;
                                 }
                             }
@@ -497,6 +498,7 @@ namespace Saber.Common.Platform
                                 switch (entry.Name.ToLower())
                                 {
                                     case "website.less":
+                                    case "website.js":
                                     case "website.json":
                                         copyTo = "/Content/";
                                         break;
@@ -511,7 +513,7 @@ namespace Saber.Common.Platform
                         if (protectedFiles != null && protectedFiles.Contains(fullpath)) { 
                             continue; 
                         }
-                        Console.WriteLine("copy to: " + copyTo + entry.Name);
+                        //Console.WriteLine("copy to: " + App.MapPath(copyTo + entry.Name));
                         if (!Directory.Exists(App.MapPath(copyTo)))
                         {
                             Directory.CreateDirectory(App.MapPath(copyTo));
@@ -527,41 +529,6 @@ namespace Saber.Common.Platform
                             bytes = fms.ToArray();
 
                             File.WriteAllBytes(fullpath, bytes);
-                            if (extension == "less")
-                            {
-                                //compile less file to public wwwroot folder
-                                var lesspath = "";
-                                switch (root)
-                                {
-                                    case "content":
-                                        if (entry.Name.ToLower() == "website.less")
-                                        {
-                                            lesspath = "";
-                                        }
-                                        else
-                                        {
-                                            lesspath = "/wwwroot/" + path.Replace("Content/", "content/");
-                                        }
-                                        break;
-                                }
-                                //if (!string.IsNullOrEmpty(lesspath))
-                                //{
-                                //    //compile LESS file into CSS
-                                //    Console.WriteLine("compiling LESS file: " + App.MapPath(lesspath + entry.Name.Replace(".less", ".css")));
-                                //    if (!Directory.Exists(App.MapPath(lesspath)))
-                                //    {
-                                //        Directory.CreateDirectory(App.MapPath(lesspath));
-                                //    }
-                                //    var data = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-                                //    Core.Website.SaveLessFile(data, lesspath + entry.Name.Replace(".less", ".css"), copyTo);
-                                //}
-
-                            }
-                            else if (root == "content" && extension == "js")
-                            {
-                                //copy js file to public wwwroot folder
-                                File.WriteAllBytes(App.MapPath("/wwwroot/" + path.Replace("Content/", "content/") + entry.Name), bytes);
-                            }
                         }
                     }
                 }
@@ -569,9 +536,6 @@ namespace Saber.Common.Platform
                 //clear all cache within Saber
                 ViewCache.Clear();
                 Cache.Store.Clear();
-
-                //finally, recompile website.css
-                //Core.Website.SaveLessFile(File.ReadAllText(App.MapPath("/Content/website.less")), "/wwwroot/css/website.css", "/Content");
             }
         }
 
