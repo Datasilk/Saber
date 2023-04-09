@@ -24,10 +24,11 @@ enterprise-level web application development.
 1. Clone the repository and get all submodules:
 
     ```
-    git clone http://github.com/Datasilk/Saber
-    git submodule update --init
+    git clone http://github.com/Datasilk/Saber MySaberProject --recursive
+    ```
+    * NOTE: If you plan on making changes to Saber, you must make sure all submodules are not in a detached HEAD state
+    ```
     git submodule foreach git checkout master
-    git submodule foreach git submodule update --init
     git submodule foreach git submodule foreach git checkout master
     ```
 
