@@ -11,6 +11,7 @@
     public static List<Saber.Models.ApiKey> DeveloperKeys { get; set; } = new List<Saber.Models.ApiKey>(); //used for public APIs
     public static IConfiguration Config { get; set; }
     public static IHostApplicationLifetime AppLifetime { get; set; }
+    public static string SaberCmsHost { get; set; } = "https://www.sabercms.com/";
 }
 
 public class WinService : BackgroundService
