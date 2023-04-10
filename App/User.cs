@@ -32,7 +32,7 @@ namespace Saber
             var userstr = session.Get("user");
             if (!string.IsNullOrEmpty(userstr))
             {
-                user = JsonSerializer.Deserialize<User>(session.Get("user"));
+                user = JsonSerializer.Deserialize<User>(session.Get("user")) ?? (User)new User().SetContext(context);
             }
             else
             {
