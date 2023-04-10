@@ -193,10 +193,12 @@ namespace Saber.Common.Platform
         #region "Position Settings"
         public static string RenderPositionSettings(DataSourceInfo datasource, Vendor.DataSource.PositionSettings settings = null)
         {
+            var start = settings != null ? (settings.Start > 0 ? settings.Start : 1) : 1;
+            var length = settings != null ? (settings.Length > 0 ? settings.Length : 10) : 10;
             var view = new View("Views/DataSources/position.html");
-            view["start"] = settings?.Start.ToString() ?? "1";
+            view["start"] = start.ToString();
             view["start-query"] = settings?.StartQuery;
-            view["length"] = settings?.Length.ToString() ?? "10";
+            view["length"] = length.ToString();
             view["length-query"] = settings?.LengthQuery;
             return view.Render();
         }
