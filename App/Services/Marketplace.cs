@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Routing.Template;
-using Saber.Core;
-using System.Net;
+﻿using Saber.Core;
 
 namespace Saber.Services
 {
@@ -18,28 +16,38 @@ namespace Saber.Services
             using (var client = new HttpClient())
             {
                 var parameters = new Dictionary<string, string> {
-                    {"token", token },
+                    {"auth-token", token },
                     { "templateId", templateId.ToString() }
                 };
                 using (var content = new FormUrlEncodedContent(parameters))
                 {
-                    var response = client.PostAsync(Server.SaberCmsHost + "api/MarketManager/DownloadTemplate", content).Result;
-                    using (var ms = new MemoryStream())
+                    var response = client.PostAsync(Server.SaberCmsHost + "api/DownloadTemplate/Request", content).Result;
+                    if(response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
-                        response.Content.CopyToAsync(ms);
-                        ms.Position = 0;
-                        if (ms.Length == 0) { return Error("template not found"); }
+                        using (var ms = new MemoryStream())
+                        {
+                            response.Content.CopyToAsync(ms);
+                            ms.Position = 0;
+                            if (ms.Length == 0) { return Error("template not found"); }
+                            Console.WriteLine("template file size: " + ms.Length);
+                            //unzip template and import
+                            try
+                            {
+                                Common.Platform.Website.Import(ms, true);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error(ex, null, "Install Template");
+                                return Error("Error installing template: " + ex.Message);
+                            }
 
-                        //unzip template and import
-                        try
-                        {
-                            Common.Platform.Website.Import(ms, true);
-                        }catch(Exception ex)
-                        {
-                            Log.Error(ex, null, "Install Template");
                         }
-                        
                     }
+                    else
+                    {
+                        return Error("Error installing template: Status Code " + (int)response.StatusCode + " (" + response.StatusCode + ") when trying to download template zip file");
+                    }
+                    
                 }
             }
             return Success();
