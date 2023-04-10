@@ -23,7 +23,11 @@
             template: {
                 install: function (id, token) {
                     if (window.parent.confirm('Do you really want to install this website template onto your Saber website? This will completely erase your existing website and replace it with the template, and this cannot be undone!')) {
-                        S.ajax.post("Marketplace/InstallTemplate", { templateId: id, token: token });
+                        S.popup.show('Installing Website Template', '<div class="pad-lg">Please wait...', {close: false});
+                        S.ajax.post('Marketplace/InstallTemplate', { templateId: id, token: token }, () => {
+                            S.popup.hide();
+                            S.popup.show('Website Template Installed!', '<div class="pad-lg">The selected website template was successfully installed. Please clear your web browser cache and refresh this page to view your new website!</div>', { close: false });
+                        });;
                     }
                 }
             }

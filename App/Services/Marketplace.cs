@@ -29,7 +29,6 @@ namespace Saber.Services
                             response.Content.CopyToAsync(ms);
                             ms.Position = 0;
                             if (ms.Length == 0) { return Error("template not found"); }
-                            Console.WriteLine("template file size: " + ms.Length);
                             //unzip template and import
                             try
                             {
