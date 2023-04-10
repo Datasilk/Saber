@@ -66,14 +66,17 @@ namespace Saber
             if (Parameters.ContainsKey("auth-token"))
             {
                 //authenticate user using their temporary session-based authentication token
-                var user = Query.Users.Authenticate(Parameters["auth-token"]);
+                Console.WriteLine("found auth-token parameter, will attempt to authenticate user...");
+                var user = Query.Users.Authenticate(Parameters["auth-token"], false);
                 if(user != null)
                 {
                     User.LogIn(user.userId, user.email, user.name, user.datecreated, user.photo, user.isadmin, true);
                     IsPublicApiRequest = true;
+                    Console.WriteLine("User authenticated using auth-token, userId: " + user.userId);
                 }
                 else
                 {
+                    Console.WriteLine("could not authenticate user with token " + Parameters["auth-token"]);
                     Context.Response.WriteAsync(AccessDenied("Could not authenticate user"));
                     return;
                 }

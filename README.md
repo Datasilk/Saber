@@ -34,11 +34,14 @@ enterprise-level web application development.
 
 2. Run command `npm install`
 3. Run command `gulp default`
-4. In Visual Studio, build then publish the **Sql** project to SQL Server
+4. In Visual Studio, build & publish the **Sql** project to SQL Server
 5. If you are running **MS SQL Server** on the same PC, you can set up your database to use a trusted connection.
-    1. In **SSMS**, under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, and within the user properties window, select **User Mappings**, then check the Saber database, and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner`
+    1. In SQL Server Management Studio (**SSMS**), under **Security > Logins**, create a new user for **NT AUTHORITY\NETWORK SERVICE**, 
+    and within the user properties window, select **User Mappings**, then check the Saber database, 
+    and check the following database membership roles for the Saber database: `db_datareader`, `db_datawriter`, `db_owner` 
+    before saving changes to your new user.
 6. Copy `/App/Content/temp/config.json` to `/App/config.json`, then open the file and update the Sql connection string
-7. Click Play in Visual Studio & navigate to https://localhost:7070
+7. Choose the **App** profile & click Play in Visual Studio & navigate to [https://localhost:7070](https://localhost:7070)
 
 ## Installation (from release)
 
@@ -57,7 +60,7 @@ enterprise-level web application development.
 Saber also supports Docker. In order for Saber to work with Docker in Windows, you must first install and run [Docker Desktop](https://docs.docker.com/docker-for-windows/). 
 * Running Docker from Visual Studio:
     1. Copy `/App/Content/temp/config.docker.json` to `/App` folder and open the file to update the Sql connection string Initial Catalog along with the User ID & Password you've created in Sql Server that has access to your Saber database
-    2. Click **Play** in Visual Studio after selecting the **Docker** launch command from the drop down
+    2. Choose the **Docker** profile & click **Play** in Visual Studio to launch a new Docker container in debug mode
 * Running Docker from Release:
     1. execute `docker compose up` to run Saber after extracting the contents of the release zip file
 

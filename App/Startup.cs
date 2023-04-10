@@ -459,10 +459,12 @@ namespace Saber
                     var headers = context.Context.Response.Headers;
                     var contentType = headers["Content-Type"].ToString();
                     if (!string.IsNullOrEmpty(context.File.PhysicalPath) && 
-                    (context.File.PhysicalPath.Contains("wwwroot\\editor") ||
-                    context.File.PhysicalPath.Contains("wwwroot/editor")) && 
-                    context.File.Name.EndsWith(".js"))
+                    (
+                        context.File.PhysicalPath.Contains("wwwroot\\editor") ||
+                        context.File.PhysicalPath.Contains("wwwroot/editor")
+                    ) && context.File.Name.EndsWith(".js"))
                     {
+                        //all editor-specific JS files are stored on the server in GZIP format
                         contentType = "application/javascript";
                         headers.Add("Content-Encoding", "gzip");
                         headers["Content-Type"] = contentType;

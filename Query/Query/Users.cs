@@ -24,9 +24,9 @@ namespace Query
             return null;
         }
 
-        public static Models.User Authenticate(string token)
+        public static Models.User Authenticate(string token, bool delete = true)
         {
-            var list = Sql.Populate<Models.User>("User_AuthenticateByToken", new { token });
+            var list = Sql.Populate<Models.User>("User_AuthenticateByToken", new { token, delete });
             if (list.Count > 0) { return list[0]; }
             return null;
         }
