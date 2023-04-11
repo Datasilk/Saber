@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Routing.Template;
-using Saber.Core.Extensions.Strings;
+﻿using Saber.Core.Extensions.Strings;
 using System.Text.Json;
 
 namespace Saber.Common.Platform

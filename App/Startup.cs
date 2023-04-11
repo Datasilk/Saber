@@ -378,6 +378,11 @@ namespace Saber
             Server.Config = config;
 
             //configure Server defaults
+            App.HostUri = config.GetSection("hostUri").Value;
+            if (!string.IsNullOrEmpty(App.HostUri))
+            {
+                Console.WriteLine("Found Host Uri: " + App.HostUri);
+            }
             var servicepaths = config.GetSection("servicePaths").Value;
             if (servicepaths != null && servicepaths != "")
             {

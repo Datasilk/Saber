@@ -512,8 +512,14 @@ namespace Saber.Common
             if (type.Equals(typeof(IVendorService))) { return; }
             var details = GetDetails(type, DLL);
             if (MarkedForUninstall.Contains(details.Key)) { return; }
-            details.Services.Add(type.Name.ToLower(), type);
-            Core.Vendors.Services.Add(type.Name.ToLower(), type);
+            if (!details.Services.ContainsKey(type.Name.ToLower()))
+            {
+                details.Services.Add(type.Name.ToLower(), type);
+            }
+            if (!Core.Vendors.Services.ContainsKey(type.Name.ToLower()))
+            {
+                Core.Vendors.Services.Add(type.Name.ToLower(), type);
+            }
         }
         #endregion
 
