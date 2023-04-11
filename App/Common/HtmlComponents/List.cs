@@ -166,6 +166,7 @@ namespace Saber.Common.HtmlComponents
                                 var datasourceId = myData.DataSource.Replace(datasource.Helper.Prefix + "-", "");
                                 if(myData.ParentRecordSet != null)
                                 {
+                                    //RecordSets were already retrieved from a parent List component
                                     if (myData.Relationship.Type == DataSource.RelationshipType.SingleSelection)
                                     {
                                         //get single record for single selection list
@@ -209,9 +210,11 @@ namespace Saber.Common.HtmlComponents
                                 }
                                 else
                                 {
+                                    //get recordset for list along with any recordsets belonging to child lists
                                     relationships = datasource.Helper.Get(datasourceId).Relationships;
                                     if(relationships.Length > 0)
                                     {
+                                        //relationships exist, get recordsets for child lists
                                         var childFilters = new Dictionary<string, List<DataSource.FilterGroup>>();
                                         var childOrderBy = new Dictionary<string, List<DataSource.OrderBy>>();
                                         if(mysettings != null)
@@ -257,34 +260,40 @@ namespace Saber.Common.HtmlComponents
                                             }
                                         }
                                             
-                                        //get record sets for list & sub-lists
-                                        var recordsets = datasource.Helper.Filter(request, datasourceId, request.User.Language ?? "en", 
-                                            myData.Settings.ToDictionary(a => a.Key, a => a.Value.Position), 
-                                            myData.Settings.ToDictionary(a => a.Key, a => a.Value.Filters), 
-                                            myData.Settings.ToDictionary(a => a.Key, a => a.Value.OrderBy), 
-                                            relationships.Select(a => a.ChildKey).ToArray());
-                                        records = recordsets.ContainsKey(datasourceId) ? recordsets[datasourceId] : new List<Dictionary<string, string>>();
-
-                                        //find settings for each list component
-                                        totals = datasource.Helper.FilterTotal(request, datasourceId, request.User.Language ?? "en", myData.Settings.ToDictionary(a => a.Key, a => a.Value.Filters), relationships.Select(a => a.ChildKey).ToArray());
-
-                                        foreach(var relationship in relationships)
+                                        //get record sets for list & child lists
+                                        try
                                         {
-                                            if (data.ContainsKey(relationship.ListComponent))
+                                            var recordsets = datasource.Helper.Filter(request, datasourceId, request.User.Language ?? "en",
+                                                myData.Settings.ToDictionary(a => a.Key, a => a.Value.Position),
+                                                myData.Settings.ToDictionary(a => a.Key, a => a.Value.Filters),
+                                                myData.Settings.ToDictionary(a => a.Key, a => a.Value.OrderBy),
+                                                relationships.Select(a => a.ChildKey).ToArray());
+                                            records = recordsets.ContainsKey(datasourceId) ? recordsets[datasourceId] : new List<Dictionary<string, string>>();
+                                            //find settings for each list component
+                                            totals = datasource.Helper.FilterTotal(request, datasourceId, request.User.Language ?? "en", myData.Settings.ToDictionary(a => a.Key, a => a.Value.Filters), relationships.Select(a => a.ChildKey).ToArray());
+
+                                            foreach(var relationship in relationships)
                                             {
-                                                data.Remove(relationship.ListComponent);
-                                            }
-                                            var listData = new ListData(){
-                                                DataSource = relationship.ChildKey,
-                                                ParentKey = key,
-                                                ParentRecordSet = recordsets[relationship.Key],
-                                                RecordSets = recordsets,
-                                                Relationship = relationship,
-                                                Totals = totals,
-                                                Settings = myData.Settings
-                                            };
-                                            data.Add(relationship.ListComponent, listData);
-                                       }
+                                                if (data.ContainsKey(relationship.ListComponent))
+                                                {
+                                                    data.Remove(relationship.ListComponent);
+                                                }
+                                                var listData = new ListData(){
+                                                    DataSource = relationship.ChildKey,
+                                                    ParentKey = key,
+                                                    ParentRecordSet = recordsets[relationship.Key],
+                                                    RecordSets = recordsets,
+                                                    Relationship = relationship,
+                                                    Totals = totals,
+                                                    Settings = myData.Settings
+                                                };
+                                                data.Add(relationship.ListComponent, listData);
+                                           }
+                                        }catch(Exception ex)
+                                        {
+                                            //TODO: display error to user that list could not be rendered
+                                            Core.Log.Error(ex, request, "List component: " + key);
+                                        }
                                     }
                                     else
                                     {
@@ -292,7 +301,11 @@ namespace Saber.Common.HtmlComponents
                                         {
                                             records = datasource.Helper.Filter(request, myData.DataSource.Replace(datasource.Helper.Prefix + "-", ""), mysettings?.Position.Start ?? 1, mysettings?.Position.Length ?? 10, request.User.Language ?? "en", mysettings?.Filters, mysettings?.OrderBy);
                                             total = datasource.Helper.FilterTotal(request, myData.DataSource.Replace(datasource.Helper.Prefix + "-", ""), request.User.Language ?? "en", mysettings?.Filters);
-                                        }catch(Exception){ }
+                                        }catch(Exception ex)
+                                        {
+                                            //TODO: display error to user that list could not be rendered
+                                            Core.Log.Error(ex, request, "List component: " + key);
+                                        }
                                     }
                                 }
                             }

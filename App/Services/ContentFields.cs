@@ -8,7 +8,7 @@
             var config = Common.Platform.PageInfo.GetPageConfig(path);
             var paths = config.Paths;
             var fields = data != null && data.Keys.Count > 0 ? data : Core.ContentFields.GetPageContent(path, language);
-            var relpath = string.Join("/", paths);
+            var relpath = "/" + string.Join("/", paths);
             if (!relpath.Contains(".html")) { relpath += ".html"; }
             var view = new View(relpath);
             if (config.IsLiveTemplate)

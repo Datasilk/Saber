@@ -77,14 +77,6 @@ namespace Saber.Common.Platform
         {
             //check for root & content folders
             var paths = PageInfo.GetRelativePath(path.ToLower());
-            //if (path == "root")
-            //{
-            //    throw new ServiceErrorException("You cannot create a file in the root folder");
-            //}
-            if (path == "")
-            {
-                //throw new ServiceErrorException("You cannot create a file in the content folder");
-            }
 
             //check folder characters
             if (!folder.OnlyLettersAndNumbers(new string[] { "-", "_" }))
