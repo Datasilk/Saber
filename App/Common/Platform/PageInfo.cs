@@ -146,7 +146,7 @@ namespace Saber.Common.Platform
                 if (!string.IsNullOrEmpty(config.TemplatePath) && config.HasNoTemplate == false)
                 {
                     //load template config
-                    Models.Page.Settings tempconfig = GetPageConfig(config.TemplatePath + ".json");
+                    Models.Page.Settings tempconfig = GetPageConfig(config.TemplatePath);
                     if (tempconfig != null)
                     {
                         config.IsFromTemplate = true;
