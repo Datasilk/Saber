@@ -17,10 +17,7 @@
                 {
                     view.Show("no-api-key");
                 }
-                
-                //AddScript("/editor/js/platform.js");
                 AddScript("/editor/js/views/login/new-admin.js");
-                UsePlatform = false;
                 return base.Render(view.Render());
             }
             else

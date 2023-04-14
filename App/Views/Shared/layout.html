@@ -8,10 +8,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="google" content="notranslate">
     <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,width=device-width,height=device-height,user-scalable=yes" />
-    {{platform}}
-    <link type="text/css" rel="stylesheet" href="/editor/css/platform.css" />
-    <link type="text/css" rel="stylesheet" href="/editor/css/themes/{{theme}}.css" />
-    {{/platform}}
     {{head-css}}
     <link rel="icon" type="{{favicon-type}}" href="{{favicon}}" />
 
@@ -36,28 +32,8 @@
     {{/android-manifest}}
     <meta name="mobile-web-app-capable" content="yes">
 </head>
-<body{{has-body-class}} class="{{body-class}}"{{/has-body-class}}{{body-attr}}>
-
-    {{platform}}
-    <div class="bg for-popup hide"></div>
-    {{/platform}}
+<body>
     {{body}}
-    {{platform}}
-    <div class="svgicons">{{svg-icons}}</div>
-    <script type="text/html" id="template_popup">
-        <div class="row box">
-            <div class="col title"><h6>#title#</h6></div>
-            <div class="col icon small btn-close">
-                <a href="javascript:">
-                    <svg viewBox="0 0 32 32">
-                        <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
-                    </svg>
-                </a>
-            </div>
-        </div>
-        <div class="popup-body">#body#</div>
-    </script>
-    {{/platform}}
     {{scripts}}
     {{footer}}
 </body>

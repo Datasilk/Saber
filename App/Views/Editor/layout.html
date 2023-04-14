@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="{{language}}" xml:lang="{{language}}" xmlns="http:/www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Language" content="{{language}}">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,width=device-width,height=device-height,user-scalable=yes" />
+    <link type="text/css" rel="stylesheet" href="/editor/css/platform.css" />
+    <link type="text/css" rel="stylesheet" href="/editor/css/themes/{{theme}}.css" />
+    {{head-css}}
+    <meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+
+    <div class="bg for-popup hide"></div>
+    {{body}}
+    <div class="svgicons"></div>
+    <script type="text/html" id="template_popup">
+        <div class="row box">
+            <div class="col title"><h6>#title#</h6></div>
+            <div class="col icon small btn-close">
+                <a href="javascript:">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div class="popup-body">#body#</div>
+    </script>
+    {{scripts}}
+    {{footer}}
+</body>
+</html>

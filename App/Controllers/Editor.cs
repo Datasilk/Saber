@@ -192,7 +192,15 @@ namespace Saber.Controllers
             //Context.Response.Headers.Add(
             //            new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("Access-Control-Allow-Headers", "Content-Type"));
 
-            return base.Render(Common.Platform.Render.View(this, view));
+            var layout = new View("/Views/Editor/layout.html");
+            layout["language"] = User.Language;
+            layout["theme"] = Theme;
+            layout["head-css"] = Css.ToString();
+            layout["body"] = Common.Platform.Render.View(this, view);
+            layout["scripts"] = Scripts.ToString();
+            layout["footer"] = Footer != null ? Footer.ToString() : "";
+
+            return layout.Render();
         }
     }
 }

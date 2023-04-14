@@ -37,13 +37,6 @@ namespace Saber
 
         public override string Render(string body = "")
         {
-            if (UsePlatform == true)
-            {
-                Scripts.Append("<script language=\"javascript\">" + 
-                    "S.svg.load('/editor/icons.svg');" + 
-                    "S.svg.load('/editor/loader.svg');" + 
-                    "</script>");
-            }
             var view = new View("/Views/Shared/layout.html");
             view["title"] = Title;
             view["description"] = Description;
@@ -102,10 +95,6 @@ namespace Saber
 
             //load body
             view["body"] = body;
-            if (UsePlatform)
-            {
-                view.Show("platform");
-            }
 
             //add initialization script
             view["scripts"] = Scripts.ToString();

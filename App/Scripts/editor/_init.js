@@ -351,6 +351,9 @@ S.editor.init = function () {
         })();
     }
 
+    //add icons to the editor
+    S.svg.load('/editor/icons.svg');
+
     S.editor.preview.hide();
 };
 

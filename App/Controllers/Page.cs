@@ -60,7 +60,6 @@ namespace Saber.Controllers
                 //load page layout
                 Title = config.Title.prefix + config.Title.body + config.Title.suffix;
                 Description = config.Description;
-                UsePlatform = false;
 
                 if (User.UserId >= 1 && !Parameters.ContainsKey("live"))
                 {
