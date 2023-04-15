@@ -20,15 +20,12 @@ namespace Saber
         public override void Init()
         {
             var host = Context.Request.Headers.Origin.ToString();
-            Console.WriteLine("host = " + host);
             if (Server.DeveloperKeys.Count > 0 && Server.DeveloperKeys.Any(a => host.IndexOf(a.Host) == 0))
             {
-                Console.WriteLine("found request host " + host);
                 //require a Public API developer key to continue
                 if (!Parameters.ContainsKey("apikey"))
                 {
                     //no api key found in request
-                    Console.WriteLine("apikey required");
                     Context.Response.WriteAsync(AccessDenied("apikey parameter required"));
                     return;
                 }
@@ -61,7 +58,6 @@ namespace Saber
                     if (apiInfo != null && apiInfo.UserId.HasValue == true)
                     {
                         var user = Query.Users.GetDetails(apiInfo.UserId.Value);
-                        Console.WriteLine("user found from apikey, userId: " + user.userId);
                         User.LogIn(user.userId, user.email, user.name, user.datecreated, user.photo, user.isadmin, true);
                     }
 
