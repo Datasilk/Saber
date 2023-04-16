@@ -82,7 +82,7 @@
 
             //upload button
             $('.user-menu .tab-upload').on('click', () => {
-                $('.tab.market-section iframe').attr('src', host + 'dashboard/upload/website-template');
+                $('.tab.market-section iframe').attr('src', host + 'dashboard/upload');
             });
 
             //dashboard button
