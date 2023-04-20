@@ -170,10 +170,12 @@
         //save selected email client settings
         e.preventDefault();
         var section = S('.email-client:not(.hide)').first();
+        console.log(section);
         var id = section[0].className.replace('email-client client-', '');
         var inputs = section.find('input, select');
+        console.log(inputs);
         var params = {};
-        inputs.each(a => {
+        inputs.each((i, a) => {
             var b = S(a);
             var type = b.attr('type') ?? '';
             params[b.attr('id').replace(id + '_', '')] = (
