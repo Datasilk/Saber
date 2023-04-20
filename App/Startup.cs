@@ -374,7 +374,6 @@ namespace Saber
                 .AddEnvironmentVariables().Build();
 
             var webconfig = Website.Settings.Load();
-
             Server.Config = config;
 
             //configure Server defaults

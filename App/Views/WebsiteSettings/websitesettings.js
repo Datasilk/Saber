@@ -170,10 +170,8 @@
         //save selected email client settings
         e.preventDefault();
         var section = S('.email-client:not(.hide)').first();
-        console.log(section);
         var id = section[0].className.replace('email-client client-', '');
         var inputs = section.find('input, select');
-        console.log(inputs);
         var params = {};
         inputs.each((i, a) => {
             var b = S(a);
@@ -262,7 +260,6 @@
         var target = $(e.target);
         var api = target.val();
         var enabled = target[0].checked;
-        console.table([api, enabled]);
         S.ajax.post('WebsiteSettings/SavePublicApi', { api: api, enabled: enabled });
     });
 })();

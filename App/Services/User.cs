@@ -101,12 +101,30 @@ namespace Saber.Services
         {
             //check if total signups in a given range is below the limit set in website.json
             var settings = Common.Platform.Website.Settings.Load();
-            int minutes = settings.Users.maxSignupsMinutes.Value <= 0 ? settings.Users.maxSignups.Value : settings.Users.maxSignups.Value * 60 * 24;
-            if (settings.Users.maxSignups.HasValue == true && settings.Users.maxSignups.Value > 0 && 
-                Query.Users.CreatedInTimeRange(minutes) >= settings.Users.maxSignups.Value)
+            if(settings.Users != null)
             {
-                return Error("The maximum number of sign ups have been reached. Please come back later and try again.");
+                int minutes = 0;
+                int maxSignups = 0;
+                if (settings.Users.maxSignupsMinutes.HasValue)
+                {
+                    if (settings.Users.maxSignupsMinutes.Value <= 0)
+                    {
+                        if (settings.Users.maxSignups.HasValue)
+                        {
+                            maxSignups = settings.Users.maxSignups.Value;
+                        }
+                    }
+                    else
+                    {
+                        minutes = settings.Users.maxSignupsMinutes.Value;
+                    }
+                }
+                if (minutes > 0 && maxSignups > 0 && Query.Users.CreatedInTimeRange(minutes) >= maxSignups)
+                {
+                    return Error("The maximum number of sign ups have been reached. Please come back later and try again.");
+                }
             }
+            
 
             //validate form fields
             if (!CheckEmailAddress(emailaddr)) { return Error("Email address is invalid"); }
@@ -133,7 +151,7 @@ namespace Saber.Services
             });
 
             //add user to default security group
-            if(settings.Users.groupId.HasValue && settings.Users.groupId.Value > 0)
+            if(settings.Users != null && settings.Users.groupId.HasValue && settings.Users.groupId.Value > 0)
             {
                 Query.Security.Users.Add(settings.Users.groupId.Value, userId);
             }

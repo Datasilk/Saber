@@ -23,10 +23,11 @@ namespace Saber.Common.Platform
             if (client == null)
             {
                 //log error, could not send email
-                Query.Logs.LogError(0, "", "Email.Send", "Could not find Email Client \"" + action.Client + "\"", "");
+                Query.Logs.LogError(0, "", "Email.Send", "Could not find Email Client \"" + action.Client + "\" for action type " + type, "");
                 return;
             }
             var _msg = "";
+
             client.Send(message, delegate() {
                 //only get RFC 2822 message if vendor plugin specifically requests it
                 if (string.IsNullOrEmpty(_msg))
