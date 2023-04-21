@@ -2,12 +2,15 @@ S.editor.init = function () {
     this.initialized = true;
     this.visible = true;
 
+    //add icons to the editor
+    S.svg.load('/editor/icons.svg');
+
     //generate path
     var path = '/' + S.editor.queryString(window.location.href, 'path');
     if (path == '/') { path = '/home'; }
-    if (path.substr(path.length - 1, 1) == '/') {
+    if (path.substring(path.length - 1, 1) == '/') {
         //remove leading slash
-        path = path.substr(0, path.length - 1);
+        path = path.substring(0, path.length - 1);
     }
     this.path = 'content/pages' + path;
     var paths = this.path.split('/').filter(a => a != '');
@@ -350,9 +353,6 @@ S.editor.init = function () {
             S.editor.preview.hide();
         })();
     }
-
-    //add icons to the editor
-    S.svg.load('/editor/icons.svg');
 
     S.editor.preview.hide();
 };

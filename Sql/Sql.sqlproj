@@ -71,6 +71,7 @@
     <Folder Include="dbo\Stored Procedures\PublicApis" />
     <Folder Include="dbo\Stored Procedures\Sessions" />
     <Folder Include="dbo\Functions" />
+    <Folder Include="dbo\Stored Procedures\Notifications" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Sequences\SequenceUsers.sql" />
@@ -139,6 +140,8 @@
     <Build Include="dbo\Stored Procedures\Sessions\Session_Set.sql" />
     <Build Include="dbo\Functions\SplitArray.sql" />
     <Build Include="dbo\Stored Procedures\Utility\ResetDatabase.sql" />
+    <Build Include="dbo\Tables\Notifications.sql" />
+    <Build Include="dbo\Tables\Notifications_Read.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

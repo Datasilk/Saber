@@ -85,14 +85,14 @@
 .editor-preview:not(.hide){display:flex; min-height:100vh; flex-direction:column;}
 
 /* toolbar */
-.toolbar{
-    .logo{padding:10px 5px 0 5px; display:none;
-        svg{width:50px; height:50px;}
+.toolbar{clear:both;
+    .top-bar{width:100%;
+        &:after{display:block; content:''; clear:both;}
     }
 }
 
 /* menu bar */
-ul.menu-bar{width:100%; list-style:none;
+ul.menu-bar{float:left; list-style:none; 
     & > li{float:left; cursor:default;
         & > div.hover{padding:5px 15px; }
     }
@@ -113,6 +113,16 @@ ul.menu-bar{width:100%; list-style:none;
     .item-new-tab{
         a{display:inline-block; width:100%;}
     }
+}
+
+/* notifications */
+.menu-notifs{float:left; height:26px;
+    svg{width:16px; height:16px;}
+}
+.notifs{padding:4px 10px 0 10px; position:relative; height:26px;}
+.notif-count{
+    background:#ff6a00; color:#fff; font-size:9px; position:absolute; left:27px; top:4px; 
+    line-height:1.0; padding:4px 3px 3px 3px; border-radius:30px; min-width:15px; text-align:center;
 }
 
 /* file tabs */

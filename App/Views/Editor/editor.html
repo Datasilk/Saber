@@ -2,444 +2,448 @@
     {{editor-header "/Views/Editor/header.html"}}
     <div class="relative">
         <div class="toolbar top-menu row noselect">
-            <div class="col logo">
-                <a href="https://saber.datasilk.io/support/editor.html" target="_blank">
-                    <svg viewBox="0 0 64 128">
-                        <use xlink:href="#icon-saber" x="0" y="0" width="64" height="128"></use>
-                    </svg>
-                </a>
-            </div>
-            <div class="col bars">
-                <div>
-                    <ul class="menu-bar">
-                        <li class="menu-item-file">
-                            <div class="row hover"><span>File</span></div>
-                            <div class="drop-menu hide">
-                                <ul class="menu">
-                                    <li>
-                                        <div class="row hover item item-save faded" disabled>
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-save" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text"><span class="shortcut-key">S</span>ave</div>
+            <div class="top-bar">
+                <ul class="menu-bar">
+                    <li class="menu-item-file">
+                        <div class="row hover"><span>File</span></div>
+                        <div class="drop-menu hide">
+                            <ul class="menu">
+                                <li>
+                                    <div class="row hover item item-save faded" disabled>
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-save" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li>
-                                        <div class="row hover item item-save-as">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-save" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Save As</div>
+                                        <div class="col text"><span class="shortcut-key">S</span>ave</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row hover item item-save-as">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-save" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    {{code-editor}}
-                                    <li>
-                                        <div class="row line">&nbsp;</div>
-                                    </li>
-                                    <li>
-                                        <div class="row hover item item-new-file">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-file-add" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">New File</div>
+                                        <div class="col text">Save As</div>
+                                    </div>
+                                </li>
+                                {{code-editor}}
+                                <li>
+                                    <div class="row line">&nbsp;</div>
+                                </li>
+                                <li>
+                                    <div class="row hover item item-new-file">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-file-add" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li>
-                                        <div class="row hover item item-new-folder">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-folder-add" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">New Folder</div>
+                                        <div class="col text">New File</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row hover item item-new-folder">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-folder-add" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    {{/code-editor}}
-                                    {{import-export}}
-                                    <li>
-                                        <div class="row line">&nbsp;</div>
-                                    </li>
-                                    {{/import-export}}
-                                    {{import}}
-                                    <li>
-                                        <div class="row hover item item-import">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-upload" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Import Website</div>
+                                        <div class="col text">New Folder</div>
+                                    </div>
+                                </li>
+                                {{/code-editor}}
+                                {{import-export}}
+                                <li>
+                                    <div class="row line">&nbsp;</div>
+                                </li>
+                                {{/import-export}}
+                                {{import}}
+                                <li>
+                                    <div class="row hover item item-import">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-upload" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    {{/import}}
-                                    {{export}}
-                                    <li>
-                                        <div class="row hover item item-export">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-file-zip" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Export Website</div>
+                                        <div class="col text">Import Website</div>
+                                    </div>
+                                </li>
+                                {{/import}}
+                                {{export}}
+                                <li>
+                                    <div class="row hover item item-export">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-file-zip" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    {{/export}}
-                                    <li>
-                                        <div class="row line">&nbsp;</div>
-                                    </li>
-                                    <li>
-                                        <div class="row hover item item-new-tab">
-                                            <a href="about:blank" target="_blank">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-new-tab" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">New Tab</div>
-                                            </a>
+                                        <div class="col text">Export Website</div>
+                                    </div>
+                                </li>
+                                {{/export}}
+                                <li>
+                                    <div class="row line">&nbsp;</div>
+                                </li>
+                                <li>
+                                    <div class="row hover item item-new-tab">
+                                        <a href="about:blank" target="_blank">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-new-tab" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li>
-                                        <div class="row hover item item-new-window">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-new-window" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">New Window</div>
+                                        <div class="col text">New Tab</div>
+                                        </a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row hover item item-new-window">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-new-window" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="menu-item-view">
-                            <div class="row hover"><span>View</span></div>
-                            <div class="drop-menu hide">
-                                <ul class="menu" style="width:275px">
-                                    {{file-browser}}
-                                    <li>
-                                        <div class="row hover item item-browse">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-folder" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">File Browser</div>
+                                        <div class="col text">New Window</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="menu-item-view">
+                        <div class="row hover"><span>View</span></div>
+                        <div class="drop-menu hide">
+                            <ul class="menu" style="width:275px">
+                                {{file-browser}}
+                                <li>
+                                    <div class="row hover item item-browse">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-folder" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li>
-                                        <div class="row line">&nbsp;</div>
-                                    </li>
-                                    <li class="col six">
-                                        <div class="row hover item item-website-js" onclick="S.editor.explorer.open('website.js')">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-file-js" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">website.js</div>
+                                        <div class="col text">File Browser</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row line">&nbsp;</div>
+                                </li>
+                                <li class="col six">
+                                    <div class="row hover item item-website-js" onclick="S.editor.explorer.open('website.js')">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-file-js" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li class="col six">
-                                        <div class="row hover item item-website-less" onclick="S.editor.explorer.open('website.less')">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-file-less" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">website.less</div>
+                                        <div class="col text">website.js</div>
+                                    </div>
+                                </li>
+                                <li class="col six">
+                                    <div class="row hover item item-website-less" onclick="S.editor.explorer.open('website.less')">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-file-less" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li class="col six">
-                                        <div class="row hover item item-header-html" onclick="S.editor.explorer.open('partials/header.html')">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-file-html" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">header.html</div>
+                                        <div class="col text">website.less</div>
+                                    </div>
+                                </li>
+                                <li class="col six">
+                                    <div class="row hover item item-header-html" onclick="S.editor.explorer.open('partials/header.html')">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-file-html" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li class="col six">
-                                        <div class="row hover item item-header-less" onclick="S.editor.explorer.open('partials/header.less')">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-file-less" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">header.less</div>
+                                        <div class="col text">header.html</div>
+                                    </div>
+                                </li>
+                                <li class="col six">
+                                    <div class="row hover item item-header-less" onclick="S.editor.explorer.open('partials/header.less')">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-file-less" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li class="col six">
-                                        <div class="row hover item item-footer-html" onclick="S.editor.explorer.open('partials/footer.html')">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-file-html" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">footer.html</div>
+                                        <div class="col text">header.less</div>
+                                    </div>
+                                </li>
+                                <li class="col six">
+                                    <div class="row hover item item-footer-html" onclick="S.editor.explorer.open('partials/footer.html')">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-file-html" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li class="col six">
-                                        <div class="row hover item item-footer-less" onclick="S.editor.explorer.open('partials/footer.less')">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-file-less" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">footer.less</div>
+                                        <div class="col text">footer.html</div>
+                                    </div>
+                                </li>
+                                <li class="col six">
+                                    <div class="row hover item item-footer-less" onclick="S.editor.explorer.open('partials/footer.less')">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-file-less" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li class="row">
-                                        <div class="row line">&nbsp;</div>
-                                    </li>
-                                    {{/file-browser}}
-                                    {{page-content}}
-                                    <li class="row">
-                                        <div class="row hover item item-content-fields">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-form-fields" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Page Content</div>
+                                        <div class="col text">footer.less</div>
+                                    </div>
+                                </li>
+                                <li class="row">
+                                    <div class="row line">&nbsp;</div>
+                                </li>
+                                {{/file-browser}}
+                                {{page-content}}
+                                <li class="row">
+                                    <div class="row hover item item-content-fields">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-form-fields" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    {{/page-content}}
-                                    {{page-resources}}
-                                    <li class="row">
-                                        <div class="row hover item item-page-resources">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-photos" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Page Resources</div>
+                                        <div class="col text">Page Content</div>
+                                    </div>
+                                </li>
+                                {{/page-content}}
+                                {{page-resources}}
+                                <li class="row">
+                                    <div class="row hover item item-page-resources">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-photos" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    {{/page-resources}}
+                                        <div class="col text">Page Resources</div>
+                                    </div>
+                                </li>
+                                {{/page-resources}}
 
-                                    {{page-settings}}
-                                    <li class="row">
-                                        <div class="row hover item item-page-settings">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Page Settings</div>
+                                {{page-settings}}
+                                <li class="row">
+                                    <div class="row hover item item-page-settings">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    {{/page-settings}}
-                                    <li class="row">
-                                        <div class="row line">&nbsp;</div>
-                                    </li>
-                                    {{website-settings}}
-                                    <!--
-                                    <li>
-                                        <div class="row hover item item-web-settings">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Website Settings</div>
+                                        <div class="col text">Page Settings</div>
+                                    </div>
+                                </li>
+                                {{/page-settings}}
+                                <li class="row">
+                                    <div class="row line">&nbsp;</div>
+                                </li>
+                                {{website-settings}}
+                                <!--
+                                <li>
+                                    <div class="row hover item item-web-settings">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-settings" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li>
-                                        <div class="row line">&nbsp;</div>
-                                    </li>-->
-                                    {{/website-settings}}
-                                    <li class="col six">
-                                        <div class="row hover item item-preview" onclick="S.editor.preview.show()">
+                                        <div class="col text">Website Settings</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row line">&nbsp;</div>
+                                </li>-->
+                                {{/website-settings}}
+                                <li class="col six">
+                                    <div class="row hover item item-preview" onclick="S.editor.preview.show()">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-preview" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
+                                        </div>
+                                        <div class="col text">Preview</div>
+                                    </div>
+                                </li>
+                                <li class="col six">
+                                    <div class="row hover item item-live-preview">
+                                        <a href="about:blank" target="_parent" title="Inspect a live preview of this web page which will not contain any Saber editor resources">
                                             <div class="col icon">
                                                 <svg viewBox="0 0 32 32">
                                                     <use xlink:href="#icon-preview" x="0" y="0" width="32" height="32"></use>
                                                 </svg>
                                             </div>
-                                            <div class="col text">Preview</div>
+                                            <div class="col text">Live Preview</div>
+                                        </a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="menu-item-website">
+                        <div class="row hover"><span>Website</span></div>
+                        <div class="drop-menu hide">
+                            <ul class="menu">
+                                {{manage-users}}
+                                <li>
+                                    <div class="row hover item item-user-management">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-users" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li class="col six">
-                                        <div class="row hover item item-live-preview">
-                                            <a href="about:blank" target="_parent" title="Inspect a live preview of this web page which will not contain any Saber editor resources">
-                                                <div class="col icon">
-                                                    <svg viewBox="0 0 32 32">
-                                                        <use xlink:href="#icon-preview" x="0" y="0" width="32" height="32"></use>
-                                                    </svg>
-                                                </div>
-                                                <div class="col text">Live Preview</div>
-                                            </a>
+                                        <div class="col text">User Accounts</div>
+                                    </div>
+                                </li>
+                                {{/manage-users}}
+                                {{manage-security}}
+                                <li>
+                                    <div class="row hover item item-security">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-security" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="menu-item-website">
-                            <div class="row hover"><span>Website</span></div>
-                            <div class="drop-menu hide">
-                                <ul class="menu">
-                                    {{manage-users}}
-                                    <li>
-                                        <div class="row hover item item-user-management">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-users" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">User Accounts</div>
+                                        <div class="col text">Security Groups</div>
+                                    </div>
+                                </li>
+                                {{/manage-security}}
+                                {{manage-datasources}}
+                                <li>
+                                    <div class="row hover item item-datasources">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-datasources" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    {{/manage-users}}
-                                    {{manage-security}}
-                                    <li>
-                                        <div class="row hover item item-security">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-security" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Security Groups</div>
+                                        <div class="col text">Data Sources</div>
+                                    </div>
+                                </li>
+                                {{/manage-datasources}}
+                                {{website-analytics}}
+                                <li>
+                                    <div class="row hover item item-analytics">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-analytics" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    {{/manage-security}}
-                                    {{manage-datasources}}
-                                    <li>
-                                        <div class="row hover item item-datasources">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-datasources" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Data Sources</div>
-                                        </div>
-                                    </li>
-                                    {{/manage-datasources}}
-                                    {{website-analytics}}
-                                    <li>
-                                        <div class="row hover item item-analytics">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-analytics" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Analytics</div>
-                                        </div>
-                                    </li>
-                                    {{/website-analytics}}
+                                        <div class="col text">Analytics</div>
+                                    </div>
+                                </li>
+                                {{/website-analytics}}
                                     
-                                    {{website-settings}}
-                                    <li>
-                                        <div class="row line">&nbsp;</div>
-                                    </li>
-                                    <li>
-                                        <div class="row hover item item-web-stylesheets">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-file-css" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Stylesheets</div>
+                                {{website-settings}}
+                                <li>
+                                    <div class="row line">&nbsp;</div>
+                                </li>
+                                <li>
+                                    <div class="row hover item item-web-stylesheets">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-file-css" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>
-                                    <li>
-                                        <div class="row hover item item-web-scripts">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-file-js" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Scripts</div>
+                                        <div class="col text">Stylesheets</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="row hover item item-web-scripts">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-file-js" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li> 
-                                    <li>
-                                        <div class="row hover item item-web-icons">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-icons" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Icons</div>
+                                        <div class="col text">Scripts</div>
+                                    </div>
+                                </li> 
+                                <li>
+                                    <div class="row hover item item-web-icons">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-icons" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li> 
-                                    <li>
-                                        <div class="row hover item item-web-email">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-email" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Email Settings</div>
+                                        <div class="col text">Icons</div>
+                                    </div>
+                                </li> 
+                                <li>
+                                    <div class="row hover item item-web-email">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-email" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li> 
-                                    <li>
-                                        <div class="row hover item item-web-pass">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-pass" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Password Settings</div>
+                                        <div class="col text">Email Settings</div>
+                                    </div>
+                                </li> 
+                                <li>
+                                    <div class="row hover item item-web-pass">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-pass" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li>   
-                                    <li>
-                                        <div class="row hover item item-web-dev-keys">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-key" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Developer Keys</div>
+                                        <div class="col text">Password Settings</div>
+                                    </div>
+                                </li>   
+                                <li>
+                                    <div class="row hover item item-web-dev-keys">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-key" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li> 
-                                    <li>
-                                        <div class="row hover item item-web-public-apis">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-public-api" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Public APIs</div>
+                                        <div class="col text">Developer Keys</div>
+                                    </div>
+                                </li> 
+                                <li>
+                                    <div class="row hover item item-web-public-apis">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-public-api" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li> 
-                                    <li>
-                                        <div class="row hover item item-web-restart">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-power" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Restart Website</div>
+                                        <div class="col text">Public APIs</div>
+                                    </div>
+                                </li> 
+                                <li>
+                                    <div class="row hover item item-web-restart">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-power" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li> 
-                                    <li>
-                                        <div class="row hover item item-web-plugins">
-                                            <div class="col icon">
-                                                <svg viewBox="0 0 32 32">
-                                                    <use xlink:href="#icon-plugin" x="0" y="0" width="32" height="32"></use>
-                                                </svg>
-                                            </div>
-                                            <div class="col text">Plugins</div>
+                                        <div class="col text">Restart Website</div>
+                                    </div>
+                                </li> 
+                                <li>
+                                    <div class="row hover item item-web-plugins">
+                                        <div class="col icon">
+                                            <svg viewBox="0 0 32 32">
+                                                <use xlink:href="#icon-plugin" x="0" y="0" width="32" height="32"></use>
+                                            </svg>
                                         </div>
-                                    </li> 
-                                    {{/website-settings}}
-                                    {{plugin-menu}}
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-                <div class="edit-bar row">
-                    <div class="left-bar edit-tabs col">
-                        <ul class="row">
-                        </ul>
+                                        <div class="col text">Plugins</div>
+                                    </div>
+                                </li> 
+                                {{/website-settings}}
+                                {{plugin-menu}}
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <div class="menu-notifs">
+                    <div class="row hover notifs" title="Notifications">
+                        <div class="notif-count">0</div>
+                        <div class="col">
+                            <svg viewBox="0 0 32 32">
+                                <use xlink:href="#icon-bell" x="0" y="0" width="32" height="32"></use>
+                            </svg>
+                        </div>
+                        <div class="drop-menu hide">
+                            <ul class="menu"></ul>
+                        </div>
                     </div>
+                </div>
+            </div>
+            <div class="edit-bar row">
+                <div class="left-bar edit-tabs col">
+                    <ul class="row">
+                    </ul>
                 </div>
             </div>
         </div>

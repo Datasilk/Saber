@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Datasilk.Core.Extensions;
 using Saber.Common.Platform;
 using Saber.Common.Utility;
+using Saber.Common.Extensions;
 
 namespace Saber
 {
@@ -25,6 +26,12 @@ namespace Saber
                 x.ValueLengthLimit = int.MaxValue;
                 x.MultipartBodyLengthLimit = int.MaxValue;
                 x.MultipartHeadersLengthLimit = int.MaxValue;
+            });
+
+            //configure logging
+            services.AddLogging(options =>
+            {
+                options.AddSaberLogFormatter();
             });
 
             //add SignalR
