@@ -142,6 +142,9 @@
     <Build Include="dbo\Stored Procedures\Utility\ResetDatabase.sql" />
     <Build Include="dbo\Tables\Notifications.sql" />
     <Build Include="dbo\Tables\Notifications_Read.sql" />
+    <Build Include="dbo\Stored Procedures\Notifications\Notification_Create.sql" />
+    <Build Include="dbo\Stored Procedures\Notifications\Notifications_GetList.sql" />
+    <Build Include="dbo\Stored Procedures\Notifications\Notification_Read.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />
