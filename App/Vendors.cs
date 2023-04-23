@@ -8,6 +8,7 @@ using Saber.Vendor;
 using System.Reflection;
 using System.Text.Json;
 using Saber.Core;
+using Saber.Core.Vendor;
 
 namespace Saber.Common
 {
@@ -899,7 +900,7 @@ namespace Saber.Common
         }
         #endregion
 
-        #region "CORS Policies"
+        #region "Page Responses"
         public static void GetPageResponseFromFileSystem()
         {
             foreach (var assembly in Assemblies)
@@ -927,6 +928,40 @@ namespace Saber.Common
             var instance = (IVendorPageResponse)Activator.CreateInstance(type);
             Core.Vendors.PageResponses.Add(instance);
             details.PageResponses.Add(instance);
+        }
+        #endregion
+
+        #region "Notification Types"
+        public static void GetNotificationTypesFromFileSystem()
+        {
+            foreach (var assembly in Assemblies)
+            {
+                foreach (var type in assembly.Value.ExportedTypes)
+                {
+                    foreach (var i in type.GetInterfaces())
+                    {
+                        if (i.Name == "IVendorNotificationTypes")
+                        {
+                            GetNotificationTypesFromType(type);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void GetNotificationTypesFromType(Type type)
+        {
+            if (type == null) { return; }
+            if (type.Equals(typeof(IVendorNotificationTypes))) { return; }
+            var details = GetDetails(type);
+            if (MarkedForUninstall.Contains(details.Key)) { return; }
+            var instance = (IVendorNotificationTypes)Activator.CreateInstance(type);
+            if(instance?.NotificationType.Length > 0)
+            {
+                Core.Vendors.NotificationTypes.AddRange(instance.NotificationType);
+                details.NotificationTypes.AddRange(instance.NotificationType);
+            }
         }
         #endregion
     }

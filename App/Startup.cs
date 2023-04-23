@@ -607,6 +607,7 @@ namespace Saber
             Core.Delegates.PageInfo.NameFromFile = PageInfo.NameFromFile;
             Core.Delegates.PageInfo.SavePageConfig = PageInfo.SavePageConfig;
             Core.Delegates.PageInfo.ClearCache = PageInfo.ClearCache;
+            Core.Delegates.Notifications.CreateNotification = Notifications.CreateNotification;
 
             //execute Configure method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)
