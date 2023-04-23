@@ -127,6 +127,7 @@ paths.working = {
             paths.scripts + 'editor/hotkeys.js',
             paths.scripts + 'editor/signalr.js',
             paths.scripts + 'editor/events.js',
+            paths.scripts + 'editor/notifications.js',
             paths.scripts + 'editor/importexport.js',
             paths.scripts + 'editor/market.js',
             paths.scripts + 'editor/utility.js',

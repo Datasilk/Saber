@@ -126,6 +126,14 @@
     & > li > .row.hover:hover{background:#0082ff; color:#fff;}
 }
 .box .menu-notifs > .row.hover:hover{background:#0082ff; color:#fff;}
+.notifs.row.hover {
+    &, &:hover{
+        ul.menu li{
+            &:hover a{outline:2px solid #0082ff;}
+            a:link, a:visited, a:hover, a:active{color:#fff !important;}
+        }
+    }
+}
 
 .box .drop-menu{
     @menu-color:#eee;

@@ -22,6 +22,11 @@ namespace Query
             return Sql.Populate<Models.Notification>("Notifications_GetList", new { userId, lastChecked, length });
         }
 
+        public static int GetUnreadCount(int userId)
+        {
+            return Sql.ExecuteScalar<int>("Notifications_GetUnreadCount", new { userId });
+        }
+
         public static void Read(Guid notifId, int userId)
         {
             Sql.ExecuteNonQuery("Notification_Read", new { notifId, userId });

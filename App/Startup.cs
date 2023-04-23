@@ -241,6 +241,25 @@ namespace Saber
             }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //get list of vendor classes that inherit IVendorNotificationTypes interface
+            foreach (var assembly in assemblies)
+            {
+                //get a list of abstract classes from the assembly
+                var types = assembly.GetTypes()
+                    .Where(type => typeof(Vendor.IVendorNotificationTypes).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                foreach (var type in types)
+                {
+                    Common.Vendors.GetNotificationTypesFromType(type);
+                }
+            }
+            //get list of DLLs that contain the IVendorNotificationTypes interface
+            Common.Vendors.GetNotificationTypesFromFileSystem();
+            if (Core.Vendors.NotificationTypes.Count > 0)
+            {
+                Console.WriteLine("Found " + Core.Vendors.NotificationTypes.Count + " Notification Types");
+            }
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //get list of vendor classes that inherit IVendorWebsiteSettings interface
             foreach (var assembly in assemblies)
             {

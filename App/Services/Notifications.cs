@@ -8,21 +8,33 @@ namespace Saber.Services
         {
             if (!CheckSecurity()) { return AccessDenied(); }
             //get notifications
-            if(lastChecked.HasValue == false)
+            var dateChecked = DateTime.Now.AddDays(-30);
+            if (lastChecked.HasValue == true)
             {
-                lastChecked = new DateTime().AddDays(-30);
+                dateChecked = lastChecked.Value;
             }
-            var notifs = Query.Notifications.GetList(User.UserId, lastChecked.Value, length);
+            var notifs = Query.Notifications.GetList(User.UserId, dateChecked, length);
             var view = new View("/Views/Notifications/list-item.html");
             var html = new StringBuilder();
-
+            var unreadCount = 0;
             if (!lastChecked.HasValue)
             {
                 //render all dynamic notifications first
-
+                unreadCount = Query.Notifications.GetUnreadCount(User.UserId);
+                foreach(var type in Core.Vendors.NotificationTypes)
+                {
+                    var items = type.GetDynamicList(User);
+                    foreach(var item in items)
+                    {
+                        html.Append(type.Render(view, item.notifId, item.notification, item.url, item.datecreated));
+                        view.Clear();
+                        unreadCount += 1;
+                    }
+                }
             }
 
             //render all generated notifications next
+            DateTime lastchecked = DateTime.Now;
             foreach(var notif in notifs)
             {
                 //find associated notification type
@@ -33,8 +45,9 @@ namespace Saber.Services
                     html.Append(type.Render(view, notif.notifId, notif.notification, notif.url, notif.datecreated));
                     view.Clear();
                 }
+                lastchecked = notif.datecreated;
             }
-            return html.ToString();
+            return unreadCount + "|!|" + lastchecked.ToString("yyyy/MM/dd hh:mm tt") + "|!|" + html.ToString();
         }
     }
 }

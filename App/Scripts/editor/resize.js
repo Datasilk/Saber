@@ -26,7 +26,7 @@ S.editor.resize = {
         stopped: function () {
             var listeners = S.editor.resize.stop.listeners;
             for (var x = 0; x < listeners.length; x++) {
-                listeners[x].callback();
+                if (typeof listeners[x].callback == 'function') { listeners[x].callback(); }
             }
         }
     },

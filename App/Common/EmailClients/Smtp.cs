@@ -90,6 +90,18 @@ namespace Saber.Common.EmailClients
                 };
         }
 
+        public bool IsConfigured()
+        {
+            var config = Platform.Website.Settings.Load();
+            if (string.IsNullOrEmpty(config.Email.Smtp.Domain)) { return false; }
+            if (config.Email.Smtp.Port <= 0) { return false; }
+            if (string.IsNullOrEmpty(config.Email.Smtp.From)) { return false; }
+            if (string.IsNullOrEmpty(config.Email.Smtp.FromName)) { return false; }
+            if (string.IsNullOrEmpty(config.Email.Smtp.Username)) { return false; }
+            if (string.IsNullOrEmpty(config.Email.Smtp.Password)) { return false; }
+            return true;
+        }
+
         public void Init()
         {
 

@@ -119,7 +119,13 @@ ul.menu-bar{float:left; list-style:none;
 .menu-notifs{float:left; height:26px;
     svg{width:16px; height:16px;}
 }
-.notifs{padding:4px 10px 0 10px; position:relative; height:26px;}
+.notifs{padding:4px 10px 0 10px; position:relative; height:26px;
+    ul.menu{padding:5px 0 10px 0;
+        li{width:300px; padding:5px 10px;
+            a{padding:5px 10px; border-radius:5px;}
+        }
+    }
+}
 .notif-count{
     background:#ff6a00; color:#fff; font-size:9px; position:absolute; left:27px; top:4px; 
     line-height:1.0; padding:4px 3px 3px 3px; border-radius:30px; min-width:15px; text-align:center;

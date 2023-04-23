@@ -1,15 +1,13 @@
-﻿CREATE PROCEDURE [dbo].[Notifications_GetList]
-	@userId int,
-	@lastChecked datetime2(7),
-	@length int = 10
+﻿CREATE PROCEDURE [dbo].[Notifications_GetUnreadCount]
+	@userId int
 AS
 	SELECT groupId INTO #groups FROM Security_Users WHERE userId=@userId
 	SELECT [key] INTO #keys FROM Security_Keys WHERE groupId IN (SELECT groupId FROM #groups)
 
-	SELECT n.*, (CASE WHEN r.userId IS NOT NULL THEN 1 ELSE 0 END) AS [read]
+	SELECT COUNT(*)
 	FROM Notifications n
 	LEFT JOIN Notifications_Read r ON r.notifId=n.notifId AND r.userId=@userId
-	WHERE n.datecreated > @lastChecked
+	WHERE r.notifId IS NULL
 	AND (
 		(n.userId IS NOT NULL AND n.userId = @userId)
 		OR n.userId IS NULL
@@ -23,5 +21,3 @@ AS
 		OR n.securitykey IS NULL
 		OR n.securitykey = ''
 	)
-	ORDER BY n.datecreated DESC
-	OFFSET 0 ROWS FETCH NEXT @length ROWS ONLY

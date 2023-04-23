@@ -310,7 +310,7 @@ S.editor.init = function () {
         {}
     ];
 
-    //finally, load content resources that belong to the page
+    //load content resources that belong to the page
     if (this.useCodeEditor == true) {
         var tabs = [dir + fileparts[0] + '.html', dir + fileparts[0] + '.less', dir + fileparts[0] + '.js'];
         if (this.savedTabs.length > 0) {
@@ -353,6 +353,9 @@ S.editor.init = function () {
             S.editor.preview.hide();
         })();
     }
+
+    //get notifications for user
+    S.editor.notifs.init();
 
     S.editor.preview.hide();
 };
