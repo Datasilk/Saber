@@ -12,6 +12,7 @@
     public static IConfiguration Config { get; set; }
     public static IHostApplicationLifetime AppLifetime { get; set; }
     public static string SaberCmsHost { get; set; } = "https://www.sabercms.com/";
+    public static bool RunTests { get; set; } = false;
 }
 
 public class WinService : BackgroundService

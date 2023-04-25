@@ -121,13 +121,16 @@ ul.menu-bar{float:left; list-style:none;
 }
 .notifs{padding:4px 10px 0 10px; position:relative; height:26px;
     ul.menu{padding:5px 0 10px 0;
-        li{width:300px; padding:5px 10px;
-            a{padding:5px 10px; border-radius:5px;}
+        li{width:300px; padding:5px 10px; 
+            a{padding:5px 10px; border-radius:5px; position:relative;}
+            .icon{display:inline-block; vertical-align:top; margin-right:5px;}
+            .info{display:inline-block; width:~"calc(100% - 25px)";}
+            .unread{display:inline-block; width:7px; height:7px; border-radius:10px; position:absolute; top:9px; left:-3px;}
         }
     }
 }
 .notif-count{
-    background:#ff6a00; color:#fff; font-size:9px; position:absolute; left:27px; top:4px; 
+    font-size:9px; font-weight:bold; position:absolute; left:27px; top:4px; 
     line-height:1.0; padding:4px 3px 3px 3px; border-radius:30px; min-width:15px; text-align:center;
 }
 
@@ -155,7 +158,6 @@ ul.menu-bar{float:left; list-style:none;
 }
 
 /* html component menu */
-
 .component-configure{
     .scroller{overflow-x:hidden; overflow-y:auto; scrollbar-color: #333 #555;
         &::-webkit-scrollbar-track{background:#555;}
@@ -501,6 +503,11 @@ ul.menu-bar{float:left; list-style:none;
         }
     }
     .btn-delete-group:hover{opacity:1;}
+}
+
+/* data sources */
+.datasources-list{
+    td:first-child{white-space:nowrap;}
 }
 
 /* message */

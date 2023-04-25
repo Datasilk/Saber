@@ -162,7 +162,8 @@ namespace Saber.Services
                         name = action.Name,
                         templatefile = action.TemplateFile,
                         subject = configAction?.Subject ?? "",
-                        options = string.Join("", 
+                        options = (string.IsNullOrEmpty(configAction?.Client) ? "<option value=\"\"></option>" : "") +
+                        string.Join("", 
                             emailClients.Select(a => "<option value=\"" + a.Key + "\"" +
                             (configAction?.Client == a.Key ? " selected=\"selected\"" : "") + 
                             ">" + a.Name + "</option>"

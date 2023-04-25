@@ -88,6 +88,15 @@ namespace Saber.Services
             Server.HasAdmin = true;
             Server.ResetPass = false;
 
+            //create initial notifications for admin account
+            Query.Notifications.Create(new Query.Models.Notification()
+            {
+                userId = userId,
+                type = "market",
+                notification = "Visit the Saber <b>Marketplace</b> and install a <b><i>website template</i></b> of your choice!",
+                url = "javascript:S.editor.market.open()"
+            });
+
             //raise Saber Event on all supported Vendor plugins
             Core.Vendors.EventHandlers.ForEach(a =>
             {

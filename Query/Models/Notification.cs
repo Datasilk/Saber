@@ -12,5 +12,6 @@ namespace Query.Models
         public string type { get; set; }
         public string notification { get; set; }
         public string url { get; set; }
+        public bool read { get; set; } = false;
     }
 }

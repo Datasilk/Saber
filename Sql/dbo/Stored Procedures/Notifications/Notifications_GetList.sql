@@ -9,7 +9,10 @@ AS
 	SELECT n.*, (CASE WHEN r.userId IS NOT NULL THEN 1 ELSE 0 END) AS [read]
 	FROM Notifications n
 	LEFT JOIN Notifications_Read r ON r.notifId=n.notifId AND r.userId=@userId
-	WHERE n.datecreated > @lastChecked
+	WHERE (
+		(@lastChecked IS NOT NULL AND n.datecreated > @lastChecked)
+		OR @lastChecked IS NULL
+	)
 	AND (
 		(n.userId IS NOT NULL AND n.userId = @userId)
 		OR n.userId IS NULL

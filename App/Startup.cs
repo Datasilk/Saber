@@ -449,6 +449,7 @@ namespace Saber
                         Query.Sql.ConnectionString = connstr;
                         Console.WriteLine("Resetting Saber-Test database (Sequences & Tables)");
                         Query.Sql.ExecuteNonQuery("ResetDatabase");
+                        Server.RunTests = true;
                     }
                 }
             }
@@ -589,7 +590,7 @@ namespace Saber
             }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //Run any services required after initializing all vendor plugins but before configuring vendor startup services
+            //map all core delegates
             Core.Delegates.Session.Get = Common.Session.Get;
             Core.Delegates.Session.Set = Common.Session.Set;
             Core.Delegates.Controller.CheckSecurity = Common.Platform.Controller.CheckSecurity;
@@ -627,7 +628,9 @@ namespace Saber
             Core.Delegates.PageInfo.SavePageConfig = PageInfo.SavePageConfig;
             Core.Delegates.PageInfo.ClearCache = PageInfo.ClearCache;
             Core.Delegates.Notifications.CreateNotification = Notifications.CreateNotification;
+            Core.Delegates.Notifications.Render = Notifications.Render;
 
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //execute Configure method for all vendors that use IVendorStartup interface
             foreach (var kv in Core.Vendors.Startups)
             {

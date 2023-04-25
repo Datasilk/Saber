@@ -41,11 +41,11 @@ namespace Saber.Common.Notifications.Types
                     //one or more actions are missing a client
                     notifs.Add(new Notification()
                     {
-                        notification = "One or more of your Email Actions are missing a selected Email Client",
-                        url = "javascript:S.editor.websettings.show('email-settings')",
-                        type = Type,
-                        datecreated = DateTime.Now,
-                        notifId = Guid.Empty
+                        Text = "One or more of your <b>Email Actions</b> are missing a selected Email Client",
+                        Url = "javascript:S.editor.websettings.show('email-settings')",
+                        Type = Type,
+                        DateCreated = DateTime.Now,
+                        NotifId = Guid.Empty
                     });
                 }
                 if (missingSubject)
@@ -53,32 +53,46 @@ namespace Saber.Common.Notifications.Types
                     //one or more actions are missing a subject
                     notifs.Add(new Notification()
                     {
-                        notification = "One or more of your Email Actions are missing a Subject",
-                        url = "javascript:S.editor.websettings.show('email-settings')",
-                        type = Type,
-                        datecreated = DateTime.Now,
-                        notifId = Guid.Empty
+                        Text = "One or more of your <b>Email Actions</b> are missing a Subject",
+                        Url = "javascript:S.editor.websettings.show('email-settings')",
+                        Type = Type,
+                        DateCreated = DateTime.Now,
+                        NotifId = Guid.Empty
                     });
                 }
 
                 //check all clients being used by actions for configuration
-                foreach(var key in usedClients)
+                if(usedClients.Count > 0)
                 {
-                    if(Core.Vendors.EmailClients.ContainsKey(key))
+                    foreach (var key in usedClients)
                     {
-                        var client = Core.Vendors.EmailClients[key];
-                        if (!client.IsConfigured())
+                        if (Core.Vendors.EmailClients.ContainsKey(key))
                         {
-                            notifs.Add(new Notification()
+                            var client = Core.Vendors.EmailClients[key];
+                            if (!client.IsConfigured())
                             {
-                                notification = "Your " + client.Name + " Email Client is not configured to send emails yet",
-                                url = "javascript:S.editor.websettings.show('email-settings')",
-                                type = Type,
-                                datecreated = DateTime.Now,
-                                notifId = Guid.Empty
-                            });
+                                notifs.Add(new Notification()
+                                {
+                                    Text = "Your <b>" + client.Name + "</b> Email Client is not configured to send emails yet",
+                                    Url = "javascript:S.editor.websettings.show('email-settings')",
+                                    Type = Type,
+                                    DateCreated = DateTime.Now,
+                                    NotifId = Guid.Empty
+                                });
+                            }
                         }
                     }
+                }
+                else
+                {
+                    notifs.Add(new Notification()
+                    {
+                        Text = "No <b>Email Clients</b> are configured to send emails yet.",
+                        Url = "javascript:S.editor.websettings.show('email-settings')",
+                        Type = Type,
+                        DateCreated = DateTime.Now,
+                        NotifId = Guid.Empty
+                    });
                 }
             }
             else

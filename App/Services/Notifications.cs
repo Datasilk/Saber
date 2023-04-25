@@ -13,6 +13,7 @@ namespace Saber.Services
             {
                 dateChecked = lastChecked.Value;
             }
+            if(length <= 0) { length = 10; }
             var notifs = Query.Notifications.GetList(User.UserId, dateChecked, length);
             var view = new View("/Views/Notifications/list-item.html");
             var html = new StringBuilder();
@@ -26,7 +27,7 @@ namespace Saber.Services
                     var items = type.GetDynamicList(User);
                     foreach(var item in items)
                     {
-                        html.Append(type.Render(view, item.notifId, item.notification, item.url, item.datecreated));
+                        html.Append(type.Render(view, item.NotifId, item.Text, item.Url, false, item.DateCreated));
                         view.Clear();
                         unreadCount += 1;
                     }
@@ -42,12 +43,19 @@ namespace Saber.Services
                 if(type != null)
                 {
                     //render notification
-                    html.Append(type.Render(view, notif.notifId, notif.notification, notif.url, notif.datecreated));
+                    html.Append(type.Render(view, notif.notifId, notif.notification, notif.url, notif.read, notif.datecreated));
                     view.Clear();
                 }
                 lastchecked = notif.datecreated;
             }
             return unreadCount + "|!|" + lastchecked.ToString("yyyy/MM/dd hh:mm tt") + "|!|" + html.ToString();
+        }
+
+        public string MarkAsRead(string id)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            Query.Notifications.Read(Guid.Parse(id), User.UserId);
+            return Success();
         }
     }
 }

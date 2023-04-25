@@ -164,7 +164,7 @@ namespace Saber.Common
             //update JSON file with current versions of DLL files
             var versions = new List<AssemblyInfo>();
             var versionsChanged = false;
-            if (File.Exists(App.MapPath("/Vendors/versions.json")))
+            if (File.Exists(App.MapPath("/Vendors/versions.json")) && Server.RunTests == false)
             {
                 versions = JsonSerializer.Deserialize<List<AssemblyInfo>>(File.ReadAllText(App.MapPath("/Vendors/versions.json")));
             }

@@ -15,5 +15,15 @@
             };
             Query.Notifications.Create(model);
         }
+
+        public static string Render(Vendor.NotificationType type, View defaultView, Guid id, string text, string url, bool read, DateTime? dateCreated = null)
+        {
+            defaultView["id"] = id.ToString();
+            defaultView["url"] = url;
+            defaultView["icon"] = type.Icon;
+            defaultView["notification"] = text;
+            if (!read) { defaultView.Show("unread"); }
+            return defaultView.Render();
+        }
     }
 }
