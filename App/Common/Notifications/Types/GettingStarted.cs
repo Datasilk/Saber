@@ -1,6 +1,7 @@
 ﻿using Saber.Core;
 using Saber.Vendor;
 using Saber.Models;
+using Saber.Core.Extensions.Strings;
 
 namespace Saber.Common.Notifications.Types
 {
@@ -11,11 +12,42 @@ namespace Saber.Common.Notifications.Types
 
         public override Notification[] GetDynamicList(IUser user)
         {
+            if(user.IsAdmin == false) { 
+                //only admins should see these notifications
+                return new Notification[] { };  
+            }
+
             var notifs = new List<Notification>();
             var settings = Platform.Website.Settings.Load();
 
+            //check security groups
+            if(Query.Security.Groups.GetCount() == 0)
+            {
+                notifs.Add(new Notification()
+                {
+                    Text = "No <b>Security Groups</b> exist yet. You must create at least one that users can belong to.",
+                    Url = "javascript:S.editor.security.show(S.editor.security.groups.create.show);",
+                    Type = Type,
+                    DateCreated = DateTime.Now,
+                    NotifId = Guid.Empty
+                });
+            }
+
+            //check for default security group
+            if(settings.Users.groupId.HasValue == false || settings.Users.groupId.Value <= 0)
+            {
+                notifs.Add(new Notification()
+                {
+                    Text = "You must select a default <b>Security Groups</b> to use for new users who signup for your website.",
+                    Url = "javascript:S.editor.users.show(() => {setTimeout(S.editor.users.settings.show, 50)});",
+                    Type = Type,
+                    DateCreated = DateTime.Now,
+                    NotifId = Guid.Empty
+                });
+            }
+
             //check all email actions & email clients configurations
-            if(settings.Email.Actions.Count > 0)
+            if (settings.Email.Actions.Count > 0)
             {
                 var missingClient = false;
                 var missingSubject = false;
@@ -26,15 +58,15 @@ namespace Saber.Common.Notifications.Types
                     {
                         missingClient = true;
                     }
-                    else if(!usedClients.Contains(action.Client))
+                    else if (!usedClients.Contains(action.Client))
                     {
 
                     }
-                    if(action.Subject == "")
+                    if (action.Subject == "")
                     {
                         missingSubject = true;
                     }
-                    if(missingClient && missingSubject) { break; }
+                    if (missingClient && missingSubject) { break; }
                 }
                 if (missingClient)
                 {
@@ -62,7 +94,7 @@ namespace Saber.Common.Notifications.Types
                 }
 
                 //check all clients being used by actions for configuration
-                if(usedClients.Count > 0)
+                if (usedClients.Count > 0)
                 {
                     foreach (var key in usedClients)
                     {
@@ -95,9 +127,33 @@ namespace Saber.Common.Notifications.Types
                     });
                 }
             }
-            else
-            {
 
+            //check website icons
+            var webIconPath = App.MapPath("/wwwroot/images/web-icon.png");
+            var hasWebIcon = false;
+            if (File.Exists(webIconPath))
+            {
+                //compare temp web icon with live web icon
+                var tmpIcon = Generate.MD5Hash(File.ReadAllText(App.MapPath("/Content/temp/images/web-icon.png")));
+                var webIcon = Generate.MD5Hash(File.ReadAllText(webIconPath));
+                if(tmpIcon != webIcon)
+                {
+                    //found unique web icon file
+                    hasWebIcon = true;
+                }
+            }
+
+            if(hasWebIcon == false)
+            {
+                //user hasn't changed web icon yet
+                notifs.Add(new Notification()
+                {
+                    Text = "This website is using the default <b>Website Icon</b>. Please change the icon before publishing your website.",
+                    Url = "javascript:S.editor.websettings.show('icons')",
+                    Type = Type,
+                    DateCreated = DateTime.Now,
+                    NotifId = Guid.Empty
+                });
             }
 
             return notifs.ToArray();

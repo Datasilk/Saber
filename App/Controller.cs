@@ -45,10 +45,6 @@ namespace Saber
             view["head-css"] = Css.ToString();
             view["footer"] = Footer != null ? Footer.ToString() : "";
 
-            //load website icon
-            view["favicon"] = "/images/web-icon.png";
-            view["favicon-type"] = "image/png";
-
             //load apple icons
             var appleIcons = new bool[4];
             var isCached = false;

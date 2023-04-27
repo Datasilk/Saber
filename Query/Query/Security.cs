@@ -33,6 +33,11 @@ namespace Query
                 return Sql.Populate<Models.SecurityGroup>("SecurityGroups_GetList");
             }
 
+            public static int GetCount()
+            {
+                return Sql.ExecuteScalar<int>("SecurityGroups_GetCount");
+            }
+
             public static void Delete(int groupId)
             {
                 Sql.ExecuteNonQuery("SecurityGroup_Delete", new { groupId });

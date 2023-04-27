@@ -2,7 +2,7 @@
     _loaded: false,
     _loadedGroups: [],
 
-    show: () => {
+    show: (callback) => {
         var self = S.editor.security;
         S.editor.dropmenu.hide();
         $('.editor .sections > .tab').addClass('hide');
@@ -28,13 +28,14 @@
         );
         if (self._loaded == true) {
             S.editor.tabs.select('security-groups-section');
+            if (callback) { callback(); }
             return;
         }
-        self.groups.load();
+        self.groups.load(callback);
     },
 
     groups: {
-        load: () => {
+        load: (callback) => {
             //load security groups
             var self = S.editor.security;
             S.ajax.post('Security/Groups', {},
@@ -51,6 +52,7 @@
                         //show tab for security group
                         self.group.load(id, name);
                     });
+                    if (callback) { callback(); }
                 }
             );
         },

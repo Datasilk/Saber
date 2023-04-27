@@ -25,17 +25,19 @@ S.editor.notifs = {
                 if (target.attr('data-id') == null) {
                     target = target.parents('a').first();
                 }
-                console.log(target);
                 var id = target.attr('data-id');
-                S.ajax.post('Notifications/MarkAsRead', { id: id }, () => {
-                    count -= 1;
-                    if (count < 1) {
-                        counter.hide();
-                    } else {
-                        counter.html(count).show();
-                    }
-                });
-                target.parents('li').first().find('.unread').remove();
+                var unread = target.parents('li').first().find('.unread');
+                if (unread.length > 0) {
+                    S.ajax.post('Notifications/MarkAsRead', { id: id }, () => {
+                        count -= 1;
+                        if (count < 1) {
+                            counter.hide();
+                        } else {
+                            counter.html(count).show();
+                        }
+                    });
+                    unread.remove();
+                }
                 S.editor.dropmenu.hide();
             });
         });

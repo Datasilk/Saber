@@ -3,7 +3,8 @@
     _loadedUsers: [],
     parameters: {start:1, length:25, search:'', orderby:1},
 
-    show: () => {
+    show: (callback) => {
+        var finished = false;
         var self = S.editor.users;
         S.editor.dropmenu.hide();
         $('.editor .sections > .tab').addClass('hide');
@@ -34,9 +35,14 @@
             S.editor.filebar.update('User Management', 'icon-users', $('#users_manage_toolbar').html());
             $('.tab-toolbar button.new-user').on('click', S.editor.users.create.show);
             $('.tab-toolbar a.button.user-settings').on('click', S.editor.users.settings.show);
+            if (finished == false && callback) {
+                finished = true;
+                callback();
+            }
         }
         if (self._loaded == true) {
             S.editor.tabs.select('users-management-section');
+            if (callback) { callback(); }
             return;
         }
         self.search(1, 25, '', 1, updateFilebar);
