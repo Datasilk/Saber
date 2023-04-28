@@ -28,14 +28,21 @@ namespace Saber.Common.Platform
             }
             var _msg = "";
 
-            client.Send(message, delegate() {
-                //only get RFC 2822 message if vendor plugin specifically requests it
-                if (string.IsNullOrEmpty(_msg))
-                {
-                    _msg = GetRFC2822FormattedMessage(message);
-                }
-                return _msg; 
-            });
+            try
+            {
+                client.Send(message, delegate () {
+                    //only get RFC 2822 message if vendor plugin specifically requests it
+                    if (string.IsNullOrEmpty(_msg))
+                    {
+                        _msg = GetRFC2822FormattedMessage(message);
+                    }
+                    return _msg;
+                });
+            }
+            catch(Exception ex)
+            {
+                Query.Logs.LogError(0, "", "Email.Send", ex.Message, ex.StackTrace);
+            }
         }
 
         public static string GetRFC2822FormattedMessage(MailMessage message)

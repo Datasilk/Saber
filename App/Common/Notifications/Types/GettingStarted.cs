@@ -38,7 +38,7 @@ namespace Saber.Common.Notifications.Types
             {
                 notifs.Add(new Notification()
                 {
-                    Text = "You must select a default <b>Security Groups</b> to use for new users who signup for your website.",
+                    Text = "You must select a default <b>Security Group</b> to use for new users who signup for your website.",
                     Url = "javascript:S.editor.users.show(() => {setTimeout(S.editor.users.settings.show, 50)});",
                     Type = Type,
                     DateCreated = DateTime.Now,
