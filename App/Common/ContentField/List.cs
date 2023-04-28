@@ -67,6 +67,9 @@ namespace Saber.Common.ContentField
                             viewlist.Show("single-selection");
                             if (isMultiselect){ viewlist.Show("multi-selection"); }
                             viewlist.Show("no-lists");
+                            viewlist.Show("no-filter");
+                            viewlist.Show("no-sort");
+                            viewlist.Show("no-position");
                             var colkey = fieldKey;
                             var selected = parts.Where(a => a.IndexOf("selected=") == 0).FirstOrDefault()?.Replace("selected=", "") ?? "";
                             if (string.IsNullOrEmpty(fieldKey))
@@ -130,10 +133,15 @@ namespace Saber.Common.ContentField
                             //render data source filter form
                             if (canfilter)
                             {
-                                viewlist.Show("can-filter");
                                 viewlist["filter-contents"] = DataSource.RenderFilters(request, datasource, mysettings?.Filters);
                                 viewlist["orderby-contents"] = DataSource.RenderOrderByList(datasource, mysettings?.OrderBy);
                                 viewlist["position-contents"] = DataSource.RenderPositionSettings(datasource, mysettings?.Position);
+                            }
+                            else
+                            {
+                                viewlist.Show("no-filter");
+                                viewlist.Show("no-sort");
+                                viewlist.Show("no-position");
                             }
                             
                             var relationships = datasource.Helper.Get(datasourceId).Relationships;
@@ -164,7 +172,7 @@ namespace Saber.Common.ContentField
                         foreach (var item in items)
                         {
                             viewitem.Clear();
-                            viewitem["label"] = fieldKey != "" ? item[fieldKey] : "List Item #" + i;
+                            viewitem["label"] = fieldKey != "" && item.ContainsKey(fieldKey) ? item[fieldKey] : "List Item #" + i;
                             viewitem["index"] = i.ToString();
                             viewitem["onclick"] = "S.editor.fields.custom.list.edit(event, '" + viewlist["title"] +
                                 "', '" + fieldKey +
@@ -179,6 +187,9 @@ namespace Saber.Common.ContentField
                         viewlist["item-count"] = "0";
                     }
                     viewlist.Show("no-datasource");
+                    viewlist.Show("no-filter");
+                    viewlist.Show("no-sort");
+                    viewlist.Show("no-position");
                     viewlist["list-contents"] = "<ul class=\"list\">" + html.ToString() + "</ul>";
                     viewlist.Show("not-locked");
                     viewlist["position-contents"] = DataSource.RenderPositionSettings(null, new DataSource.PositionSettings()
