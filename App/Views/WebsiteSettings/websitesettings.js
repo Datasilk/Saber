@@ -216,8 +216,28 @@
         });
     });
 
+    $('.email-actions .sent-test-email').on('click', (e) => {
+        var target = $(e.target);
+        var key = target.parents('.email-action').first().attr('data-key');
+        S.popup.show('Send test email',
+            S('#template_test_email').html()
+        );
+        var btn = $('.popup.show button.apply')
+        btn.on('click', () => {
+            //send test email
+            btn.hide();
+            S.ajax.post('WebsiteSettings/SendTestEmail', { key: key, email: $('#test_email').val() }, (response) => {
+                S.editor.message('.popup.show .messages', 'Email sent successfully');
+                btn.show();
+            }, (err) => {
+                S.editor.message('.popup.show .messages', err.responseText, 'error');
+                btn.show();
+            });
+        });
+    });
+
     S('.passwords button.save').on('click', (e) => {
-        //save email actions
+        //save password settings
         e.preventDefault();
         var data = {
             passwords: {

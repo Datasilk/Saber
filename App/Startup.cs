@@ -599,6 +599,8 @@ namespace Saber
             Core.Delegates.Service.CheckSecurity = Common.Platform.Service.CheckSecurity;
             Core.Delegates.Service.GetUser = Common.Platform.Service.GetUser;
             Core.Delegates.Email.Send = Email.Send;
+            Core.Delegates.Email.GetActionConfig = Email.GetActionConfig;
+            Core.Delegates.Email.GetClientForAction = Email.GetClientForAction;
             Core.Delegates.Website.AllFiles = Website.AllFiles;
             Core.Delegates.Website.AllFolders = Website.AllFolders;
             Core.Delegates.Website.AllRootFolders = Website.AllRootFolders;

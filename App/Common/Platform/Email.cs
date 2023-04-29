@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using MimeKit;
 using Saber.Vendor;
 
@@ -19,6 +16,7 @@ namespace Saber.Common.Platform
                 Query.Logs.LogError(0, "", "Email.Send", "Could not find Email Action Type \"" + type + "\"", "");
                 return;
             }
+
             var client = Core.Vendors.EmailClients.Values.Where(a => a.Key == action.Client).FirstOrDefault();
             if (client == null)
             {
@@ -42,6 +40,7 @@ namespace Saber.Common.Platform
             catch(Exception ex)
             {
                 Query.Logs.LogError(0, "", "Email.Send", ex.Message, ex.StackTrace);
+                throw new Exception(ex.Message, ex);
             }
         }
 
@@ -67,7 +66,55 @@ namespace Saber.Common.Platform
                 Description = "",
                 TemplateFile = "update-pass.html",
                 UserDefinedSubject = true
+            },
+            new EmailType()
+            {
+                Key="forgotpass",
+                Name = "Recover Password",
+                Description = "",
+                TemplateFile = "forgot-pass.html",
+                UserDefinedSubject = true
             }
         };
+
+        public static List<EmailType> Actions
+        {
+            get
+            {
+                var actions = new List<EmailType>();
+                actions.AddRange(Types);
+                actions.AddRange(Core.Vendors.EmailTypes.Values);
+                return actions;
+            }
+        }
+
+        public static EmailType? GetAction(string key)
+        {
+            return Actions.Where(a => a.Key == key).FirstOrDefault();
+        }
+
+        public static Models.Website.EmailAction GetActionConfig(string key)
+        {
+            var config = Website.Settings.Load();
+            return config.Email.Actions.Where(a => a.Type == key).FirstOrDefault() ?? new Models.Website.EmailAction();
+        }
+
+        public static IVendorEmailClient GetClientForAction(EmailType action)
+        {
+            return GetClientForAction(action.Key);
+        }
+
+        public static IVendorEmailClient GetClientForAction(string key)
+        {
+            //load website config
+            var config = Website.Settings.Load();
+            var configAction = config.Email.Actions.Where(a => a.Type == key).FirstOrDefault();
+            if (configAction != null && Core.Vendors.EmailClients.ContainsKey(configAction.Client))
+            {
+                return Core.Vendors.EmailClients[configAction.Client];
+
+            }
+            return null;
+        }
     }
 }

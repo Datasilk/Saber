@@ -171,8 +171,19 @@ namespace Saber.Services
             viewEmail["name"] = name;
             viewEmail["email"] = emailaddr;
             viewEmail["activation-key"] = activationkey;
-            var msg = Core.Email.Create(Core.Email.From, new MailAddress(emailaddr, name), "Welcome to Saber!", viewEmail.Render());
-            Core.Email.Send(msg, "signup");
+
+            //send email
+            try
+            {
+                //asynchronously send out email
+                var task = new Task(() => { Core.Email.Send("signup", emailaddr, viewEmail.Render()); });
+                task.Start();
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+            
 
             //raise Saber Event on all supported Vendor plugins
             Core.Vendors.EventHandlers.ForEach(a =>
@@ -180,7 +191,7 @@ namespace Saber.Services
                 a.CreatedUser(userId, name, emailaddr);
             });
 
-            return "success";
+            return Success();
         }
 
         [PublicApi("Request that an activation email be sent to a new user account", "A valid email address associated with the user's account")]
@@ -219,9 +230,17 @@ namespace Saber.Services
                 viewEmail["email"] = emailaddr;
                 viewEmail["url"] = App.Host + "/resetpass#" + activationkey;
                 viewEmail["activation-key"] = activationkey;
-                var msg = Core.Email.Create(Core.Email.From, new MailAddress(emailaddr), "Password reset for Saber", viewEmail.Render());
-                Core.Email.Send(msg, "updatepass");
-                return Success();
+                try
+                {
+                    //asynchronously send out email
+                    var task = new Task(() => { Core.Email.Send("forgotpass", emailaddr, viewEmail.Render()); });
+                    task.Start();
+
+                }
+                catch(Exception ex)
+                {
+                    return ex.Message;
+                }
             }
             return Error("Email is not eligible for a password reset");
         }

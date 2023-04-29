@@ -6,8 +6,11 @@ namespace Saber.Common.EmailClients
 {
     public class Smtp : IVendorEmailClient
     {
-        public string Key { get; set; } = "smtp";
-        public string Name { get; set; } = "SMTP Server";
+        public string Key { get; } = "smtp";
+        public string Name { get; } = "SMTP Server";
+        public string FromKey { get; } = "from";
+        public string FromNameKey { get; } = "from-name";
+
         public Dictionary<string, EmailClientParameter> Parameters { get; set; } = new Dictionary<string, EmailClientParameter>()
             {
                 {

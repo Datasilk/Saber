@@ -1,6 +1,9 @@
 ﻿<div class="row email-action" data-key="{{action.key}}">
     <div class="row">
-        <h5>{{action.name}} Email</h5>
+        <div class="col"><h5>{{action.name}} Email</h5></div>
+        <div class="col right"><a href="javascript:" class="sent-test-email">Sent Test Email</a></div>
+    </div>
+    <div class="row">
         {{template-file}}
             <p>Uses the file <span class="code string">emails/{{action.templatefile}}</span> to generate emails.</p>
         {{/template-file}}

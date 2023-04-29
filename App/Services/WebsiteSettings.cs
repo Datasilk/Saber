@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using Saber.Common.Utility;
 using Saber.Core.Extensions.Strings;
+using Saber.Core;
 
 namespace Saber.Services
 {
@@ -147,11 +148,9 @@ namespace Saber.Services
 
             //render email actions
             var viewEmailAction = new View("/Views/WebsiteSettings/email-action.html");
-            var emailActions = new List<Vendor.EmailType>();
-            emailActions.AddRange(Common.Platform.Email.Types);
-            emailActions.AddRange(Core.Vendors.EmailTypes.Values);
+            var actions = Common.Platform.Email.Actions;
 
-            foreach(var action in emailActions)
+            foreach (var action in actions)
             {
                 var configAction = config.Email.Actions.Where(a => a.Type == action.Key).FirstOrDefault();
                 viewEmailAction.Bind(new
@@ -698,6 +697,33 @@ namespace Saber.Services
 
         #endregion
 
+        #region "Email Settings"
+        public string SendTestEmail(string key, string email)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+
+            try
+            {
+                var action = Common.Platform.Email.GetAction(key);
+                var templateFile = "/Content/emails/" + (action?.TemplateFile ?? "signup.html");
+                var body = "This is a test email sent out from Saber. The email template file \"" +
+                    templateFile + "\" was not found, " +
+                    "so this suppliment text was automatically generated as a result.";
+                if(File.Exists(App.MapPath(templateFile)))
+                {
+                    var view = new View(templateFile);
+                    body = view.Render();
+                }
+                Email.Send(key, email, body);
+            }
+            catch(Exception ex)
+            {
+                return Error(ex.Message);
+            }
+            return Success();
+        }
+        #endregion
+
         #region "Save Settings"
         public string SaveEmailClient(string id, Dictionary<string, string> parameters)
         {
@@ -787,7 +813,7 @@ namespace Saber.Services
             try
             {
                 //check icon dimensions
-                var image = Image.Load(file);
+                var image = Common.Utility.Image.Load(file);
                 if (px != 0 && (image.width != px || image.height != px))
                 {
                     return Error($"Icon must be {px} pixels in width & height.");

@@ -47,22 +47,23 @@ namespace Saber.Common.Notifications.Types
             }
 
             //check all email actions & email clients configurations
-            if (settings.Email.Actions.Count > 0)
+            if (Platform.Email.Actions.Count > 0)
             {
                 var missingClient = false;
                 var missingSubject = false;
                 var usedClients = new List<string>();
-                foreach (var action in settings.Email.Actions)
+                foreach (var action in Platform.Email.Actions)
                 {
-                    if (string.IsNullOrEmpty(action.Client))
+                    var config = Platform.Email.GetActionConfig(action.Key);
+                    if (string.IsNullOrEmpty(config.Client))
                     {
                         missingClient = true;
                     }
-                    else if (!usedClients.Contains(action.Client))
+                    else if (!usedClients.Contains(config.Client))
                     {
-                        usedClients.Add(action.Client);
+                        usedClients.Add(config.Client);
                     }
-                    if (action.Subject == "")
+                    if (action.UserDefinedSubject == true && config.Subject == "")
                     {
                         missingSubject = true;
                     }
