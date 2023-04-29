@@ -60,7 +60,7 @@ namespace Saber.Common.Notifications.Types
                     }
                     else if (!usedClients.Contains(action.Client))
                     {
-
+                        usedClients.Add(action.Client);
                     }
                     if (action.Subject == "")
                     {

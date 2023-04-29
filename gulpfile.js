@@ -122,6 +122,7 @@ paths.working = {
             paths.scripts + 'editor/websettings.js',
             paths.scripts + 'editor/datasources.js',
             paths.scripts + 'editor/analytics.js',
+            paths.scripts + 'editor/errorlogs.js',
             paths.scripts + 'editor/resources.js',
             paths.scripts + 'editor/preview.js',
             paths.scripts + 'editor/hotkeys.js',

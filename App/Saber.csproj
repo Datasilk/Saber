@@ -34,6 +34,8 @@
     <None Remove="views\contentfields\contentfields.js" />
     <None Remove="Views\ContentFields\readonly.html" />
     <None Remove="Views\Editor\layout.html" />
+    <None Remove="Views\ErrorLogs\errorlogs.html" />
+    <None Remove="Views\ErrorLogs\log-item.html" />
     <None Remove="Views\PageSettings\template-item.html" />
     <None Remove="Views\WebsiteSettings\restart.html" />
     <Content Include="wwwroot\web.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>

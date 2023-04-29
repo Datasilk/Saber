@@ -167,6 +167,10 @@ namespace Saber.Services
             var groups = Query.Security.Groups.GetList();
             var html = new StringBuilder();
             var settings = Common.Platform.Website.Settings.Load();
+            if(settings.Users.groupId.HasValue == false || settings.Users.groupId <= 0)
+            {
+                html.Append("<option value=\"\"></option>");
+            }
             foreach(var group in groups)
             {
                 html.Append("<option value=\"" + group.groupId + "\"" + 

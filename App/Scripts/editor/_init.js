@@ -263,6 +263,7 @@ S.editor.init = function () {
     $('.top-menu .menu-bar .item-security').on('click', S.editor.security.show);
     $('.top-menu .menu-bar .item-datasources').on('click', S.editor.datasources.show);
     $('.top-menu .menu-bar .item-analytics').on('click', S.editor.analytics.show);
+    $('.top-menu .menu-bar .item-errorlogs').on('click', S.editor.errorlogs.show);
     $('.top-menu .menu-bar .item-web-settings').on('click', S.editor.websettings.show);
     $('.top-menu .menu-bar .item-new-file').on('click', S.editor.file.create.show);
     $('.top-menu .menu-bar .item-new-folder').on('click', S.editor.folder.create.show);

@@ -147,6 +147,7 @@
     <Build Include="dbo\Stored Procedures\Notifications\Notification_Read.sql" />
     <Build Include="dbo\Stored Procedures\Notifications\Notifications_GetUnreadCount.sql" />
     <Build Include="dbo\Stored Procedures\Secuirty\SecurityGroups_GetCount.sql" />
+    <Build Include="dbo\Stored Procedures\Logs\Log_Errors_GetList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

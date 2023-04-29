@@ -147,6 +147,10 @@ namespace Saber.Controllers
                 view.Show("website-analytics");
                 websiteSecurity = true;
             }
+            if (CheckSecurity("error-logs"))
+            {
+                view.Show("website-errorlogs");
+            }
             if (CheckSecurity("website-settings"))
             {
                 view.Show("website-settings");

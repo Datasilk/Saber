@@ -119,4 +119,4 @@
     }
 };
 
-S.editor.dropmenu.add('.menu-bar .menu-item-website > .drop-menu > .menu', 'market', 'Marketplace', '#icon-market', true, S.editor.market.open);
+S.editor.dropmenu.add('.menu-bar .menu-item-website > .drop-menu .menu.for-plugins', 'market', 'Marketplace', '#icon-market', false, S.editor.market.open);
