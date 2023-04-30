@@ -15,6 +15,7 @@ namespace Query.Models
         public DateTime keyexpires { get; set; }
         public string tempkey { get; set; }
         public bool enabled { get; set; }
+        public bool activate { get; set; }
     }
 
     public class UserWithSecurityCount: User

@@ -10,10 +10,10 @@ namespace Query
             return Sql.ExecuteScalar<int>("User_Exists", new { email }) == 1;
         }
 
-        public static int CreateUser(Models.User user, bool activate = false)
+        public static int CreateUser(Models.User user)
         {
             return Sql.ExecuteScalar<int>("User_Create",
-                new { user.name, user.email, user.password, user.photo, user.isadmin, user.tempkey, activate }
+                new { user.name, user.email, user.password, user.photo, user.isadmin, user.tempkey, user.activate }
             );
         }
 
@@ -43,9 +43,9 @@ namespace Query
             return Sql.ExecuteScalar<int>("User_CanActivate", new { email }) == 1;
         }
 
-        public static bool Activate(string email, string tempkey)
+        public static bool Activate(string tempkey)
         {
-            return Sql.ExecuteScalar<int>("User_Activate", new { email, tempkey }) == 1;
+            return Sql.ExecuteScalar<int>("User_Activate", new { tempkey }) == 1;
         }
 
         public static void RequestActivation(string email, string tempkey)

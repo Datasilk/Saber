@@ -134,7 +134,6 @@ namespace Saber.Services
                 }
             }
             
-
             //validate form fields
             if (!CheckEmailAddress(emailaddr)) { return Error("Email address is invalid"); }
             if (Query.Users.Exists(emailaddr)) { return Error("Another account is already using the email address \"" + emailaddr + "\""); }
@@ -156,7 +155,8 @@ namespace Saber.Services
                 name = name,
                 email = emailaddr,
                 password = EncryptPassword(emailaddr, password),
-                tempkey = activationkey
+                tempkey = activationkey,
+                activate = false //force user to validate email before logging in
             });
 
             //add user to default security group
@@ -167,7 +167,7 @@ namespace Saber.Services
 
             //send signup activation email
             var viewEmail = new View("/Content/emails/signup.html");
-            viewEmail["userId"] = userId.ToString();
+            viewEmail["userid"] = userId.ToString();
             viewEmail["name"] = name;
             viewEmail["email"] = emailaddr;
             viewEmail["activation-key"] = activationkey;
@@ -202,20 +202,9 @@ namespace Saber.Services
                 var activationkey = Generate.NewId(16);
                 Query.Users.RequestActivation(emailaddr, activationkey);
                 //TODO: send signup activation email
+
             }
             return Success();
-        }
-
-        public string Activate(string emailaddr, string activationkey)
-        {
-            if (IsPublicApiRequest) { return AccessDenied(); }
-            if(Query.Users.Activate(emailaddr, activationkey))
-            {
-                return Success();
-            }
-            else {
-                return Error();
-            }
         }
 
         public string ForgotPassword(string emailaddr)

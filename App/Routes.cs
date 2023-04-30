@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
-using Datasilk.Core.Web;
+﻿using Datasilk.Core.Web;
 
 namespace Saber
 {
@@ -23,6 +21,7 @@ namespace Saber
                         return new Controllers.Page();
                     }
                 case "logout": return new Controllers.Logout();
+                case "activate": return new Controllers.Activate();
                 case "upload": return new Controllers.Upload();
                 case "import": return new Controllers.Import();
                 case "export": return new Controllers.Export();
@@ -41,9 +40,15 @@ namespace Saber
             switch (name)
             {
                 case "analytics": return new Services.Analytics();
+                case "components": return new Services.Components();
                 case "contentfields": return new Services.ContentFields();
+                case "datasources": return new Services.DataSources();
+                case "errorlogs": return new Services.ErrorLogs();
                 case "files": return new Services.Files();
+                case "importexport": return new Services.ImportExport();
                 case "languages": return new Services.Languages();
+                case "marketplace": return new Services.Marketplace();
+                case "notifications": return new Services.Notifications();
                 case "page": return new Services.Page();
                 case "pageresources": return new Services.PageResources();
                 case "pagesettings": return new Services.PageSettings();

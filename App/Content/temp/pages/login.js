@@ -2,7 +2,6 @@
     var byId = (name) => {return document.getElementById(name);};
     var byClass = (name) => {return document.getElementsByClassName(name)[0];};
     var form = byId('loginform');
-    var submit = byId('login');
     form.addEventListener('submit', function(e) {
         submitForm();
         e.preventDefault();
@@ -46,5 +45,28 @@
         box.className = 'msg error';
         box.innerHTML = msg;
         box.style.display = 'block';
+    }
+
+
+    function message(msg) {
+        var box = byClass('msg');
+        box.className = 'msg';
+        box.innerHTML = msg;
+        box.style.display = 'block';
+    }
+
+    function getParameterByName(name, url) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    //check for URL querystring
+    var param = getParameterByName('activated', location.href);
+    if (param != null) {
+        message('Account activated successfully!');
     }
 })();
