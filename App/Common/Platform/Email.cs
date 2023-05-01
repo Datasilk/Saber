@@ -19,14 +19,6 @@ namespace Saber.Common.Platform
             },
             new EmailAction()
             {
-                Key="updatepass",
-                Name = "Update Password",
-                Description = "Email sent when user requests to reset their password",
-                TemplateFile = "update-pass.html",
-                UserDefinedSubject = true
-            },
-            new EmailAction()
-            {
                 Key="forgotpass",
                 Name = "Recover Password",
                 Description = "Email sent when user requests to reset a forgotten password",

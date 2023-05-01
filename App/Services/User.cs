@@ -182,13 +182,11 @@ namespace Saber.Services
                 Query.Security.Users.Add(settings.Users.groupId.Value, userId);
             }
 
-            //send signup activation email
+            //generate signup activation email
             var viewEmail = new View("/Content/emails/signup.html");
             viewEmail["userid"] = userId.ToString();
             viewEmail["name"] = name;
-            viewEmail["email"] = emailaddr;
-            viewEmail["host"] = App.HostUri;
-            viewEmail["activation-key"] = activationkey;
+            viewEmail["url"] = App.HostUri + "/activate?key=" + activationkey;
 
             //send email
             try
@@ -220,14 +218,11 @@ namespace Saber.Services
                 var activationkey = Generate.NewId(16);
                 Query.Users.RequestActivation(emailaddr, activationkey);
 
-                //send signup activation email
+                //generate activation email
                 var user = Query.Users.GetDetailsFromEmail(emailaddr);
                 var viewEmail = new View("/Content/emails/activation.html");
-                viewEmail["userid"] = user.userId.ToString();
                 viewEmail["name"] = user.name;
-                viewEmail["email"] = emailaddr;
-                viewEmail["host"] = App.HostUri;
-                viewEmail["activation-key"] = activationkey;
+                viewEmail["url"] = App.HostUri + "/activate?key=" + activationkey;
 
                 //send email
                 try
@@ -250,12 +245,14 @@ namespace Saber.Services
             if (!Query.Users.CanActivate(emailaddr))
             {
                 var activationkey = Generate.NewId(16);
-                Query.Users.ForgotPassword(emailaddr, activationkey);
+                var forgot = Query.Users.ForgotPassword(emailaddr, activationkey);
                 Query.Logs.LogForgotPassword(emailaddr);
+
+                //generate forgot password email
+                var user = Query.Users.GetDetailsFromEmail(emailaddr);
                 var viewEmail = new View("/Content/emails/forgot-pass.html");
-                viewEmail["email"] = emailaddr;
-                viewEmail["url"] = App.Host + "/resetpass#" + activationkey;
-                viewEmail["activation-key"] = activationkey;
+                viewEmail["name"] = user.name;
+                viewEmail["url"] = App.HostUri + "/resetpass#" + activationkey;
                 try
                 {
                     //asynchronously send out email
@@ -267,6 +264,7 @@ namespace Saber.Services
                 {
                     return ex.Message;
                 }
+                return Success();
             }
             return Error("Email is not eligible for a password reset");
         }

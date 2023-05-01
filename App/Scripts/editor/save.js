@@ -82,7 +82,7 @@ S.editor.save = function (path, content) {
             } else if (self.isResource(path, 'website.js')) {
                 S.editor.files.website.js.changed = true;
                 S.editor.files.js.changed = true;
-            } else if(path.indexOf('partials/' >= 0)) {
+            } else if(path.indexOf('partials/') >= 0) {
                 //check if file is a partial and if partial content fields tab is loaded
                 var fields_tab = $('.tab-' + self.fileId(path.replace('content/partials/', 'content-fields-')));
                 if (fields_tab.length > 0) {
