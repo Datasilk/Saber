@@ -89,32 +89,7 @@ namespace Saber.Services
             viewEmails["email-clients"] = RenderEmailClients();
 
             //render email actions
-            var viewEmailAction = new View("/Views/WebsiteSettings/email/action.html");
-            var actions = Common.Platform.Email.Actions;
-            html = new StringBuilder();
-
-            foreach (var action in actions)
-            {
-                var configAction = config.Email.Actions.Where(a => a.Type == action.Key).FirstOrDefault();
-                var configEmail = configAction != null ? Common.Platform.Email.GetClientConfig(configAction.ClientId) : null;
-                viewEmailAction.Bind(new
-                {
-                    action = new
-                    {
-                        key = action.Key,
-                        name = action.Name,
-                        templatefile = action.TemplateFile,
-                        subject = configAction?.Subject ?? "<span class=\"err\">No subject written</span>",
-                        client = configEmail != null ? configEmail.Label : "<span class=\"err\">No client selected</span>"
-                    }
-                });
-                if (action.UserDefinedSubject) { viewEmailAction.Show("user-subject"); }
-                if(action.TemplateFile == "") { viewEmailAction.Show("any-file"); }
-                else { viewEmailAction.Show("template-file"); }
-                html.Append(viewEmailAction.Render());
-                viewEmailAction.Clear();
-            }
-            viewEmails["email-actions"] = html.ToString();
+            viewEmails["email-actions"] = RenderEmailActions();
 
             //render email settings accordion
             accordion.Clear();
@@ -819,7 +794,6 @@ namespace Saber.Services
         public string RenderEmailAction(string key)
         {
             if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
-
             var view = new View("/Views/WebsiteSettings/email/action-form.html");
             var config = Website.Settings.Load();
             var action = Email.GetAction(key);
@@ -836,6 +810,38 @@ namespace Saber.Services
                 view["subject"] = actionConfig.Subject;
             }
             return view.Render();
+        }
+
+        public string RenderEmailActions()
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            var config = Common.Platform.Website.Settings.Load();
+            var viewEmailAction = new View("/Views/WebsiteSettings/email/action.html");
+            var actions = Common.Platform.Email.Actions;
+            var html = new StringBuilder();
+
+            foreach (var action in actions)
+            {
+                var configAction = config.Email.Actions.Where(a => a.Type == action.Key).FirstOrDefault();
+                var configEmail = configAction != null ? Common.Platform.Email.GetClientConfig(configAction.ClientId) : null;
+                viewEmailAction.Bind(new
+                {
+                    action = new
+                    {
+                        key = action.Key,
+                        name = action.Name,
+                        templatefile = action.TemplateFile,
+                        subject = configAction?.Subject ?? "<span class=\"err\">No subject written</span>",
+                        client = configEmail != null ? configEmail.Label : "<span class=\"err\">No client selected</span>"
+                    }
+                });
+                if (action.UserDefinedSubject) { viewEmailAction.Show("user-subject"); }
+                if (action.TemplateFile == "") { viewEmailAction.Show("any-file"); }
+                else { viewEmailAction.Show("template-file"); }
+                html.Append(viewEmailAction.Render());
+                viewEmailAction.Clear();
+            }
+            return html.ToString();
         }
 
         public string SaveEmailAction(string type, string clientId, string subject)

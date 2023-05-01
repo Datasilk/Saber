@@ -191,7 +191,7 @@ S.editor.websettings.email = {
         },
         update: function () {
             S.ajax.post("WebsiteSettings/RenderEmailClients", {}, (response) => {
-                $('.email-clients .contents').html(response);
+                $('.email-clients .email-contents').html(response);
                 S.editor.websettings.email.clients.init.call(S.editor.websettings);
             });
         },
@@ -259,6 +259,12 @@ S.editor.websettings.email = {
             $('.email-actions .send-test-email').on('click', this.email.actions.sendTest);
             $('.email-actions .edit-action').on('click', this.email.actions.edit)
         },
+        update: function () {
+            S.ajax.post('WebsiteSettings/RenderEmailActions', { }, (response) => {
+                $('.email-actions .email-contents').html(response);
+                S.editor.websettings.email.actions.init();
+            });
+        },
         edit: function (e) {
             var target = $(e.target);
             var key = target.parents('.email-action').first().attr('data-key');
@@ -277,6 +283,7 @@ S.editor.websettings.email = {
 
             S.ajax.post('WebsiteSettings/SaveEmailAction', data, () => {
                 S.editor.message('', 'Email Action settings saved successfully');
+                S.editor.websettings.email.actions.update();
                 S.popup.hide();
             }, (err) => {
                 S.editor.error('.popup.show .messages', err.responseText);
