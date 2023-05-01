@@ -11,8 +11,8 @@ namespace Query.Models
         public bool photo { get; set; }
         public bool isadmin { get; set; } = false;
         public DateTime datecreated { get; set; }
-        public DateTime dateactivated { get; set; }
-        public DateTime keyexpires { get; set; }
+        public DateTime? dateactivated { get; set; }
+        public DateTime? keyexpires { get; set; }
         public string tempkey { get; set; }
         public bool enabled { get; set; }
         public bool activate { get; set; }

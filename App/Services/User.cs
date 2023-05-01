@@ -14,19 +14,27 @@ namespace Saber.Services
         {
             if (IsPublicApiRequest) { return AccessDenied(); }
             var encrypted = Query.Users.GetPassword(email);
-            if(encrypted == null) { return Error(); }
-            if (!DecryptPassword(email, password, encrypted)) { return Error(); }
+            if(encrypted == null) { return Error("Incorrect username or password"); }
+            if (!DecryptPassword(email, password, encrypted)) { return Error("Incorrect username or password"); }
             {
                 //password verified by Bcrypt
                 var user = Query.Users.Authenticate(email, encrypted);
                 if (user != null)
                 {
+                    if(!user.dateactivated.HasValue)
+                    {
+                        return AccessDenied("Please activate your account");
+                    }
+                    if(user.enabled == false)
+                    {
+                        return AccessDenied("Your account is deactivated");
+                    }
                     User.LogIn(user.userId, user.email, user.name, user.datecreated, user.photo, user.isadmin);
                     User.Save(true);
                     return JsonResponse(new { redirect = homePath });
                 }
             }
-            return Error();
+            return Error("Incorrect username or password");
         }
 
         public string OAuth(string clientId, string email, string password)
@@ -42,6 +50,14 @@ namespace Saber.Services
                 var user = Query.Users.Authenticate(email, encrypted);
                 if (user != null)
                 {
+                    if (!user.dateactivated.HasValue)
+                    {
+                        return AccessDenied("Please activate your account");
+                    }
+                    if (user.enabled == false)
+                    {
+                        return AccessDenied("Your account is deactivated");
+                    }
                     //TODO: generate temporary code for user account & save in database
                     var code = "notimplimented";
                     return Server.DeveloperKeys.Where(a => a.Client_ID == clientId).First().Redirect_URI + "?code=" + code;
@@ -171,6 +187,7 @@ namespace Saber.Services
             viewEmail["userid"] = userId.ToString();
             viewEmail["name"] = name;
             viewEmail["email"] = emailaddr;
+            viewEmail["host"] = App.HostUri;
             viewEmail["activation-key"] = activationkey;
 
             //send email
@@ -202,8 +219,27 @@ namespace Saber.Services
             {
                 var activationkey = Generate.NewId(16);
                 Query.Users.RequestActivation(emailaddr, activationkey);
-                //TODO: send signup activation email
 
+                //send signup activation email
+                var user = Query.Users.GetDetailsFromEmail(emailaddr);
+                var viewEmail = new View("/Content/emails/activation.html");
+                viewEmail["userid"] = user.userId.ToString();
+                viewEmail["name"] = user.name;
+                viewEmail["email"] = emailaddr;
+                viewEmail["host"] = App.HostUri;
+                viewEmail["activation-key"] = activationkey;
+
+                //send email
+                try
+                {
+                    //asynchronously send out email
+                    var task = new Task(() => { Core.Email.Send("signup", emailaddr, viewEmail.Render()); });
+                    task.Start();
+                }
+                catch (Exception ex)
+                {
+                    return Error(ex.Message);
+                }
             }
             return Success();
         }

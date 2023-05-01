@@ -6,6 +6,43 @@ namespace Saber.Common.Platform
 {
     public static class Email
     {
+
+        public static List<EmailAction> Types = new List<EmailAction>()
+        {
+            new EmailAction()
+            {
+                Key = "signup",
+                Name = "Sign Up",
+                Description = "Email sent when a user creates a new account",
+                TemplateFile = "signup.html",
+                UserDefinedSubject = true
+            },
+            new EmailAction()
+            {
+                Key="updatepass",
+                Name = "Update Password",
+                Description = "Email sent when user requests to reset their password",
+                TemplateFile = "update-pass.html",
+                UserDefinedSubject = true
+            },
+            new EmailAction()
+            {
+                Key="forgotpass",
+                Name = "Recover Password",
+                Description = "Email sent when user requests to reset a forgotten password",
+                TemplateFile = "forgot-pass.html",
+                UserDefinedSubject = true
+            },
+            new EmailAction()
+            {
+                Key="activation",
+                Name = "Activate Account",
+                Description = "Email sent when a user manually requests thier account activation",
+                TemplateFile = "activation.html",
+                UserDefinedSubject = true
+            }
+        };
+
         public static void Send(MailMessage message, string type)
         {
             var config = Website.Settings.Load();
@@ -49,42 +86,6 @@ namespace Saber.Common.Platform
         {
             return MimeMessage.CreateFromMailMessage(message).ToString();
         }
-
-        public static List<EmailAction> Types = new List<EmailAction>()
-        {
-            new EmailAction()
-            {
-                Key = "signup",
-                Name = "Sign Up",
-                Description = "Email sent when a user creates a new account",
-                TemplateFile = "signup.html",
-                UserDefinedSubject = true
-            },
-            new EmailAction()
-            {
-                Key="updatepass",
-                Name = "Update Password",
-                Description = "Email sent when user requests to reset their password",
-                TemplateFile = "update-pass.html",
-                UserDefinedSubject = true
-            },
-            new EmailAction()
-            {
-                Key="forgotpass",
-                Name = "Recover Password",
-                Description = "Email sent when user requests to reset a forgotten password",
-                TemplateFile = "forgot-pass.html",
-                UserDefinedSubject = true
-            },
-            new EmailAction()
-            {
-                Key="activation",
-                Name = "Activate Account",
-                Description = "Email sent when a user manually requests thier account activation",
-                TemplateFile = "activation.html",
-                UserDefinedSubject = true
-            }
-        };
 
         public static List<EmailAction> Actions
         {

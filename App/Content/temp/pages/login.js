@@ -1,14 +1,14 @@
-(function(){
-    var byId = (name) => {return document.getElementById(name);};
-    var byClass = (name) => {return document.getElementsByClassName(name)[0];};
+(function () {
+    var byId = (name) => { return document.getElementById(name); };
+    var byClass = (name) => { return document.getElementsByClassName(name)[0]; };
     var form = byId('loginform');
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
         submitForm();
         e.preventDefault();
         return false;
     });
 
-    function submitForm(){
+    function submitForm() {
         var data = {
             email: byId('email').value,
             password: byId('password').value
@@ -25,7 +25,11 @@
                 document.location.href = '/' + response.redirect;
             } else {
                 //connected to server, but returned an error
-                error('Incorrect email and/or password');
+                if(req.responseText.indexOf('activate your account') >= 0){
+                    message('Please <a href="/activate-account">activate</a> your account')
+                }else{
+                    error(req.responseText);
+                }
             }
         };
 
@@ -40,7 +44,7 @@
         req.send(JSON.stringify(data));
     }
 
-    function error(msg){
+    function error(msg) {
         var box = byClass('msg');
         box.className = 'msg error';
         box.innerHTML = msg;

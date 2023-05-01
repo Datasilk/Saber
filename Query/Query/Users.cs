@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Query
 {
@@ -19,23 +20,17 @@ namespace Query
 
         public static Models.User Authenticate(string email, string password)
         {
-            var list = Sql.Populate<Models.User>("User_Authenticate", new { email, password });
-            if (list.Count > 0) { return list[0]; }
-            return null;
+            return Sql.Populate<Models.User>("User_Authenticate", new { email, password }).FirstOrDefault();
         }
 
         public static Models.User Authenticate(string token, bool delete = true)
         {
-            var list = Sql.Populate<Models.User>("User_AuthenticateByToken", new { token, delete });
-            if (list.Count > 0) { return list[0]; }
-            return null;
+            return Sql.Populate<Models.User>("User_AuthenticateByToken", new { token, delete }).FirstOrDefault();
         }
 
         public static Models.User AuthenticateApi(string token)
         {
-            var list = Sql.Populate<Models.User>("User_AuthenticateApiToken", new { token });
-            if (list.Count > 0) { return list[0]; }
-            return null;
+            return Sql.Populate<Models.User>("User_AuthenticateApiToken", new { token }).FirstOrDefault();
         }
 
         public static bool CanActivate(string email)
@@ -75,9 +70,12 @@ namespace Query
 
         public static Models.User GetDetails(int userId)
         {
-            var list = Sql.Populate<Models.User>("User_GetDetails", new { userId });
-            if (list.Count > 0) { return list[0]; }
-            return null;
+            return Sql.Populate<Models.User>("User_GetDetails", new { userId }).FirstOrDefault();
+        }
+
+        public static Models.User GetDetailsFromEmail(string email)
+        {
+            return Sql.Populate<Models.User>("User_GetDetailsFromEmail", new { email }).FirstOrDefault();
         }
 
         public static string CreateAuthToken(int userId, int expireDays = 30)
