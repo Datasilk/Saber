@@ -600,7 +600,10 @@ namespace Saber
             Core.Delegates.Service.GetUser = Common.Platform.Service.GetUser;
             Core.Delegates.Email.Send = Email.Send;
             Core.Delegates.Email.GetActionConfig = Email.GetActionConfig;
+            Core.Delegates.Email.GetClientConfig = Email.GetClientConfig;
             Core.Delegates.Email.GetClientForAction = Email.GetClientForAction;
+            Core.Delegates.Email.GetAction = Email.GetAction;
+            Core.Delegates.Email.GetClient = Email.GetClient;
             Core.Delegates.Website.AllFiles = Website.AllFiles;
             Core.Delegates.Website.AllFolders = Website.AllFolders;
             Core.Delegates.Website.AllRootFolders = Website.AllRootFolders;
@@ -610,6 +613,8 @@ namespace Saber
             Core.Delegates.Website.ImportWebsite = Website.Import;
             Core.Delegates.Website.ExportWebsite = Website.Export;
             Core.Delegates.Website.Restart = Website.Restart;
+            Core.Delegates.Website.Settings.Load = Website.Settings.Load;
+            Core.Delegates.Website.Settings.Save = Website.Settings.Save;
             Core.Delegates.Log.Error = Query.Logs.LogError;
             Core.Delegates.ContentFields.GetFieldId = ContentFields.GetFieldId;
             Core.Delegates.ContentFields.GetFieldType = ContentFields.GetFieldType;

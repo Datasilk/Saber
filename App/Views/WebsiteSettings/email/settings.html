@@ -1,0 +1,38 @@
+﻿<div class="row">
+    <div class="row email-clients">
+        <div class="row pad-width">
+            <div class="col">
+                <h4>Email Clients</h4>
+            </div>
+            <div class="col right">
+                <button class="button btn-add-client">+ Add Email Client</button>
+            </div>
+        </div>
+        
+        <div class="contents pad-bottom">
+            {{email-clients}}
+        </div>
+    </div>
+    <div class="row email-actions pad-top">
+        <div class="pad-width">
+            <h4>Email Actions</h4>
+            <p>
+                When performing various actions, the user may receive an email from your website. 
+                Please select which preferred email client will send emails on your behalf to your
+                users for these various actions.
+            </p>
+        </div>
+        <hr/>
+        <div class="contents">{{email-actions}}</div>
+    </div>
+</div>
+<script type="text/html" id="template_test_email">
+    <div class="messages"></div>
+    <div class="row hover">
+        <div class="col field">Email</div>
+        <div class="col input"><input type="text" id="test_email" placeholder="john.doe@datasilk.io" /></div>
+    </div>
+    <div class="row pad-top-sm text-center">
+        <div class="col"><button class="apply">Send Test Email</button></div>
+    </div>
+</script>

@@ -62,11 +62,11 @@
     .fonts(#ddd, #ddd, #009B87, #4DA400, #FF2222, #376EB2);
     .input(#2a2a2a, #ddd, #444, #555, #2a2a2a, #ddd, #274052, #2a2a2a, #ddd, #185682, #7eccff, #40b4ff);
     .line(#2f2f2f); 
-    .button(default,  #0082ff, #004eff, #004eff, #0082ff, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
-    .button(special,  #6666ff, #5353f7, #5353f7, #5353f7, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
-    .button(cancel,   #696969, #31be85, #31be85, #31be85, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
-    .button(disabled, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #fff, #fff, #fff, #fff);
-    .button(delete,   #5d4040, #c95454, #c95454, #c95454, transparent, transparent, transparent, transparent, transparent, transparent, transparent, transparent, #d4a6a6, #fff, #fff, #fff);
+    .button(default,  #0082ff, #004eff, #004eff, #0082ff, #0082ff, #004eff, #004eff, #0082ff, #0082ff, #004eff, #004eff, #0082ff, #fff, #fff, #fff, #fff);
+    .button(special,  #6666ff, #5353f7, #5353f7, #5353f7, #6666ff, #5353f7, #5353f7, #5353f7, #6666ff, #5353f7, #5353f7, #5353f7, #fff, #fff, #fff, #fff);
+    .button(cancel,   #696969, #31be85, #31be85, #31be85, #696969, #31be85, #31be85, #31be85, #696969, #31be85, #31be85, #31be85, #fff, #fff, #fff, #fff);
+    .button(disabled, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #fff, #fff, #fff, #fff);
+    .button(delete,   #5d4040, #c95454, #c95454, #c95454, #5d4040, #c95454, #c95454, #c95454, #5d4040, #c95454, #c95454, #c95454, #d4a6a6, #fff, #fff, #fff);
     .message(default, #31516c, transparent, #94d3ff, #14f4ff);
     .message(error,   #8d4444, transparent, #fec5c5, #ffd28e);
     .message(alert,   #595928, transparent, #dbd47f, #ffed0f); 
@@ -82,6 +82,15 @@
         #fff, #fff, #fff, #fff//alt row
     );
     .spreadsheet .row.hover:hover{background-color:#0082ff;}
+
+    .spreadsheet tbody > {
+        tr, tr:nth-child(even) {
+            .icon.btn-close{ 
+                use{color:#cc0000; fill:#cc0000; }
+                &:hover use{color:#ff0000; fill:#ff0000;}
+            }
+        }
+    }
 }
 
 /* backgrounds for various UI element */
@@ -168,6 +177,7 @@
 
 .box{
     p{color:#777;}
+    span.err{color:#ff2626;}
 
     /* edit bar */
     .edit-bar li {
@@ -274,10 +284,10 @@
 
     hr{border-top-color:rgba(255,255,255,0.2);}
     .dragging{background-color:#1d3323;}
+    .row.hover.hover-outline:hover{background:transparent !important; outline:2px solid #004d97;}
 
     /* content fields */
     .has-content-fields{
-        .row.hover.hover-outline:hover{background:transparent !important; outline:2px solid #004d97;}
         .row.hover.content-field{
             input:not([type=button]):not([type=submit]):not([type=radio]), textarea, select{
                 &:hover{background:#353535; border-color:#0072ff;}

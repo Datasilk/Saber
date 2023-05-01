@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using Saber.Common.Utility;
+﻿using System.Text;
 using Saber.Core.Extensions.Strings;
 using Saber.Core;
+using Datasilk.Core.DOM;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Saber.Services
 {
@@ -87,72 +85,18 @@ namespace Saber.Services
             accordions.Append(accordion.Render());
 
             //load email settings
-            var viewEmails = new View("/Views/WebsiteSettings/email-settings.html");
-            var clientoptions = new StringBuilder();
-            var clientforms = new StringBuilder();
-            var emailClients = new List<Vendor.IVendorEmailClient>();
-            emailClients.AddRange(Core.Vendors.EmailClients.Values.OrderBy(a => a.Name));
-
-            foreach (var client in emailClients)
-            {
-                clientoptions.Append("<option value=\"" + client.Key + "\">" + client.Name + "</option>");
-
-                //load vendor email client config
-                var vendorConfig = client.GetConfig();
-
-                //generate email client form
-                clientforms.Append("<div class=\"email-client client-" + client.Key + (client.Key != "smtp" ? " hide" : "") + "\">");
-                foreach(var param in client.Parameters)
-                {
-                    var value = (vendorConfig.ContainsKey(param.Key) ? vendorConfig[param.Key] : param.Value.DefaultValue).Replace("\"", "&quot;");
-                    var id = " id=\"" + client.Key + "_" + param.Key + "\"";
-                    switch (param.Value.DataType)
-                    {
-                        case Vendor.EmailClientDataType.Boolean:
-                            break;
-                        default:
-                            clientforms.Append("<div class=\"row field\">" + param.Value.Name + "</div>");
-                            break;
-                    }
-                    switch (param.Value.DataType)
-                    {
-                        case Vendor.EmailClientDataType.Text:
-                            clientforms.Append("<div class=\"row input\"><input type=\"text\"" + id + " value=\"" + value + "\"/></div>");
-                            break;
-                        case Vendor.EmailClientDataType.UserOrEmail:
-                            clientforms.Append("<div class=\"row input\"><input type=\"text\"" + id + " value=\"" + value + "\" autocomplete=\"new-email\"/></div>");
-                            break;
-                        case Vendor.EmailClientDataType.Password:
-                            clientforms.Append("<div class=\"row input\"><input type=\"password\"" + id + " value=\"" + (value != "" ? "********" : "") + "\" autocomplete=\"new-password\"/></div>");
-                            break;
-                        case Vendor.EmailClientDataType.Number:
-                            clientforms.Append("<div class=\"row input\"><input type=\"number\"" + id + " value=\"" + value + "\"/></div>");
-                            break;
-                        case Vendor.EmailClientDataType.List:
-                            clientforms.Append("<div class=\"row input\"><select" + id + ">" + 
-                                string.Join("", param.Value.ListOptions?.Select(a => "<option value=\"" + a + "\">" + a + "</option>") ?? new string[] { "" }) +
-                                "</select></div>");
-                            break;
-                        case Vendor.EmailClientDataType.Boolean:
-                            clientforms.Append("<div class=\"row input\"><input type=\"checkbox\"" + id + (value == "1" || value.ToLower() == "true" ? " checked=\"checked\"" : "") + " />" + 
-                                "<label for=\"" + client.Key + "_" + param.Key + "\">" + param.Value.Name + "</label>" +
-                                "</div>");
-                            break;
-                    }
-                    
-                }
-                clientforms.Append("</div>");
-            }
-            viewEmails["emailclients"] = clientoptions.ToString();
-            viewEmails["emailclients.forms"] = clientforms.ToString();
+            var viewEmails = new View("/Views/WebsiteSettings/email/settings.html");
+            viewEmails["email-clients"] = RenderEmailClients();
 
             //render email actions
-            var viewEmailAction = new View("/Views/WebsiteSettings/email-action.html");
+            var viewEmailAction = new View("/Views/WebsiteSettings/email/action.html");
             var actions = Common.Platform.Email.Actions;
+            html = new StringBuilder();
 
             foreach (var action in actions)
             {
                 var configAction = config.Email.Actions.Where(a => a.Type == action.Key).FirstOrDefault();
+                var configEmail = configAction != null ? Common.Platform.Email.GetClientConfig(configAction.ClientId) : null;
                 viewEmailAction.Bind(new
                 {
                     action = new
@@ -160,13 +104,8 @@ namespace Saber.Services
                         key = action.Key,
                         name = action.Name,
                         templatefile = action.TemplateFile,
-                        subject = configAction?.Subject ?? "",
-                        options = (string.IsNullOrEmpty(configAction?.Client) ? "<option value=\"\"></option>" : "") +
-                        string.Join("", 
-                            emailClients.Select(a => "<option value=\"" + a.Key + "\"" +
-                            (configAction?.Client == a.Key ? " selected=\"selected\"" : "") + 
-                            ">" + a.Name + "</option>"
-                            ))
+                        subject = configAction?.Subject ?? "<span class=\"err\">No subject written</span>",
+                        client = configEmail != null ? configEmail.Label : "<span class=\"err\">No client selected</span>"
                     }
                 });
                 if (action.UserDefinedSubject) { viewEmailAction.Show("user-subject"); }
@@ -355,10 +294,10 @@ namespace Saber.Services
                     viewFeature.Clear();
                 }
 
-                if (plugin.EmailTypes.Count > 0)
+                if (plugin.EmailActions.Count > 0)
                 {
-                    viewFeature["field"] = "Email Types";
-                    viewFeature["text"] = string.Join(", ", plugin.EmailTypes.Select(a => paramOpen + a.Value.Name + paramClose));
+                    viewFeature["field"] = "Email Actions";
+                    viewFeature["text"] = string.Join(", ", plugin.EmailActions.Select(a => paramOpen + a.Value.Name + paramClose));
                     feature.Append(viewFeature.Render());
                     viewFeature.Clear();
                 }
@@ -411,39 +350,6 @@ namespace Saber.Services
                     javascript = Scripts.ToString()
                 }
             );
-        }
-
-        private string RenderAppleIcon(View viewIcon, int px)
-        {
-            viewIcon["favicon-missing"] = "";
-            viewIcon["src"] = "";
-            viewIcon["px"] = px.ToString();
-            if (!File.Exists(App.MapPath($"/wwwroot/images/mobile/apple-{px}x{px}.png")))
-            {
-                viewIcon.Show("favicon-missing");
-            }
-            else
-            {
-                viewIcon["src"] = $"/images/mobile/apple-{px}x{px}.png";
-            }
-            return viewIcon.Render();
-        }
-
-        private string RenderAndroidIcon(View viewIcon, int px)
-        {
-            viewIcon["favicon-missing"] = "";
-            viewIcon["src"] = "";
-            viewIcon["px"] = px.ToString();
-            if (!File.Exists(App.MapPath($"/wwwroot/images/mobile/android-{px}x{px}.png")))
-            {
-                viewIcon.Show("favicon-missing");
-            }
-            else
-            {
-                viewIcon["src"] = $"/images/mobile/android-{px}x{px}.png";
-            }
-            viewIcon["px"] = px.ToString();
-            return viewIcon.Render();
         }
         #endregion
 
@@ -697,7 +603,268 @@ namespace Saber.Services
 
         #endregion
 
+        #region "Icons"
+        private string RenderAppleIcon(View viewIcon, int px)
+        {
+            viewIcon["favicon-missing"] = "";
+            viewIcon["src"] = "";
+            viewIcon["px"] = px.ToString();
+            if (!File.Exists(App.MapPath($"/wwwroot/images/mobile/apple-{px}x{px}.png")))
+            {
+                viewIcon.Show("favicon-missing");
+            }
+            else
+            {
+                viewIcon["src"] = $"/images/mobile/apple-{px}x{px}.png";
+            }
+            return viewIcon.Render();
+        }
+
+        private string RenderAndroidIcon(View viewIcon, int px)
+        {
+            viewIcon["favicon-missing"] = "";
+            viewIcon["src"] = "";
+            viewIcon["px"] = px.ToString();
+            if (!File.Exists(App.MapPath($"/wwwroot/images/mobile/android-{px}x{px}.png")))
+            {
+                viewIcon.Show("favicon-missing");
+            }
+            else
+            {
+                viewIcon["src"] = $"/images/mobile/android-{px}x{px}.png";
+            }
+            viewIcon["px"] = px.ToString();
+            return viewIcon.Render();
+        }
+        #endregion
+
         #region "Email Settings"
+        public string RenderEmailClients()
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            var config = Common.Platform.Website.Settings.Load();
+            var viewClientList = new View("/Views/WebsiteSettings/email/client-list.html");
+            var viewClient = new View("/Views/WebsiteSettings/email/client.html");
+            if (config.Email.Clients.Count > 0)
+            {
+                var html = new StringBuilder();
+                foreach (var client in config.Email.Clients)
+                {
+                    var emailClient = Common.Platform.Email.GetClient(client.Key);
+                    viewClient.Clear();
+                    viewClient["id"] = client.Id.ToString();
+                    viewClient["label"] = client.Label;
+                    viewClient["type"] = emailClient.Name;
+                    viewClient["from-name"] = client.Parameters[emailClient.FromNameKey];
+                    viewClient["from"] = client.Parameters[emailClient.FromKey];
+                    html.Append(viewClient.Render());
+                }
+                viewClientList["clients"] = html.ToString();
+                return viewClientList.Render();
+            }
+            else
+            {
+                //no clients exist yet
+                return Cache.LoadFile("/Views/WebsiteSettings/email/no-clients.html");
+            }
+        }
+
+        public string RenderEmailClient(string clientId)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+
+            var view = new View("/Views/WebsiteSettings/email/client-form.html");
+            var clientoptions = new StringBuilder();
+            var clientforms = new StringBuilder();
+            var emailClients = new List<Vendor.IVendorEmailClient>();
+            emailClients.AddRange(Vendors.EmailClients.Values.OrderBy(a => a.Name));
+            var id = new Guid();
+            if (!string.IsNullOrEmpty(clientId)) { id = new Guid(clientId); }
+            var clientConfig = !string.IsNullOrEmpty(clientId) ? Email.GetClientConfig(id) : null;
+            view["id"] = clientId;
+            if (clientConfig != null)
+            {
+                view["label"] = clientConfig.Label;
+            }
+
+            foreach (var client in emailClients)
+            {
+                clientoptions.Append("<option value=\"" + client.Key + "\"" + (
+                    clientConfig != null && clientConfig.Key == client.Key ? " selected=\"selected\"" : ""
+                    ) + ">" + client.Name + "</option>");
+            
+                //generate email client form
+                clientforms.Append("<div class=\"email-client client-" + client.Key + (client.Key != "smtp" ? " hide" : "") + "\">");
+                foreach(var param in client.Parameters)
+                {
+                    var value = (clientConfig != null && clientConfig.Parameters.ContainsKey(param.Key) ? clientConfig.Parameters[param.Key] : param.Value.DefaultValue).Replace("\"", "&quot;");
+                    var idAttr = " id=\"" + client.Key + "_" + param.Key + "\"";
+                    switch (param.Value.DataType)
+                    {
+                        case Vendor.EmailClientDataType.Boolean:
+                            break;
+                        default:
+                            clientforms.Append("<div class=\"row field\">" + param.Value.Name + "</div>");
+                            break;
+                    }
+                    switch (param.Value.DataType)
+                    {
+                        case Vendor.EmailClientDataType.Text:
+                            clientforms.Append("<div class=\"row input\"><input type=\"text\"" + idAttr + " value=\"" + value + "\"/></div>");
+                            break;
+                        case Vendor.EmailClientDataType.UserOrEmail:
+                            clientforms.Append("<div class=\"row input\"><input type=\"text\"" + idAttr + " value=\"" + value + "\" autocomplete=\"new-email\"/></div>");
+                            break;
+                        case Vendor.EmailClientDataType.Password:
+                            clientforms.Append("<div class=\"row input\"><input type=\"password\"" + idAttr + " value=\"" + (value != "" ? "********" : "") + "\" autocomplete=\"new-password\"/></div>");
+                            break;
+                        case Vendor.EmailClientDataType.Number:
+                            clientforms.Append("<div class=\"row input\"><input type=\"number\"" + idAttr + " value=\"" + value + "\"/></div>");
+                            break;
+                        case Vendor.EmailClientDataType.List:
+                            clientforms.Append("<div class=\"row input\"><select" + idAttr + ">" + 
+                                string.Join("", param.Value.ListOptions?.Select(a => "<option value=\"" + a + "\">" + a + "</option>") ?? new string[] { "" }) +
+                                "</select></div>");
+                            break;
+                        case Vendor.EmailClientDataType.Boolean:
+                            clientforms.Append("<div class=\"row input\"><input type=\"checkbox\"" + idAttr + (value == "1" || value.ToLower() == "true" ? " checked=\"checked\"" : "") + " />" + 
+                                "<label for=\"" + client.Key + "_" + param.Key + "\">" + param.Value.Name + "</label>" +
+                                "</div>");
+                            break;
+                    }   
+                }
+                clientforms.Append("</div>");
+            }
+            view["email-clients"] = clientoptions.ToString();
+            view["forms"] = clientforms.ToString();
+            return view.Render();
+
+        }
+
+        public string SaveEmailClient(string clientId, string label, string key, Dictionary<string, string> parameters)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            //save vendor email client settings
+            if(label == "") { return Error("Email Client requires a unique label"); }
+            if (key == "") { return Error("Email Client requires a selected key"); }
+            var config = Website.Settings.Load();
+            var id = new Guid();
+            if (!string.IsNullOrEmpty(clientId))
+            {
+                id = new Guid(clientId);
+            }
+            if (string.IsNullOrEmpty(clientId) && config.Email.Clients.Any(a => a.Label == label))
+            {
+                return Error("Another Email Client already uses the specified label");
+            }
+
+            var vendor = Vendors.EmailClients.Where(a => a.Key == key).FirstOrDefault().Value;
+            if (vendor != null)
+            {
+                if (id == Guid.Empty)
+                {
+                    //save new client
+                    id = Guid.NewGuid();
+                    config.Email.Clients.Add(new Models.Website.EmailClient()
+                    {
+                        Id = id,
+                        Key = key,
+                        Label = label,
+                        Parameters = parameters
+                    });
+                }
+                else
+                {
+                    //save existing client
+                    var client = config.Email.Clients.FirstOrDefault(a => a.Id == id);
+                    if (client != null)
+                    {
+                        client.Label = label;
+                        client.Key = key;
+
+                        //check all parameters
+                        foreach(var param in vendor.Parameters)
+                        {
+                            if(param.Value.DataType == Vendor.EmailClientDataType.Password)
+                            {
+                                //make sure user is actually updating password field
+                                if (parameters[param.Key].StartsWith("***"))
+                                {
+                                    //password has not changed
+                                    parameters[param.Key] = client.Parameters[param.Key];
+                                }
+                            }
+                        }
+                        client.Parameters = parameters;
+                    }
+                }
+                Website.Settings.Save(config);
+            }
+            return Success();
+        }
+
+        public string RemoveEmailClient(string clientId)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            var config = Website.Settings.Load();
+            var id = new Guid(clientId);
+            if(config.Email.Clients.Any(a => a.Id == id))
+            {
+                config.Email.Clients.Remove(config.Email.Clients.FirstOrDefault(a => a.Id == id));
+            }
+            Website.Settings.Save(config);
+            return Success();
+        }
+
+        public string RenderEmailAction(string key)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+
+            var view = new View("/Views/WebsiteSettings/email/action-form.html");
+            var config = Website.Settings.Load();
+            var action = Email.GetAction(key);
+            var actionConfig = Email.GetActionConfig(key);
+            var clients = config.Email.Clients.OrderBy(a => a.Label);
+            view["key"] = key;
+            view["name"] = action.Name;
+            view["email-clients"] = (actionConfig == null ? "<option value=\"\"></option>" : "") + 
+                string.Join("", clients.Select(a => "<option value=\"" + a.Id + "\"" + 
+                (actionConfig != null && actionConfig.ClientId == a.Id ? " selected=\"selected\"" : "") + 
+                ">" + a.Label + "</option>"));
+            if(actionConfig != null)
+            {
+                view["subject"] = actionConfig.Subject;
+            }
+            return view.Render();
+        }
+
+        public string SaveEmailAction(string type, string clientId, string subject)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if(string.IsNullOrEmpty(subject)) { return Error("Subject is a required field"); }
+            if(string.IsNullOrEmpty(clientId)) { return Error("You must select an Email Client to use for this action"); }
+            var config = Website.Settings.Load();
+            var configAction = config.Email.Actions.FirstOrDefault(a => a.Type == type);
+            if (configAction == null)
+            {
+                //save new action
+                config.Email.Actions.Add(new Models.Website.EmailAction()
+                {
+                    ClientId = new Guid(clientId),
+                    Type = type,
+                    Subject = subject
+                });
+            }
+            else
+            {
+                //save existing action
+                configAction.ClientId = new Guid(clientId);
+                configAction.Subject = subject;
+            }
+            Website.Settings.Save(config);
+            return Success();
+        }
+
         public string SendTestEmail(string key, string email)
         {
             if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
@@ -709,14 +876,14 @@ namespace Saber.Services
                 var body = "This is a test email sent out from Saber. The email template file \"" +
                     templateFile + "\" was not found, " +
                     "so this suppliment text was automatically generated as a result.";
-                if(File.Exists(App.MapPath(templateFile)))
+                if (File.Exists(App.MapPath(templateFile)))
                 {
                     var view = new View(templateFile);
                     body = view.Render();
                 }
                 Email.Send(key, email, body);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Error(ex.Message);
             }
@@ -725,27 +892,6 @@ namespace Saber.Services
         #endregion
 
         #region "Save Settings"
-        public string SaveEmailClient(string id, Dictionary<string, string> parameters)
-        {
-            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
-            //save vendor email client settings
-            var vendor = Core.Vendors.EmailClients.Where(a => a.Key == id).FirstOrDefault().Value;
-            if (vendor != null)
-            {
-                vendor.SaveConfig(parameters);
-            }
-            return Success();
-        }
-
-        public string SaveEmailActions(List<Models.Website.EmailAction> actions)
-        {
-            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
-            var settings = Common.Platform.Website.Settings.Load();
-            settings.Email.Actions = actions;
-            Common.Platform.Website.Settings.Save(settings);
-            return Success();
-        }
-
         public string SavePasswords(Models.Website.Passwords passwords)
         {
             if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
@@ -777,7 +923,9 @@ namespace Saber.Services
             }
             return Success();
         }
+        #endregion
 
+        #region "Plugins"
         public string UninstallPlugin(string key)
         {
             //create file delete.tmp in Vendor plugin folder

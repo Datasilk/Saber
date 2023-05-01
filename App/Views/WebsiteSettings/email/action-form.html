@@ -1,0 +1,18 @@
+﻿<div class="messages"></div>
+<form autocomplete="chrome-off">
+    <input type="hidden" id="action_key" value="{{key}}" />
+    <div class="row pad-height">
+        <span><b>Action:</b> {{name}}</span>
+    </div>
+    <div class="row field">Email Client</div>
+    <div class="row input">
+        <select id="emailclients">{{email-clients}}</select>
+    </div>
+    <div class="row field">Subject</div>
+    <div class="row input">
+        <input type="text" id="action_subject" value="{{subject}}" maxlength="255" placeholder="Hello from Saber!"/>
+    </div>
+    <div class="row text-center pad-top">
+        <button class="save apply">Save Email Action</button>
+    </div>
+</form>

@@ -1,0 +1,16 @@
+﻿<div class="messages"></div>
+<form autocomplete="chrome-off">
+    <input type="hidden" id="client_id" value="{{id}}" />
+    <div class="row field">Client Type</div>
+    <div class="row input">
+        <select id="emailclients">{{email-clients}}</select>
+    </div>
+    <div class="row field">Label</div>
+    <div class="row input">
+        <input type="text" id="client_label" value="{{label}}" maxlength="32" placeholder="My Email Client"/>
+    </div>
+    {{forms}}
+    <div class="row text-center pad-top">
+        <button class="save apply">Save Email Client</button>
+    </div>
+</form>

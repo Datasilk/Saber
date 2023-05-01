@@ -17,18 +17,19 @@ namespace Saber.Common.Platform
                 return;
             }
 
-            var client = Core.Vendors.EmailClients.Values.Where(a => a.Key == action.Client).FirstOrDefault();
+            var clientConfig = GetClientConfig(action.ClientId);
+            var client = GetClient(clientConfig.Key);
             if (client == null)
             {
                 //log error, could not send email
-                Query.Logs.LogError(0, "", "Email.Send", "Could not find Email Client \"" + action.Client + "\" for action type " + type, "");
+                Query.Logs.LogError(0, "", "Email.Send", "Could not find Email Client \"" + action.ClientId + "\" for action type " + type, "");
                 return;
             }
             var _msg = "";
 
             try
             {
-                client.Send(message, delegate () {
+                client.Send(clientConfig, message, delegate () {
                     //only get RFC 2822 message if vendor plugin specifically requests it
                     if (string.IsNullOrEmpty(_msg))
                     {
@@ -49,70 +50,90 @@ namespace Saber.Common.Platform
             return MimeMessage.CreateFromMailMessage(message).ToString();
         }
 
-        public static List<EmailType> Types = new List<EmailType>()
+        public static List<EmailAction> Types = new List<EmailAction>()
         {
-            new EmailType()
+            new EmailAction()
             {
                 Key = "signup",
                 Name = "Sign Up",
-                Description = "",
+                Description = "Email sent when a user creates a new account",
                 TemplateFile = "signup.html",
                 UserDefinedSubject = true
             },
-            new EmailType()
+            new EmailAction()
             {
                 Key="updatepass",
                 Name = "Update Password",
-                Description = "",
+                Description = "Email sent when user requests to reset their password",
                 TemplateFile = "update-pass.html",
                 UserDefinedSubject = true
             },
-            new EmailType()
+            new EmailAction()
             {
                 Key="forgotpass",
                 Name = "Recover Password",
-                Description = "",
+                Description = "Email sent when user requests to reset a forgotten password",
                 TemplateFile = "forgot-pass.html",
+                UserDefinedSubject = true
+            },
+            new EmailAction()
+            {
+                Key="activation",
+                Name = "Activate Account",
+                Description = "Email sent when a user manually requests thier account activation",
+                TemplateFile = "activation.html",
                 UserDefinedSubject = true
             }
         };
 
-        public static List<EmailType> Actions
+        public static List<EmailAction> Actions
         {
             get
             {
-                var actions = new List<EmailType>();
+                var actions = new List<EmailAction>();
                 actions.AddRange(Types);
                 actions.AddRange(Core.Vendors.EmailTypes.Values);
                 return actions;
             }
         }
 
-        public static EmailType? GetAction(string key)
+        public static EmailAction GetAction(string key)
         {
-            return Actions.Where(a => a.Key == key).FirstOrDefault();
+            return Actions.FirstOrDefault(a => a.Key == key);
         }
 
         public static Models.Website.EmailAction GetActionConfig(string key)
         {
             var config = Website.Settings.Load();
-            return config.Email.Actions.Where(a => a.Type == key).FirstOrDefault() ?? new Models.Website.EmailAction();
+            return config.Email.Actions.FirstOrDefault(a => a.Type == key);
         }
 
-        public static IVendorEmailClient GetClientForAction(EmailType action)
+        public static Models.Website.EmailClient GetClientConfig(Guid Id)
+        {
+            var config = Website.Settings.Load();
+            return config.Email.Clients.FirstOrDefault(a => a.Id == Id);
+        }
+
+        public static IVendorEmailClient GetClient(string key)
+        {
+            return Core.Vendors.EmailClients.Where(a => a.Key == key).FirstOrDefault().Value;
+        }
+
+        public static IVendorEmailClient GetClientForAction(EmailAction action)
         {
             return GetClientForAction(action.Key);
         }
 
         public static IVendorEmailClient GetClientForAction(string key)
         {
-            //load website config
-            var config = Website.Settings.Load();
-            var configAction = config.Email.Actions.Where(a => a.Type == key).FirstOrDefault();
-            if (configAction != null && Core.Vendors.EmailClients.ContainsKey(configAction.Client))
+            var configAction = GetActionConfig(key);
+            if(configAction != null)
             {
-                return Core.Vendors.EmailClients[configAction.Client];
-
+                var configClient = GetClientConfig(configAction.ClientId);
+                if (configClient != null)
+                {
+                    return GetClient(configClient.Key);
+                }
             }
             return null;
         }

@@ -37,6 +37,11 @@
     <None Remove="Views\ErrorLogs\errorlogs.html" />
     <None Remove="Views\ErrorLogs\log-item.html" />
     <None Remove="Views\PageSettings\template-item.html" />
+    <None Remove="Views\WebsiteSettings\email\action-form.html" />
+    <None Remove="Views\WebsiteSettings\email\client-form.html" />
+    <None Remove="Views\WebsiteSettings\email\client-list.html" />
+    <None Remove="Views\WebsiteSettings\email\client.html" />
+    <None Remove="Views\WebsiteSettings\email\no-clients.html" />
     <None Remove="Views\WebsiteSettings\restart.html" />
     <Content Include="wwwroot\web.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\Release.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>

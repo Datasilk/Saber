@@ -660,12 +660,11 @@ namespace Saber.Common
             var instance = (IVendorEmailClient)Activator.CreateInstance(type);
             details.EmailClients.Add(instance.Key, instance);
             Core.Vendors.EmailClients.Add(instance.Key, instance);
-            instance.Init();
         }
         #endregion
 
-        #region "Emails"
-        public static void GetEmailsFromFileSystem()
+        #region "Email Actions"
+        public static void GetEmailActionsFromFileSystem()
         {
             foreach (var assembly in Assemblies)
             {
@@ -675,7 +674,7 @@ namespace Saber.Common
                     {
                         if (i.Name == "IVendorEmails")
                         {
-                            GetEmailsFromType(type, assembly.Key);
+                            GetEmailActionsFromType(type, assembly.Key);
                             break;
                         }
                     }
@@ -683,16 +682,16 @@ namespace Saber.Common
             }
         }
 
-        public static void GetEmailsFromType(Type type, string DLL = "")
+        public static void GetEmailActionsFromType(Type type, string DLL = "")
         {
             if (type == null) { return; }
-            if (type.Equals(typeof(IVendorEmails))) { return; }
+            if (type.Equals(typeof(IVendorEmailActions))) { return; }
             var details = GetDetails(type, DLL);
             if (MarkedForUninstall.Contains(details.Key)) { return; }
-            var emails = (IVendorEmails)Activator.CreateInstance(type);
-            foreach(var email in emails.Types)
+            var emails = (IVendorEmailActions)Activator.CreateInstance(type);
+            foreach(var email in emails.Actions)
             {
-                details.EmailTypes.Add(email.Key, email);
+                details.EmailActions.Add(email.Key, email);
                 Core.Vendors.EmailTypes.Add(email.Key, email);
             }
         }

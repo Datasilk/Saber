@@ -13,7 +13,7 @@
                 }
                 else
                 {
-                    return Error("Activation key expired");
+                    return Error("Activation key invalid or expired");
                 }
             }
             else

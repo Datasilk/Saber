@@ -1,5 +1,6 @@
 ﻿using System.Net.Mail;
 using MimeKit;
+using Saber.Models.Website;
 using Saber.Vendor;
 
 namespace Saber.Common.EmailClients
@@ -78,65 +79,51 @@ namespace Saber.Common.EmailClients
                 }
             };
 
-        public Dictionary<string, string> GetConfig()
+        public bool IsConfigured(EmailClient emailClient)
         {
-            var config = Platform.Website.Settings.Load();
-            return new Dictionary<string, string>()
-                {
-                    { "domain", config.Email.Smtp.Domain },
-                    { "port", config.Email.Smtp.Port.ToString() },
-                    { "ssl", config.Email.Smtp.SSL ? "1" : "0" },
-                    { "from", config.Email.Smtp.From },
-                    { "from-name", config.Email.Smtp.FromName },
-                    { "user", config.Email.Smtp.Username },
-                    { "pass", config.Email.Smtp.Password }
-                };
+            return !string.IsNullOrEmpty(emailClient.Parameters["domain"])
+                && !string.IsNullOrEmpty(emailClient.Parameters["port"])
+                && !string.IsNullOrEmpty(emailClient.Parameters["from"])
+                && !string.IsNullOrEmpty(emailClient.Parameters["from-name"])
+                && !string.IsNullOrEmpty(emailClient.Parameters["user"])
+                && !string.IsNullOrEmpty(emailClient.Parameters["pass"]);
         }
 
-        public bool IsConfigured()
+        public void Validate(EmailClient emailClient)
         {
-            var config = Platform.Website.Settings.Load();
-            if (string.IsNullOrEmpty(config.Email.Smtp.Domain)) { return false; }
-            if (config.Email.Smtp.Port <= 0) { return false; }
-            if (string.IsNullOrEmpty(config.Email.Smtp.From)) { return false; }
-            if (string.IsNullOrEmpty(config.Email.Smtp.FromName)) { return false; }
-            if (string.IsNullOrEmpty(config.Email.Smtp.Username)) { return false; }
-            if (string.IsNullOrEmpty(config.Email.Smtp.Password)) { return false; }
-            return true;
-        }
-
-        public void Init()
-        {
-
-        }
-
-        public void SaveConfig(Dictionary<string, string> parameters)
-        {
-            var config = Platform.Website.Settings.Load();
-            int.TryParse(parameters["port"], out var port);
-            var ssl = parameters["ssl"] ?? "";
-            var pass = parameters["pass"] ?? "";
-            config.Email.Smtp.Domain = parameters["domain"] ?? "";
-            config.Email.Smtp.Port = port;
-            config.Email.Smtp.SSL = ssl.ToLower() == "true";
-            config.Email.Smtp.From = parameters["from"];
-            config.Email.Smtp.FromName = parameters["from-name"];
-            config.Email.Smtp.Username = parameters["user"];
-            if (pass != "" && pass.Any(a => a != '*'))
+            if (string.IsNullOrEmpty(emailClient.Parameters["domain"]))
             {
-                config.Email.Smtp.Password = parameters["pass"];
+                throw new Exception("Domain is a required field");
             }
-            Platform.Website.Settings.Save(config);
+            if (string.IsNullOrEmpty(emailClient.Parameters["port"]))
+            {
+                throw new Exception("Port is a required field");
+            }
+            if (string.IsNullOrEmpty(emailClient.Parameters["from"]))
+            {
+                throw new Exception("From Address is a required field");
+            }
+            if (string.IsNullOrEmpty(emailClient.Parameters["from-name"]))
+            {
+                throw new Exception("From Name is a required field");
+            }
+            if (string.IsNullOrEmpty(emailClient.Parameters["user"]))
+            {
+                throw new Exception("Username is a required field");
+            }
+            if (string.IsNullOrEmpty(emailClient.Parameters["pass"]))
+            {
+                throw new Exception("Password is a required field");
+            }
         }
 
-        public void Send(MailMessage message, Func<string> GetRFC2822)
+        public void Send(EmailClient emailClient, MailMessage message, Func<string> GetRFC2822)
         {
             try
             {
-                var config = Platform.Website.Settings.Load().Email.Smtp;
                 var client = new MailKit.Net.Smtp.SmtpClient();
                 var msg = new MimeMessage();
-                msg.From.Add(new MailboxAddress(config.FromName, config.From));
+                msg.From.Add(new MailboxAddress(emailClient.Parameters[FromNameKey], emailClient.Parameters[FromKey]));
                 foreach (var to in message.To)
                 {
                     msg.To.Add(new MailboxAddress(to.DisplayName, to.Address));
@@ -148,16 +135,17 @@ namespace Saber.Common.EmailClients
                     Text = message.Body
                 };
 
-                client.Connect(config.Domain, config.Port, config.SSL);
+                client.Connect(emailClient.Parameters["domain"], int.Parse(emailClient.Parameters["port"]), bool.Parse(emailClient.Parameters["ssl"]));
                 //disable the XOAUTH2 authentication mechanism.
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
-                client.Authenticate(config.Username, config.Password);
+                client.Authenticate(emailClient.Parameters["user"], emailClient.Parameters["pass"]);
                 client.Send(msg);
                 client.Disconnect(true);
             }
             catch (Exception ex)
             {
                 Query.Logs.LogError(0, "", "Email.Smtp.Send", ex.Message, ex.StackTrace);
+                throw new Exception(ex.Message, ex);
             }
         }
     }

@@ -4,23 +4,10 @@
     var iframe = document.getElementById('editor-iframe');
     var tab = document.getElementsByClassName('editor-tab')[0];
 
-    window.addEventListener('resize', () => {
-        resizeIframe();
-    });
-
     tab.addEventListener('click', () => {
         loadEditor();
         container.style.display = 'block';
-        resizeIframe();
     });
-
-    function resizeIframe(){
-        requestAnimationFrame(() => {
-            var h = window.innerHeight;
-            iframe.style.height = h + 'px';
-        });
-    }
-    resizeIframe();
 
     function loadEditor() {
         if (iframe.getAttribute('src') == 'about:blank') {
@@ -46,7 +33,6 @@
                         if (iframe.contentWindow.S) {
                             iframe.contentWindow.S.editor.preview.hide();
                         }
-                        resizeIframe();
                     }
                     break;
             }

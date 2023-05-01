@@ -51,19 +51,19 @@ namespace Saber.Common.Notifications.Types
             {
                 var missingClient = false;
                 var missingSubject = false;
-                var usedClients = new List<string>();
+                var usedClients = new List<Guid>();
                 foreach (var action in Platform.Email.Actions)
                 {
                     var config = Platform.Email.GetActionConfig(action.Key);
-                    if (string.IsNullOrEmpty(config.Client))
+                    if (config == null || (config != null && config.ClientId == Guid.Empty))
                     {
                         missingClient = true;
                     }
-                    else if (!usedClients.Contains(config.Client))
+                    else if (config != null && !usedClients.Contains(config.ClientId))
                     {
-                        usedClients.Add(config.Client);
+                        usedClients.Add(config.ClientId);
                     }
-                    if (action.UserDefinedSubject == true && config.Subject == "")
+                    if (config != null && action.UserDefinedSubject == true && config.Subject == "")
                     {
                         missingSubject = true;
                     }
@@ -97,12 +97,13 @@ namespace Saber.Common.Notifications.Types
                 //check all clients being used by actions for configuration
                 if (usedClients.Count > 0)
                 {
-                    foreach (var key in usedClients)
+                    foreach (var id in usedClients)
                     {
-                        if (Core.Vendors.EmailClients.ContainsKey(key))
+                        var config = Email.GetClientConfig(id);
+                        if (config == null)
                         {
-                            var client = Core.Vendors.EmailClients[key];
-                            if (!client.IsConfigured())
+                            var client = Email.GetClient(config.Key);
+                            if (!client.IsConfigured(config))
                             {
                                 notifs.Add(new Notification()
                                 {

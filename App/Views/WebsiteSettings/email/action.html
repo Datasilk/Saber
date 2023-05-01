@@ -1,7 +1,12 @@
-﻿<div class="row email-action" data-key="{{action.key}}">
+﻿<div class="row hover hover-outline email-action pad" data-key="{{action.key}}">
     <div class="row">
         <div class="col"><h5>{{action.name}} Email</h5></div>
-        <div class="col right"><a href="javascript:" class="sent-test-email">Sent Test Email</a></div>
+        <div class="col right hover-only pad-left">
+            <button class="edit-action">Edit Action</button>
+        </div>
+        <div class="col right hover-only pad-left">
+            <button class="send-test-email outline">Send Test Email</button>
+        </div>
     </div>
     <div class="row">
         {{template-file}}
@@ -13,19 +18,19 @@
     </div>
     <div class="row">
         <div class="col four">
-            <div class="row field">Email Client</div>
-            <div class="row input">
-                <select id="emailaction_{{action.key}}">{{action.options}}</select>
+            <div class="row">
+            <div class="col field">Email Client</div>
+            <div class="col text">{{action.client}}</div>
             </div>
         </div>
         {{user-subject}}
         <div class="col eight">
-            <div class="row field">Subject</div>
-            <div class="row input">
-                <input type="text" id="emailaction_{{action.key}}_subject" value="{{action.subject}}" spellcheck="false" />
+            <div class="row">
+                <div class="col field">Subject</div>
+                <div class="col text">{{action.subject}}</div>
             </div>
         </div>
         {{/user-subject}}
     </div>
-    <hr />
 </div>
+<hr />

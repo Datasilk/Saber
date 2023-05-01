@@ -83,8 +83,9 @@ namespace Saber.Services
                 name = name,
                 email = email,
                 password = EncryptPassword(email, password),
-                isadmin = true
-            }, true);
+                isadmin = true,
+                activate = true
+            });
             Server.HasAdmin = true;
             Server.ResetPass = false;
 
