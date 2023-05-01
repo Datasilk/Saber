@@ -111,7 +111,7 @@ namespace Saber.Common.DataSources
                     {"parent-path", parent },
                     {"title", info != null ? info.Title.body : parent + name.Replace("-", " ").Capitalize() },
                     {"description", info != null ? info.Description : "" },
-                    {"datecreated", info != null ? info.DateCreated.ToString("yyyy-MM-dd HH:mm") : "" }
+                    {"datecreated", info != null ? info.DateCreated.ToString("yyyy-MM-dd hh:mm tt") : "" }
                 });
             }
         }
