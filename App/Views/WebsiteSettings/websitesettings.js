@@ -262,7 +262,7 @@ S.editor.websettings.email = {
         update: function () {
             S.ajax.post('WebsiteSettings/RenderEmailActions', { }, (response) => {
                 $('.email-actions .email-contents').html(response);
-                S.editor.websettings.email.actions.init();
+                S.editor.websettings.email.actions.init.call(S.editor.websettings);
             });
         },
         edit: function (e) {

@@ -4,6 +4,7 @@ using Saber.Core;
 using Datasilk.Core.DOM;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 using Microsoft.IdentityModel.Tokens;
+using System.Net.Mail;
 
 namespace Saber.Services
 {
@@ -887,7 +888,7 @@ namespace Saber.Services
                     var view = new View(templateFile);
                     body = view.Render();
                 }
-                Email.Send(key, email, body);
+                Email.Send(key, new MailAddress(email, "Anonymous Tester"), body);
             }
             catch (Exception ex)
             {

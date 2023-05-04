@@ -7,7 +7,7 @@ using System.Diagnostics;
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureWebHostDefaults(webBuilder =>
     {
-        webBuilder.UseStartup<Saber.Startup>();
+        webBuilder.UseStartup<Startup>();
     })
     .ConfigureServices(services =>
     {
@@ -36,9 +36,9 @@ var addressFeature = server.Features.Get<IServerAddressesFeature>();
 if(addressFeature != null)
 {
     App.Host = addressFeature.Addresses.ToArray();
-    foreach (var address in addressFeature.Addresses)
+    foreach (var address in App.Host)
     {
-        Console.WriteLine($"{Process.GetCurrentProcess().ProcessName} is listening to {address} in the {Saber.App.Environment} environment");
+        Console.WriteLine($"{Process.GetCurrentProcess().ProcessName} is listening to {address} in the {App.Environment} environment");
     }
 }
 host.WaitForShutdown();

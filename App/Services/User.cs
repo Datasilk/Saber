@@ -192,7 +192,7 @@ namespace Saber.Services
             try
             {
                 //asynchronously send out email
-                var task = new Task(() => { Core.Email.Send("signup", emailaddr, viewEmail.Render()); });
+                var task = new Task(() => { Core.Email.Send("signup", new MailAddress(emailaddr, name), viewEmail.Render()); });
                 task.Start();
             }
             catch(Exception ex)
@@ -228,7 +228,7 @@ namespace Saber.Services
                 try
                 {
                     //asynchronously send out email
-                    var task = new Task(() => { Core.Email.Send("signup", emailaddr, viewEmail.Render()); });
+                    var task = new Task(() => { Core.Email.Send("signup", new MailAddress(emailaddr, user.name), viewEmail.Render()); });
                     task.Start();
                 }
                 catch (Exception ex)
@@ -256,7 +256,7 @@ namespace Saber.Services
                 try
                 {
                     //asynchronously send out email
-                    var task = new Task(() => { Core.Email.Send("forgotpass", emailaddr, viewEmail.Render()); });
+                    var task = new Task(() => { Core.Email.Send("forgotpass", new MailAddress(emailaddr, user.name), viewEmail.Render()); });
                     task.Start();
 
                 }
