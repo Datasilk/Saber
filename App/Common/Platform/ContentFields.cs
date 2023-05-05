@@ -86,7 +86,7 @@ namespace Saber.Common.Platform
                         fieldBlock.Clear();
                         fieldBlock["title"] = sectionTitle != "" ? fieldTitle.ToLower().Replace(sectionTitle, "").Trim().Capitalize() : fieldTitle.Capitalize();
                         fieldBlock["id"] = fieldId;
-                        if (fieldValue == "1") { fieldBlock.Show("checked"); }
+                        if (fieldValue == "1" || fieldValue.ToLower() == "true") { fieldBlock.Show("checked"); }
                         html.Append(fieldBlock.Render());
                         break;
                     case Core.ContentFields.FieldType.image:

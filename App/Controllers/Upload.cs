@@ -46,7 +46,7 @@ namespace Saber.Controllers
                         }
                         catch (Exception ex)
                         {
-                            Query.Logs.LogError(User.UserId, Path, "Save file to disk (" + App.MapPath(pubdir + filename) + ")", ex.Message, ex.StackTrace);
+                            Query.Logs.LogError(User.UserId, Path, "Save file to disk", ex.Message, ex.StackTrace, "file: " + App.MapPath(pubdir + filename));
                         }
                         var i = 0;
                         while (!File.Exists(App.MapPath(pubdir + filename)) && i < 5)
@@ -78,7 +78,7 @@ namespace Saber.Controllers
                                     }
                                     catch (Exception ex)
                                     {
-                                        Query.Logs.LogError(User.UserId, Path, "Shrink file (" + App.MapPath(pubdir + thumbdir + filename) + ")", ex.Message, ex.StackTrace);
+                                        Query.Logs.LogError(User.UserId, Path, "Shrink file", ex.Message, ex.StackTrace, "file: " + App.MapPath(pubdir + thumbdir + filename));
                                         return Error("An error occured when trying to create a thumbnail preview of your image upload");
                                     }
                                 }

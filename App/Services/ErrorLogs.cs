@@ -18,6 +18,7 @@ namespace Saber.Services
                 viewItem["area"] = err.area;
                 viewItem["message"] = err.message.Replace("\n", "<br/>");
                 viewItem["stacktrace"] = err.stacktrace.Replace("\n", "<br/>");
+                viewItem["data"] = err.data.Replace("\n", "<br/>");
                 viewItem["url"] = string.IsNullOrEmpty(err.url) ? "No URL provided" : err.url;
                 viewItem["datetime"] = err.datecreated.ToString("yyyy/MM/dd hh:mm tt");
                 html.Append(viewItem.Render());

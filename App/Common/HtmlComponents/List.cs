@@ -295,7 +295,7 @@ namespace Saber.Common.HtmlComponents
                                         }catch(Exception ex)
                                         {
                                             //TODO: display error to user that list could not be rendered
-                                            Core.Log.Error(ex, request, "List component: " + key);
+                                            Log.Error(ex, request, "List component: " + key);
                                         }
                                     }
                                     else
@@ -307,7 +307,7 @@ namespace Saber.Common.HtmlComponents
                                         }catch(Exception ex)
                                         {
                                             //TODO: display error to user that list could not be rendered
-                                            Core.Log.Error(ex, request, "List component: " + key);
+                                            Log.Error(ex, request, "List component: " + key);
                                         }
                                     }
                                 }

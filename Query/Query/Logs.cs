@@ -29,9 +29,9 @@ namespace Query
         #endregion
 
         #region "Errors"
-        public static void LogError(int userId, string url, string area, string message, string stacktrace)
+        public static void LogError(int userId, string url = "", string area = "", string message = "", string stacktrace = "", string data = "")
         {
-            Sql.ExecuteNonQuery("Log_Error", new { userId, url, area, message, stacktrace });
+            Sql.ExecuteNonQuery("Log_Error", new { userId, url, area, message, stacktrace, data });
         }
         public static class Errors
         {

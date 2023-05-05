@@ -32,5 +32,6 @@ namespace Query.Models.Logs
         public string area { get; set; }
         public string message { get; set; }
         public string stacktrace { get; set; }
+        public string data { get; set; }
     }
 }

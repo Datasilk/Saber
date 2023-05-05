@@ -48,6 +48,15 @@
             user-select: none; /* Non-prefixed version, currently
                                     supported by Chrome, Edge, Opera and Firefox */
 }
+.canselect{
+    -webkit-touch-callout:text !important; /* iOS Safari */
+    -webkit-user-select: text !important; /* Safari */
+        -khtml-user-select: text !important; /* Konqueror HTML */
+        -moz-user-select: text !important; /* Old versions of Firefox */
+        -ms-user-select: text !important; /* Internet Explorer/Edge */
+            user-select: text !important; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}
 
 /* editor header */
 @import "header.less";

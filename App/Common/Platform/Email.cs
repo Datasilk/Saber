@@ -69,7 +69,7 @@ namespace Saber.Common.Platform
             }
             catch(Exception ex)
             {
-                Query.Logs.LogError(0, "", "Email.Send", ex.Message, ex.StackTrace);
+                Query.Logs.LogError(0, "", "Email.Send", ex.Message, ex.StackTrace, "to: <" + string.Join(", ", message.To.Select(a => a.Address)) + ">, subject: " + message.Subject);
                 throw new Exception(ex.Message, ex);
             }
         }
