@@ -85,7 +85,7 @@ S.editor.hotkey = {
                             ) {
                                 break;
                             }
-                            callback(e);
+                            if (callback != null) { callback(e); }
                             break;
                     }
                 }

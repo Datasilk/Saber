@@ -653,7 +653,7 @@ namespace Saber.Services
             var clientoptions = new StringBuilder();
             var clientforms = new StringBuilder();
             var emailClients = new List<Vendor.IVendorEmailClient>();
-            emailClients.AddRange(Vendors.EmailClients.Values.OrderBy(a => a.Name));
+            emailClients.AddRange(Saber.Core.Vendors.EmailClients.Values.OrderBy(a => a.Name));
             var id = new Guid();
             if (!string.IsNullOrEmpty(clientId)) { id = new Guid(clientId); }
             var clientConfig = !string.IsNullOrEmpty(clientId) ? Email.GetClientConfig(id) : null;
@@ -734,7 +734,7 @@ namespace Saber.Services
                 return Error("Another Email Client already uses the specified label");
             }
 
-            var vendor = Vendors.EmailClients.Where(a => a.Key == key).FirstOrDefault().Value;
+            var vendor = Saber.Core.Vendors.EmailClients.Where(a => a.Key == key).FirstOrDefault().Value;
             if (vendor != null)
             {
                 if (id == Guid.Empty)

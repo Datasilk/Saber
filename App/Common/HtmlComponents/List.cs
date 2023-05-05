@@ -195,9 +195,12 @@ namespace Saber.Common.HtmlComponents
                                         //filter list based on filter settings afterwards
                                         records = myData.RecordSets.ContainsKey(datasourceId) ? myData.RecordSets[datasourceId].ToList() : new List<Dictionary<string, string>>();
                                         //get settings from parent record
-                                        var parts = myData.Record[myData.Relationship.ListComponent].Split("|!|");
-                                        var settings = JsonSerializer.Deserialize<Dictionary<string, ListSettings>>(parts.Where(a => a.Contains("lists=")).FirstOrDefault()?.Split("=", 2)[1] ?? "{}") ?? new Dictionary<string, ListSettings>();
-                                        records = FilterRecords(settings.ContainsKey(myData.Relationship.ChildKey) ? settings[myData.Relationship.ChildKey].Filters : new List<DataSource.FilterGroup>(), records);
+                                        if (myData.Record.ContainsKey(myData.Relationship.ListComponent))
+                                        {
+                                            var parts = myData.Record[myData.Relationship.ListComponent].Split("|!|");
+                                            var settings = JsonSerializer.Deserialize<Dictionary<string, ListSettings>>(parts.Where(a => a.Contains("lists=")).FirstOrDefault()?.Split("=", 2)[1] ?? "{}") ?? new Dictionary<string, ListSettings>();
+                                            records = FilterRecords(settings.ContainsKey(myData.Relationship.ChildKey) ? settings[myData.Relationship.ChildKey].Filters : new List<DataSource.FilterGroup>(), records);
+                                        }
                                     }
                                     else
                                     {

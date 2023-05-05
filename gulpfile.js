@@ -188,7 +188,9 @@ paths.working = {
                 paths.app + 'vendors/**/*.jpg',
                 paths.app + 'vendors/**/*.png',
                 paths.app + 'vendors/**/*.gif',
-                '!' + paths.app + 'vendors/**/node_modules/**/*.*'
+                '!' + paths.app + 'vendors/**/node_modules/**/*.*',
+                '!' + paths.app + 'vendors/**/temp/*.*',
+                '!' + paths.app + 'vendors/**/temp/**/*.*'
             ]
         },
         less: [
@@ -594,7 +596,7 @@ gulp.task('watch', function () {
         tasks.push(p);
 
         var newpath = path.toLowerCase().replace(paths.app.toLowerCase().replace('/app/', '/App/'), paths.compiled.vendors);
-        console.log('copying ' + path + ' to ' + newpath);
+        console.log('copying ' + path + ' to ' + newpath.replace('.less', '.css'));
         return merge(tasks);
     });
 
@@ -621,6 +623,26 @@ gulp.task('watch', function () {
 
     //watch iframe CSS
     gulp.watch(paths.working.css.iframe, gulp.series('css:iframe'));
+
+    //watch vendor resources
+    var watchVendorMedia = gulp.watch(paths.working.vendors.resources.media);
+    watchVendorMedia.on('change', (path) => {
+        //only copy css files that were changed in the app folder
+        path = path.replace(/\\/g, '/');
+        var tasks = [];
+        var p = gulp.src(path, { base: 'App/Vendors' })
+        .pipe(rename(function (name) {
+            name.dirname = name.dirname.toLowerCase().replace('/app/', '/App/');
+            name.basename = name.basename.toLowerCase();
+            name.extname = name.extname.toLowerCase();
+        }));
+        p.pipe(gulp.dest(paths.compiled.vendors, { overwrite: true }));
+        tasks.push(p);
+
+        var newpath = path.toLowerCase().replace(paths.app.toLowerCase().replace('/app/', '/App/'), paths.compiled.vendors);
+        console.log('copying ' + path + ' to ' + newpath);
+        return merge(tasks);
+    });
 
 });
 
