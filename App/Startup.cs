@@ -132,7 +132,7 @@ namespace Saber
                     Common.Vendors.GetServiceFromType(type);
                 }
             }
-            //get list of DLLs that contain the IVendorController interface
+            //get list of DLLs that contain the IVendorService interface
             Common.Vendors.GetServicesFromFileSystem();
             if (Core.Vendors.Services.Count > 0)
             {

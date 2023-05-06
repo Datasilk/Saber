@@ -21,8 +21,8 @@ namespace Saber.Common
         #region "Assemblies"
         private class AssemblyInfo
         {
-            public string Assembly { get; set; }
-            public string Version { get; set; }
+            public string Assembly { get; set; } = "";
+            public string Version { get; set; } = "";
         }
 
         private static void RecurseDirectories(string path)
@@ -148,7 +148,7 @@ namespace Saber.Common
                     ));
                 }
                 catch (Exception ex) {
-                    Console.WriteLine(ex.InnerException.Message);
+                    Console.WriteLine(ex.InnerException?.Message ?? "");
                 }
             }
             if(vendors.Count > 0)
@@ -166,7 +166,7 @@ namespace Saber.Common
             var versionsChanged = false;
             if (File.Exists(App.MapPath("/Vendors/versions.json")) && Server.RunTests == false)
             {
-                versions = JsonSerializer.Deserialize<List<AssemblyInfo>>(File.ReadAllText(App.MapPath("/Vendors/versions.json")));
+                versions = JsonSerializer.Deserialize<List<AssemblyInfo>>(File.ReadAllText(App.MapPath("/Vendors/versions.json"))) ?? new List<AssemblyInfo>();
             }
             if (Directory.Exists(App.MapPath("/wwwroot/editor/vendors")))
             {
@@ -191,12 +191,14 @@ namespace Saber.Common
                         isnew = true;
                         isupdated = true;
                         versionsChanged = true;
+                        Console.WriteLine("\nUpgrading Vendor Plugin " + detail.Name + " from " + v.ToString() + " to " + versions[versionIndex].Version);
                     }
                 }
                 else
                 {
                     isnew = true;
                     versionsChanged = true;
+                    Console.WriteLine("\nInstalling Vendor Plugin " + detail.Name + "...");
                 }
 
                 if (isnew)
@@ -204,8 +206,8 @@ namespace Saber.Common
                     //copy any public vendor resource files to the wwwroot folder
                     var path = App.MapPath(detail.Path);
                     var relpath = detail.Key + "/";
-                    var dir = new DirectoryInfo(path);
-                    var files = dir.GetFiles().Where(Current => Regex.IsMatch(Current.Extension, "\\.(js|css|less|" + string.Join("|", Core.Image.Extensions).Replace(".", "") + ")", RegexOptions.IgnoreCase));
+                    var files = new List<FileInfo>();
+                    GetAllVendorResources(path, files);
                     var vendorsPath = "/wwwroot/editor/vendors/";
                     var vendorPath = vendorsPath + relpath.ToLower();
                     if (files.Count() > 0)
@@ -219,22 +221,34 @@ namespace Saber.Common
                     foreach (var f in files)
                     {
                         //copy all required vendor resources
+                        var filename = Path.GetFileName(f.FullName);
+                        var subPath = f.FullName.Replace(path, "").Replace(filename, "").ToLower();
+                        var subPathRel = subPath.Replace("\\", "/").ToLower();
+                        //create wwwroot vendor path
+                        if (!Directory.Exists(App.MapPath(vendorPath + subPathRel)))
+                        {
+                            Directory.CreateDirectory(App.MapPath(vendorPath + subPathRel));
+                        }
                         switch (f.Extension)
                         {
                             case ".js":
-                                Utility.Compression.GzipCompress(f.OpenText().ReadToEnd(), vendorPath + Path.GetFileName(f.FullName));
+                                Utility.Compression.GzipCompress(f.OpenText().ReadToEnd(), vendorPath + subPathRel + filename);
+                                Console.WriteLine("compressed & copied " + f.FullName + " to " + vendorPath + subPathRel + filename);
                                 break;
                             case ".css":
                                 File.Copy(f.FullName, App.MapPath(vendorPath + Path.GetFileName(f.FullName)), true);
+                                Console.WriteLine("copied " + f.FullName + " to " + vendorPath + subPathRel + filename);
                                 break;
                             case ".less":
-                                Platform.Website.SaveLessFile(f.OpenText().ReadToEnd(), vendorPath + Path.GetFileName(f.FullName).Replace(".less", ".css"), f.FullName.Replace(f.Name, ""));
+                                Platform.Website.SaveLessFile(f.OpenText().ReadToEnd(), vendorPath + subPathRel + filename.Replace(".less", ".css"), f.FullName.Replace(f.Name, ""));
+                                Console.WriteLine("compiled " + f.FullName + " to " + vendorPath + subPathRel + filename.Replace(".less", ".css"));
                                 break;
                             default:
-                                if (Core.Image.Extensions.Any(a => a == f.Extension))
+                                if (Image.Extensions.Any(a => a == f.Extension))
                                 {
                                     //images
-                                    File.Copy(f.FullName, App.MapPath(vendorPath + Path.GetFileName(f.FullName)), true);
+                                    File.Copy(f.FullName, App.MapPath(vendorPath + subPathRel + filename), true);
+                                    Console.WriteLine("copied image " + f.FullName + " to " + vendorPath + subPathRel + filename);
                                 }
                                 break;
                         }
@@ -254,7 +268,7 @@ namespace Saber.Common
                             {
                                 Console.WriteLine("Error executing " + detail.Path + "Sql/install.sql");
                                 Console.WriteLine(ex.Message);
-                                Console.WriteLine(ex.InnerException.Message);
+                                Console.WriteLine(ex.InnerException?.Message ?? "");
                                 haserror = true;
                             }
                         }
@@ -286,7 +300,7 @@ namespace Saber.Common
                             {
                                 Console.WriteLine("Error executing " + detail.Path + "Sql/" + script.Value);
                                 Console.WriteLine(ex.Message);
-                                Console.WriteLine(ex.InnerException.Message);
+                                Console.WriteLine(ex.InnerException?.Message ?? "");
                                 haserror = true;
                             }
                         }
@@ -304,6 +318,7 @@ namespace Saber.Common
                             versions.Add(new AssemblyInfo() { Assembly = detail.Assembly, Version = v });
                         }
                     }
+                    Console.WriteLine("Finished installing Vendor Plugin\n\n");
                 }
             }
 
@@ -314,7 +329,8 @@ namespace Saber.Common
                 {
                     if(versions.Any(a => a.Assembly == "Saber.Vendors." + vendor))
                     {
-                        versions.Remove(versions.Where(a => a.Assembly == "Saber.Vendors." + vendor).FirstOrDefault());
+                        var version = versions.Where(a => a.Assembly == "Saber.Vendors." + vendor).FirstOrDefault();
+                        if (version != null) { versions.Remove(version); }
                     }
                 }
             }
@@ -328,6 +344,17 @@ namespace Saber.Common
                 ConcatVendorsEditorJs();
                 //concat all editor.css files into "/wwwroot/editor/css/vendors-editor.css"
                 ConcatVendorsEditorCss();
+            }
+        }
+
+        private static void GetAllVendorResources(string path, List<FileInfo> files)
+        {
+            var dir = new DirectoryInfo(path);
+            files.AddRange(dir.GetFiles().Where(Current => Regex.IsMatch(Current.Extension, "\\.(js|css|less|" + string.Join("|", Core.Image.Extensions).Replace(".", "") + ")", RegexOptions.IgnoreCase)));
+            var subdirs = dir.GetDirectories();
+            foreach(var sub in subdirs)
+            {
+                GetAllVendorResources(sub.FullName, files);
             }
         }
 
@@ -597,7 +624,7 @@ namespace Saber.Common
                 {
                     foreach (var i in type.GetInterfaces())
                     {
-                        if (i.Name == "IVendorHtmlComponent")
+                        if (i.Name == "IVendorHtmlComponents")
                         {
                             GetHtmlComponentsFromType(type, assembly.Key);
                             break;
