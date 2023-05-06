@@ -78,6 +78,7 @@ namespace Saber.Common.Platform
                 var fieldValueHtml = fieldValue.Replace("\"", "&quot;");
                 var fieldType = fieldTypes != null && fieldTypes.ContainsKey(elem.Name) ? fieldTypes[elem.Name] : GetFieldType(view, x, fieldElementInfo);
                 elemInfo.Type = fieldType;
+                var rendered = true;
 
                 switch (fieldType)
                 {
@@ -134,7 +135,15 @@ namespace Saber.Common.Platform
 
                         if (vendor.Value.ReplaceRow == true)
                         {
-                            html.Append(vendor.Value.ContentField.Render(request, elem.Vars ?? new Dictionary<string, string>() { ["var"] = elem.Var }, fieldValue, fieldId, prefix, elemName, language, container));
+                            var result = vendor.Value.ContentField.Render(request, elem.Vars ?? new Dictionary<string, string>() { ["var"] = elem.Var }, fieldValue, fieldId, prefix, elemName, language, container);
+                            if (result.Length > 0)
+                            {
+                                html.Append(result);
+                            }
+                            else
+                            {
+                                rendered = false;
+                            }
                         }
                         else
                         {
@@ -167,7 +176,7 @@ namespace Saber.Common.Platform
                         break;
                     default: continue;
                 }
-                html.Append("\n\n<hr/>\n\n");
+                if (rendered == true) { html.Append("\n\n<hr/>\n\n"); }
             }
             section["fields"] = html.ToString();
             html.Clear();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Mail;
+using Saber.Core;
 using Saber.Core.Extensions.Strings;
 using Saber.Vendor;
 
@@ -16,23 +17,22 @@ namespace Saber.Services
             var encrypted = Query.Users.GetPassword(email);
             if(encrypted == null) { return Error("Incorrect username or password"); }
             if (!DecryptPassword(email, password, encrypted)) { return Error("Incorrect username or password"); }
+            
+            //password verified by Bcrypt
+            var user = Query.Users.Authenticate(email, encrypted);
+            if (user != null)
             {
-                //password verified by Bcrypt
-                var user = Query.Users.Authenticate(email, encrypted);
-                if (user != null)
+                if(!user.dateactivated.HasValue)
                 {
-                    if(!user.dateactivated.HasValue)
-                    {
-                        return AccessDenied("Please activate your account");
-                    }
-                    if(user.enabled == false)
-                    {
-                        return AccessDenied("Your account is deactivated");
-                    }
-                    User.LogIn(user.userId, user.email, user.name, user.datecreated, user.photo, user.isadmin);
-                    User.Save(true);
-                    return JsonResponse(new { redirect = homePath });
+                    return AccessDenied("Please activate your account");
                 }
+                if(user.enabled == false)
+                {
+                    return AccessDenied("Your account is deactivated");
+                }
+                User.LogIn(user.userId, user.email, user.name, user.datecreated, user.photo, user.isadmin);
+                User.Save(true);
+                return JsonResponse(new { redirect = homePath });
             }
             return Error("Incorrect username or password");
         }
@@ -82,7 +82,7 @@ namespace Saber.Services
 
         public string CreateAdminAccount(string name, string email, string password, string password2)
         {
-            if (Server.HasAdmin == true) { return Error(); }
+            if (Server.HasAdmin == true || Query.Users.HasAdmin()) { return Error(); }
             if (!CheckEmailAddress(email)) { return Error("Email address is invalid"); }
             if (password != password2) { return Error("Passwords do not match"); }
             try
@@ -291,7 +291,7 @@ namespace Saber.Services
             }
             else
             {
-                return Error("Password reset authentication key expired.");
+                return Error("Password reset authentication key has expired.");
             }
         }
 
@@ -300,6 +300,62 @@ namespace Saber.Services
             User.LogOut();
         }
 
+        [PublicApi("Update the authenticated user's name")]
+        public string UpdateName(string name)
+        {
+            if (!CheckSecurity()) { return AccessDenied(); }
+            Query.Users.UpdateName(User.UserId, name);
+            return Success();
+        }
+
+        public string UpdateEmail(string newemail, string password)
+        {
+            if (!CheckSecurity() || IsPublicApiRequest) { return AccessDenied(); }
+            if (!CheckEmailAddress(newemail)) { return Error("Email address is invalid"); }
+            var encrypted = Query.Users.GetPassword(User.Email);
+            if (!DecryptPassword(User.Email, password, encrypted)) { return Error("Incorrect password"); }
+            if (Query.Users.Exists(newemail)) { return Error("Another account is already using the email address \"" + newemail + "\""); }
+            try
+            {
+                Query.Users.UpdateEmail(User.UserId, newemail, EncryptPassword(newemail, password));
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex, this, "UpdateEmail", "userId: " + User.UserId + ", newemail: " + newemail);
+                return Error("Error updating email");
+            }
+            
+            return Success();
+        }
+
+        public string UpdatePassword(string password, string password2, string oldpass)
+        {
+            if (!CheckSecurity() || IsPublicApiRequest) { return AccessDenied(); }
+            if (password != password2) { return Error("Passwords do not match"); }
+            try
+            {
+                CheckPassword(password);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+            var encrypted = Query.Users.GetPassword(User.Email);
+            if (!DecryptPassword(User.Email, oldpass, encrypted)) { return Error("Incorrect password"); }
+            try
+            {
+                Query.Users.UpdatePassword(User.Email, password);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, this, "UpdatePassword", "userId: " + User.UserId);
+                return Error("Error updating password");
+            }
+
+            return Success();
+        }
+
+        #region "Helpers"
         private bool CheckEmailAddress(string email)
         {
             try
@@ -313,7 +369,7 @@ namespace Saber.Services
             }
         }
 
-        public void CheckPassword(string password)
+        private void CheckPassword(string password)
         {
             if (IsPublicApiRequest) { return; }
             var config = Common.Platform.Website.Settings.Load();
@@ -382,5 +438,6 @@ namespace Saber.Services
         {
             return BCrypt.Net.BCrypt.Verify(email + Server.Salt + password, encrypted);
         }
+        #endregion
     }
 }
