@@ -753,7 +753,21 @@ namespace Saber.Common.Platform
 
             public static void Save(Models.Website.Settings settings)
             {
+                //update website settings cache
                 App.Website = settings;
+
+                //update cached languages
+                var langs = new Dictionary<string, string>() 
+                {
+                    { "en", "English"}
+                };
+                foreach(var lang in settings.Languages)
+                {
+                    langs.Add(lang.Id, lang.Name);
+                }
+                App.Languages = langs;
+
+                //save website.json
                 var file = App.MapPath("/Content/website.json");
                 File.WriteAllText(file, JsonSerializer.Serialize(settings, jsonOptions));
                 Cache.Remove(file);

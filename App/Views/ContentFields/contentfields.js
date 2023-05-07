@@ -123,7 +123,15 @@ S.editor.fields.render = function (file, lang, container, fields, callback, ispo
             S.ajax.inject(d);
 
             //add language button
-            $(container + ' .add-lang a').on('click', S.editor.lang.add.show);
+            $(container + ' .add-lang a').on('click', (e) => {
+                S.editor.lang.add.show(() => {
+                    $(container + ' #lang').html('');
+                    S.editor.lang.load(container + ' #lang', lang, (e) => {
+                        //changed selected language
+                        S.editor.fields.load(file);
+                    });
+                })
+            });
 
             //set up events for fields
             $(container + ' form .input-field').on('input', (e) => { S.editor.fields.change(e, file) });

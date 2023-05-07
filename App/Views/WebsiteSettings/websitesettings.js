@@ -1,5 +1,4 @@
 ﻿S.editor.websettings.init = function () {
-    console.log(this);
     //load accordion functionality 
     S.accordion.load({}, () => { S.editor.resize.window(); });
 
@@ -369,5 +368,78 @@ S.editor.websettings.apis = {
         S.ajax.post('WebsiteSettings/SavePublicApi', { api: api, enabled: enabled });
     }
 };
+
+S.editor.websettings.pagetitles = {
+    edit: {
+        show: function (e) {
+            var target = $(e.target).parents('tr').first();
+            target.find('.label').addClass('hide');
+            target.find('.edit-form').removeClass('hide');
+        },
+
+        submit: function (e, type) {
+            var target = $(e.target).parents('tr').first();
+            var label = target.find('.label').html().trim();
+            var newlabel = target.find('input[type="text"]').val();
+            if (label == newlabel) {
+                target.find('.label').removeClass('hide');
+                target.find('.edit-form').addClass('hide');
+                return;
+            }
+            S.ajax.post('WebsiteSettings/UpdatePageTitle', { oldTitle: label, newTitle: newlabel, type: type }, () => {
+                target.find('.label').html(newlabel);
+                var btnclose = target.find('.btn-close');
+                btnclose.attr('onclick', btnclose.attr('onclick').replace(label, newlabel));
+                target.find('.label').removeClass('hide');
+                target.find('.edit-form').addClass('hide');
+            }, (err) => { S.editor.error('', err.responseText); });
+        }
+    },
+
+    remove: function (e, title) {
+        if (!window.parent.confirm('Do you really want to remove this page title? It won\'t affect any web pages that already use this page title')) { return; }
+        var target = $(e.target);
+        target = target.parents('tr').first();
+        S.ajax.post('WebsiteSettings/RemovePageTitle', { title: title }, () => {
+            target.remove();
+        }, (err) => { S.editor.error('', err.responseText); });
+    }
+}
+
+S.editor.websettings.languages = {
+    edit: {
+        show: function (e) {
+            var target = $(e.target).parents('tr').first();
+            target.find('.label').addClass('hide');
+            target.find('.edit-form').removeClass('hide');
+        },
+
+        submit: function (e) {
+            var target = $(e.target).parents('tr').first();
+            var abbr = target.find('.abbr').html().trim();
+            var name = target.find('.label').html().trim();
+            var newname = target.find('input[type="text"]').val();
+            if (name == newname) {
+                target.find('.label').removeClass('hide');
+                target.find('.edit-form').addClass('hide');
+                return;
+            }
+            S.ajax.post('WebsiteSettings/UpdateLanguage', { abbr: abbr, name: newname }, () => {
+                target.find('.label').html(newlabel);
+                target.find('.label').removeClass('hide');
+                target.find('.edit-form').addClass('hide');
+            }, (err) => { S.editor.error('', err.responseText); });
+        }
+    },
+
+    remove: function (e, abbr) {
+        if (!window.parent.confirm('Do you really want to remove this language from your webiste? Users will no longer have access to any content created with this language.')) { return; }
+        var target = $(e.target);
+        target = target.parents('tr').first();
+        S.ajax.post('WebsiteSettings/RemoveLanguage', { abbr: abbr }, () => {
+            target.remove();
+        }, (err) => { S.editor.error('', err.responseText); });
+    }
+}
 
 S.editor.websettings.init.call(S.editor.websettings);

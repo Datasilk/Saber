@@ -2,8 +2,6 @@
 using Saber.Core.Extensions.Strings;
 using Saber.Core;
 using Datasilk.Core.DOM;
-using static Org.BouncyCastle.Math.EC.ECCurve;
-using Microsoft.IdentityModel.Tokens;
 using System.Net.Mail;
 
 namespace Saber.Services
@@ -83,6 +81,56 @@ namespace Saber.Services
             accordion["id"] = "icons";
             accordion["title"] = "Icons";
             accordion["contents"] = viewIcons.Render();
+            accordions.Append(accordion.Render());
+
+            //load page titles
+            html = new StringBuilder();
+            var viewPageTitle = new View("/Views/WebsiteSettings/page-title.html");
+            foreach(var title in config.PageTitles)
+            {
+                viewPageTitle.Clear();
+                viewPageTitle["title"] = title.Value;
+                viewPageTitle["type"] = title.Type.ToString();
+                viewPageTitle["typeid"] = ((int)title.Type).ToString();
+                html.Append(viewPageTitle.Render());
+            }
+
+            //render page title accordion
+            var viewPageTitles = new View("/Views/WebsiteSettings/page-titles.html");
+            viewPageTitles["list"] = html.ToString();
+            accordion.Clear();
+            accordion["id"] = "page-titles";
+            accordion["title"] = "Page Titles";
+            accordion["contents"] = viewPageTitles.Render();
+            accordions.Append(accordion.Render());
+
+            //load languages
+            html = new StringBuilder();
+            if(config.Languages.Count > 0)
+            {
+                var viewLanguage = new View("/Views/WebsiteSettings/language.html");
+                foreach (var lang in config.Languages)
+                {
+                    viewLanguage.Clear();
+                    viewLanguage["title"] = lang.Name;
+                    viewLanguage["abbr"] = lang.Id;
+                    html.Append(viewLanguage.Render());
+                }
+                var viewLanguages = new View("/Views/WebsiteSettings/languages.html");
+                viewLanguages["list"] = html.ToString();
+                html = new StringBuilder(viewLanguages.Render());
+            }
+            else
+            {
+                var viewLanguage = new View("/Views/WebsiteSettings/no-languages.html");
+                html = new StringBuilder(viewLanguage.Render());
+            }
+
+            //render page title accordion
+            accordion.Clear();
+            accordion["id"] = "languages";
+            accordion["title"] = "Languages";
+            accordion["contents"] = html.ToString();
             accordions.Append(accordion.Render());
 
             //load email settings
@@ -614,6 +662,59 @@ namespace Saber.Services
             viewIcon["px"] = px.ToString();
             return viewIcon.Render();
         }
+
+        public string UploadPngIcon(int type, int px)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (Parameters.Files.Count == 0 || !Parameters.Files.ContainsKey("file"))
+            {
+                return Error("File upload was not found");
+            }
+            var file = Parameters.Files["file"];
+            if (file.ContentType != "image/png")
+            {
+                return Error("Icon must be PNG image format.");
+            }
+            var iconType = "apple";
+            var imgpath = "mobile/";
+            var imgSuffix = $"-{px}x{px}";
+            switch (type)
+            {
+                case 0: iconType = "web"; imgpath = ""; imgSuffix = "-icon"; break;
+                case 2: iconType = "android"; break;
+            }
+
+            try
+            {
+                //check icon dimensions
+                var image = Common.Utility.Image.Load(file);
+                if (px != 0 && (image.width != px || image.height != px))
+                {
+                    return Error($"Icon must be {px} pixels in width & height.");
+                }
+                else if (px == 0 && (image.width > 128))
+                {
+                    return Error($"Icon must be less than 129 pixels in width & height.");
+                }
+                //save image to disk
+                if (!Directory.Exists(App.MapPath("/wwwroot/images/" + imgpath)))
+                {
+                    Directory.CreateDirectory(App.MapPath("/wwwroot/images/" + imgpath));
+                }
+                var filepath = App.MapPath($"/wwwroot/images/{imgpath}{iconType}{imgSuffix}.png");
+                File.Delete(filepath);
+                file.Seek(0, SeekOrigin.Begin);
+                using (var fs = new FileStream(filepath, FileMode.Create))
+                {
+                    file.CopyTo(fs);
+                }
+            }
+            catch (Exception)
+            {
+                return Error("Error reading image file");
+            }
+            return Success();
+        }
         #endregion
 
         #region "Email Settings"
@@ -900,7 +1001,7 @@ namespace Saber.Services
         }
         #endregion
 
-        #region "Save Settings"
+        #region "Passwords"
         public string SavePasswords(Models.Website.Passwords passwords)
         {
             if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
@@ -910,7 +1011,9 @@ namespace Saber.Services
             Common.Platform.Website.Settings.Save(settings);
             return Success();
         }
+        #endregion
 
+        #region "Public API"
         public string SavePublicApi(bool enabled, string api)
         {
             if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
@@ -945,56 +1048,62 @@ namespace Saber.Services
         }
         #endregion
 
-        #region "Upload"
-        public string UploadPngIcon(int type, int px)
+        #region "Page Title"
+        public string UpdatePageTitle(string oldTitle, string newTitle, Models.Website.PageTitleType type)
         {
             if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
-            if (Parameters.Files.Count == 0 || !Parameters.Files.ContainsKey("file"))
+            if(newTitle == "") { return Error("Page Title is empty"); }
+            var settings = Common.Platform.Website.Settings.Load();
+            if (settings.PageTitles.Any(a => a.Value == newTitle && a.Type == type)) { return Error("Page Title already exists"); }
+            var pageTitle = settings.PageTitles.FirstOrDefault(a => a.Value == oldTitle && a.Type == type);
+            if (pageTitle != null)
             {
-                return Error("File upload was not found");
+                pageTitle.Value = newTitle;
             }
-            var file = Parameters.Files["file"];
-            if (file.ContentType != "image/png")
-            {
-                return Error("Icon must be PNG image format.");
-            }
-            var iconType = "apple";
-            var imgpath = "mobile/";
-            var imgSuffix = $"-{px}x{px}";
-            switch (type)
-            {
-                case 0: iconType = "web"; imgpath = ""; imgSuffix = "-icon"; break;
-                case 2: iconType = "android"; break;
-            }
+            Common.Platform.Website.Settings.Save(settings);
+            return Success();
+        }
 
-            try
+        public string RemovePageTitle(string title, Models.Website.PageTitleType type)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            var settings = Common.Platform.Website.Settings.Load();
+            var pageTitle = settings.PageTitles.FirstOrDefault(a => a.Value == title && a.Type == type);
+            if(pageTitle != null)
             {
-                //check icon dimensions
-                var image = Common.Utility.Image.Load(file);
-                if (px != 0 && (image.width != px || image.height != px))
-                {
-                    return Error($"Icon must be {px} pixels in width & height.");
-                }else if(px == 0 && (image.width > 128))
-                {
-                    return Error($"Icon must be less than 129 pixels in width & height.");
-                }
-                //save image to disk
-                if (!Directory.Exists(App.MapPath("/wwwroot/images/" + imgpath)))
-                {
-                    Directory.CreateDirectory(App.MapPath("/wwwroot/images/" + imgpath));
-                }
-                var filepath = App.MapPath($"/wwwroot/images/{imgpath}{iconType}{imgSuffix}.png");
-                File.Delete(filepath);
-                file.Seek(0, SeekOrigin.Begin);
-                using (var fs = new FileStream(filepath, FileMode.Create))
-                {
-                    file.CopyTo(fs);
-                }
+                settings.PageTitles.Remove(pageTitle);
             }
-            catch (Exception)
+            Common.Platform.Website.Settings.Save(settings);
+            return Success();
+        }
+        #endregion
+
+        #region "Languages"
+        public string UpdateLanguage(string abbr, string name)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            if (name == "") { return Error("Language is empty"); }
+            var settings = Common.Platform.Website.Settings.Load();
+            if (settings.Languages.Any(a => a.Name == name && a.Id != abbr)) { return Error("Language already exists"); }
+            var language = settings.Languages.FirstOrDefault(a => a.Id == abbr);
+            if (language != null)
             {
-                return Error("Error reading image file");
+                language.Name = name;
             }
+            Common.Platform.Website.Settings.Save(settings);
+            return Success();
+        }
+
+        public string RemoveLanguage(string abbr)
+        {
+            if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }
+            var settings = Common.Platform.Website.Settings.Load();
+            var language = settings.Languages.FirstOrDefault(a => a.Id == abbr);
+            if (language != null)
+            {
+                settings.Languages.Remove(language);
+            }
+            Common.Platform.Website.Settings.Save(settings);
             return Success();
         }
         #endregion

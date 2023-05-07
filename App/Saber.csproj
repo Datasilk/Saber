@@ -42,6 +42,11 @@
     <None Remove="Views\WebsiteSettings\email\client-list.html" />
     <None Remove="Views\WebsiteSettings\email\client.html" />
     <None Remove="Views\WebsiteSettings\email\no-clients.html" />
+    <None Remove="Views\WebsiteSettings\language.html" />
+    <None Remove="Views\WebsiteSettings\languages.html" />
+    <None Remove="Views\WebsiteSettings\no-languages.html" />
+    <None Remove="Views\WebsiteSettings\page-title.html" />
+    <None Remove="Views\WebsiteSettings\page-titles.html" />
     <None Remove="Views\WebsiteSettings\restart.html" />
     <Content Include="wwwroot\web.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\Release.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>

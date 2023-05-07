@@ -1,0 +1,17 @@
+﻿<tr>
+    <td>
+        <div class="label" onclick="S.editor.websettings.pagetitles.edit.show(event)">{{title}}</div>
+        <div class="row edit-form hide">
+            <div class="col input pad-right"><input type="text" value="{{title}}" /></div>
+            <div class="col input"><button onclick="S.editor.websettings.pagetitles.edit.submit(event, {{typeid}})">Save</button></div>
+        </div>
+    </td>
+    <td>{{type}}</td>
+    <td class="hover-only del" style="width:45px">
+        <div class="col right icon small btn-close pointer" onclick="S.editor.websettings.pagetitles.remove(event, '{{title}}', {{typeid}})">
+            <svg viewBox="0 0 32 32">
+                <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
+            </svg>
+        </div>
+    </td>
+</tr>

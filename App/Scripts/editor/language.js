@@ -44,7 +44,7 @@ S.editor.lang = {
                     var abbr = data.abbr.toLowerCase();
                     $('.content-fields #lang').append('<option value="' + abbr + '">' + data.name + '</option>').val(abbr);
                     S.editor.lang.supported[abbr] = data.name;
-                    if (callback) { callback(); }
+                    if (typeof callback == 'function') { callback(); }
                 }
             );
             S.popup.hide(S.editor.lang.add.popup);
