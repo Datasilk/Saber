@@ -50,24 +50,24 @@ namespace Saber.Controllers
                 var htmlVars = Core.Vendors.HtmlComponentKeys;
 
                 //add custom component for generating Partial Views
-                viewComponent["icon"] = "/editor/components/partial-view.svg";
+                viewComponent["icon"] = "/editor/components/partial-view.svg?v=" + App.Version;
                 viewComponent["key"] = "partial-view";
                 viewComponent["name"] = "Partial View";
                 viewComponent["description"] = "Render a partial HTML file inside of your web page.";
                 html.Append(viewComponent.Render());
 
                 //add custom component for generating Special Variables
-                viewComponent["icon"] = "/editor/special-vars.svg";
+                viewComponent["icon"] = "/editor/special-vars.svg?v=" + App.Version;
                 viewComponent["key"] = "special-vars";
                 viewComponent["name"] = "Special Variable";
                 viewComponent["description"] = "Generate special variables that contain dynamic info about your website.";
                 html.Append(viewComponent.Render());
 
-                foreach (var component in Core.Vendors.HtmlComponents.Values.OrderBy(a => a.Key))
+                foreach (var component in Vendors.HtmlComponents.Values.OrderBy(a => a.Key))
                 {
                     if(string.IsNullOrEmpty(component.Icon) || string.IsNullOrEmpty(component.Name)) { continue; }
                     viewComponent.Clear();
-                    viewComponent["icon"] = "/editor/" + component.Icon.ToLower();
+                    viewComponent["icon"] = "/editor/" + component.Icon.ToLower() + "?v=" + App.Version;
                     viewComponent["key"] = component.Key;
                     viewComponent["name"] = component.Name;
                     viewComponent["description"] = component.Description;

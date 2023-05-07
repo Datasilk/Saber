@@ -168,4 +168,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="notifId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="dea7346f-63ce-469f-b95c-56b9c179c130" ChangeDateTime="05/07/2023 17:00:07">
+    <Property Name="ElementName" Value="[dbo].[FileVersions].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[FileVersions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="file" />
+  </Operation>
 </Operations>

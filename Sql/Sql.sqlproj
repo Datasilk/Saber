@@ -72,6 +72,7 @@
     <Folder Include="dbo\Stored Procedures\Sessions" />
     <Folder Include="dbo\Functions" />
     <Folder Include="dbo\Stored Procedures\Notifications" />
+    <Folder Include="dbo\Stored Procedures\FileVersions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Sequences\SequenceUsers.sql" />
@@ -149,6 +150,9 @@
     <Build Include="dbo\Stored Procedures\Secuirty\SecurityGroups_GetCount.sql" />
     <Build Include="dbo\Stored Procedures\Logs\Log_Errors_GetList.sql" />
     <Build Include="dbo\Stored Procedures\Users\User_GetDetailsFromEmail.sql" />
+    <Build Include="dbo\Tables\FileVersions.sql" />
+    <Build Include="dbo\Stored Procedures\FileVersions\FileVersions_GetList.sql" />
+    <Build Include="dbo\Stored Procedures\FileVersions\FileVersion_Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

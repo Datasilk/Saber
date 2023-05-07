@@ -475,7 +475,7 @@ namespace Saber
             //get version of Saber
             Assembly saberAssembly = Assembly.GetExecutingAssembly();
             System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(saberAssembly.Location);
-            Server.Version = (fvi.FileVersion ?? "").Trim();
+            App.Version = Server.Version = (fvi.FileVersion ?? "").Trim();
 
             //handle static files
             var provider = new FileExtensionContentTypeProvider();
@@ -591,6 +591,10 @@ namespace Saber
             }
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //Get list of file versions
+            Server.FileVersions = Query.FileVersions.GetList();
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //map all core delegates
             Core.Delegates.Session.Get = Common.Session.Get;
             Core.Delegates.Session.Set = Common.Session.Set;
@@ -613,6 +617,7 @@ namespace Saber
             Core.Delegates.Website.CopyTempWebsite = Website.CopyTempWebsite;
             Core.Delegates.Website.ImportWebsite = Website.Import;
             Core.Delegates.Website.ExportWebsite = Website.Export;
+            Core.Delegates.Website.GetFileVersion = Website.GetFileVersion;
             Core.Delegates.Website.Restart = Website.Restart;
             Core.Delegates.Website.Settings.Load = Website.Settings.Load;
             Core.Delegates.Website.Settings.Save = Website.Settings.Save;

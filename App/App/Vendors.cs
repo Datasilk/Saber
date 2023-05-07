@@ -234,10 +234,12 @@ namespace Saber.Common
                             case ".js":
                                 Utility.Compression.GzipCompress(f.OpenText().ReadToEnd(), vendorPath + subPathRel + filename);
                                 Console.WriteLine("compressed & copied " + f.FullName + " to " + vendorPath + subPathRel + filename);
+                                Platform.Website.UpdateFileVersion(vendorPath + subPathRel + filename);
                                 break;
                             case ".css":
                                 File.Copy(f.FullName, App.MapPath(vendorPath + Path.GetFileName(f.FullName)), true);
                                 Console.WriteLine("copied " + f.FullName + " to " + vendorPath + subPathRel + filename);
+                                Platform.Website.UpdateFileVersion(vendorPath + subPathRel + filename);
                                 break;
                             case ".less":
                                 Platform.Website.SaveLessFile(f.OpenText().ReadToEnd(), vendorPath + subPathRel + filename.Replace(".less", ".css"), f.FullName.Replace(f.Name, ""));

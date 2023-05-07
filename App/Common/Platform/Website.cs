@@ -161,6 +161,16 @@ namespace Saber.Common.Platform
             var filepath = "/" + string.Join("/", paths); //relative filename & path
             var file = paths[paths.Length - 1]; //filename only
             var ext = file.Split('.', 2)[1].ToLower(); //file extension only
+            var versionPath = "";
+            if (filepath.Contains("/wwwroot/"))
+            {
+                switch (filepath.GetFileExtension())
+                {
+                    case "css": case "js":
+                        versionPath = filepath;
+                        break;
+                }
+            }
             if(paths[0] == "Content") { paths[0] = "content"; }
 
             //create folder for file
@@ -188,7 +198,6 @@ namespace Saber.Common.Platform
             ViewCache.Remove(filepath);
 
             //process saved files
-
             if (dir.ToLower().IndexOf("content/pages") == 0)
             {
                 //create public folder in wwwroot
@@ -203,6 +212,7 @@ namespace Saber.Common.Platform
                     case "js": case "css":
                         //copy resource file to public wwwroot folder
                         File.Copy(App.MapPath(filepath), App.MapPath(pubdir + file), true);
+                        versionPath = pubdir + file;
                         break;
 
                     case "less":
@@ -236,17 +246,25 @@ namespace Saber.Common.Platform
                                 }else if (paths[paths.Length - 1].Length > 3 && paths[paths.Length - 1].Right(3) == ".js")
                                 {
                                     File.Copy(App.MapPath(filepath), App.MapPath(pubpath + paths[paths.Length - 1]), true);
+                                    versionPath = pubpath + paths[paths.Length - 1];
                                 }
                                 break;
                         }
                         break;
                     case "website.js":
                         File.Copy(App.MapPath(filepath), App.MapPath("/wwwroot/js/" + paths[paths.Length - 1]), true);
+                        versionPath = "/wwwroot/js/" + paths[paths.Length - 1];
                         break;
                     case "website.less":
                         SaveLessFile(content, "/wwwroot/css/website.css", "/Content/");
                         break;
                 }
+            }
+
+            //update file version
+            if(versionPath != "")
+            {
+                UpdateFileVersion(versionPath);
             }
         }
 
@@ -279,6 +297,9 @@ namespace Saber.Common.Platform
             File.WriteAllText(file, css);
                 
             Directory.SetCurrentDirectory(App.MapPath("/"));
+
+            //update file version
+            UpdateFileVersion(outputFile);
         }
 
         private static void CreateDirectory(string path)
@@ -522,6 +543,16 @@ namespace Saber.Common.Platform
 
                             File.WriteAllBytes(fullpath, bytes);
                         }
+                        //update file version
+                        if (copyTo.Contains("/wwwroot/"))
+                        {
+                            switch (entry.Name.GetFileExtension())
+                            {
+                                case "css": case "js":
+                                    UpdateFileVersion(copyTo + entry.Name);
+                                    break;
+                            }
+                        }
                     }
                 }
 
@@ -610,6 +641,31 @@ namespace Saber.Common.Platform
         }
         #endregion
 
+        #region "Cache"
+
+        public static int GetFileVersion(string file)
+        {
+            if (Server.FileVersions.ContainsKey(file))
+            {
+                return Server.FileVersions[file];
+            }
+            return 0;
+        }
+
+        public static void UpdateFileVersion(string file)
+        {
+
+            if (Server.FileVersions.ContainsKey(file))
+            {
+                Server.FileVersions[file] += 1;
+            }
+            else
+            {
+                Server.FileVersions.Add(file, 1);
+            }
+            Query.FileVersions.Update(file, Server.FileVersions[file]);
+        }
+
         public static void ResetCache(string path, string language = "en")
         {
             var paths = PageInfo.GetRelativePath(path);
@@ -650,6 +706,8 @@ namespace Saber.Common.Platform
                 File.WriteAllText(file, webconfig);
             }
         }
+
+        #endregion
 
         #region "Helper Classes"
         public class ConsoleLogger : Logger

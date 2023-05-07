@@ -85,7 +85,7 @@ namespace Saber.Controllers
                 var styleIndex = 1;
                 foreach (var style in webconfig.Stylesheets)
                 {
-                    AddCSS(style, "custom_css_" + styleIndex);
+                    AddCSS(style + "?fv=" + Website.GetFileVersion("/wwwroot" + style), "custom_css_" + styleIndex);
                     styleIndex++;
                 }
 
@@ -95,14 +95,14 @@ namespace Saber.Controllers
                 //add all custom live template styles before loading page style
                 foreach (var style in config.LiveStylesheets)
                 {
-                    AddCSS(style, "custom_css_" + styleIndex);
+                    AddCSS(style + "?fv=" + Website.GetFileVersion("/wwwroot" + style), "custom_css_" + styleIndex);
                     styleIndex++;
                 }
 
                 //add all custom page styles before loading page style
                 foreach (var style in config.Stylesheets)
                 {
-                    AddCSS(style, "custom_css_" + styleIndex);
+                    AddCSS(style + "?fv=" + Website.GetFileVersion("/wwwroot" + style), "custom_css_" + styleIndex);
                     styleIndex++;
                 }
 
@@ -110,24 +110,24 @@ namespace Saber.Controllers
                 var scriptIndex = 1;
                 foreach (var script in webconfig.Scripts)
                 {
-                    AddScript(script, "custom_js_" + scriptIndex);
+                    AddScript(script + "?fv=" + Website.GetFileVersion("/wwwroot" + script), "custom_js_" + scriptIndex);
                     scriptIndex++;
                 }
 
                 //add website.js after custom website scripts
-                AddScript("/js/website.js", "website_js");
+                AddScript("/js/website.js?fv=" + Website.GetFileVersion("/wwwroot/js/website.js"), "website_js");
 
                 //add all custom live template scripts before loading page script
                 foreach (var script in config.LiveScripts)
                 {
-                    AddScript(script, "custom_js_" + scriptIndex);
+                    AddScript(script + "?fv=" + Website.GetFileVersion("/wwwroot" + script), "custom_js_" + scriptIndex);
                     scriptIndex++;
                 }
 
                 //add all custom page scripts before loading page script
                 foreach (var script in config.Scripts)
                 {
-                    AddScript(script, "custom_js_" + scriptIndex);
+                    AddScript(script + "?fv=" + Website.GetFileVersion("/wwwroot" + script), "custom_js_" + scriptIndex);
                     scriptIndex++;
                 }
 
@@ -148,8 +148,8 @@ namespace Saber.Controllers
                     {
                         //page exists
                         html.Append(Common.Platform.Render.Page("content/pages/" + pathname + ".html", this, config, lang));
-                        AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
-                        AddScript(rpath.ToLower() + rfile + ".js", "page_js");
+                        AddCSS(rpath.ToLower() + rfile + ".css?fv=" + Website.GetFileVersion("/wwwroot" + rpath.ToLower() + rfile + ".css"), "page_css");
+                        AddScript(rpath.ToLower() + rfile + ".js?fv=" + Website.GetFileVersion("/wwwroot" + rpath.ToLower() + rfile + ".js"), "page_js");
                     }
                     else if (User.UserId == 0 || Parameters.ContainsKey("live"))
                     {
@@ -159,8 +159,8 @@ namespace Saber.Controllers
                         {
                             config = Common.Platform.PageInfo.GetPageConfig("content/pages/404");
                             html.Append(Common.Platform.Render.Page("content/pages/404.html", this, config, lang));
-                            AddCSS("/content/pages/404.css", "page_css");
-                            AddScript("/content/pages/404.js", "page_js");
+                            AddCSS("/content/pages/404.css?fv=" + Website.GetFileVersion("/wwwroot/content/pages/404.css"), "page_css");
+                            AddScript("/content/pages/404.js?fv=" + Website.GetFileVersion("/wwwroot/content/pages/404.js"), "page_js");
                         }
                         else
                         {
@@ -171,15 +171,15 @@ namespace Saber.Controllers
                     {
                         //page does not exist, try to load template page from parent
                         html.Append(Common.Platform.Render.Page(config.TemplatePath + ".html", this, config, lang));
-                        AddCSS(config.TemplatePath.ToLower() + ".css", "page_css");
-                        AddScript(config.TemplatePath.ToLower() + ".js", "page_js");
+                        AddCSS(config.TemplatePath.ToLower() + ".css?fv=" + Website.GetFileVersion("/wwwroot" + config.TemplatePath.ToLower() + ".css"), "page_css");
+                        AddScript(config.TemplatePath.ToLower() + ".js?fv=" + Website.GetFileVersion("/wwwroot" + config.TemplatePath.ToLower() + ".js"), "page_js");
                     }
                     else
                     {
                         //last resort, page & template doesn't exists
                         html.Append(Common.Platform.Render.Page("content/pages/" + pathname + ".html", this, config, lang));
-                        AddCSS(rpath.ToLower() + rfile + ".css", "page_css");
-                        AddScript(rpath.ToLower() + rfile + ".js", "page_js");
+                        AddCSS(rpath.ToLower() + rfile + ".css?fv=" + Website.GetFileVersion("/wwwroot" + rpath.ToLower() + rfile + ".css"), "page_css");
+                        AddScript(rpath.ToLower() + rfile + ".js?fv=" + Website.GetFileVersion("/wwwroot" + rpath.ToLower() + rfile + ".js"), "page_js");
                     }
                 }
                 catch (ServiceDeniedException)

@@ -13,6 +13,7 @@
     public static IHostApplicationLifetime AppLifetime { get; set; }
     public static string SaberCmsHost { get; set; } = "https://www.sabercms.com/";
     public static bool RunTests { get; set; } = false;
+    public static Dictionary<string, int> FileVersions = new Dictionary<string, int>();
 }
 
 public class WinService : BackgroundService
