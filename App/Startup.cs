@@ -481,14 +481,16 @@ namespace Saber
             var provider = new FileExtensionContentTypeProvider();
 
             // Add static file mappings
-            provider.Mappings[".svg"] = "image/svg+xml";
+            foreach(var mimetype in Models.StaticFiles.MimeTypes)
+            {
+                provider.Mappings[mimetype.Key] = mimetype.Value;
+            }
             var options = new StaticFileOptions
             {
                 ContentTypeProvider = provider,
                 OnPrepareResponse = (context) =>
                 {
                     var headers = context.Context.Response.Headers;
-                    var contentType = headers["Content-Type"].ToString();
                     if (!string.IsNullOrEmpty(context.File.PhysicalPath) && 
                     (
                         context.File.PhysicalPath.Contains("wwwroot\\editor") ||
@@ -496,11 +498,10 @@ namespace Saber
                     ) && context.File.Name.EndsWith(".js"))
                     {
                         //all editor-specific JS files are stored on the server in GZIP format
-                        contentType = "application/javascript";
                         headers.Add("Content-Encoding", "gzip");
-                        headers["Content-Type"] = contentType;
+                        headers["Content-Type"] = "application/javascript";
                     }
-                    headers["Cache-Control"] = "public, max-age: 604800";
+                    headers.Append("Cache-Control", "public, max-age: 604800"); //one week
                 }
             };
 
