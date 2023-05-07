@@ -193,7 +193,15 @@ namespace Saber.Controllers
 
                 html.Append("</div>");
 
-                if (User.UserId >= 1 && !Parameters.ContainsKey("live"))
+                if (User.UserId >= 1 && !Parameters.ContainsKey("live") && (
+                    //only show editor if user has at least one sufficient security key
+                    CheckSecurity("code-editor") ||
+                    CheckSecurity("edit-content") ||
+                    CheckSecurity("page-settings") ||
+                    CheckSecurity("website-settings") ||
+                    CheckSecurity("manage-users") ||
+                    CheckSecurity("manage-security")
+                    ))
                 {
                     AddCSS("/editor/css/iframe.css");
                     AddScript("/editor/js/iframe.js");

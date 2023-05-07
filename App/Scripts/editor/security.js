@@ -28,7 +28,7 @@
         );
         if (self._loaded == true) {
             S.editor.tabs.select('security-groups-section');
-            if (callback) { callback(); }
+            if (typeof callback == 'function') { callback(); }
             return;
         }
         self.groups.load(callback);
@@ -52,7 +52,7 @@
                         //show tab for security group
                         self.group.load(id, name);
                     });
-                    if (callback) { callback(); }
+                    if (typeof callback == 'function') { callback(); }
                 }
             );
         },

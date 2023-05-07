@@ -43,7 +43,7 @@
         }
         if (self._loaded == true) {
             S.editor.tabs.select('users-management-section');
-            if (callback) { callback(); }
+            if (typeof callback == 'function') { callback(); }
             return;
         }
         self.search(1, 25, '', 1, updateFilebar);

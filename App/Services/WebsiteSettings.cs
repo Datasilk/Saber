@@ -369,6 +369,7 @@ namespace Saber.Services
         private List<string> RenderAvailableStylesheetsList()
         {
             var list = new List<string>();
+            RecurseDirectoriesForStylesheets(list, App.MapPath("/wwwroot/editor/vendors"));
             RecurseDirectoriesForStylesheets(list, App.MapPath("/wwwroot/css"));
             RecurseDirectoriesForStylesheets(list, App.MapPath("/wwwroot/content"));
             var root = App.MapPath("/") + "\\";
@@ -496,6 +497,7 @@ namespace Saber.Services
                 "editor/js/selector.js",
                 "editor/js/utility/velocity.min.js"
             };
+            RecurseDirectoriesForScripts(list, App.MapPath("/wwwroot/editor/vendors"));
             RecurseDirectoriesForScripts(list, App.MapPath("/wwwroot/js"));
             RecurseDirectoriesForScripts(list, App.MapPath("/wwwroot/content"));
             var root = App.MapPath("/") + "\\";

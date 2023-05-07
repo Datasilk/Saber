@@ -12,13 +12,11 @@
 
     //set up stylesheets
     S('.website-styles .btn-add-style').on('click', this.styles.add);
-    S('.website-styles-list .close-btn').on('click', this.styles.remove);
-    S.drag.sort.add('.website-styles-list ul', '.website-styles-list li', this.styles.drag);
+    this.styles.init();
 
     //set up scripts
     S('.website-scripts .btn-add-script').on('click', this.scripts.add);
-    S('.website-scripts-list .close-btn').on('click', this.scripts.remove);
-    S.drag.sort.add('.website-scripts-list ul', '.website-scripts-list li', this.scripts.drag);
+    this.scripts.init();
 
     //set up email settings
     $('.email-clients .btn-add-client').on('click', this.email.clients.add.show);
@@ -37,6 +35,11 @@
 };
 
 S.editor.websettings.styles = {
+    init: function () {
+        S('.website-styles-list .close-btn').on('click', S.editor.websettings.styles.remove);
+        S.drag.sort.add('.website-styles-list ul', '.website-styles-list li', S.editor.websettings.styles.drag);
+    },
+
     add: function () {
         S.popup.show('Add Stylesheet to Page',
             S('#website_styles_add').html()
@@ -61,7 +64,7 @@ S.editor.websettings.styles = {
                 S.util.css.load(data.file, 'css_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), window.parent.document);
                 S.editor.files.less.changed = true;
                 S('.website-styles-list > ul').html(list);
-                initStyles();
+                S.editor.websettings.styles.init();
                 S.popup.hide();
             });
         });
@@ -74,7 +77,7 @@ S.editor.websettings.styles = {
             //add stylesheets to list
             S.editor.files.less.changed = true;
             S('.website-styles-list > ul').html(list);
-            initStyles();
+            S.editor.websettings.styles.init();
         });
     },
 
@@ -90,6 +93,11 @@ S.editor.websettings.styles = {
 };
 
 S.editor.websettings.scripts = {
+    init: function () {
+        S('.website-scripts-list .close-btn').on('click', S.editor.websettings.scripts.remove);
+        S.drag.sort.add('.website-scripts-list ul', '.website-scripts-list li', S.editor.websettings.scripts.drag);
+    },
+
     add: function () {
         S.popup.show('Add Script to Page',
             S('#website_scripts_add').html()
@@ -114,7 +122,7 @@ S.editor.websettings.scripts = {
                 S.util.js.load(data.file, 'js_' + data.file.replace(/\//g, '_').replace(/\./g, '_'), null, null, window.parent.document);
                 S.editor.files.js.changed = true;
                 S('.website-scripts-list > ul').html(list);
-                initScripts();
+                S.editor.websettings.scripts.init();
                 S.popup.hide();
             });
         });
@@ -127,7 +135,7 @@ S.editor.websettings.scripts = {
             //add scripts to list
             S.editor.files.js.changed = true;
             S('.website-scripts-list > ul').html(list);
-            initScripts();
+            S.editor.websettings.scripts.init();
         });
     },
 

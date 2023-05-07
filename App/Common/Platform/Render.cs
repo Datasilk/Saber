@@ -35,7 +35,7 @@ namespace Saber.Common.Platform
             }
 
             var uselayout = true;
-            if (request.Parameters.ContainsKey("nolayout"))
+            if (request.Parameters.ContainsKey("nolayout") || request.Parameters.ContainsKey("noheadfoot"))
             {
                 uselayout = false;
             }
