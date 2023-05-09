@@ -131,19 +131,6 @@ namespace Saber.Common.ContentField
                         else
                         {
                             //render data source filter form
-                            if (canfilter)
-                            {
-                                viewlist["filter-contents"] = DataSource.RenderFilters(request, datasource, mysettings?.Filters);
-                                viewlist["orderby-contents"] = DataSource.RenderOrderByList(datasource, mysettings?.OrderBy);
-                                viewlist["position-contents"] = DataSource.RenderPositionSettings(datasource, mysettings?.Position);
-                            }
-                            else
-                            {
-                                viewlist.Show("no-filter");
-                                viewlist.Show("no-sort");
-                                viewlist.Show("no-position");
-                            }
-                            
                             var relationships = datasource.Helper.Get(datasourceId).Relationships;
                             if (relationships.Length == 0)
                             {
@@ -151,12 +138,25 @@ namespace Saber.Common.ContentField
                             }
                             else
                             {
+
                                 viewlist["lists"] = "<option value=\"" + dataSourceKey + "\">" + 
                                     key.Replace("list-", "").Replace("-", " ").Capitalize() + "</option>" +
                                     string.Join('\n', relationships.Select(a => "<option value=\"" +
                                     Core.Vendors.DataSources.Where(b => b.Key == a.ChildKey).FirstOrDefault()?.Helper.Prefix +
                                     "-" + a.Child.Key + "\">" + a.ListComponent.Replace("list-", "").Replace("-", " ").Capitalize() + 
                                     "</option>").ToArray());
+                            }
+                            if (canfilter)
+                            {
+                                viewlist["filter-contents"] = Platform.DataSources.RenderFilters(request, datasource, mysettings?.Filters);
+                                viewlist["orderby-contents"] = Platform.DataSources.RenderOrderByList(datasource, mysettings?.OrderBy);
+                                viewlist["position-contents"] = Platform.DataSources.RenderPositionSettings(datasource, mysettings?.Position);
+                            }
+                            else
+                            {
+                                viewlist.Show("no-filter");
+                                viewlist.Show("no-sort");
+                                viewlist.Show("no-position");
                             }
                         }
                     }
@@ -192,7 +192,7 @@ namespace Saber.Common.ContentField
                     viewlist.Show("no-position");
                     viewlist["list-contents"] = "<ul class=\"list\">" + html.ToString() + "</ul>";
                     viewlist.Show("not-locked");
-                    viewlist["position-contents"] = DataSource.RenderPositionSettings(null, new DataSource.PositionSettings()
+                    viewlist["position-contents"] = Platform.DataSources.RenderPositionSettings(null, new DataSource.PositionSettings()
                     {
                         Start = 1,
                         StartQuery = "",

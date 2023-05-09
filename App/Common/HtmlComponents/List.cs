@@ -199,7 +199,7 @@ namespace Saber.Common.HtmlComponents
                                         {
                                             var parts = myData.Record[myData.Relationship.ListComponent].Split("|!|");
                                             var settings = JsonSerializer.Deserialize<Dictionary<string, ListSettings>>(parts.Where(a => a.Contains("lists=")).FirstOrDefault()?.Split("=", 2)[1] ?? "{}") ?? new Dictionary<string, ListSettings>();
-                                            records = FilterRecords(settings.ContainsKey(myData.Relationship.ChildKey) ? settings[myData.Relationship.ChildKey].Filters : new List<DataSource.FilterGroup>(), records);
+                                            records = FilterRecords(myData, settings.ContainsKey(myData.Relationship.ChildKey) ? settings[myData.Relationship.ChildKey].Filters : new List<DataSource.FilterGroup>(), records);
                                         }
                                     }
                                     else
@@ -551,7 +551,7 @@ namespace Saber.Common.HtmlComponents
             }
         }
 
-        private List<Dictionary<string, string>> FilterRecords(List<DataSource.FilterGroup> filters, List<Dictionary<string, string>> records)
+        private List<Dictionary<string, string>> FilterRecords(ListData myData, List<DataSource.FilterGroup> filters, List<Dictionary<string, string>> records)
         {
             if (filters.Count == 0){ return records; }
             var filtered = new List<Dictionary<string, string>>();
@@ -559,7 +559,7 @@ namespace Saber.Common.HtmlComponents
             {
                 foreach (var filter in filters)
                 {
-                    if(CheckFilter(filter, record))
+                    if(CheckFilter(myData, filter, record))
                     {
                         filtered.Add(record);
                         break;
@@ -569,14 +569,14 @@ namespace Saber.Common.HtmlComponents
             return filtered;
         }
 
-        private bool CheckFilter(DataSource.FilterGroup filter, Dictionary<string, string> record)
+        private bool CheckFilter(ListData myData, DataSource.FilterGroup filter, Dictionary<string, string> record)
         {
             if (filter.Match == DataSource.GroupMatchType.All)
             {
                 //if any filters do NOT match, return false
                 foreach (var elem in filter.Elements)
                 {
-                    if (!CheckFilterElement(elem, record))
+                    if (!CheckFilterElement(myData, elem, record))
                     {
                         return false;
                     }
@@ -584,7 +584,7 @@ namespace Saber.Common.HtmlComponents
                 //check all subgroups
                 foreach (var group in filter.Groups)
                 {
-                    if (!CheckFilter(group, record))
+                    if (!CheckFilter(myData, group, record))
                     {
                         return false;
                     }
@@ -595,7 +595,7 @@ namespace Saber.Common.HtmlComponents
             {
                 foreach (var elem in filter.Elements)
                 {
-                    if (CheckFilterElement(elem, record))
+                    if (CheckFilterElement(myData, elem, record))
                     {
                         return true;
                     }
@@ -603,7 +603,7 @@ namespace Saber.Common.HtmlComponents
                 //check all subgroups
                 foreach (var group in filter.Groups)
                 {
-                    if (CheckFilter(group, record))
+                    if (CheckFilter(myData, group, record))
                     {
                         return true;
                     }
@@ -614,9 +614,33 @@ namespace Saber.Common.HtmlComponents
         }
 
 
-        private bool CheckFilterElement(DataSource.FilterElement filter, Dictionary<string, string> record)
+        private bool CheckFilterElement(ListData myData, DataSource.FilterElement filter, Dictionary<string, string> record)
         {
-            if (record.ContainsKey(filter.Column))
+            var colparts = filter.Column.Split(".");
+            var col = colparts[0];
+            if (colparts.Length > 1)
+            {
+                var ds = myData.RecordSets[colparts[0]];
+                col = colparts[1];
+                foreach(var r in ds)
+                {
+                    if(CheckSingleFilterElement(myData, col, filter, r))
+                    {
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+                return CheckSingleFilterElement(myData, col, filter, record);
+            }
+            return false;
+        }
+
+
+        private bool CheckSingleFilterElement(ListData myData, string column, DataSource.FilterElement filter, Dictionary<string, string> record)
+        {
+            if (record.ContainsKey(column))
             {
                 //try to match string values
                 var val = record[filter.Column].ToLower();
@@ -639,7 +663,7 @@ namespace Saber.Common.HtmlComponents
                         //try to get numerical values and match values
                         var a = double.TryParse(val, out var valnum);
                         var b = double.TryParse(filterVal, out var filternum);
-                        if(a && b)
+                        if (a && b)
                         {
                             switch (filter.Match)
                             {
@@ -661,7 +685,7 @@ namespace Saber.Common.HtmlComponents
 
                 }
 
-                
+
             }
             return false;
         }

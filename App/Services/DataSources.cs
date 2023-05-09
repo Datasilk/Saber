@@ -17,34 +17,81 @@ namespace Saber.Services
             }).ToArray());
         }
 
-        public string Columns(string key)
+        public string Columns(string key, bool includeChildren = false)
         {
             if (!CheckSecurity("edit-content")) { return AccessDenied(); }
-            var datasource = Core.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
-            if(datasource != null)
+            var info = Core.Vendors.DataSources.Where(a => a.Key == key).FirstOrDefault();
+            if(info != null)
             {
                 var columns = new List<Vendor.DataSource.Column>() { 
                     new Vendor.DataSource.Column()
                     {
+                        Id = "id",
                         Name = "id",
                         DataType = Vendor.DataSource.DataType.Number
                     },
                     new Vendor.DataSource.Column()
                     {
+                        Id = "datecreated",
                         Name = "datecreated",
                         DataType = Vendor.DataSource.DataType.DateTime
                     },
                     new Vendor.DataSource.Column()
                     {
+                        Id = "datemodified",
                         Name = "datemodified",
                         DataType = Vendor.DataSource.DataType.DateTime
                     }
                 };
-                
-                columns.AddRange(datasource.Helper.Get(key.Replace(datasource.Helper.Prefix + "-", "")).Columns);
+                var datasource = info.Helper.Get(key.Replace(info.Helper.Prefix + "-", ""));
+                columns.AddRange(datasource.Columns.Select(a => new Vendor.DataSource.Column()
+                {
+                    Id = a.Name,
+                    Name = a.Name,
+                    DataType = a.DataType
+                }));
+
+                if(includeChildren == true)
+                {
+                    var relationships = datasource.Relationships;
+                    foreach(var relationship in relationships)
+                    {
+                        GetColumnsForRelationship(datasource, relationship, columns);
+                    }
+                }
                 return JsonResponse(columns);
             }
             return Error("Could not find data source");
+        }
+
+        private void GetColumnsForRelationship(Vendor.DataSource datasource, Vendor.DataSource.Relationship relationship, List<Vendor.DataSource.Column> columns)
+        {
+            columns.AddRange(new List<Vendor.DataSource.Column>(){
+                new Vendor.DataSource.Column()
+                {
+                    Id = relationship.Key + "." + "id",
+                    Name = relationship.ListComponent + "." + "id",
+                    DataType = Vendor.DataSource.DataType.Number
+                },
+                new Vendor.DataSource.Column()
+                {
+                    Id = relationship.Key + "." + "datecreated",
+                    Name = relationship.ListComponent + "." + "datecreated",
+                    DataType = Vendor.DataSource.DataType.DateTime
+                },
+                new Vendor.DataSource.Column()
+                {
+                    Id = relationship.Key + "." + "datemodified",
+                    Name = relationship.ListComponent + "." + "datemodified",
+                    DataType = Vendor.DataSource.DataType.DateTime
+                }
+            });
+            columns.AddRange(datasource.Columns.Select(a => new Vendor.DataSource.Column()
+            {
+                Id = relationship.Key + "." + a.Name,
+                Name = relationship.ListComponent + "." + a.Name,
+                DataType = a.DataType
+            }).ToList());
         }
 
         public string Relationships(string key)
@@ -107,7 +154,9 @@ namespace Saber.Services
             {
                 return Error("Could not find data source \"" + key + "\"");
             }
-            return Common.Platform.DataSources.RenderFilter(this, datasource.Helper.Get(key.Replace(datasource.Helper.Prefix + "-", "")), new Vendor.DataSource.FilterElement()
+            var info = datasource.Helper.Get(key.Replace(datasource.Helper.Prefix + "-", ""));
+            var relationships = datasource.Helper.Get(datasource.Key).Relationships;
+            return Common.Platform.DataSources.RenderFilter(this, datasource, info, relationships, new Vendor.DataSource.FilterElement()
             {
                 Column = column
             });
@@ -134,7 +183,8 @@ namespace Saber.Services
                 {
                     return Error("Could not find data source \"" + key + "\"");
                 }
-                return Common.Platform.DataSources.RenderFilterGroups(this, datasource, groups, depth);
+                var relationships = datasource.Helper.Get(datasource.Key).Relationships;
+                return Common.Platform.DataSources.RenderFilterGroups(this, datasource, relationships, groups, depth);
             }
             catch (Exception ex)
             {

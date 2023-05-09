@@ -840,14 +840,15 @@ S.editor.fields.custom.list = {
                 }
             }
         },
-        select: function (key, title, callback, onload) {
+        select: function (key, title, includeChildColumns, callback, onload) {
             var html = template_datasource_column.innerHTML;
-            S.ajax.post('DataSources/Columns', { key: key }, (response) => {
+            S.ajax.post('DataSources/Columns', { key: key, includeChildren: includeChildColumns }, (response) => {
                 var columns = JSON.parse(response);
                 var options = '';
                 for (var x = 0; x < columns.length; x++) {
                     var c = columns[x].Name;
-                    options += '<option value="' + c + '">' + c + '</options>';
+                    var id = columns[x].Id;
+                    options += '<option value="' + id + '">' + c + '</options>';
                 }
                 html = html.replace('#options#', options);
                 S.editor.message.confirm(title, html, {}, (response) => {
@@ -877,7 +878,6 @@ S.editor.fields.custom.list = {
                 newgroup.find('input, select').on('input', (e) => {
                     S.editor.fields.change();
                 });
-                //S.drag.sort.add(container.find('.filter-settings .filter-groups, .filter-settings .sub-groups'), newgroup, S.editor.fields.custom.list.filters.sorted);
             });
         },
         removeGroup: function (e) {
@@ -890,7 +890,7 @@ S.editor.fields.custom.list = {
             var container = target.parents('.filter-group').first();
             var dskey = target.parents('.vendor-input').find('.list-lists select').val() ?? key;
             if (dskey == '') { dskey = key; }
-            S.editor.fields.custom.list.datasource.select(dskey, "Select Column to Filter By", (response) => {
+            S.editor.fields.custom.list.datasource.select(dskey, "Select Column to Filter By", true, (response) => {
                 if (response == true) {
                     S.ajax.post('DataSources/RenderFilter', { key: dskey, column: datasource_column.value }, (response) => {
                         var parent = container.find('.filters').first();
@@ -900,7 +900,6 @@ S.editor.fields.custom.list = {
                         newfilter.find('input, select').on('input', (e) => {
                             S.editor.fields.change();
                         });
-                        //S.drag.sort.add(container.parents('.filter-settings').find('.filters'), newfilter, S.editor.fields.custom.list.filters.sorted);
                     });
                 }
             });
@@ -924,7 +923,7 @@ S.editor.fields.custom.list = {
             var container = target.parents('.orderby-settings .contents').first();
             container.find('.no-orderby').remove();
             var dskey = target.parents('.vendor-input').find('.list-lists select').val() ?? key;
-            S.editor.fields.custom.list.datasource.select(dskey, "Select Column to Sort By", (response) => {
+            S.editor.fields.custom.list.datasource.select(dskey, "Select Column to Sort By", false, (response) => {
                 if (response == true) {
                     S.ajax.post('DataSources/RenderOrderBy', { key: dskey, column: datasource_column.value }, (response) => {
                         container.append(response);

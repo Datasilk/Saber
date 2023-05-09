@@ -24,13 +24,14 @@ namespace Saber.Common.Platform
             }
             else
             {
-                view["content"] = RenderFilterGroups(request, datasource, filters);
+                var relationships = datasource.Helper.Get(datasource.Key).Relationships;
+                view["content"] = RenderFilterGroups(request, datasource, relationships, filters);
                 view.Show("has-content");
             }
             return view.Render();
         }
 
-        public static string RenderFilterGroups(IRequest request, DataSourceInfo datasource,List<Vendor.DataSource.FilterGroup> filters, int depth = 0)
+        public static string RenderFilterGroups(IRequest request, DataSourceInfo datasource, Vendor.DataSource.Relationship[]? relationships, List<Vendor.DataSource.FilterGroup> filters, int depth = 0)
         {
             if(filters == null){ filters = new List<Vendor.DataSource.FilterGroup>(); }
             var viewGroup = new View("/Views/DataSources/filter-group.html");
@@ -46,7 +47,7 @@ namespace Saber.Common.Platform
                 if (depth > 0) { viewGroup.Show("sub"); }
                 foreach (var filter in group.Elements)
                 {
-                    html.Append(RenderFilter(request, info, filter));
+                    html.Append(RenderFilter(request, datasource, info, relationships, filter));
                 }
                 if (html.Length > 0)
                 {
@@ -55,7 +56,7 @@ namespace Saber.Common.Platform
                 }
                 if(group.Groups != null && group.Groups.Count > 0)
                 {
-                    viewGroup["filter-groups"] = RenderFilterGroups(request, datasource, group.Groups, depth + 1);
+                    viewGroup["filter-groups"] = RenderFilterGroups(request, datasource, relationships, group.Groups, depth + 1);
                 }
 
                 groupsHtml.Append(viewGroup.Render());
@@ -63,16 +64,18 @@ namespace Saber.Common.Platform
             return groupsHtml.ToString();
         }
 
-        public static string RenderFilter(IRequest request, Vendor.DataSource datasource, Vendor.DataSource.FilterElement filter)
+        public static string RenderFilter(IRequest request, DataSourceInfo info, Vendor.DataSource datasource, Vendor.DataSource.Relationship[]? relationships, Vendor.DataSource.FilterElement filter)
         {
-            var col = datasource.Columns.Where(a => a.Name == filter.Column).FirstOrDefault();
-            if(col == null)
+            var columnParts = filter.Column.Split(".");
+            var col = datasource.Columns.Where(a => a.Name == columnParts[0]).FirstOrDefault();
+            if(col == null && columnParts.Length == 1)
             {
-                switch (filter.Column)
+                switch (columnParts[0])
                 {
                     case "id":
                         col = new Vendor.DataSource.Column()
                         {
+                            Id = filter.Column,
                             Name = filter.Column,
                             DataType = Vendor.DataSource.DataType.Number
                         };
@@ -80,11 +83,34 @@ namespace Saber.Common.Platform
                     case "datecreated": case "datemodified":
                         col = new Vendor.DataSource.Column()
                         {
+                            Id = filter.Column,
                             Name = filter.Column,
                             DataType = Vendor.DataSource.DataType.DateTime
                         };
                         break;
                 }
+            }else if(columnParts.Length > 1)
+            {
+                //column belongs to relationship DataSource
+                var relationship = relationships.FirstOrDefault(a => a.Key == columnParts[0]);
+                if(relationship != null)
+                {
+                    var ds = info.Helper.Get(relationship.Key);
+                    var dscol = ds.Columns.FirstOrDefault(a => a.Name == columnParts[1]);
+                    if(dscol != null)
+                    {
+                        col = new Vendor.DataSource.Column()
+                        {
+                            Id = relationship.Key + "." + filter.Column,
+                            Name = ds.Name + "." + dscol.Name,
+                            DataType = dscol.DataType
+                        };
+                    }
+                }
+            }
+            else
+            {
+                col.Id = col.Name;
             }
             if (col == null) { return ""; }
             var name = col.Name.Replace("_", " ").Capitalize();
