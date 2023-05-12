@@ -69,27 +69,27 @@ namespace Saber.Services
             columns.AddRange(new List<Vendor.DataSource.Column>(){
                 new Vendor.DataSource.Column()
                 {
-                    Id = relationship.Key + "." + "id",
-                    Name = relationship.ListComponent + "." + "id",
+                    Id = relationship.Child.Key + "." + "id",
+                    Name = relationship.Child.Name + "." + "id",
                     DataType = Vendor.DataSource.DataType.Number
                 },
                 new Vendor.DataSource.Column()
                 {
-                    Id = relationship.Key + "." + "datecreated",
-                    Name = relationship.ListComponent + "." + "datecreated",
+                    Id = relationship.Child.Key + "." + "datecreated",
+                    Name = relationship.Child.Name + "." + "datecreated",
                     DataType = Vendor.DataSource.DataType.DateTime
                 },
                 new Vendor.DataSource.Column()
                 {
-                    Id = relationship.Key + "." + "datemodified",
-                    Name = relationship.ListComponent + "." + "datemodified",
+                    Id = relationship.Child.Key + "." + "datemodified",
+                    Name = relationship.Child.Name + "." + "datemodified",
                     DataType = Vendor.DataSource.DataType.DateTime
                 }
             });
             columns.AddRange(datasource.Columns.Select(a => new Vendor.DataSource.Column()
             {
-                Id = relationship.Key + "." + a.Name,
-                Name = relationship.ListComponent + "." + a.Name,
+                Id = relationship.Child.Key + "." + a.Name,
+                Name = relationship.Child.Name + "." + a.Name,
                 DataType = a.DataType
             }).ToList());
         }

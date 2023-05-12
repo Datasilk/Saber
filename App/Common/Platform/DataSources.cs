@@ -92,16 +92,16 @@ namespace Saber.Common.Platform
             }else if(columnParts.Length > 1)
             {
                 //column belongs to relationship DataSource
-                var relationship = relationships.FirstOrDefault(a => a.Key == columnParts[0]);
+                var relationship = relationships.FirstOrDefault(a => a.Child.Key == columnParts[0]);
                 if(relationship != null)
                 {
-                    var ds = info.Helper.Get(relationship.Key);
+                    var ds = info.Helper.Get(relationship.Child.Key);
                     var dscol = ds.Columns.FirstOrDefault(a => a.Name == columnParts[1]);
                     if(dscol != null)
                     {
                         col = new Vendor.DataSource.Column()
                         {
-                            Id = relationship.Key + "." + filter.Column,
+                            Id = filter.Column,
                             Name = ds.Name + "." + dscol.Name,
                             DataType = dscol.DataType
                         };
@@ -120,7 +120,7 @@ namespace Saber.Common.Platform
             {
                 case Vendor.DataSource.DataType.Text:
                     var viewText = new View("/Views/DataSources/Filters/text.html");
-                    viewText["column"] = col.Name;
+                    viewText["column"] = col.Id;
                     viewText["label"] = name;
                     viewText["value"] = value;
                     viewText["queryname"] = filter.QueryName;
@@ -130,7 +130,7 @@ namespace Saber.Common.Platform
                 case Vendor.DataSource.DataType.Float:
                 case Vendor.DataSource.DataType.Number:
                     var viewNumber = new View("/Views/DataSources/Filters/number.html");
-                    viewNumber["column"] = col.Name;
+                    viewNumber["column"] = col.Id;
                     viewNumber["label"] = name;
                     viewNumber["value"] = value;
                     viewNumber["queryname"] = filter.QueryName;
@@ -139,7 +139,7 @@ namespace Saber.Common.Platform
 
                 case Vendor.DataSource.DataType.Boolean:
                     var viewBool = new View("/Views/DataSources/Filters/bool.html");
-                    viewBool["column"] = col.Name;
+                    viewBool["column"] = col.Id;
                     viewBool["label"] = name;
                     viewBool["id"] = col.Name;
                     viewBool["checked"] = value == "1" ? "checked=\"checked\"" : "";
@@ -148,7 +148,7 @@ namespace Saber.Common.Platform
 
                 case Vendor.DataSource.DataType.DateTime:
                     var viewDateTime = new View("/Views/DataSources/Filters/datetime.html");
-                    viewDateTime["column"] = col.Name;
+                    viewDateTime["column"] = col.Id;
                     viewDateTime["label"] = name;
                     viewDateTime["value"] = value;
                     viewDateTime["queryname"] = filter.QueryName;
