@@ -9,7 +9,7 @@
     "cypress": "^12.7.0",
     "del": "^6.0.0",
     "google-closure-compiler-js": "^20170218.0.0",
-    "gulp": "^4.0.0",
+    "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-changed": "^3.2.0",
     "gulp-clean-css": "^2.3.2",

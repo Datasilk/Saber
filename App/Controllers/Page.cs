@@ -38,6 +38,17 @@ namespace Saber.Controllers
             var config = Common.Platform.PageInfo.GetPageConfig("content/pages/" + pathname);
             var webconfig = Common.Platform.Website.Settings.Load();
 
+            var canUseEditor = User.UserId >= 1 && 
+                !Parameters.ContainsKey("live") && (
+                    //only show editor if user has at least one sufficient security key
+                    CheckSecurity("code-editor") ||
+                    CheckSecurity("edit-content") ||
+                    CheckSecurity("page-settings") ||
+                    CheckSecurity("website-settings") ||
+                    CheckSecurity("manage-users") ||
+                    CheckSecurity("manage-security")
+                );
+
             if (uselayout)
             {
                 var html = new StringBuilder();
@@ -61,7 +72,7 @@ namespace Saber.Controllers
                 Title = config.Title.prefix + config.Title.body + config.Title.suffix;
                 Description = config.Description;
 
-                if (User.UserId >= 1 && !Parameters.ContainsKey("live"))
+                if (canUseEditor == true)
                 {
                     var view = new View("/Views/Editor/editor-iframe.html");
                     view["path"] = pathname;
@@ -193,15 +204,7 @@ namespace Saber.Controllers
 
                 html.Append("</div>");
 
-                if (User.UserId >= 1 && !Parameters.ContainsKey("live") && (
-                    //only show editor if user has at least one sufficient security key
-                    CheckSecurity("code-editor") ||
-                    CheckSecurity("edit-content") ||
-                    CheckSecurity("page-settings") ||
-                    CheckSecurity("website-settings") ||
-                    CheckSecurity("manage-users") ||
-                    CheckSecurity("manage-security")
-                    ))
+                if (canUseEditor == true)
                 {
                     AddCSS("/editor/css/iframe.css");
                     AddScript("/editor/js/iframe.js");

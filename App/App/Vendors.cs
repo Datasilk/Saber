@@ -272,6 +272,7 @@ namespace Saber.Common
                                 Console.WriteLine(ex.Message);
                                 Console.WriteLine(ex.InnerException?.Message ?? "");
                                 haserror = true;
+                                throw new Exception("Error executing " + detail.Path + "Sql/install.sql");
                             }
                         }
                     }

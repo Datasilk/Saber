@@ -556,46 +556,12 @@ namespace Saber
                 new KeyValuePair<string, string>("pages", "Content/pages")
             });
 
-            //try deleting Vendors that are marked for uninstallation
-            Common.Vendors.DeleteVendors();
-
-            //check vendor versions which may run SQL migration scripts
-            Common.Vendors.CheckVersions();
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //get list of vendor classes that inherit IVendorDataSources interface
-            foreach (var assembly in assemblies)
-            {
-                //get a list of interfaces from the assembly
-                var types = assembly.GetTypes()
-                    .Where(type => typeof(Vendor.IVendorDataSources).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
-                foreach (var type in types)
-                {
-                    Common.Vendors.GetDataSourcesFromType(type);
-                }
-            }
-            //get list of DLLs that contain the IVendorDataSources interface
-            Common.Vendors.GetDataSourcesFromFileSystem();
-            if(Core.Vendors.DataSources.Count > 0)
-            {
-                Common.Vendors.InitDataSources();
-                Console.WriteLine("Found " + Core.Vendors.DataSources.Count + " Vendor Data Source" + (Core.Vendors.DataSources.Count != 1 ? "s" : ""));
-            }
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //Get list of all Public APIs
-            var apis = PublicApi.GetList(assemblies);
-            if(apis.Count > 0)
-            {
-                Console.WriteLine("Found " + apis.Count + " Public API endpoints");
-            }
-
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //Get list of file versions
             Server.FileVersions = Query.FileVersions.GetList();
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //map all core delegates
+            //map all Saber.Core delegates
             Core.Delegates.Session.Get = Common.Session.Get;
             Core.Delegates.Session.Set = Common.Session.Set;
             Core.Delegates.Controller.CheckSecurity = Common.Platform.Controller.CheckSecurity;
@@ -643,28 +609,74 @@ namespace Saber
             Core.Delegates.Notifications.CreateNotification = Notifications.CreateNotification;
             Core.Delegates.Notifications.Render = Notifications.Render;
 
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //execute Configure method for all vendors that use IVendorStartup interface
-            foreach (var kv in Core.Vendors.Startups)
+            //try deleting Vendors that are marked for uninstallation
+            Common.Vendors.DeleteVendors();
+
+            //check vendor versions which may run SQL migration scripts
+            var pluginsCanInitialize = true;
+            try
             {
-                try
+                Common.Vendors.CheckVersions();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Skipping initialization of all plugins due to plugin installation failure!");
+                pluginsCanInitialize = false;
+            }
+
+            if(pluginsCanInitialize == true)
+            {
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //get list of vendor classes that inherit IVendorDataSources interface 
+                foreach (var assembly in assemblies)
                 {
-                    if (kv.Value != null)
+                    //get a list of interfaces from the assembly
+                    var types = assembly.GetTypes()
+                        .Where(type => typeof(Vendor.IVendorDataSources).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract).ToList();
+                    foreach (var type in types)
                     {
-                        var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
-                        vendor.Configure(app, env, config);
-                        Console.WriteLine("Configured Startup for " + kv.Key);
+                        Common.Vendors.GetDataSourcesFromType(type);
                     }
                 }
-                catch (Exception ex) {
-                    Console.WriteLine("Vendor startup error: " + ex.Message);
-                    Console.WriteLine(ex.StackTrace);
+                //get list of DLLs that contain the IVendorDataSources interface
+                Common.Vendors.GetDataSourcesFromFileSystem();
+                if (Core.Vendors.DataSources.Count > 0)
+                {
+                    Common.Vendors.InitDataSources();
+                    Console.WriteLine("Found " + Core.Vendors.DataSources.Count + " Vendor Data Source" + (Core.Vendors.DataSources.Count != 1 ? "s" : ""));
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //Get list of all Public APIs
+                var apis = PublicApi.GetList(assemblies);
+                if (apis.Count > 0)
+                {
+                    Console.WriteLine("Found " + apis.Count + " Public API endpoints");
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //execute Configure method for all vendors that use IVendorStartup interface
+                foreach (var kv in Core.Vendors.Startups)
+                {
+                    try
+                    {
+                        if (kv.Value != null)
+                        {
+                            var vendor = (Vendor.IVendorStartup)Activator.CreateInstance(kv.Value);
+                            vendor.Configure(app, env, config);
+                            Console.WriteLine("Configured Startup for " + kv.Key);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Vendor startup error: " + ex.Message);
+                        Console.WriteLine(ex.StackTrace);
+                    }
                 }
             }
 
             //copy temporary website (if neccessary) /////////////////////////////////////////////////////////////////////////
             Website.CopyTempWebsite();
-
 
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //set up SignalR hubs
@@ -735,6 +747,7 @@ namespace Saber
             Console.WriteLine($"Saber {Server.Version} is ready! <(^.^<)");
         }
 
+        #region "Helper methods"
         private string GetFileExtension(string filename)
         {
             for (int x = filename.Length - 1; x >= 0; x += -1)
@@ -747,5 +760,6 @@ namespace Saber
 
             return "";
         }
+        #endregion
     }
 }
