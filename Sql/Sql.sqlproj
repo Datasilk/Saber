@@ -153,6 +153,7 @@
     <Build Include="dbo\Tables\FileVersions.sql" />
     <Build Include="dbo\Stored Procedures\FileVersions\FileVersions_GetList.sql" />
     <Build Include="dbo\Stored Procedures\FileVersions\FileVersion_Update.sql" />
+    <Build Include="dbo\Stored Procedures\Users\Users_Count.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql.publish.xml" />

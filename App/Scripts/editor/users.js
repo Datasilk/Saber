@@ -50,6 +50,7 @@
     },
 
     search: (start, length, search, orderby, callback) => {
+        if (search == null) { search = $('#users_search').val(); }
         S.editor.users.parameters = { start: start, length: length, search: search, orderby: orderby }
         S.ajax.post('Users/List', S.editor.users.parameters,
             function (d) {
@@ -97,7 +98,7 @@
                     function (d) {
                         S.popup.hide();
                         var p = S.editor.users.parameters;
-                        S.editor.users.search(p.start, p.length, p.search, p.orderby);
+                        S.editor.users.search(p.start, p.length, data.emailaddr, p.orderby);
                     },
                     function (err) {
                         S.editor.error('.popup .msg', err.responseText);

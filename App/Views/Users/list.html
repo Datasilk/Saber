@@ -1,15 +1,19 @@
-﻿<h4>{{users-type}}</h4>
-<table class="spreadsheet">
-    <thead>
-        <tr>
-            <td>User ID</td>
-            <td>Email Address</td>
-            <td>Display Name</td>
-            <td>Date Created</td>
-            {{vendor.table.head}}
-        </tr>
-    </thead>
-    <tbody>
-        {{users}}
-    </tbody>
-</table>
+﻿<div class="row">
+    <div class="col"><h4>{{users-type}}</h4></div>
+</div>
+<div class="row pad-top">
+    <table class="spreadsheet">
+        <thead>
+            <tr>
+                <td>User ID</td>
+                <td>Email Address</td>
+                <td>Display Name</td>
+                <td>Date Created</td>
+                {{vendor.table.head}}
+            </tr>
+        </thead>
+        <tbody>
+            {{users}}
+        </tbody>
+    </table>
+</div>

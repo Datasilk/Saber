@@ -123,9 +123,14 @@ namespace Query
             Sql.ExecuteNonQuery("User_UpdateAdmin", new { userId, isadmin });
         }
 
-        public static List<Models.UserWithSecurityCount> GetList(int page = 1, int length = 25, string search = "", int orderby = 1)
+        public static List<Models.UserWithSecurityCount> GetList(int start = 1, int length = 25, string search = "", int orderby = 1)
         {
-            return Sql.Populate<Models.UserWithSecurityCount>("Users_GetList", new { page, length, search, orderby });
+            return Sql.Populate<Models.UserWithSecurityCount>("Users_GetList", new { start, length, search, orderby });
+        }
+
+        public static int Count(string search = "")
+        {
+            return Sql.ExecuteScalar<int>("Users_Count", new { search });
         }
 
         public static void Disable(int userId)

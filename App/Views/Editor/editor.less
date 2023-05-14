@@ -565,6 +565,16 @@ ul.menu-bar{float:left; list-style:none;
     
 }
 
+/* paging */
+.box .paging{
+    .paging-info{padding:5px 10px; opacity:0.6;}
+    .page-item{padding:5px; margin:0 3px;
+        &.selected{outline:2px solid #ffffff77; border-radius:4px;}
+    }
+    .previous, .next, .no-previous, .no-next{padding:5px;}
+    .no-previous, .no-next{opacity:0.6;}
+}
+
 /* tooltip */
 .tooltip-container{ position:relative;
     & > *:not(.tooltip){cursor:default;}

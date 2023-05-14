@@ -31,6 +31,8 @@
     <Content Remove="Views\ImportExport\export.html" />
     <Content Remove="Views\ImportExport\import.html" />
     <Content Remove="Views\Market\toolbar.html" />
+    <Content Remove="Views\Users\page-item.html" />
+    <Content Remove="Views\Users\paging.html" />
     <None Remove="views\contentfields\contentfields.js" />
     <None Remove="Views\ContentFields\readonly.html" />
     <None Remove="Views\Editor\layout.html" />

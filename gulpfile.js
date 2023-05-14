@@ -322,7 +322,7 @@ gulp.task('less:utility', function () {
     var p = gulp.src(paths.working.less.utility)
         .pipe(less());
     //if (prod == true) { p = p.pipe(cleancss()); }
-    return p.pipe(gulp.dest(paths.compiled.css + 'themes', { overwrite: true }));
+    return p.pipe(gulp.dest(paths.compiled.css + 'utility', { overwrite: true }));
 });
 
 gulp.task('css:themes', function () {
@@ -577,7 +577,7 @@ gulp.task('watch', function () {
     //watch themes LESS
     gulp.watch([
         paths.working.less.themes
-    ], gulp.series('less:themes', 'less:platform'));
+    ], gulp.series('less:themes'));
 
     //watch vendor LESS
     var watchVendorLESS = gulp.watch(paths.working.vendors.less);

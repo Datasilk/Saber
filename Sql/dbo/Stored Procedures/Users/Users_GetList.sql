@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[Users_GetList]
-	@page int = 1,
+	@start int = 1,
 	@length int = 10,
 	@search nvarchar(MAX) = '',
 	@orderby int = 0
@@ -33,5 +33,5 @@ BEGIN
 	CASE WHEN @orderby = 0 THEN u.userId END ASC,
 	CASE WHEN @orderby = 1 THEN u.email END ASC,
 	CASE WHEN @orderby = 2 THEN u.datecreated END DESC
-	OFFSET @length * (@page - 1) ROWS FETCH NEXT @length ROWS ONLY
+	OFFSET @start ROWS FETCH NEXT @length ROWS ONLY
 END

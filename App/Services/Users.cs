@@ -12,9 +12,12 @@ namespace Saber.Services
             var list = new View("/Views/Users/list.html");
             var listitem = new View("/Views/Users/list-item.html");
             var users = Query.Users.GetList(start, length, search);
+            var total = Query.Users.Count(search);
             var lists = new StringBuilder();
             var html = new StringBuilder();
             var showAdmins = false;
+
+            //render lists of admins & users
             foreach(var user in users)
             {
                 if(showAdmins == false && user.userId != 1 && user.security == 0)
@@ -47,6 +50,59 @@ namespace Saber.Services
                 lists.Append(list.Render());
             }
             view["lists"] = lists.ToString();
+
+            //render paging
+            if(total > 0)
+            {
+                var end = start + length > total ? total : start + length - 1;
+                var pagingView = new View("/Views/Users/paging.html");
+                var pageItemView = new View("/Views/Users/page-item.html");
+                pagingView["total"] = total.ToString();
+                pagingView["start"] = start.ToString();
+                pagingView["end"] = end.ToString();
+                var pagingItems = new StringBuilder();
+                var pageLink = "S.editor.users.search(#start#, " + length + ", null, " + orderby + ")";
+                var i = 0;
+                if (start > 1)
+                {
+                    pagingView.Show("previous");
+                    pagingView["prev-click"] = pageLink.Replace("#start#", (start - length).ToString());
+                    for (var x = (start - (length * 3)) < 1 ? 1 : start - (length * 3); x < start; x += length)
+                    {
+                        i++;
+                        pageItemView.Clear();
+                        pageItemView.Show("not-selected");
+                        pageItemView["page-num"] = ((x / length) + 1).ToString();
+                        pageItemView["onclick"] = pageLink.Replace("#start#", x.ToString());
+                        pagingItems.Append(pageItemView.Render());
+                    }
+                }
+                else
+                {
+                    pagingView.Show("no-previous");
+                }
+                if (start + length < total)
+                {
+                    pagingView.Show("next");
+                    pagingView["next-click"] = pageLink.Replace("#start#", (start + length).ToString());
+                }
+                else
+                {
+                    pagingView.Show("no-next");
+                }
+                for (var x = start; x < total; x += length)
+                {
+                    i++;
+                    if (i > 6) { break; }
+                    pageItemView.Clear();
+                    if (x == start) { pageItemView.Show("selected"); } else { pageItemView.Show("not-selected"); }
+                    pageItemView["page-num"] = ((x / length) + 1).ToString();
+                    pageItemView["onclick"] = pageLink.Replace("#start#", x.ToString());
+                    pagingItems.Append(pageItemView.Render());
+                }
+                pagingView["pages"] = pagingItems.ToString();
+                view["paging"] = pagingView.Render();
+            }
 
             //get list of security groups that can be assigned to users
             var groups = Query.Security.Groups.GetList();

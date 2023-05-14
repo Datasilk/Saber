@@ -18,16 +18,45 @@ namespace Saber.Common.Platform.HtmlComponents
                 new HtmlComponentModel()
                 {
                     Key = "user",
-                    Name = "User Logged In",
+                    Name = "User Content",
                     Block = true,
+                    NoID = true,
                     ContentField = false,
                     Description = "Display a block of HTML if the user is logged into their account",
+                    Icon = "components/user.svg",
+                    Parameters = new Dictionary<string, HtmlComponentParameter>()
+                    {
+                        {"security-key", new HtmlComponentParameter()
+                            {
+                            DataType = HtmlComponentParameterDataType.Text,
+                            Description = "Show the block if the user has access to a specific security key",
+                            Name = "Security Key",
+                            Required = false
+                            } 
+                        },
+                        {"is-admin", new HtmlComponentParameter()
+                            {
+                                DataType = HtmlComponentParameterDataType.Boolean,
+                                Description = "Show to block if the user is an administrator",
+                                Name = "Is Administrator",
+                                Required = false
+                            }
+                        }
+                    },
                     Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
                     {
                         var results = new List<KeyValuePair<string, string>>();
                         //check if user is logged in
                         if(request.User.UserId > 0 && !request.Parameters.ContainsKey("live"))
                         {
+                            if(args.ContainsKey("security-key") && !request.CheckSecurity(args["security-key"]))
+                            {
+                                return results;
+                            }
+                            else if(args.ContainsKey("is-admin") && request.User.IsAdmin == false)
+                            {
+                                return results;
+                            }
                             results.Add(new KeyValuePair<string, string>(prefix + "user", "True"));
                         }
                         return results;

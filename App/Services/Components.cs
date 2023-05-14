@@ -9,10 +9,11 @@ namespace Saber.Services
         public string GetParameters(string key)
         {
             if(!CheckSecurity("code-editor") || User.PublicApi) { return AccessDenied(); }
+            var parameters = new List<Models.HtmlComponentParams>();
             switch (key)
             {
                 case "special-vars":
-                    return JsonResponse(new List<Models.HtmlComponentParams>()
+                    parameters = new List<Models.HtmlComponentParams>()
                     {
                         new Models.HtmlComponentParams()
                         {
@@ -25,9 +26,10 @@ namespace Saber.Services
                                 a.Value.Name + (a.Value.Block == true ? " (block)" : "") + "</option>").Replace("\"", "&q;")).ToArray(),
                             Description = "The relative path to your partial HTML file (e.g. \"partials/menu.html\")"
                         }
-                    });
+                    };
+                    break;
                 case "partial-view":
-                    return JsonResponse(new List<Models.HtmlComponentParams>()
+                    parameters = new List<Models.HtmlComponentParams>()
                     {
                         new Models.HtmlComponentParams()
                         {
@@ -36,13 +38,13 @@ namespace Saber.Services
                             DataType = (int)Vendor.HtmlComponentParameterDataType.WebPage,
                             Description = "The relative path to your partial HTML file (e.g. \"partials/menu.html\")"
                         }
-                    });
+                    };
+                    break;
                 default:
                     //vendor component
                     var component = Core.Vendors.HtmlComponents.ContainsKey(key) ? Core.Vendors.HtmlComponents[key] : null;
                     if(component != null)
                     {
-                        var parameters = new List<Models.HtmlComponentParams>();
                         foreach (var param in component.Parameters)
                         {
                             parameters.Add(new Models.HtmlComponentParams()
@@ -58,11 +60,25 @@ namespace Saber.Services
                                 AddItemJs = param.Value.AddItemJs
                             });
                         }
-                        return JsonResponse(parameters);
+                        return JsonResponse(new
+                        {
+                            description = component.Description,
+                            block = component.Block,
+                            noId = component.NoID,
+                            website = component.Website,
+                            parameters
+                        });
                     }
                     break;
             }
-            return Error();
+            return JsonResponse(new
+            {
+                description = "",
+                block = false,
+                noId = false,
+                website = "",
+                parameters
+            });
         }
     }
 }

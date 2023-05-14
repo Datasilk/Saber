@@ -45,7 +45,8 @@
 
     configure: {
         show: (key, name) => {
-            S.ajax.post('Components/GetParameters', { key: key }, (params) => {
+            S.ajax.post('Components/GetParameters', { key: key }, (component) => {
+                var params = component.parameters;
                 var html = $('#template_component_config').html()
                     .replace('##key##', key).replace('##name##', name)
                     .replace('##button-title##', 'Create ' + name);
@@ -53,14 +54,14 @@
                 var htmlparamlist = $('#template_component_param_list').html();
                 var fields = [];
                 var idfield = $('#template_component_id').html();
-
                 if (key == 'partial-view') {
-                    html = html.replace('##id-field##', idfield).replace('##optional##', '');
-                } else if (key == 'special-vars') {
+                    html = html.replace('##id-field##', idfield);
+                } else if (key == 'special-vars' || component.noId == true) {
                     html = html.replace('##id-field##', '');
                 } else {
                     html = html.replace('##id-field##', idfield).replace('##optional##', '<span class="faded">optional</span>');
                 }
+                html = html.replace('##optional##', '');
                 if (params != null && params.length > 0) {
                     for (var x = 0; x < params.length; x++) {
                         var param = params[x];
@@ -74,7 +75,8 @@
                             : htmlparam;
                         field = field.replace('##name##', param.Name)
                             .replace('##param-key##', 'param-' + param.Key)
-                            .replace('##required##', !required ? '<span class="faded">optional</span>' : '');
+                            .replace('##required##', !required ? '<span class="faded">optional</span>' : '')
+                            .replace('##optional-class##', !required ? 'optional' : '');
                         switch (param.DataType) {
                             case 0: //text
                                 fields.push(field.replace('##input##', '<input type="text"' + id + clss + spellchk + ' ' +
@@ -173,8 +175,8 @@
                     var inputs = $('.component-configure').find('.input-field');
                     var suffix = $('#component_id').length > 0 ? $('#component_id').val() : '';
                     var componentId = $('#component_key').val();
-                    var mustache = '{{' + componentId +
-                        (suffix && suffix != '' ? '-' + suffix : '');
+                    var varname = componentId + (suffix && suffix != '' ? '-' + suffix : '');
+                    var mustache = '{{' + varname;
                     if (key == 'partial-view') {
                         //generate partial view
                         mustache = '{{' + suffix + ' "' + $('#param_page').val() + '"}}';
@@ -195,6 +197,9 @@
                             var value = input.val();
                             if (input.attr('type') == 'checkbox') {
                                 value = input[0].checked ? '1' : '0';
+                                if (value == '0' && input.parents('.component-param').hasClass('optional')) {
+                                    value = '';
+                                }
                             }
                             if (id && id != '' && value && value != '') {
                                 mustache += (paramlen > 0 ? ',' : '') + ' ' + id + ':"' + value + '"';
@@ -202,6 +207,9 @@
                             }
                         }
                         mustache += '}}';
+                        if (component.block == true) {
+                            mustache += '{{/' + varname + '}}';
+                        }
                     }
                     if (S.editor.type == 0) {
                         //monaco editor
