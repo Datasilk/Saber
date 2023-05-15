@@ -9,11 +9,10 @@ BEGIN
 	WHERE 
 	(
 		(@search <> '' AND 
-			(
+			( 
 				u.[name] LIKE '%' + @search + '%'
 				OR u.email LIKE '%' + @search + '%'
 			)
-			OR @search = ''
-		)
+		) OR @search = ''
 	)
 END

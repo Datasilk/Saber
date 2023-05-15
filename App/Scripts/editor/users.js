@@ -55,6 +55,13 @@
         S.ajax.post('Users/List', S.editor.users.parameters,
             function (d) {
                 $('.sections > .users-management .scroller').html(d);
+                $('.sections > .users-management button.search').on('click', () => {
+                    S.editor.users.search(1, length, null, 1);
+                });
+                $('.sections > .users-management .search form').on('submit', (e) => {
+                    e.preventDefault();
+                    S.editor.users.search(1, length, null, 1);
+                });
                 S.editor.users._loaded = true;
                 //add event listeners
                 $('.users-management tbody tr').on('click', (e) => {

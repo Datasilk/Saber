@@ -22,16 +22,15 @@ BEGIN
 	WHERE 
 	(
 		(@search <> '' AND 
-			(
+			( 
 				u.[name] LIKE '%' + @search + '%'
 				OR u.email LIKE '%' + @search + '%'
 			)
-			OR @search = ''
-		)
+		) OR @search = ''
 	)
 	ORDER BY sec.total DESC,
 	CASE WHEN @orderby = 0 THEN u.userId END ASC,
 	CASE WHEN @orderby = 1 THEN u.email END ASC,
 	CASE WHEN @orderby = 2 THEN u.datecreated END DESC
-	OFFSET @start ROWS FETCH NEXT @length ROWS ONLY
+	OFFSET @start - 1 ROWS FETCH NEXT @length ROWS ONLY
 END

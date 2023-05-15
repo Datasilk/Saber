@@ -6,6 +6,14 @@
     .users-management .spreadsheet td:nth-child(3){max-width:100px;}
     .users-management .spreadsheet td:nth-child(4){width:175px;}
 </style>
+<div class="row hover search">
+    <form>
+        <div class="col input"><input type="text" id="users_search" value="{{search}}" placeholder="search for users" /></div>
+        <div class="col input pad-right">
+            <button class="search button">Search</button>
+        </div>
+    </form>
+</div>
 <div class="row paging pad-top">
     {{paging}}
 </div>
@@ -16,7 +24,7 @@
     {{paging}}
 </div>
 <script id="users_manage_toolbar" type="text/html">
-    <button class="new-user button">+ New User</button>
+    <button class="new-user button special">+ New User</button>
 
     <a class="user-settings icon button small">
         <svg viewBox="0 0 32 32">

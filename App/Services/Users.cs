@@ -50,9 +50,10 @@ namespace Saber.Services
                 lists.Append(list.Render());
             }
             view["lists"] = lists.ToString();
+            view["search"] = search;
 
             //render paging
-            if(total > 0)
+            if (total > 0)
             {
                 var end = start + length > total ? total : start + length - 1;
                 var pagingView = new View("/Views/Users/paging.html");
