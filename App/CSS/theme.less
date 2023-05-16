@@ -54,71 +54,52 @@
 .box{font-family:Jaldi, Arial, Helvetica, sans-serif; font-size:13px; font-weight:300; letter-spacing:0;
     textarea, input, select{font-family:Jaldi, Arial, Helvetica, sans-serif; font-size:13px; font-weight:300; letter-spacing:0;}
     h1, h2, h3, h4, h5, h6, .col, .row{font-family:Jaldi, Arial, Helvetica, sans-serif; font-size:13px; font-weight:300; letter-spacing:0;}
-    .box(transparent, transparent, #ddd);
-    .links(#0099FF, #006bff, #006bff, #0099FF);
-    .icons(#ccc, #0099FF, #0099FF, #ccc);
-    .row(transparent, #202e3c, #0e375e, #ddd, #b1d3ea, #cde4f3, #0099ff, #007aff, #007aff, #0099ff, #6ac3ff, #ddd, #fff, #77bbe9, #77bbe9);
-    .row.light:hover, .row.light.selected{background:#0082ff;}
-    .fonts(#ddd, #ddd, #009B87, #4DA400, #FF2222, #376EB2);
-    .input(#2a2a2a, #ddd, #444, #555, #2a2a2a, #ddd, #274052, #2a2a2a, #ddd, #185682, #7eccff, #40b4ff);
-    .line(#2f2f2f); 
-    .button(default,  #0082ff, #004eff, #004eff, #0082ff, #0082ff, #004eff, #004eff, #0082ff, #0082ff, #004eff, #004eff, #0082ff, #fff, #fff, #fff, #fff);
-    .button(special,  #6666ff, #5353f7, #5353f7, #5353f7, #6666ff, #5353f7, #5353f7, #5353f7, #6666ff, #5353f7, #5353f7, #5353f7, #fff, #fff, #fff, #fff);
-    .button(cancel,   #696969, #31be85, #31be85, #31be85, #696969, #31be85, #31be85, #31be85, #696969, #31be85, #31be85, #31be85, #fff, #fff, #fff, #fff);
-    .button(disabled, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #a9d7ec, #fff, #fff, #fff, #fff);
-    .button(delete,   #5d4040, #c95454, #c95454, #c95454, #5d4040, #c95454, #c95454, #c95454, #5d4040, #c95454, #c95454, #c95454, #d4a6a6, #fff, #fff, #fff);
-    .message(default, #31516c, transparent, #94d3ff, #14f4ff);
-    .message(error,   #8d4444, transparent, #fec5c5, #ffd28e);
-    .message(alert,   #595928, transparent, #dbd47f, #ffed0f); 
-    .message(confirm, #385425, transparent, #9dd7b3, #4fd77f); 
+    .box(transparent, transparent, var(--font));
+    .links(var(--link-color), var(--link-hover), var(--link-active), var(--link-visited));
+    .icons(var(--icon-color), var(--icon-hover), var(--icon-active), var(--icon-visited));
+    .row(var(--row-bg), var(--row-hover-bg), var(--row-selected-bg), var(--row-font), var(--row-hover-font), var(--row-selected-font), var(--row-link), var(--row-link-hover), var(--row-link-active), var(--row-link-visited), var(--row-selected-link), var(--row-icon), var(--row-icon-hover), var(--row-icon-active), var(--row-icon-selected));
+    .row.light:hover, .row.light.selected{background:var(--row-light-hover-bg);}
+    .fonts(var(--font), var(--font-faded), var(--font-price), var(--font-positive), var(--font-negative), var(--font-time));
+    .input(var(--input-bg), var(--input-color), var(--input-border), var(--input-placeholder), var(--input-hover-bg), var(--input-hover-font), var(--input-hover-border), var(--input-focus-bg), var(--input-focus-font), var(--input-focus-border), var(--input-label), var(--input-hover-label));
+    .line(var(--hr)); 
 
-    @perc:3%;
-    @perc2:1%;
+    .button(default,  var(--btn-default-bg), var(--btn-default-hover-bg), var(--btn-default-active-bg), var(--btn-default-selected-bg), var(--btn-default-border), var(--btn-default-hover-border), var(--btn-default-active-border), var(--btn-default-selected-border), var(--btn-default-outline), var(--btn-default-hover-outline), var(--btn-default-active-outline), var(--btn-default-selected-outline), var(--btn-default-font), var(--btn-default-hover-font), var(--btn-default-active-font), var(--btn-default-selected-font));
+    .button(special,  var(--btn-special-bg), var(--btn-special-hover-bg), var(--btn-special-active-bg), var(--btn-special-selected-bg), var(--btn-special-border), var(--btn-special-hover-border), var(--btn-special-active-border), var(--btn-special-selected-border), var(--btn-special-outline), var(--btn-special-hover-outline), var(--btn-special-active-outline), var(--btn-special-selected-outline), var(--btn-special-font), var(--btn-special-hover-font), var(--btn-special-active-font), var(--btn-special-selected-font));
+    .button(cancel,  var(--btn-cancel-bg), var(--btn-cancel-hover-bg), var(--btn-cancel-active-bg), var(--btn-cancel-selected-bg), var(--btn-cancel-border), var(--btn-cancel-hover-border), var(--btn-cancel-active-border), var(--btn-cancel-selected-border), var(--btn-cancel-outline), var(--btn-cancel-hover-outline), var(--btn-cancel-active-outline), var(--btn-cancel-selected-outline), var(--btn-cancel-font), var(--btn-cancel-hover-font), var(--btn-cancel-active-font), var(--btn-cancel-selected-font));
+    .button(disabled,  var(--btn-disabled-bg), var(--btn-disabled-hover-bg), var(--btn-disabled-active-bg), var(--btn-disabled-selected-bg), var(--btn-disabled-border), var(--btn-disabled-hover-border), var(--btn-disabled-active-border), var(--btn-disabled-selected-border), var(--btn-disabled-outline), var(--btn-disabled-hover-outline), var(--btn-disabled-active-outline), var(--btn-disabled-selected-outline), var(--btn-disabled-font), var(--btn-disabled-hover-font), var(--btn-disabled-active-font), var(--btn-disabled-selected-font));
+    .button(delete,  var(--btn-delete-bg), var(--btn-delete-hover-bg), var(--btn-delete-active-bg), var(--btn-delete-selected-bg), var(--btn-delete-border), var(--btn-delete-hover-border), var(--btn-delete-active-border), var(--btn-delete-selected-border), var(--btn-delete-outline), var(--btn-delete-hover-outline), var(--btn-delete-active-outline), var(--btn-delete-selected-outline), var(--btn-delete-font), var(--btn-delete-hover-font), var(--btn-delete-active-font), var(--btn-delete-selected-font));
+
+    .message(default, var(--msg-default-bg), var(--msg-default-border), var(--msg-default-font), var(--msg-default-link), var(--msg-default-link));
+    .message(error, var(--msg-error-bg), var(--msg-error-border), var(--msg-error-font), var(--msg-error-link), var(--msg-error-link));
+    .message(alert, var(--msg-alert-bg), var(--msg-alert-border), var(--msg-alert-font), var(--msg-alert-link), var(--msg-alert-link));
+    .message(confirm, var(--msg-confirm-bg), var(--msg-confirm-border), var(--msg-confirm-font), var(--msg-confirm-link), var(--msg-confirm-link));
+
     .table(
-        #2f2f2f, #949494, #949494, #949494, #949494, #949494, //table header
-        #272727, #113454, #003b73, #fff, #fff, #fff, #0099FF, #006bff, #006bff, #0099FF, #fff, #fff, #fff, #fff, //row
-        darken(#2b2b2b, @perc), darken(#113454, @perc2), darken(#003b73, @perc2), darken(#fff, @perc), darken(#fff, @perc), //alt row
-        darken(#fff, @perc), darken(#0099FF, @perc), darken(#006bff, @perc), darken(#006bff, @perc), darken(#0099FF, @perc), //alt row
-        #fff, #fff, #fff, #fff//alt row
+        var(--table-header-bg), var(--table-header-font), var(--table-header-a-link), var(--table-header-a-hover), var(--table-header-a-active), var(--table-header-a-visited), //table header
+        var(--table-row-bg), var(--table-row-hover-bg), var(--table-row-selected-bg), var(--table-row-font), var(--table-row-font-hover), var(--table-row-font-selected), var(--table-row-a-link), var(--table-row-a-hover), var(--table-row-a-active), var(--table-row-a-visited), var(--table-row-icon-link), var(--table-row-icon-hover), var(--table-row-icon-active), var(--table-row-icon-selected), //row
+        var(--table-row-alt-bg), var(--table-row-alt-hover-bg), var(--table-row-alt-selected-bg), var(--table-row-alt-font), var(--table-row-alt-font-hover), var(--table-row-alt-font-selected), var(--table-row-alt-a-link), var(--table-row-alt-a-hover), var(--table-row-alt-a-active), var(--table-row-alt-a-visited), var(--table-row-alt-icon-link), var(--table-row-alt-icon-hover), var(--table-row-alt-icon-active), var(--table-row-alt-icon-selected) //alt row
     );
-    .spreadsheet .row.hover:hover{background-color:#0082ff;}
-
+    .spreadsheet .row.hover:hover{background-color:var(--table-col-row-hover-bg);}
     .spreadsheet tbody > {
         tr, tr:nth-child(even) {
             .icon.btn-close{ 
-                use{color:#cc0000; fill:#cc0000; }
-                &:hover use{color:#ff0000; fill:#ff0000;}
+                use{color:var(--button-close); fill:var(--button-close); }
+                &:hover use{color:var(--button-close-hover); fill:var(--button-close-hover);}
             }
         }
     }
 }
 
 /* backgrounds for various UI element */
-.box.bg{background:#1d1d1d;}
+.box.bg{background:var(--bg);}
 .menu-bar .box.bg, .file-browser, .code-bar, .box .tooltip{
-    background:#2a2a2a;
-    .line(#444); 
+    background:var(--toolbar-bg);
+    .line(var(--toolbar-hr)); 
 }
-.box .toolbar, .box .menu-bar, .box .drop-menu{background:#2a2a2a;}
-.box .toolbar.for-tabs{background:#1d1d1d;}
-.box .code-bar{color:#999;}
-.box .content-fields .code{background:#353535; }
-.box .section, .popup{
-    .box(#222, #444, #ddd); 
-}
-.box .tabs li.selected > .row{border-bottom-color:#0099ff; }
-.box header{
-    .box(#222222, transparent, #ddd); 
-}
-
-/* editor tab */
-.editor-tab .box{
-    &.bg{background-color:#1d1d1d;}
-    .icons(#ddd, #0099FF, #0099FF, #0099FF);
-    .row(transparent, #004d81, #004d81, #eee, #a0d9ff, #a0d9ff, #0099FF, #0099FF, #0099FF, #0099FF, #0099FF, #eee, #a0d9ff, #a0d9ff, #a0d9ff);
-}
-.editor-tab:hover > .box{
-    &.bg{background-color:#00295e;}
+.box .toolbar, .box .menu-bar, .box .drop-menu{background:var(--toolbar-bg);}
+.box .code-bar{color:var(--font-faded);}
+.box .popup{
+    .box(var(--popup-bg), var(--popup-border), var(--popup-font)); 
 }
 
 /* popups */
@@ -132,8 +113,8 @@
         }
     }
     .icon.btn-close{ 
-        use{color:#cc0000; fill:#cc0000; }
-        &:hover use{color:#ff0000; fill:#ff0000;}
+        use{color:var(--button-close); fill:var(--button-close); }
+        &:hover use{color:var(--button-close-hover); fill:var(--button-close-hover);}
     }
 }
 
@@ -204,7 +185,7 @@
     }
 
     /* file bar */
-    .file-bar{background:#1d1d1d;
+    .file-bar{background:var(--bg);
         .row.hover:hover{background:#0082ff;}
         .file-path{color:#90d3ff;}
     }
@@ -225,8 +206,8 @@
     .resources-list{
         .img{background-color:#000;}
         .img:hover{background-color:#111;}
-        .close-btn, .btn-close{ use{color:#cc0000; fill:#cc0000; }}
-        .close-btn, .btn-close{&:hover use{color:#ff0000; fill:#ff0000;}}
+        .close-btn, .btn-close{ use{color:var(--button-close); fill:var(--button-close); }}
+        .close-btn, .btn-close{&:hover use{color:var(--button-close-hover); fill:var(--button-close-hover);}}
     }
 
     /* accordion*/

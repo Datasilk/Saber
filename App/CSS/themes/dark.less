@@ -1,1 +1,203 @@
 ﻿@import "../theme.less";
+
+:root{
+    --bg:#1d1d1d;
+    --hr:#2f2f2f;
+    --font:#ddd;
+    --font-faded:#999;
+    --font-price:#009B87;
+    --font-positive:#4DA400;
+    --font-negative:#FF2222;
+    --font-time:#376EB2;
+    
+    --toolbar-bg:#2a2a2a;
+    --toolbar-hr:#444;
+
+    --link-color:#0099FF;
+    --link-hover:#006bff;
+    --link-active:#006bff;
+    --link-visited:#0099FF;
+
+    --icon-color:#CCC;
+    --icon-hover:#006bff;
+    --icon-active:#006bff;
+    --icon-visited:#CCC;
+
+    --input-bg:#2a2a2a;
+    --input-color:#ddd;
+    --input-border:#444;
+    --input-placeholder:#555;
+    --input-hover-bg:#2a2a2a;
+    --input-hover-font:#ddd;
+    --input-hover-border:#274052;
+    --input-hover-label:#40b4ff;
+    --input-focus-bg:#2a2a2a;
+    --input-focus-font:#ddd;
+    --input-focus-border:#185682;
+    --input-label:#7eccff;
+    
+    --row-bg:transparent;
+    --row-font:#ddd;
+    --row-hover-bg:#202e3c;
+    --row-hover-font:#b1d3ea;
+    --row-selected-bg:#0e375e;
+    --row-selected-font:#cde4f3;
+    --row-selected-link:#6ac3ff;
+    --row-link:#0099ff;
+    --row-link-hover:#007aff;
+    --row-link-active:#007aff;
+    --row-link-visited:#0099ff;
+    --row-icon:#ddd;
+    --row-icon-hover:#fff;
+    --row-icon-active:#77bbe9;
+    --row-icon-selected:#77bbe9;
+    --row-light-hover-bg:#202e3c;
+
+    --btn-default-bg:#0082ff;
+    --btn-default-font:#fff;
+    --btn-default-border:#0082ff;
+    --btn-default-outline:#0082ff;
+    --btn-default-hover-bg:#004eff;
+    --btn-default-hover-font:#fff;
+    --btn-default-hover-border:#004eff;
+    --btn-default-hover-outline:#004eff;
+    --btn-default-active-bg:#004eff;
+    --btn-default-active-font:#fff;
+    --btn-default-active-border:#004eff;
+    --btn-default-active-outline:#004eff;
+    --btn-default-selected-bg:#0082ff;
+    --btn-default-selected-font:#fff;
+    --btn-default-selected-border:#0082ff;
+    --btn-default-selected-outline:#0082ff;
+
+    --btn-special-bg:#6666ff;
+    --btn-special-font:#fff;
+    --btn-special-border:#6666ff;
+    --btn-special-outline:#6666ff;
+    --btn-special-hover-bg:#5353f7;
+    --btn-special-hover-font:#fff;
+    --btn-special-hover-border:#5353f7;
+    --btn-special-hover-outline:#5353f7;
+    --btn-special-active-bg:#5353f7;
+    --btn-special-active-font:#fff;
+    --btn-special-active-border:#5353f7;
+    --btn-special-active-outline:#5353f7;
+    --btn-special-selected-bg:#5353f7;
+    --btn-special-selected-font:#fff;
+    --btn-special-selected-border:#5353f7;
+    --btn-special-selected-outline:#5353f7;
+
+    --btn-cancel-bg:#696969;
+    --btn-cancel-font:#fff;
+    --btn-cancel-border:#696969;
+    --btn-cancel-outline:#696969;
+    --btn-cancel-hover-bg:#31be85;
+    --btn-cancel-hover-font:#fff;
+    --btn-cancel-hover-border:#31be85;
+    --btn-cancel-hover-outline:#31be85;
+    --btn-cancel-active-bg:#31be85;
+    --btn-cancel-active-font:#fff;
+    --btn-cancel-active-border:#31be85;
+    --btn-cancel-active-outline:#31be85;
+    --btn-cancel-selected-bg:#31be85;
+    --btn-cancel-selected-font:#fff;
+    --btn-cancel-selected-border:#31be85;
+    --btn-cancel-selected-outline:#31be85;
+
+    --btn-disabled-bg:#a9d7ec;
+    --btn-disabled-font:#fff;
+    --btn-disabled-border:#a9d7ec;
+    --btn-disabled-outline:#a9d7ec;
+    --btn-disabled-hover-bg:#a9d7ec;
+    --btn-disabled-hover-font:#fff;
+    --btn-disabled-hover-border:#a9d7ec;
+    --btn-disabled-hover-outline:#a9d7ec;
+    --btn-disabled-active-bg:#a9d7ec;
+    --btn-disabled-active-font:#fff;
+    --btn-disabled-active-border:#a9d7ec;
+    --btn-disabled-active-outline:#a9d7ec;
+    --btn-disabled-selected-bg:#a9d7ec;
+    --btn-disabled-selected-font:#fff;
+    --btn-disabled-selected-border:#a9d7ec;
+    --btn-disabled-selected-outline:#a9d7ec;
+
+    --btn-delete-bg:#5d4040;
+    --btn-delete-font:#d4a6a6;
+    --btn-delete-border:#5d4040;
+    --btn-delete-outline:#5d4040;
+    --btn-delete-hover-bg:#c95454;
+    --btn-delete-hover-font:#fff;
+    --btn-delete-hover-border:#c95454;
+    --btn-delete-hover-outline:#c95454;
+    --btn-delete-active-bg:#c95454;
+    --btn-delete-active-font:#fff;
+    --btn-delete-active-border:#c95454;
+    --btn-delete-active-outline:#c95454;
+    --btn-delete-selected-bg:#c95454;
+    --btn-delete-selected-font:#fff;
+    --btn-delete-selected-border:#c95454;
+    --btn-delete-selected-outline:#c95454;
+
+    --msg-default-bg:#31516c;
+    --msg-default-border:transparent;
+    --msg-default-font:#94d3ff;
+    --msg-default-link:#14f4ff;
+
+    --msg-error-bg:#8d4444;
+    --msg-error-border:transparent;
+    --msg-error-font:#fec5c5;
+    --msg-error-link:#ffd28e;
+
+    --msg-alert-bg:#595928;
+    --msg-alert-border:transparent;
+    --msg-alert-font:#dbd47f;
+    --msg-alert-link:#ffed0f;
+
+    --msg-confirm-bg:#385425;
+    --msg-confirm-border:transparent;
+    --msg-confirm-font:#9dd7b3;
+    --msg-confirm-link:#4fd77f;
+
+    --table-header-bg:#2f2f2f;
+    --table-header-font:#949494;
+    --table-header-a-link:#949494;
+    --table-header-a-hover:#949494;
+    --table-header-a-active:#949494;
+    --table-header-a-visited:#949494;
+    --table-row-bg:#272727;
+    --table-row-hover-bg:#113454;
+    --table-row-selected-bg:#003b73;
+    --table-row-font:#fff;
+    --table-row-font-hover:#fff;
+    --table-row-font-selected:#fff;
+    --table-row-a-link:#0099FF;
+    --table-row-a-hover:#006bff;
+    --table-row-a-active:#006bff;
+    --table-row-a-visited:#0099FF;
+    --table-row-icon-link:#fff;
+    --table-row-icon-hover:#fff;
+    --table-row-icon-active:#fff;
+    --table-row-icon-selected:#fff;
+    --table-row-alt-bg:darken(#2b2b2b, 3%);
+    --table-row-alt-hover-bg:darken(#113454, 1%);
+    --table-row-alt-selected-bg:darken(#003b73, 1%);
+    --table-row-alt-font:darken(#fff, 3%);
+    --table-row-alt-font-hover:darken(#fff, 3%);
+    --table-row-alt-font-selected:darken(#fff, 3%);
+    --table-row-alt-a-link:darken(#0099FF, 3%);
+    --table-row-alt-a-hover:darken(#006bff, 3%);
+    --table-row-alt-a-active:darken(#006bff, 3%);
+    --table-row-alt-a-visited:darken(#0099FF, 3%);
+    --table-row-alt-icon-link:#fff;
+    --table-row-alt-icon-hover:#fff;
+    --table-row-alt-icon-active:#fff;
+    --table-row-alt-icon-selected:#fff;
+    --table-col-row-hover-bg:#0082ff;
+    
+    --popup-bg:#222;
+    --popup-border:#444;
+    --popup-font:#ddd;
+
+    --button-close:#cc0000;
+    --button-close-hover:#ff0000;
+}
