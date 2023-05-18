@@ -169,7 +169,7 @@ ul.menu-bar{float:left; list-style:none;
 .box.editor .tab{
     p, ul{display:block;}
     p, ul, li{padding-bottom:10px;}
-    ul.menu, ul.menu li{padding-bottom:0;}
+    ul.menu{padding-bottom:0;}
     p{padding-bottom:10px;}
 }
 
@@ -298,7 +298,7 @@ ul.menu-bar{float:left; list-style:none;
 
 /* image menu */
 .box.editor .img, .box.popup .img{
-    .menu{position:absolute; bottom: 10px; right: 10px;
+    .menu{position:absolute; bottom: 10px; right: 10px; padding-bottom:0;
         ul{list-style:none;display:block;}
         li{padding:6px 10px; font-size:13px; display:block;}
         a{text-decoration:none;}
@@ -573,28 +573,6 @@ ul.menu-bar{float:left; list-style:none;
     }
     .previous, .next, .no-previous, .no-next{padding:5px;}
     .no-previous, .no-next{opacity:0.6;}
-}
-
-/* tooltip */
-.tooltip-container{ position:relative;
-    & > *:not(.tooltip){cursor:default;}
-    .tooltip{display:none; position:absolute; z-index:1000; padding:10px; border-radius:6px; width:~"calc(100% - 10px)";
-        ul{padding-left:15px;}
-        li{padding:10px;}
-    }
-    .tooltip.below{top:~"calc(100% + 12px)";
-        &:after{
-            bottom: 100%; left:~"calc(50% - 15px)"; border: solid transparent; content: " "; height: 0; width: 0; 
-            position: absolute; pointer-events: none; border-width: 15px; margin-left: -15px;
-        }
-        &.tip-left:after{left:10%;}
-        &.tip-right:after{left:90%;}
-        &.tip-left-center:after{left:25%;}
-        &.tip-right-center:after{left:75%;}
-    }
-    &:hover{
-        .tooltip{display:block; }
-    }
 }
 
 /* hidden elements */
