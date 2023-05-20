@@ -429,11 +429,12 @@ ul.menu-bar{float:left; list-style:none;
 .page-resources, .resources{width:100%; padding:0 20px;
     .toolbar, .no-resources{max-width:1250px; margin:0 auto;}
 }
-.resources-list{max-width:1250px; margin:0 auto;
+.resources-list{
+    @width:245px;
     & > ul::after{content:" "; overflow:hidden; clear:both; display:block; font-size:0px; height:0px;}
-    & > ul > li{float:left; padding:20px; list-style:none; width:250px; height:270px;}
-    .img{position:relative; width:250px; height:200px; overflow:hidden; display:table-cell; text-align:center; vertical-align:middle; background-image:url(/editor/grid.png); background-repeat:repeat; line-height:0;
-         .pic{display:inline-block; overflow:hidden; max-height:200px; max-width:250px;}
+    & > ul > li{float:left; padding:20px; list-style:none; width:@width; height:270px;}
+    .img{position:relative; width:@width; height:200px; overflow:hidden; display:table-cell; text-align:center; vertical-align:middle; background-image:url(/editor/grid.png); background-repeat:repeat; line-height:0;
+         .pic{display:inline-block; overflow:hidden; max-height:200px; max-width:@width;}
         img{width:100%;}
         svg{width:100%; height:100%;}
         .svgicon{padding:50px; box-sizing:border-box;}
@@ -451,6 +452,8 @@ ul.menu-bar{float:left; list-style:none;
 .tab-toolbar .uploader{
     svg{width:12px; height:12px; margin:0 5px 0 0; position:relative; top:1px;}
 }
+.popup .uploader .icon svg{position:relative; top:4px;}
+.popup .resources-upload{margin:-40px 40px 0 0;}
 .box.popup .resources-list{overflow-x:hidden; overflow-y:auto; max-width:100%;
     .selected{position:absolute; top:5px; left:5px;
         svg{width:25px; height:25px;}

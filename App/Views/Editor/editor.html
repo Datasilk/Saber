@@ -831,11 +831,18 @@
 </script>
 
 <script type="text/html" id="template_resources_popup">
-        <div class="resources-list"></div>
-        <div class="row text-center pad-top">
-            <div class="col">
-                <input type="submit" class="button special uploader" value="Upload" />
-            </div>
+        <div class="col right resources-upload">
+            <button class="uploader button special">
+                <span class="icon small">
+                    <svg viewBox="0 0 32 32">
+                        <use xlink:href="#icon-upload" x="0" y="0" width="32" height="32"></use>
+                    </svg>
+                </span>
+                ##media-type##
+            </button>
+        </div>
+        <div class="resources-content"></div>
+        <div class="row text-center pad-top resources-select-btn">
             <div class="col">
                 <input type="submit" class="button apply" value="##button-title##" />
             </div>

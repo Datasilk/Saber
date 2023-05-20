@@ -8,7 +8,7 @@ S.editor.fields = {
         if (!S.editor.fields.loaded) {
             S.util.js.load('/editor/js/views/contentfields/contentfields.js', 'contentfields', callback);
         } else {
-            callback();
+            setTimeout(callback, 100);
         }
     },
     load: function (file, show) {

@@ -42,35 +42,36 @@ S.editor.resources = {
                 pagename = path.replace('content/pages/', '');
 
                 //initialize uploader
-                if (self.uploader == null) {
-                    S.editor.resources.uploader = launchPad({
-                        url: '/Upload/Resources',
-                        onUploadStart: function (files, xhr, data) {
-                            data.append('path', S.editor.resources.path);
-                        },
+                S.editor.resources.uploader = launchPad({
+                    url: '/Upload/Resources',
+                    onUploadStart: function (files, xhr, data) {
+                        data.append('path', S.editor.resources.path);
+                    },
 
-                        onQueueComplete: function () {
-                            S.editor.resources._loaded = false;
-                            $('.sections .' + id).children().remove();
-                            S.editor.resources.load(S.editor.resources.path);
-                            S.editor.explorer.dir(S.editor.explorer.path);
-                        }
-                    });
-                }
+                    onQueueComplete: function () {
+                        S.editor.resources._loaded = false;
+                        $('.sections .' + id).children().remove();
+                        S.editor.resources.load(S.editor.resources.path);
+                        S.editor.explorer.dir(S.editor.explorer.path);
+                    }
+                });
                 updateFilebar();
             }
         );
 },
 
-    select: function (path, filetypes, multiselect, title, buttonTitle, callback) {
+    select: function (path, filetypes, multiselect, title, buttonTitle, uploadTitle, callback) {
         //show a popup to select a resource
-        let popup = $(S.popup.show(title, $('#template_resources_popup').html().replace('##button-title##', buttonTitle)));
+        let popup = $(S.popup.show(title, $('#template_resources_popup').html()
+            .replace('##button-title##', buttonTitle)
+            .replace('##media-type##', uploadTitle)
+        ));
         popup.css({ 'width': 'calc(100% - 30px)' });
         $(window).on('resize', resizeResources);
 
         function resizeResources() {
             var win = S.window.pos();
-            popup.find('.resources-list').css({ 'max-height': (win.h - 200) + 'px' });
+            popup.find('.resources-list').css({ 'max-height': (win.h + (multiselect ? -200 : -90)) + 'px' });
         }
         resizeResources();
 
@@ -78,22 +79,29 @@ S.editor.resources = {
 
         S.ajax.post('PageResources/Render', { path: path, filetypes:filetypes },
             function (d) {
-                popup.find('.resources-list').html(d);
+                popup.find('.resources-content').html(d);
                 popup.find('.img .close-btn').each((i, a) => {
                     $(a).attr('onclick', $(a).attr('onclick').replace('this)', 'this, \'' + path + '\')'));
                 });
                 popup.find('.img').prepend($('#template_resource_selected').html());
                 popup.find('.img').on('click', (e) => {
-                    var target = e.target;
-                    if (target.tagName.toLowerCase() == 'img') { target = $(e.target).parents('.img')[0]; }
-                    if (target.className.indexOf('img') >= 0 || target.tagName.toLowerCase() == 'img') {
-                        e.cancelBubble = true;
-                        $(target).find('.selected').toggleClass('hide');
-                        selectedResources = popup.find('.resources-list li')
-                            .filter((i, a) => $(a).find('.selected:not(.hide)').length > 0)
-                            .map((i, a) => $(a).find('.title').html().trim());
+                    e.cancelBubble = true;
+                    var target = $(e.target);
+                    if (!target.hasClass('img')) { target = $(e.target).parents('.img').first(); }
+                    $(target).find('.selected').toggleClass('hide');
+                    selectedResources = popup.find('.resources-list li')
+                        .filter((i, a) => $(a).find('.selected:not(.hide)').length > 0)
+                        .map((i, a) => $(a).find('.title').html().trim());
+                    if (!multiselect) {
+                        //single-select
+                        popup.find('.apply')[0].click();
                     }
                 })
+                if (!multiselect) {
+                    //single select
+                    popup.find('.apply').hide();
+                    popup.find('.img').css({ 'cursor': 'pointer' });
+                }
                 resizeResources();
 
                 //initialize uploader
@@ -105,7 +113,7 @@ S.editor.resources = {
 
                     onQueueComplete: function () {
                         S.popup.hide(popup);
-                        S.editor.resources.select(path, filetypes, multiselect, title, buttonTitle, callback);
+                        S.editor.resources.select(path, filetypes, multiselect, title, buttonTitle, uploadTitle, callback);
                     }
                 });
                 popup.find('.uploader').on('click', uploader.click);
