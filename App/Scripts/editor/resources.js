@@ -34,25 +34,41 @@ S.editor.resources = {
             return;
         }
         S.editor.resources.path = path;
-        $('.sections > .' + id).html('');
+        var container = $('.sections > .' + id);
         S.ajax.post('PageResources/Render', { path: path },
             function (d) {
-                $('.sections > .' + id).html(d);
+                container.html(d);
                 S.editor.resources._loaded = true;
                 pagename = path.replace('content/pages/', '');
 
                 //initialize uploader
+                var total = 0;
                 S.editor.resources.uploader = launchPad({
                     url: '/Upload/Resources',
+                    onQueueStart: function () {
+                        total = this.queue.length;
+                        container.prepend('<div class="progress-bg"><div class="progress"><div class="info"></div><div class="bar"><div class="progress-bar" style="width:0%"><span></span></div></div></div></div>');
+                    },
+
                     onUploadStart: function (files, xhr, data) {
                         data.append('path', S.editor.resources.path);
                     },
 
+                    onUploadProgress: function (e, perc) {
+                        var totalLeft = this.queue.length + this.parallelUploads;
+                        var percent = parseInt((100 / total) * ((total - totalLeft) + perc)) + '%';
+                        container.find('.progress-bg .info').html('Uploading ' + totalLeft + ' file' + (totalLeft > 1 ? 's' : '') + '...');
+                        container.find('.progress-bar').css({ 'width': percent });
+                        container.find('.progress-bar span').html(percent);
+                    },
+
                     onQueueComplete: function () {
                         S.editor.resources._loaded = false;
-                        $('.sections .' + id).children().remove();
-                        S.editor.resources.load(S.editor.resources.path);
-                        S.editor.explorer.dir(S.editor.explorer.path);
+                        //$('.sections .' + id).children().remove();
+                        setTimeout(() => {
+                            //wait before reloading resources explorer to allow files to process on server
+                            S.editor.resources.load(path);
+                        }, 1000);
                     }
                 });
                 updateFilebar();

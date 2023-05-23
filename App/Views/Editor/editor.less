@@ -461,6 +461,16 @@ ul.menu-bar{float:left; list-style:none;
     }
 }
 
+.tab .progress-bg{
+    position:absolute; top:0; left:0; right:0; bottom:0; background:#000000cc; z-index:1000; text-align:center;
+    .progress{position:relative; display:inline-block; width:90%; max-width:400px; text-align:center; padding-top:100px;}
+    .info{display:inline-block; padding:0 0 20px 0;}
+    .bar{display:inline-block; width:100%; background:#000;}
+    .progress-bar{border-radius:5px; text-align:left;
+        span{display:inline-block; padding:4px 0 4px 10px;}
+    }
+}
+
 /* website settings */
 .web-settings{padding:0 20px;
     .plugin-info{
