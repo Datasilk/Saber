@@ -40,6 +40,14 @@ S.editor.resources = {
                 container.html(d);
                 S.editor.resources._loaded = true;
                 pagename = path.replace('content/pages/', '');
+                container.find('.check input[type="checkbox"]').on('input', (e) => {
+                    var target = $(e.target);
+                    if (e.target.checked == true) {
+                        target.parents('.check').addClass('checked');
+                    } else {
+                        target.parents('.check').removeClass('checked');
+                    }
+                });
 
                 //initialize uploader
                 var total = 0;
@@ -64,9 +72,7 @@ S.editor.resources = {
 
                     onQueueComplete: function () {
                         S.editor.resources._loaded = false;
-                        //$('.sections .' + id).children().remove();
                         setTimeout(() => {
-                            //wait before reloading resources explorer to allow files to process on server
                             S.editor.resources.load(path);
                         }, 1000);
                     }
@@ -95,15 +101,24 @@ S.editor.resources = {
 
         S.ajax.post('PageResources/Render', { path: path, filetypes:filetypes },
             function (d) {
+                var container = $('.popup.show');
                 popup.find('.resources-content').html(d);
                 popup.find('.img .close-btn').each((i, a) => {
                     $(a).attr('onclick', $(a).attr('onclick').replace('this)', 'this, \'' + path + '\')'));
                 });
                 popup.find('.img').prepend($('#template_resource_selected').html());
+
                 popup.find('.img').on('click', (e) => {
-                    e.cancelBubble = true;
+                    //click on image
                     var target = $(e.target);
                     if (!target.hasClass('img')) { target = $(e.target).parents('.img').first(); }
+                    console.log($(e.target));
+                    if ($(e.target).hasClass('close-btn') ||
+                        $(e.target).parents('.close-btn').length > 0 ||
+                        $(e.target).parents('.check').length > 0 ||
+                        $(e.target).parents('.menu.hover-only').length > 0
+                    ) { return; }
+                    e.cancelBubble = true;
                     $(target).find('.selected').toggleClass('hide');
                     selectedResources = popup.find('.resources-list li')
                         .filter((i, a) => $(a).find('.selected:not(.hide)').length > 0)
@@ -120,16 +135,37 @@ S.editor.resources = {
                 }
                 resizeResources();
 
+                //checkboxes
+                container.find('.check').remove();
+
                 //initialize uploader
+                var total = 0;
                 var uploader = S.editor.resources.uploader = launchPad({
                     url: '/Upload/Resources',
+
+                    onQueueStart: function () {
+                        total = this.queue.length;
+                        container.prepend('<div class="progress-bg"><div class="progress"><div class="info"></div><div class="bar"><div class="progress-bar" style="width:0%"><span></span></div></div></div></div>');
+                    },
+
                     onUploadStart: function (files, xhr, data) {
                         data.append('path', path);
                     },
 
+                    onUploadProgress: function (e, perc) {
+                        var totalLeft = this.queue.length + this.parallelUploads;
+                        var percent = parseInt((100 / total) * ((total - totalLeft) + perc)) + '%';
+                        container.find('.progress-bg .info').html('Uploading ' + totalLeft + ' file' + (totalLeft > 1 ? 's' : '') + '...');
+                        container.find('.progress-bar').css({ 'width': percent });
+                        container.find('.progress-bar span').html(percent);
+                    },
+
                     onQueueComplete: function () {
+                        S.editor.resources._loaded = false;
                         S.popup.hide(popup);
-                        S.editor.resources.select(path, filetypes, multiselect, title, buttonTitle, uploadTitle, callback);
+                        setTimeout(() => {
+                            S.editor.resources.select(path, filetypes, multiselect, title, buttonTitle, uploadTitle, callback);
+                        }, 1000);
                     }
                 });
                 popup.find('.uploader').on('click', uploader.click);
@@ -142,7 +178,9 @@ S.editor.resources = {
         );
     },
 
-    delete: function (file, elem, path) {
+    delete: function (e, file, elem, path) {
+        console.log('delete!');
+        e.cancelBubble = true;
         if (!window.parent.confirm('Do you really want to delete the file "' + file + '"? This cannot be undone.')) { return; }
         S.ajax.post('PageResources/Delete', { path: path ?? S.editor.resources.path, file: file },
             function (d) {

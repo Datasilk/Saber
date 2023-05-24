@@ -1,6 +1,7 @@
 ﻿<li class="type-{{file-type}} file-{{file-id}}">
     <div class="img">
-        <div class="close-btn icon small" onclick="S.editor.resources.delete('{{filename}}', this)">
+        <div class="check"><input type="checkbox" /></div>
+        <div class="close-btn icon small" onclick="S.editor.resources.delete(event, '{{filename}}', this);">
             <svg viewBox="0 0 32 32"><use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use></svg>
         </div>
         {{img}}<div class="pic"><img src="{{img-src}}" alt="{{img-alt}}" /></div>{{/img}}
