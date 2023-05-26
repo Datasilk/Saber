@@ -313,5 +313,55 @@ namespace Saber.Services
             }
             catch (Exception) { return Error(); }
         }
+
+        public string DeleteAll(string path, List<string> files)
+        {
+            if (IsPublicApiRequest || !CheckSecurity()) { return AccessDenied(); }
+            try
+            {
+                var paths = PageInfo.GetRelativePath(path);
+                paths[paths.Length - 1] = paths[paths.Length - 1].Split('.', 2)[0];
+                var dir = string.Join("/", paths).ToLower() + "/";
+                var pubdir = dir; //published directory
+                if (paths[0].ToLower() == "content" && paths[1] == "pages")
+                {
+                    //loading resources for specific page
+                    pubdir = "/wwwroot/" + dir;
+                }
+
+                //check for special files that cannot be deleted
+                var exclude = new string[] { "web.config" };
+                foreach(var file in files)
+                {
+                    if (exclude.Contains(file)) { return Error(); }
+
+                    if (Directory.Exists(App.MapPath(pubdir)))
+                    {
+                        if (File.Exists(App.MapPath(pubdir + file)))
+                        {
+                            //delete file from disk
+                            File.Delete(App.MapPath(pubdir + file));
+                        }
+                        //check for thumbnails
+                        var ext = file.GetFileExtension();
+                        switch (ext.ToLower())
+                        {
+                            case "jpg":
+                            case "jpeg":
+                            case "png":
+                                //delete thumbnail, too
+                                if (File.Exists(App.MapPath(pubdir + Settings.ThumbDir + file)))
+                                {
+                                    File.Delete(App.MapPath(pubdir + Settings.ThumbDir + file));
+                                }
+                                break;
+                        }
+                    }
+                }
+                
+                return Success();
+            }
+            catch (Exception) { return Error(); }
+        }
     }
 }

@@ -2,7 +2,15 @@
 
 <script id="page_resources_toolbar" type="text/html">
     {{can-upload}}
-    <div class="pad-right">
+    <div class="col delete-all pad-right" style="display:none;">
+        <button class="button">
+            <svg viewBox="0 0 32 32">
+                <use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use>
+            </svg>
+            Delete Selected
+        </button>
+    </div>
+    <div class="col pad-right">
         <button class="uploader button">
             <svg viewBox="0 0 32 32">
                 <use xlink:href="#icon-upload" x="0" y="0" width="32" height="32"></use>

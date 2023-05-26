@@ -27,6 +27,7 @@ S.editor.resources = {
             S.editor.filebar.update((isRoot ? 'Resources for ' + pagename : 'Page Resources for <a href="/' + pagename + '">' + pagename + '</a>'), 'icon-photos', $('#page_resources_toolbar').html());
             if (S.editor.resources.uploader != null) {
                 $('.tab-toolbar .uploader').on('click', S.editor.resources.uploader.click);
+                $('.tab-toolbar .delete-all button').on('click', S.editor.resources.deleteAll);
             }
         }
         if (self._loaded == true && self.path == path) {
@@ -46,6 +47,11 @@ S.editor.resources = {
                         target.parents('.check').addClass('checked');
                     } else {
                         target.parents('.check').removeClass('checked');
+                    }
+                    if (container.find('input[type="checkbox"]:checked').length > 0) {
+                        $('.tab-toolbar .delete-all').show();
+                    } else {
+                        $('.tab-toolbar .delete-all').hide();
                     }
                 });
 
@@ -179,16 +185,34 @@ S.editor.resources = {
     },
 
     delete: function (e, file, elem, path) {
-        console.log('delete!');
         e.cancelBubble = true;
         if (!window.parent.confirm('Do you really want to delete the file "' + file + '"? This cannot be undone.')) { return; }
         S.ajax.post('PageResources/Delete', { path: path ?? S.editor.resources.path, file: file },
             function (d) {
                 $(elem).parents('li').first().remove();
-                S.editor.explorer.dir(S.editor.explorer.path);
             },
 
             function () { S.editor.error('Could not delete resource on the server.'); }
+        );
+    },
+
+    deleteAll: function () {
+        var path = S.editor.resources.path;
+        var isRoot = false;
+        if (path.indexOf('wwwroot') >= 0) { isRoot = true; }
+        var id = isRoot ? 'resources' : 'page-resources';
+        var container = $('.sections > .' + id);
+        var checkboxes = container.find('input[type="checkbox"]:checked');
+        var count = checkboxes.length;
+        if (!window.parent.confirm('Do you really want to delete the selected ' + count + ' files? This cannot be undone.')) { return; }
+        S.ajax.post('PageResources/DeleteAll', { path: path, files: checkboxes.map((i, a) => $(a).parents('li').first().attr('data-file')) },
+            function () {
+                S.editor.resources._loaded = false;
+                setTimeout(() => {
+                    S.editor.resources.load(path);
+                }, 1000);
+            },
+            function () { S.editor.error('Could not delete resource(s) on the server.'); }
         );
     }
 };
