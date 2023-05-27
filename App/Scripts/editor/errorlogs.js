@@ -23,7 +23,7 @@ S.editor.errorlogs = {
         if (S.editor.websettings._loaded) {
             S.editor.tabs.select('errorlogs-section');
         } else {
-            S.editor.errorlogs.update(0, 50, '');
+            S.editor.errorlogs.update(0, 10, '');
         }
     },
 

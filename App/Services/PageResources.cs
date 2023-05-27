@@ -40,8 +40,48 @@ namespace Saber.Services
 
             if (Directory.Exists(App.MapPath(pubdir)))
             {
-                //get list of files in directory (excluding thumbnail images)
+                //first, get list of folders in directory
                 var info = new DirectoryInfo(App.MapPath(pubdir));
+                var subfolders = info.GetDirectories();
+                var html = new StringBuilder();
+                var exclude = new List<string>()
+                {
+                    "wwwroot/editor",
+                    "wwwroot/css",
+                    "wwwroot/js",
+                    "/_thumbs"
+                };
+
+                if(path.Replace("content/pages/", "").Split("/").Length > 1)
+                {
+                    //add parent folder
+                    item.Clear();
+                    item["file-type"] = "folder";
+                    item["file-type"] = "folder";
+                    item["file-id"] = "previous-folder";
+                    item.Show("svg");
+                    item["icon"] = "folder";
+                    item["filename"] = "..";
+                    html.Append(item.Render());
+                    noResources = false;
+                }
+
+                foreach(var folder in subfolders)
+                {
+                    var folderPath = folder.FullName.Replace("\\", "/");
+                    var folderName = folder.Name;
+                    if (exclude.Any(a => folderPath.Contains(a))) { continue; }
+                    item.Clear();
+                    item["file-type"] = "folder";
+                    item["file-id"] = folderName.Replace(" ", "_");
+                    item.Show("svg");
+                    item["icon"] = "folder";
+                    item["filename"] = folderName;
+                    html.Append(item.Render());
+                    noResources = false;
+                }
+
+                //get list of files in directory (excluding thumbnail images)
                 var files = info.GetFiles();
                 if(filetypes != "")
                 {
@@ -78,16 +118,22 @@ namespace Saber.Services
                 //generate HTML list of resources
                 if (files.Count() > 0)
                 {
-                    var html = new StringBuilder();
-                    var exclude = new List<string>() { "web.config", "web-icon.png"};
+                    exclude = new List<string>() 
+                    { 
+                        "web.config", 
+                        "web-icon.png"
+                    };
                     foreach (var f in files)
                     {
                         if (exclude.Contains(f.Name.ToLower())) { continue; }
+                        item.Clear();
                         var ext = f.Name.GetFileExtension();
                         var type = "file";
                         var icon = "";
                         item["img-src-full"] = pubdir.Replace("/wwwroot", "") + f.Name;
                         item["img-src-rel"] = pubdir.Replace("/wwwroot", "") + f.Name;
+                        item.Show("check");
+                        item.Show("menu");
 
 
                         switch (ext.ToLower())
@@ -110,9 +156,7 @@ namespace Saber.Services
                             case "pbm":
                             case "tiff":
                             case "tga":
-                                type = "image";
                                 item.Show("img");
-                                item["svg"] = "";
                                 item["img-src"] = pubdir.Replace("/wwwroot", "") + Settings.ThumbDir + f.Name;
                                 item["img-alt"] = type + " " + f.Name;
                                 item.Show("menu-full");
@@ -239,9 +283,8 @@ namespace Saber.Services
                         item["file-type"] = type;
                         item["file-id"] = f.Name.ReplaceAll("", new string[] {"@#$%^&*()+=|[]{};'\",<>?~"}).ReplaceAll("_", new string[] {"-", "." }).ToLower();
                         item["filename"] = f.Name;
-                        if (type == "file")
+                        if (item["img-src"] == "")
                         {
-                            item["img"] = "";
                             item.Show("svg");
                             item["icon"] = "file" + (icon != "" ? "-" : "") + icon;
                             item.Show("menu-copy");
@@ -249,9 +292,8 @@ namespace Saber.Services
                         html.Append(item.Render());
                         noResources = false;
                     }
-
-                    view["resources"] = "<ul>" + html.ToString() + "</ul>";
                 }
+                view["resources"] = "<ul>" + html.ToString() + "</ul>";
             }
 
             //no resources

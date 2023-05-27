@@ -4,7 +4,7 @@ namespace Saber.Services
 {
     public class ErrorLogs : Service
     {
-        public string Render(int start = 0, int length = 50, string search = "")
+        public string Render(int start = 0, int length = 10, string search = "")
         {
             //display all application settings
             if (IsPublicApiRequest || !CheckSecurity("website-settings")) { return AccessDenied(); }

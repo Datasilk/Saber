@@ -88,11 +88,12 @@ S.editor.resources = {
         );
 },
 
-    select: function (path, filetypes, multiselect, title, buttonTitle, uploadTitle, callback) {
+    select: function (path, filetypes, multiselect, title, buttonTitle, uploadTitle, browseTitle, backTitle, browsePath, callback, isback) {
         //show a popup to select a resource
         let popup = $(S.popup.show(title, $('#template_resources_popup').html()
             .replace('##button-title##', buttonTitle)
             .replace('##media-type##', uploadTitle)
+            .replace('##browse-title##', isback ? backTitle : browseTitle)
         ));
         popup.css({ 'width': 'calc(100% - 30px)' });
         $(window).on('resize', resizeResources);
@@ -114,11 +115,10 @@ S.editor.resources = {
                 });
                 popup.find('.img').prepend($('#template_resource_selected').html());
 
-                popup.find('.img').on('click', (e) => {
+                popup.find('li.type-file .img').on('click', (e) => {
                     //click on image
                     var target = $(e.target);
                     if (!target.hasClass('img')) { target = $(e.target).parents('.img').first(); }
-                    console.log($(e.target));
                     if ($(e.target).hasClass('close-btn') ||
                         $(e.target).parents('.close-btn').length > 0 ||
                         $(e.target).parents('.check').length > 0 ||
@@ -128,17 +128,38 @@ S.editor.resources = {
                     $(target).find('.selected').toggleClass('hide');
                     selectedResources = popup.find('.resources-list li')
                         .filter((i, a) => $(a).find('.selected:not(.hide)').length > 0)
-                        .map((i, a) => $(a).find('.title').html().trim());
+                        .map((i, a) => path.replace('wwwroot/', '') + '/' + $(a).find('.title').html().trim());
                     if (!multiselect) {
                         //single-select
                         popup.find('.apply')[0].click();
                     }
-                })
+                });
+
+                popup.find('li.type-folder .img').on('click', (e2) => {
+                    S.popup.hide(popup);
+                    var t = $(e2.target).parents('li').first();
+                    var f = t.attr('data-file');
+                    var parts = path.split('/');
+                    console.log('"' + f + '"');
+                    if (parts[parts.length - 1] == '') { console.log('wtf');  parts.splice(parts.length - 1, 1); }
+                    if (f == '..') { parts.splice(parts.length - 1, 1); } else { parts.push(f); }
+                    var p = parts.join('/');
+                    console.log(parts);
+                    S.editor.resources.select(p, filetypes, multiselect, title, buttonTitle, uploadTitle, browseTitle, backTitle, browsePath, callback, true);
+                });
+
                 if (!multiselect) {
                     //single select
                     popup.find('.apply').hide();
                     popup.find('.img').css({ 'cursor': 'pointer' });
                 }
+
+                //browse button
+                container.find('.browse-wwwroot').on('click', () => {
+                    S.popup.hide(popup);
+                    S.editor.resources.select(browsePath, filetypes, multiselect, title, buttonTitle, uploadTitle, browseTitle, backTitle, path, callback, isback === true ? false : true);
+                });
+
                 resizeResources();
 
                 //checkboxes
@@ -170,7 +191,7 @@ S.editor.resources = {
                         S.editor.resources._loaded = false;
                         S.popup.hide(popup);
                         setTimeout(() => {
-                            S.editor.resources.select(path, filetypes, multiselect, title, buttonTitle, uploadTitle, callback);
+                            S.editor.resources.select(path, filetypes, multiselect, title, buttonTitle, uploadTitle, browseTitle, backTitle, browsePath, callback);
                         }, 1000);
                     }
                 });

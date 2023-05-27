@@ -140,11 +140,10 @@ S.editor.fields.render = function (file, lang, container, fields, callback, ispo
             //set up event for image selection buttons
             $(container + ' .select-image button').on('click', (e) => {
                 e.preventDefault();
-                S.editor.resources.select(file ? 'wwwroot/images' : S.editor.path, 'images', false, 'Select An Image', 'Select Image', 'Upload Images', (results) => {
+                S.editor.resources.select(file ? 'wwwroot/images' : S.editor.path, 'images', false, 'Select An Image', 'Select Image', 'Upload Images', 'Browse...', 'Page Resources...', 'wwwroot/images', (results) => {
                     var parent = $(e.target).parents('.content-field');
                     var field = parent.find('.input-field');
-                    var newpath = file ? '/images/' : '/' + S.editor.path + '/';
-                    var src = newpath + results[0];
+                    var src = results[0];
                     parent.find('.img').html('<div><img src="' + src + '"/></div>');
                     parent.find('.img').css({ 'background-image': 'url(' + src + ')' });
                     field.val(src);

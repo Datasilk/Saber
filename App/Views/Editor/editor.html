@@ -832,14 +832,28 @@
 
 <script type="text/html" id="template_resources_popup">
         <div class="col right resources-upload">
-            <button class="uploader button special">
-                <span class="icon small">
-                    <svg viewBox="0 0 32 32">
-                        <use xlink:href="#icon-upload" x="0" y="0" width="32" height="32"></use>
-                    </svg>
-                </span>
-                ##media-type##
-            </button>
+            <div class="row">
+                <div class="col right">
+                    <button class="uploader button special">
+                        <span class="icon small">
+                            <svg viewBox="0 0 32 32">
+                                <use xlink:href="#icon-upload" x="0" y="0" width="32" height="32"></use>
+                            </svg>
+                        </span>
+                        ##media-type##
+                    </button>
+                </div>
+                <div class="col right browse-wwwroot pad-right">
+                    <button class="button">
+                        <span class="icon small">
+                            <svg viewBox="0 0 32 32">
+                                <use xlink:href="#icon-folder" x="0" y="0" width="32" height="32"></use>
+                            </svg>
+                        </span>
+                        ##browse-title##
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="resources-content"></div>
         <div class="row text-center pad-top resources-select-btn">

@@ -1,11 +1,14 @@
-﻿<li class="type-{{file-type}} file-{{file-id}}" data-file="{{filename}}">
+﻿<li class="type-{{file-type}}" data-file="{{filename}}">
     <div class="img">
+        {{check}}
         <div class="check"><input type="checkbox" /></div>
+        {{/check}}
         <div class="close-btn icon small" onclick="S.editor.resources.delete(event, '{{filename}}', this);">
             <svg viewBox="0 0 32 32"><use xlink:href="#icon-close" x="0" y="0" width="32" height="32"></use></svg>
         </div>
         {{img}}<div class="pic"><img src="{{img-src}}" alt="{{img-alt}}" /></div>{{/img}}
         {{svg}}<svg viewBox="0 0 32 32"><use xlink:href="#icon-{{icon}}" x="0" y="0" width="32" height="32"></use></svg>{{/svg}}
+        {{menu}}
         <ul class="menu hover-only">
             {{menu-full}}
             <li><a href="{{img-src-full}}" target="_blank">Preview</a></li>
@@ -14,6 +17,7 @@
             <li><a href="{{img-src-rel}}" onclick="S.clipboard.copy('{{img-src-rel}}'); event.preventDefault(); return false;">Copy Path</a></li>
             {{/menu-copy}}
         </ul>
+        {{/menu}}
     </div>
     <div class="title">{{filename}}</div>
 </li>
