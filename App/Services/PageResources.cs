@@ -10,7 +10,7 @@ namespace Saber.Services
 {
     public class PageResources: Service
     {
-        public string Render(string path, string filetypes = "", int sort = 0)
+        public string Render(string path, string filetypes = "", int sort = 0, bool folders = false)
         {
             if (IsPublicApiRequest || !CheckSecurity()) { return AccessDenied(); }
             if(path == "") { return Error("No path specified"); }
@@ -52,33 +52,36 @@ namespace Saber.Services
                     "/_thumbs"
                 };
 
-                if(path.Replace("content/pages/", "").Split("/").Length > 1)
+                if(folders == true)
                 {
-                    //add parent folder
-                    item.Clear();
-                    item["file-type"] = "folder";
-                    item["file-type"] = "folder";
-                    item["file-id"] = "previous-folder";
-                    item.Show("svg");
-                    item["icon"] = "folder";
-                    item["filename"] = "..";
-                    html.Append(item.Render());
-                    noResources = false;
-                }
+                    if (path.Replace("content/pages/", "").Split("/").Length > 1)
+                    {
+                        //add parent folder
+                        item.Clear();
+                        item["file-type"] = "folder";
+                        item["file-type"] = "folder";
+                        item["file-id"] = "previous-folder";
+                        item.Show("svg");
+                        item["icon"] = "folder";
+                        item["filename"] = "..";
+                        html.Append(item.Render());
+                        noResources = false;
+                    }
 
-                foreach(var folder in subfolders)
-                {
-                    var folderPath = folder.FullName.Replace("\\", "/");
-                    var folderName = folder.Name;
-                    if (exclude.Any(a => folderPath.Contains(a))) { continue; }
-                    item.Clear();
-                    item["file-type"] = "folder";
-                    item["file-id"] = folderName.Replace(" ", "_");
-                    item.Show("svg");
-                    item["icon"] = "folder";
-                    item["filename"] = folderName;
-                    html.Append(item.Render());
-                    noResources = false;
+                    foreach (var folder in subfolders)
+                    {
+                        var folderPath = folder.FullName.Replace("\\", "/");
+                        var folderName = folder.Name;
+                        if (exclude.Any(a => folderPath.Contains(a))) { continue; }
+                        item.Clear();
+                        item["file-type"] = "folder";
+                        item["file-id"] = folderName.Replace(" ", "_");
+                        item.Show("svg");
+                        item["icon"] = "folder";
+                        item["filename"] = folderName;
+                        html.Append(item.Render());
+                        noResources = false;
+                    }
                 }
 
                 //get list of files in directory (excluding thumbnail images)

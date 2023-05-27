@@ -36,7 +36,7 @@ S.editor.resources = {
         }
         S.editor.resources.path = path;
         var container = $('.sections > .' + id);
-        S.ajax.post('PageResources/Render', { path: path },
+        S.ajax.post('PageResources/Render', { path: path, folders:false },
             function (d) {
                 container.html(d);
                 S.editor.resources._loaded = true;
@@ -106,7 +106,7 @@ S.editor.resources = {
 
         var selectedResources = [];
 
-        S.ajax.post('PageResources/Render', { path: path, filetypes:filetypes },
+        S.ajax.post('PageResources/Render', { path: path, filetypes:filetypes, folders: true },
             function (d) {
                 var container = $('.popup.show');
                 popup.find('.resources-content').html(d);
