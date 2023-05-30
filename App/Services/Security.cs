@@ -1,10 +1,13 @@
 ﻿using System.Text;
 using System.Linq;
+using Datasilk.Core.DOM;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Saber.Services
 {
     public class Security : Service
     {
+        #region "Security Groups"
         public string Groups()
         {
             if (IsPublicApiRequest || !CheckSecurity("manage-security")) { return AccessDenied(); }
@@ -106,5 +109,51 @@ namespace Saber.Services
             Query.Security.Groups.Delete(groupId);
             return Success();
         }
+        #endregion
+
+        #region "Security Keys"
+        public string RenderKeysDefinitions()
+        {
+            if (IsPublicApiRequest || !CheckSecurity("manage-security")) { return AccessDenied(); }
+            var viewScope = new View("/Views/Security/key-scope.html");
+            var viewKey = new View("/Views/Security/key-definition.html");
+            var html = new StringBuilder();
+            var scopes = new StringBuilder();
+
+            //show platform-specific keys
+            viewScope["label"] = "Saber Editor";
+            foreach (var key in Core.Security.Keys)
+            {
+                viewKey["key"] = key.Value;
+                viewKey["label"] = key.Label;
+                viewKey["description"] = key.Description;
+                html.Append(viewKey.Render());
+                viewKey.Clear();
+            }
+            viewScope["keys"] = html.ToString();
+            scopes.Append(viewScope.Render());
+            viewScope.Clear();
+
+            //add vendor-specific keys
+            foreach (var vendor in Core.Vendors.Keys)
+            {
+                html.Clear();
+                viewScope["label"] = vendor.Vendor;
+                foreach (var key in vendor.Keys)
+                {
+                    viewKey["key"] = key.Value;
+                    viewKey["label"] = key.Label;
+                    viewKey["description"] = key.Description;
+                    html.Append(viewKey.Render());
+                    viewKey.Clear();
+                }
+                viewScope["keys"] = html.ToString();
+                scopes.Append(viewScope.Render());
+                viewScope.Clear();
+            }
+
+            return scopes.ToString();
+        }
+        #endregion
     }
 }

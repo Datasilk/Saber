@@ -1,16 +1,23 @@
-﻿<table class="groups spreadsheet">
-    <thead>
-        <tr>
-            <td>Name</td><td>Active Keys</td>
-        </tr>
-    </thead>
-    <tbody>
-        {{groups}}
-    </tbody>
-</table>
+﻿<div class="groups-list">
+    <table class="groups spreadsheet">
+        <thead>
+            <tr>
+                <td>Name</td><td>Active Keys</td>
+            </tr>
+        </thead>
+        <tbody>
+            {{groups}}
+        </tbody>
+    </table>
+</div>
 
 <script id="security_groups_toolbar" type="text/html">
-    <button class="new-group button">+ New Group</button>
+    <div class="col right new-group">
+        <button class="button special">+ New Group</button>
+    </div>
+    <div class="col right view-keys pad-right">
+        <button class="button">View Key Definitions</button>
+    </div>
 </script>
 <script id="template_newgroup" type="text/html">
     <form autocomplete="chrome-off">

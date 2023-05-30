@@ -58,7 +58,8 @@
         },
         updateFilebar:() => {
             S.editor.filebar.update('Security Groups', 'icon-security', $('#security_groups_toolbar').html());
-            $('.tab-toolbar button.new-group').on('click', S.editor.security.groups.create.show);
+            $('.tab-toolbar .new-group button').on('click', S.editor.security.groups.create.show);
+            $('.tab-toolbar .view-keys button').on('click', S.editor.security.keys.show);
         },
 
         create: {
@@ -162,6 +163,31 @@
                         S.editor.error('', "An error occurred when trying to save your security group changes");
                     });
             }
+        }
+    },
+
+    keys: {
+        show: function () {
+            var id = 'security-key-definitions';
+            $('.tab.security-key-definitions').remove();
+            $('.editor .sections > .tab').addClass('hide');
+            $('.sections').append('<div class="tab ' + id + '"><div class="scroller"></div></div>');
+            S.editor.resize.window();
+
+            S.editor.tabs.create('Security Keys', id, null,
+                () => { //onfocus
+                    S.editor.tabs.show(id);
+                },
+                () => { //onblur
+
+                },
+                () => { //onsave
+
+                }
+            );
+            S.ajax.post('Security/RenderKeysDefinitions', {}, (d) => {
+                $('.tab.' + id + ' .scroller').html(d);
+            });
         }
     }
 };
