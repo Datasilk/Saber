@@ -13,6 +13,8 @@ namespace Saber.Common.Platform.HtmlComponents
         public List<HtmlComponentModel> Bind()
         {
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+            
             return new List<HtmlComponentModel>(){
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 new HtmlComponentModel()
@@ -20,7 +22,7 @@ namespace Saber.Common.Platform.HtmlComponents
                     Key = "user",
                     Name = "User Content",
                     Block = true,
-                    NoID = true,
+                    KeyIsPrefix = true,
                     ContentField = false,
                     Description = "Display a block of HTML if the user is logged into their account",
                     Icon = "components/user.svg",
@@ -28,11 +30,20 @@ namespace Saber.Common.Platform.HtmlComponents
                     {
                         {"security-key", new HtmlComponentParameter()
                             {
-                            DataType = HtmlComponentParameterDataType.Text,
-                            Description = "Show the block if the user has access to a specific security key",
-                            Name = "Security Key",
-                            Required = false
-                            } 
+                                DataType = HtmlComponentParameterDataType.List,
+                                Description = "Show the block if the user has access to a specific security key",
+                                Name = "Security Key",
+                                Required = false,
+                                ListOptions = () =>
+                                {
+                                    var keys = Security.Keys.Select(a => new KeyValuePair<string, string>(a.Label, a.Value)).ToList();
+                                    foreach(var vendorKeys in Core.Vendors.Keys)
+                                    {
+                                        keys.AddRange(vendorKeys.Keys.Select(a => new KeyValuePair<string, string>(vendorKeys.Vendor + " - " + a.Label, a.Value)));
+                                    }
+                                    return keys.ToArray();
+                                }
+                            }
                         },
                         {"is-admin", new HtmlComponentParameter()
                             {
@@ -57,7 +68,7 @@ namespace Saber.Common.Platform.HtmlComponents
                             {
                                 return results;
                             }
-                            results.Add(new KeyValuePair<string, string>(prefix + "user", "True"));
+                            results.Add(new KeyValuePair<string, string>(prefix + key, "True"));
                         }
                         return results;
                     })

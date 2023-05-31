@@ -54,7 +54,7 @@ namespace Saber.Services
                                 DataType = (int)param.Value.DataType,
                                 List = param.Value.List,
                                 DefaultValue = param.Value.DefaultValue,
-                                ListOptions = param.Value.ListOptions?.Select(a => "<option value=\"" + a.Value + "\">" + a.Key.Replace("\"", "&quot;") + "</option>").ToArray(),
+                                ListOptions = param.Value.ListOptions != null ? param.Value.ListOptions().Select(a => "<option value=\"" + a.Value + "\">" + a.Key.Replace("\"", "&quot;") + "</option>").ToArray() : new string[] { },
                                 Description = param.Value.Description.Replace("\"", "&quot;"),
                                 Required = param.Value.Required,
                                 AddItemJs = param.Value.AddItemJs

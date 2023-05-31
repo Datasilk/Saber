@@ -55,14 +55,16 @@ namespace Saber.Common.HtmlComponents
                                 DataType = HtmlComponentParameterDataType.List,
                                 Description = "If using multiple partial views, the load order determines the pattern to use when choosing which partial view to render for each item in your list",
                                 Required = false,
-                                ListOptions = new KeyValuePair<string, string>[]
+                                ListOptions = () => {
+                                    return new KeyValuePair<string, string>[]
                                     {
                                         new KeyValuePair<string, string>("Loop", "loop"),
                                         new KeyValuePair<string, string>("Reverse", "reverse"),
                                         new KeyValuePair<string, string>("Bounce", "bounce"),
                                         new KeyValuePair<string, string>("Random", "random"),
                                         new KeyValuePair<string, string>("Random First", "random-first"),
-                                    },
+                                    };
+                                },
                                 DefaultValue = "0"
                             }
                         },

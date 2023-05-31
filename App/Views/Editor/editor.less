@@ -19,7 +19,7 @@
     input, textarea, select{border-radius:0 !important; font-size:13px !important;}
     .col.field{padding:9px 7px 11px 4px;}
     
-    .code{padding:5px 7px; font-family:monospace;
+    .code{padding:5px 7px; font-family:monospace; 
         .line{width:100%; min-height:19px;
             @tabw:25px;
             &.tabs-1{padding-left:@tabw;}
@@ -31,6 +31,12 @@
             &.tabs-7{padding-left:@tabw * 7;}
             &.tabs-8{padding-left:@tabw * 8;}
         }
+        -webkit-touch-callout:text !important;
+        -webkit-user-select: text !important;
+        -khtml-user-select: text !important;
+        -moz-user-select: text !important;
+        -ms-user-select: text !important;
+        user-select: text !important;
     }
     .bold{font-weight:bold;}
     hr{margin:15px 0; border-width:0; border-top-width:1px;}
@@ -42,20 +48,14 @@
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
-        -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                    supported by Chrome, Edge, Opera and Firefox */
+    user-select: none; /* Non-prefixed version, currently
+                            supported by Chrome, Edge, Opera and Firefox */
 }
 .canselect{
     -webkit-touch-callout:text !important; /* iOS Safari */
     -webkit-user-select: text !important; /* Safari */
-        -khtml-user-select: text !important; /* Konqueror HTML */
-        -moz-user-select: text !important; /* Old versions of Firefox */
-        -ms-user-select: text !important; /* Internet Explorer/Edge */
-            user-select: text !important; /* Non-prefixed version, currently
-                                    supported by Chrome, Edge, Opera and Firefox */
+    user-select: text !important; /* Non-prefixed version, currently
+                            supported by Chrome, Edge, Opera and Firefox */
 }
 
 /* editor header */

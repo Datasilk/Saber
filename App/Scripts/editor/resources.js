@@ -140,11 +140,9 @@ S.editor.resources = {
                     var t = $(e2.target).parents('li').first();
                     var f = t.attr('data-file');
                     var parts = path.split('/');
-                    console.log('"' + f + '"');
-                    if (parts[parts.length - 1] == '') { console.log('wtf');  parts.splice(parts.length - 1, 1); }
+                    if (parts[parts.length - 1] == '') { parts.splice(parts.length - 1, 1); }
                     if (f == '..') { parts.splice(parts.length - 1, 1); } else { parts.push(f); }
                     var p = parts.join('/');
-                    console.log(parts);
                     S.editor.resources.select(p, filetypes, multiselect, title, buttonTitle, uploadTitle, browseTitle, backTitle, browsePath, callback, true);
                 });
 
