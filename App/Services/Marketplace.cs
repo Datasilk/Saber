@@ -10,6 +10,13 @@ namespace Saber.Services
             return Cache.LoadFile("Views/Market/toolbar.html");
         }
 
+        public string Permissions()
+        {
+            var response = "";
+            if (CheckSecurity("install-template")) { response += "canInstall"; }
+            return response;
+        }
+
         public string InstallTemplate(int templateId, string token)
         {
             if (!CheckSecurity("install-template")) { return AccessDenied(); }

@@ -1,4 +1,5 @@
 ﻿S.editor.market = {
+    canInstall: false,
     open: function () {
         //show market tab
         var host = 'https://www.sabercms.com/'; //S.editor.env == 'prod' ? 'https://www.sabercms.com/' : 'http://localhost:7071/';
@@ -16,19 +17,18 @@
                 userId: null,
                 username: null,
                 load: function (userId, username) {
-                    console.log('window.market.load(' + userId + ', ' + username + ')');
                     window.market.userId = userId;
                     window.market.username = username;
                     focusTab();
                 },
                 template: {
                     install: function (id, token) {
-                        if (window.parent.confirm('Do you really want to install this website template onto your Saber website? This will completely erase your existing website and replace it with the template, and this cannot be undone!')) {
+                        if (S.editor.market.canInstall == true && window.parent.confirm('Do you really want to install this website template onto your Saber website? This will completely erase your existing website and replace it with the template, and this cannot be undone!')) {
                             S.popup.show('Installing Website Template', '<div class="pad-lg">Please wait...', { close: false });
                             S.ajax.post('Marketplace/InstallTemplate', { templateId: id, token: token }, () => {
                                 S.popup.hide();
                                 S.popup.show('Website Template Installed!', '<div class="pad-lg">The selected website template was successfully installed. Please clear your web browser cache and refresh this page to view your new website!</div>', { close: false });
-                            });;
+                            });
                         }
                     }
                 }
@@ -42,8 +42,11 @@
                     if (e.data.indexOf('marketplace|') == 0) {
                         var data = JSON.parse(e.data.replace('marketplace|', ''));
                         window.market.load(data.userId, data.username);
-                        var iframe = $('.tab.market.market-section iframe')[0].contentWindow;
-                        iframe.postMessage('saber', '*');
+                        S.ajax.post('Marketplace/Permissions', {}, (response) => {
+                            var iframe = $('.tab.market.market-section iframe')[0].contentWindow;
+                            S.editor.market.canInstall = response.indexOf('canInstall') >= 0;
+                            iframe.postMessage('saber|' + response, '*');
+                        });
                     } else if (e.data.indexOf('install-template|') == 0) {
                         var props = e.data.replace('install-template|', '').split(',');
                         window.market.template.install(props[0], props[1]);
@@ -114,7 +117,7 @@
             );
         } else {
             $('.tab.market-section').removeClass('hide');
-            S.editor.tabs.select('dataset-market-section');
+            S.editor.tabs.select('market-section');
         }
     }
 };
