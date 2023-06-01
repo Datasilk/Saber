@@ -33,6 +33,11 @@
     <Content Remove="Views\Market\toolbar.html" />
     <Content Remove="Views\Users\page-item.html" />
     <Content Remove="Views\Users\paging.html" />
+    <None Remove="Content\emails\activation.html" />
+    <None Remove="Content\emails\forgot-pass.html" />
+    <None Remove="Content\emails\signup.html" />
+    <None Remove="Content\temp\emails\activation.html" />
+    <None Remove="Content\temp\emails\forgot-pass.html" />
     <None Remove="views\contentfields\contentfields.js" />
     <None Remove="Views\ContentFields\readonly.html" />
     <None Remove="Views\Editor\layout.html" />
@@ -52,6 +57,15 @@
     <None Remove="Views\WebsiteSettings\page-title.html" />
     <None Remove="Views\WebsiteSettings\page-titles.html" />
     <None Remove="Views\WebsiteSettings\restart.html" />
+    <Content Include="Content\emails\activation.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\emails\forgot-pass.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\emails\signup.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="wwwroot\web.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\Release.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
 	  <Content Include="..\README.md"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
