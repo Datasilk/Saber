@@ -40,7 +40,7 @@ S.editor.tabs = {
                 $('.tab-' + id + ' .btn-close').on('click', function (e) {
                     S.editor.tabs.close(id, path);
                     e.preventDefault();
-                    e.cancelBubble = true;
+                    e.stopPropagation();
                 });
             } else {
                 $('.tab-' + id + ' .btn-close').hide();

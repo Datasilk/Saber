@@ -328,7 +328,7 @@ S.editor.fields.custom.list = {
         return data;
     },
     remove: function (e) {
-        e.cancelBubble = true;
+        e.stopPropagation();
         var target = $(e.target);
         var field = target.parents('.content-field').first();
         var li = target.parents('li').first();

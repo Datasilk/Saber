@@ -56,7 +56,7 @@ S.editor.websettings.styles = {
 
         S('.popup form').on('submit', (e) => {
             e.preventDefault();
-            e.cancelBubble = true;
+            e.stopPropagation();
             var data = { file: S('#available_styles').val() };
             S.ajax.post('WebsiteSettings/AddStylesheetToSite', data, (list) => {
                 //add stylesheets to list
@@ -114,7 +114,7 @@ S.editor.websettings.scripts = {
 
         S('.popup form').on('submit', (e) => {
             e.preventDefault();
-            e.cancelBubble = true;
+            e.stopPropagation();
             var data = { file: S('#available_scripts').val() };
             S.ajax.post('WebsiteSettings/AddScriptToSite', data, (list) => {
                 //add scripts to list

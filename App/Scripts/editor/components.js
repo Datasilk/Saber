@@ -133,7 +133,7 @@
                 S.accordion.load({}, () => { S.editor.resize.window(); });
                 $('.component-configure .accordion .title .add-list-item').filter((i, a) => $(a).attr('onclick') == '').on('click', (e) => {
                     //show new param form
-                    e.cancelBubble = true;
+                    e.stopPropagation();
                     var parent = $(e.target).parents('.component-param').first();
                     parent.find('.accordion').first().removeClass('expanded');
                     parent.find('.add-list-item, .expander').addClass('hide');
@@ -144,7 +144,7 @@
                 });
                 $('.component-configure .accordion .title .cancel-item').on('click', (e) => {
                     //cancel creating param value item
-                    e.cancelBubble = true;
+                    e.stopPropagation();
                     var parent = $(e.target).parents('.component-param').first();
                     parent.find('.add-list-item, .expander').removeClass('hide');
                     parent.find('.field-form, .accept-item, .cancel-item').addClass('hide');
@@ -230,7 +230,7 @@
     accordion: {
         accept: function(e){
             //create param value item and add to list of param values
-            e.cancelBubble = true;
+            e.stopPropagation();
             var parent = $(e.target).parents('.component-param').first();
             var param = parent.find('.field-form .param');
             var val = param.val();
@@ -268,7 +268,7 @@
 
             //add event listeners for list items
             ul.find('li .close-btn').on('click', (e) => {
-                e.cancelBubble = true;
+                e.stopPropagation();
                 var vals2 = input.val() != '' ? input.val().split('|') : [];
                 var li = $(e.target).parents('li').first();
                 var lis = ul.find('li');
@@ -292,7 +292,7 @@
 
     partials: {
         show: function (e, callback) {
-            e.cancelBubble = true;
+            e.stopPropagation();
             S.editor.explorer.select('Select Partial View', 'Content/partials', '.html', (file) => {
                 $(e.target).parents('.component-param').find('.select-partial input').val(file.replace('Content/', '').replace('content/', ''));
                 if (callback) {

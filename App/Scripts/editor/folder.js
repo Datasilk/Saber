@@ -16,7 +16,7 @@ S.editor.folder = {
 
         submit: function(e) {
             e.preventDefault();
-            e.cancelBubble = true;
+            e.stopPropagation();
             var data = {
                 path: $('#newfolderpath').val().replace(/\s/g, ''),
                 folder: $('#newfolder').val()

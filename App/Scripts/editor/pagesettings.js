@@ -92,7 +92,7 @@ S.editor.pagesettings = {
 
             submit: function (e) {
                 e.preventDefault();
-                e.cancelBubble = true;
+                e.stopPropagation();
                 var data = { title: $('#page_title_new_prefix').val(), prefix: true };
                 S.ajax.post('PageSettings/CreatePageTitlePart', data,
                     function (d) {
@@ -115,7 +115,7 @@ S.editor.pagesettings = {
 
             submit: function (e) {
                 e.preventDefault();
-                e.cancelBubble = true;
+                e.stopPropagation();
                 var data = { title: $('#page_title_new_suffix').val(), prefix: false };
                 S.ajax.post('PageSettings/CreatePageTitlePart', data,
                     function (d) {
@@ -237,7 +237,7 @@ S.editor.pagesettings = {
 
             submit: function (e) {
                 e.preventDefault();
-                e.cancelBubble = true;
+                e.stopPropagation();
                 var data = { file: $('#available_styles').val(), path: S.editor.path };
                 S.ajax.post('PageSettings/AddStylesheetToPage', data, (list) => {
                     //add stylesheet to page
@@ -303,7 +303,7 @@ S.editor.pagesettings = {
 
             submit: function (e) {
                 e.preventDefault();
-                e.cancelBubble = true;
+                e.stopPropagation();
                 var data = { file: $('#available_scripts').val(), path: S.editor.path };
                 S.ajax.post('PageSettings/AddScriptToPage', data, (list) => {
                     //add script to page
@@ -370,7 +370,7 @@ S.editor.pagesettings = {
 
             submit: function (e) {
                 e.preventDefault();
-                e.cancelBubble = true;
+                e.stopPropagation();
                 var data = { groupId: $('#available_groups').val(), path: S.editor.path };
                 S.ajax.post('PageSettings/AddSecurityGroup', data, (list) => {
                     //update security group list

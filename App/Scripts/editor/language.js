@@ -37,7 +37,7 @@ S.editor.lang = {
 
         submit: function (e, callback) {
             e.preventDefault();
-            e.cancelBubble = true;
+            e.stopPropagation();
             var data = { name: $('#lang_name').val(), abbr: $('#lang_abbr').val() };
             S.ajax.post('Languages/Create', data,
                 function (d) {

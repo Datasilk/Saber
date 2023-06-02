@@ -27,11 +27,11 @@ S.editor.explorer = {
                 $('.file-browser ul.menu').html(d);
                 //add event listeners to delete buttons
                 $('.file-browser .delete-file').on('click', (e) => {
-                    e.cancelBubble = true;
+                    e.stopPropagation();
                     S.editor.file.delete($(e.target).parents('.item').first().attr('data-path'));
                 });
                 $('.file-browser .delete-folder').on('click', (e) => {
-                    e.cancelBubble = true;
+                    e.stopPropagation();
                     S.editor.folder.delete($(e.target).parents('.item').first().attr('data-path'));
                 });
                 //add event listener for renaming files
@@ -40,7 +40,7 @@ S.editor.explorer = {
                     var path = parent.attr('data-path');
                     var tab = $('.tab-' + S.editor.fileId(path) + '.selected');
                     if (tab.length == 1 && ['/pages/', 'website.less'].filter(a => path.indexOf(a) >= 0).length == 0) {
-                        e.cancelBubble = true;
+                        e.stopPropagation();
                         e.stopPropagation();
                     }
                 });
@@ -50,7 +50,7 @@ S.editor.explorer = {
                     var tab = $('.tab-' + S.editor.fileId(path) + '.selected');
                     if (tab.length == 1 && ['/pages/', 'website.less'].filter(a => path.indexOf(a) >= 0).length == 0) {
                         //show textbox to rename file with
-                        e.cancelBubble = true;
+                        e.stopPropagation();
                         e.stopPropagation();
                         let label = parent.find('.label');
                         if (label.find('input').length == 1) { return;}
@@ -103,7 +103,7 @@ S.editor.explorer = {
                                     break;
                             }
                             if (found) {
-                                e.cancelBubble = true;
+                                e.stopPropagation();
                                 e.stopPropagation();
                             }
                         });

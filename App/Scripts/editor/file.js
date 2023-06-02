@@ -16,7 +16,7 @@ S.editor.file = {
 
         submit: function (e) {
             e.preventDefault();
-            e.cancelBubble = true;
+            e.stopPropagation();
             var data = {
                 path: $('#newfilepath').val(),
                 filename: $('#newfilename').val().replace(/\s/g, '')

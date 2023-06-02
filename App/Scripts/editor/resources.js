@@ -124,7 +124,7 @@ S.editor.resources = {
                         $(e.target).parents('.check').length > 0 ||
                         $(e.target).parents('.menu.hover-only').length > 0
                     ) { return; }
-                    e.cancelBubble = true;
+                    e.stopPropagation();
                     $(target).find('.selected').toggleClass('hide');
                     selectedResources = popup.find('.resources-list li')
                         .filter((i, a) => $(a).find('.selected:not(.hide)').length > 0)
@@ -204,7 +204,7 @@ S.editor.resources = {
     },
 
     delete: function (e, file, elem, path) {
-        e.cancelBubble = true;
+        e.stopPropagation();
         if (!window.parent.confirm('Do you really want to delete the file "' + file + '"? This cannot be undone.')) { return; }
         S.ajax.post('PageResources/Delete', { path: path ?? S.editor.resources.path, file: file },
             function (d) {

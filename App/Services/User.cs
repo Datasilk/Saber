@@ -323,7 +323,7 @@ namespace Saber.Services
             if (!DecryptPassword(User.Email, oldpass, encrypted)) { return Error("Incorrect password"); }
             try
             {
-                Query.Users.UpdatePassword(User.Email, password);
+                Query.Users.UpdatePassword(User.Email, EncryptPassword(User.Email, password));
             }
             catch (Exception ex)
             {
@@ -354,6 +354,8 @@ namespace Saber.Services
             try
             {
                 Query.Users.UpdateEmail(User.UserId, newemail, EncryptPassword(newemail, password));
+                User.Email = newemail;
+                User.Save();
             }
             catch(Exception ex)
             {
@@ -418,6 +420,7 @@ namespace Saber.Services
                 else if (p == ' ') { spaces++; }
                 else if (char.IsLetter(p)) { }
                 else { special++; }
+                lastchar = p;
             }
 
             if (numbers < config.Passwords.MinNumbers)
