@@ -96,7 +96,7 @@
 
                 //settings button
                 $('.user-menu .tab-settings').on('click', () => {
-                    $('.tab.market-section iframe').attr('src', host + 'user/settings');
+                    $('.tab.market-section iframe').attr('src', host + 'dashboard/profile');
                 });
 
                 //homepage button

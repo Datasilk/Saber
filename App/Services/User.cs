@@ -11,6 +11,7 @@ namespace Saber.Services
     {
         public string homePath = "home"; //user home path used to redirect after user log in success
 
+        #region "Authenticate"
         public string Authenticate(string email, string password)
         {
             if (IsPublicApiRequest) { return AccessDenied(); }
@@ -80,6 +81,13 @@ namespace Saber.Services
             return Error("Endpoint not yet implemented");
         }
 
+        public void LogOut()
+        {
+            User.LogOut();
+        }
+        #endregion
+
+        #region "Create Account"
         public string CreateAdminAccount(string name, string email, string password, string password2)
         {
             if (Server.HasAdmin == true || Query.Users.HasAdmin()) { return Error(); }
@@ -209,7 +217,9 @@ namespace Saber.Services
 
             return Success();
         }
+        #endregion
 
+        #region "Activation"
         [PublicApi("Request that an activation email be sent to a new user account", "A valid email address associated with the user's account")]
         public string RequestActivation(string emailaddr)
         {
@@ -238,7 +248,9 @@ namespace Saber.Services
             }
             return Success();
         }
+        #endregion
 
+        #region "Update Password"
         public string ForgotPassword(string emailaddr)
         {
             if (IsPublicApiRequest) { return AccessDenied(); }
@@ -295,11 +307,35 @@ namespace Saber.Services
             }
         }
 
-        public void LogOut()
+        public string UpdatePassword(string password, string password2, string oldpass)
         {
-            User.LogOut();
-        }
+            if (!CheckSecurity() || IsPublicApiRequest) { return AccessDenied(); }
+            if (password != password2) { return Error("Passwords do not match"); }
+            try
+            {
+                CheckPassword(password);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+            var encrypted = Query.Users.GetPassword(User.Email);
+            if (!DecryptPassword(User.Email, oldpass, encrypted)) { return Error("Incorrect password"); }
+            try
+            {
+                Query.Users.UpdatePassword(User.Email, password);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, this, "UpdatePassword", "userId: " + User.UserId);
+                return Error("Error updating password");
+            }
 
+            return Success();
+        }
+        #endregion
+
+        #region "Update Info"
         [PublicApi("Update the authenticated user's name")]
         public string UpdateName(string name)
         {
@@ -327,33 +363,7 @@ namespace Saber.Services
             
             return Success();
         }
-
-        public string UpdatePassword(string password, string password2, string oldpass)
-        {
-            if (!CheckSecurity() || IsPublicApiRequest) { return AccessDenied(); }
-            if (password != password2) { return Error("Passwords do not match"); }
-            try
-            {
-                CheckPassword(password);
-            }
-            catch (Exception ex)
-            {
-                return Error(ex.Message);
-            }
-            var encrypted = Query.Users.GetPassword(User.Email);
-            if (!DecryptPassword(User.Email, oldpass, encrypted)) { return Error("Incorrect password"); }
-            try
-            {
-                Query.Users.UpdatePassword(User.Email, password);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, this, "UpdatePassword", "userId: " + User.UserId);
-                return Error("Error updating password");
-            }
-
-            return Success();
-        }
+        #endregion
 
         #region "Helpers"
         private bool CheckEmailAddress(string email)

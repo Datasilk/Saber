@@ -94,6 +94,24 @@ namespace Saber.Common.Platform.HtmlComponents
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 , new HtmlComponentModel()
                 {
+                    Key = "useremail",
+                    Name = "User Email",
+                    Description = "Display the user's email address",
+                    ContentField = false,
+                    Render = new Func<View, IRequest, Dictionary<string, string>, Dictionary<string, object>, string, string, List<KeyValuePair<string, string>>>((view, request, args, data, prefix, key) =>
+                    {
+                        var results = new List<KeyValuePair<string, string>>();
+                        //check if user is logged in
+                        if(request.User.UserId > 0 && !request.Parameters.ContainsKey("live"))
+                        {
+                            results.Add(new KeyValuePair<string, string>(prefix + "useremail", request.User.Email));
+                        }
+                        return results;
+                    })
+                }
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                , new HtmlComponentModel()
+                {
                     Key = "userid",
                     Name = "User ID",
                     Description = "Display the user's ID",
