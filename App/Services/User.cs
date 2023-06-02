@@ -342,6 +342,7 @@ namespace Saber.Services
             if (!CheckSecurity()) { return AccessDenied(); }
             Query.Users.UpdateName(User.UserId, name);
             User.Name = name;
+            User.Save(true);
             User.Save();
             return Success();
         }
@@ -357,6 +358,7 @@ namespace Saber.Services
             {
                 Query.Users.UpdateEmail(User.UserId, newemail, EncryptPassword(newemail, password));
                 User.Email = newemail;
+                User.Save(true);
                 User.Save();
             }
             catch(Exception ex)
