@@ -341,6 +341,8 @@ namespace Saber.Services
         {
             if (!CheckSecurity()) { return AccessDenied(); }
             Query.Users.UpdateName(User.UserId, name);
+            User.Name = name;
+            User.Save();
             return Success();
         }
 
