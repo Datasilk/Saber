@@ -128,7 +128,7 @@ S.editor.resources = {
                     $(target).find('.selected').toggleClass('hide');
                     selectedResources = popup.find('.resources-list li')
                         .filter((i, a) => $(a).find('.selected:not(.hide)').length > 0)
-                        .map((i, a) => path.replace('wwwroot/', '') + '/' + $(a).find('.title').html().trim());
+                        .map((i, a) => '/' + path.replace('wwwroot/', '') + '/' + $(a).attr('data-file'));
                     if (!multiselect) {
                         //single-select
                         popup.find('.apply')[0].click();

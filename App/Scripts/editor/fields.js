@@ -8,12 +8,12 @@ S.editor.fields = {
         if (!S.editor.fields.loaded) {
             S.util.js.load('/editor/js/views/contentfields/contentfields.js', 'contentfields', callback);
         } else {
-            setTimeout(callback, 100);
+            callback();
         }
     },
     load: function (file, show) {
         S.editor.fields.checkjs(() => {
-            S.editor.fields._load(file, show);
+            setTimeout(() => { S.editor.fields._load(file, show); }, 100);
         });
     },
     popup: function (partial, lang, title, fieldsdata, buttonTitle, submit, excludeFields, renderApi, callback) {

@@ -168,8 +168,7 @@ describe('Getting Started', () => {
                         cy.uploadFiles('cypress/uploads/list/' + file);
                         cy.wait('@upload-file').then((s) => { expect(s.response.statusCode).to.eq(200); });
                         cy.wait('@render-uploads').then((s) => { expect(s.response.statusCode).to.eq(200); });
-                        cy.getEditor().find('.popup.show img[alt="image ' + file + '"]').click();
-                        cy.getEditor().find('.popup.show input.button.apply').click();
+                        cy.getEditor().find('.popup.show img[alt="file ' + file + '"]').click();
                         cy.getEditor().find('.popup.show #field_title').type(title);
                         cy.getEditor().find('.popup.show .has-content-fields button.apply').click();
                     }

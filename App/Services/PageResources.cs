@@ -284,7 +284,7 @@ namespace Saber.Services
                                 break;
                         }
                         item["file-type"] = type;
-                        item["file-id"] = f.Name.ReplaceAll("", new string[] {"@#$%^&*()+=|[]{};'\",<>?~"}).ReplaceAll("_", new string[] {"-", "." }).ToLower();
+                        item["file-id"] = type + "-" + f.Name.ReplaceAll("", new string[] {"@#$%^&*()+=|[]{};'\",<>?~"}).ReplaceAll("_", new string[] {"-", "." }).ToLower();
                         item["filename"] = f.Name;
                         if (item["img-src"] == "")
                         {
