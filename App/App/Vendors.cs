@@ -164,6 +164,7 @@ namespace Saber.Common
             //update JSON file with current versions of DLL files
             var versions = new List<AssemblyInfo>();
             var versionsChanged = false;
+            var excludePaths = new string[] { "/temp/", "/node_modules/", "/sql/" };
             if (File.Exists(App.MapPath("/Vendors/versions.json")) && Server.RunTests == false)
             {
                 versions = JsonSerializer.Deserialize<List<AssemblyInfo>>(File.ReadAllText(App.MapPath("/Vendors/versions.json"))) ?? new List<AssemblyInfo>();
@@ -172,6 +173,7 @@ namespace Saber.Common
             {
                 Directory.CreateDirectory(App.MapPath("/wwwroot/editor/vendors"));
             }
+
             foreach (var detail in Core.Vendors.Details)
             {
                 //check version of vendor
@@ -224,6 +226,7 @@ namespace Saber.Common
                         var filename = Path.GetFileName(f.FullName);
                         var subPath = f.FullName.Replace(path, "").Replace(filename, "").ToLower();
                         var subPathRel = subPath.Replace("\\", "/").ToLower();
+                        if (excludePaths.Any(a => ("/" + subPathRel).Contains(a))) { continue; }
                         //create wwwroot vendor path
                         if (!Directory.Exists(App.MapPath(vendorPath + subPathRel)))
                         {

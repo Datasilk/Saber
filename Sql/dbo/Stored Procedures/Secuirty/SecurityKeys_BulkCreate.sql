@@ -33,6 +33,7 @@ AS
 	DECLARE @key varchar(32), @value bit, @isplatform bit
 	SET @cursor = CURSOR FOR
 	SELECT * FROM @newkeys
+	OPEN @cursor
 	FETCH NEXT FROM @cursor INTO @key, @value, @isplatform
 	WHILE @@FETCH_STATUS = 0 BEGIN
 		IF EXISTS(SELECT * FROM Security_Keys WHERE groupId=@groupId AND [key]=@key) BEGIN
