@@ -27,15 +27,15 @@ public class WinService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Logger.LogInformation("Saber is starting.");
+        Logger.LogInformation("Background service is starting.");
 
-        stoppingToken.Register(() => Logger.LogInformation("Saber is stopping."));
+        stoppingToken.Register(() => Logger.LogInformation("Background service is stopping."));
 
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(TimeSpan.FromSeconds(1000), stoppingToken);
         }
 
-        Logger.LogInformation("Saber has stopped.");
+        Logger.LogInformation("Background service has stopped.");
     }
 }
