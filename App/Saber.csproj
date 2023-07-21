@@ -26,7 +26,8 @@
     <None Include="Content\**"></None>
     <Content Include="Content\temp\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
     <Content Include="Content\website.*"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
-    <Content Include="Views\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
+    <Content Include="Views\**\*.html"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
+    <Content Include="Views\**\*.js"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
     <None Include="wwwroot\**"></None>
     <Content Include="wwwroot\editor\**"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
     <Content Include="wwwroot\web.config"><CopyToOutputDirectory>Always</CopyToOutputDirectory></Content>
@@ -62,6 +63,9 @@
   <ItemGroup>
     <None Update="config.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\emails\signup.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="web.config">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
